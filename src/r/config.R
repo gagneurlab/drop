@@ -1,3 +1,10 @@
+# R Script
+# author: baderda
+##############################################################################
+
+# allow group users to read AND write 
+Sys.umask(mode = "0002")
+
 ##--------------------------------------------
 ## required packages
 
@@ -21,5 +28,21 @@ stopifnot(dir.exists("../gagneurlab_shared"))
 source("src/r/functions/load_rscripts_from_folder.R")
 load_rscripts_from_folder("src/r/functions/")
 
+
+
+##--------------------------------------------
+## parameters
+
+
+# folders
+DATADIR     <- "/s/project/mitoMultiOmics/"		# main project folder on ouga
+RAWDIR      <- file.path(DATADIR,"raw_data/")	# all original files from the collaborators (read only files) 
+NGSDIR      <- file.path(RAWDIR, "helmholtz/")	# all raw sequencing data (BAM,VCF,RNAseq,...)
+BADERDIR    <- file.path(DATADIR,'tmp_baderda/')
+
+#PROCDIR     <- file.path(DATADIR,'processed_expression/')	# folder for the processed data
+
+# files
+FILE_GO_HUMAN    <- "/s/genomes/human/GO/gene_association.goa_human"
 
 
