@@ -1,0 +1,30 @@
+# typical latex tmp files
+*.aux
+*.log
+*.synctex.gz
+*.bbl
+*.blg
+*.out
+# data heavy folders structure
+data/
+Data/
+Output/
+# snakemake build
+auto
+.wBuild
+.snakemake/
+# IDE project files
+*.Rproj
+*.project
+# other
+*~
+.ipynb_
+*.ipynb_*
+slurm-*.out
+__pycache__
+~$
+_cache
+*_cache
+*_files
+*.cache
+/readme.html
