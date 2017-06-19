@@ -80,7 +80,7 @@ get_expression_from_proteinGroups_dt <- function(
     }
     
     # return
-    protein_intensity_dt
+    return(protein_intensity_dt)
 }
 
 

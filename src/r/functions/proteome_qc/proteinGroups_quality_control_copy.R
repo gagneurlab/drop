@@ -4,7 +4,195 @@
 ###############################################################################
 
 
+get_unique_protein_ids <- function(
+    proteome_data_table,
+    column_protein_id='PROTEIN_ID'
+){
+    unique(proteome_data_table[, get(column_protein_id)])
+}
 
+
+get_unique_gene_ids <- function(
+    proteome_data_table,
+    column_genen_id='GENE_NAME'
+){
+    unique(proteome_data_table[, get(column_gene_id)])
+}
+
+
+
+#' proteins with no gene name 
+#' 
+#' @return data.table; subset of input where column_gene_id is NA
+#' 
+get_proteome_with_unknown_genes <- function(
+    proteome_data_table,
+    column_protein_id='PROTEIN_ID',
+    column_gene_id='GENE_NAME'
+){
+    res <- proteome_data_table[
+        is.na(get(column_gene_id)), 
+        c(column_protein_id, column_gene_id), 
+        with=F
+    ]
+    return(unique(res))
+}
+
+
+
+#' proteins with duplicated gene names
+#' 
+get_proteome_with_duplicated_genes <- function(
+    proteome_data_table,
+    column_protein_id='PROTEIN_ID',
+    column_gene_id='GENE_NAME'
+){
+    # get unique matching protein to gene
+    dt <- unique(
+        proteome_data_table[,c(column_protein_id, column_gene_id), with=F]
+    )
+    index_duplicated <- duplicated(dt[, get(column_gene_id)])
+    
+    # names of duplicates
+    genes_duplicated <- get_unique_gene_ids(dt[index_duplicated, ])
+    
+    # return all affected entries
+    res <- proteome_data_table[get(column_gene_id) %in% genes_duplicated]
+    return(res)
+}
+
+
+
+#' select_best_among_duplicates
+#' 
+#' For all protein entries of one gene, pick best. 
+#' 
+select_best_among_duplicates <- function(
+    duplicated_proteome_dt,
+    column_protein_id='PROTEIN_ID',
+    column_gene_id='GENE_NAME',
+    column_intensity='LFQ_INTENSITY'
+){
+    # ensure that only 1 gene is compared
+    num_genes_tested <- length(unique(duplicated_proteome_dt[,get(column_gene_id)]))
+    stopifnot(num_genes_tested==1)
+    
+    # mean intensity by protein across samples
+    info_by_pid <- duplicated_proteome_dt[, 
+        mean(get(column_intensity), na.rm=TRUE), 
+        by=eval(column_protein_id)
+    ]
+    
+    # return highest mean
+    best_pid <- info_by_pid[V1==max(V1), get(column_protein_id)]
+    res <- duplicated_proteome_dt[get(column_protein_id)==best_pid]
+    res
+}
+
+
+#' filter_proteome_for_duplicated_genes
+#' 
+#' Return subset of input proteome. 
+#' Only best genes among duplicates are returned. 
+#' 
+filter_proteome_for_duplicated_genes <- function(
+    proteome_data_table,
+    column_protein_id='PROTEIN_ID',
+    column_gene_id='GENE_NAME',
+    column_intensity='LFQ_INTENSITY'
+){
+    dupl_gene_pid <- get_unique_protein_ids(
+        get_proteome_with_duplicated_genes(
+            proteome_data_table, column_protein_id, column_gene_id
+        )
+    )
+    dupl_gene_names <- get_unique_gene_ids(proteome_data_table[
+            get(column_protein_id) %in% dupl_gene_pid
+        ]
+    )
+    # report duplicates lost
+    num_duplicates_lost = length(dupl_gene_pid) - length(dupl_gene_names)
+    message('Number of duplicates gene names: ', length(dupl_gene_names))
+    message('Number of protein duplicates removed: ', num_duplicates_lost)
+    
+    
+    # select best for each duplicated gene
+    best_dupl_proteome_dt <- data.table()
+    for(g in dupl_gene_names){
+        dupl_dt <- proteome_data_table[get(column_gene_id)==g]
+        res <- select_best_among_duplicates(
+            dupl_dt, column_protein_id, column_gene_id, column_intensity
+        )
+        best_dupl_proteome_dt <- rbind(best_dupl_proteome_dt, res)
+    }
+    
+    # remove all duplicate entries
+    proteome_data_table <- proteome_data_table[
+        !get(column_protein_id) %in% dupl_gene_pid
+    ]
+    # add best duplicates back 
+    proteome_data_table <- rbind(proteome_data_table, best_dupl_proteome_dt)
+}
+
+
+#' filter_proteome_for_genes
+#' 
+filter_proteome_by_gene_properties <- function(
+    proteome_data_table
+){
+    column_protein_id='PROTEIN_ID'
+    column_gene_id='GENE_NAME'
+    column_intensity='LFQ_INTENSITY'
+    remove_proteins_without_gene_name=TRUE
+    
+    
+    print(dim(proteome_data_table))
+    
+    # 
+    # Remove proteins w/o gene name
+    #
+    if(remove_proteins_without_gene_name){
+        nogene_pid <- get_unique_protein_ids(get_proteome_with_unknown_genes(
+            proteome_data_table, column_protein_id, column_gene_id
+        ))
+        proteome_data_table <- proteome_data_table[
+            !get(column_protein_id) %in% nogene_pid
+        ]
+        message("Number of proteins without gene name: ", length(nogene_pid))
+    }
+    print(dim(proteome_data_table))
+    
+    
+    #
+    # Choose best among gene duplicates
+    #
+    proteome_data_table <- filter_proteome_for_duplicated_genes(
+        proteome_data_table
+    )
+    print(dim(proteome_data_table))
+    
+    
+    
+    
+########################################
+    column_ids=c(column_protein_id, column_gene_id)
+    
+    # select group representative
+    for(i in column_ids){
+        proteome_data_table[,eval(paste0(i, "_FIRST")):=tstrsplit(
+                get(i), ';', fixed=T, keep=1
+            )
+        ]
+    }
+    head(proteome_data_table)
+    
+    
+    
+    
+    
+
+    
+}
 
 
 
@@ -29,12 +217,7 @@ proteinGroups_dt_quality_control = function( proteinGroups_data_table,
     if(nrow(noid)>0)
         message('Number of proteins without protein ID: ', nrow(noid))
     
-    # set first protein and gene of group as the only ID, since they are dominating their group
-    tmpid = sapply( strsplit(proteinGroups_data_table$Protein.IDs,';'), '[',1)
-    proteinGroups_data_table[ ,first_protein:= tmpid ]
-    tmpid = sapply( strsplit(proteinGroups_data_table$Gene.names,';'), '[',1)
-    proteinGroups_data_table[ ,first_gene:= tmpid ]
-    
+    #
     # first_protein as KEY
     setkey(proteinGroups_data_table, first_protein)
     
@@ -43,47 +226,6 @@ proteinGroups_dt_quality_control = function( proteinGroups_data_table,
     stopifnot(length(cols_intensity)>0)
     replace_value_in_dt_columns(proteinGroups_data_table, 0, cols_intensity, NA)
     
-    
-    #
-    # Focus on genes
-    #
-    
-    # remove proteins w/o gene name
-    nogene = is.na(proteinGroups_data_table$first_gene)
-    proteinGroups_data_table = proteinGroups_data_table[!nogene]
-    message('Number of proteins without gene ID: ', sum(nogene))
-    if(verbose)
-        print(proteinGroups_data_table[nogene, first_protein])
-    
-    # detect duplicated gene names
-    genes_duplicated = unique(proteinGroups_data_table[duplicated(first_gene), first_gene])
-    
-    # remove all duplicated genes
-    res_dt = proteinGroups_data_table[ !first_gene %in% genes_duplicated, ]
-    
-    # find protein with highest avg expression and least NA values among duplicates
-    best_couples = sapply( genes_duplicated, function(g){
-            pids= proteinGroups_data_table[first_gene==g, first_protein]
-            tmp_metrics = sapply(pids, function(p){
-                    expr_single_prot = log2(as.numeric(proteinGroups_data_table[first_protein==p, cols_intensity, with=F]))
-                    # compute comparables
-                    c( mean= mean(expr_single_prot, na.rm=T), 
-                        median= median(expr_single_prot, na.rm=T), 
-                        notnafreq= 1-sum(is.na(expr_single_prot))/length(cols_intensity) 
-                    )
-                })
-            # get protein with most maxima
-            best= names(sort(colSums(tmp_metrics==rowMax(replace_na(tmp_metrics, -Inf))), decreasing=T))[1]
-            return(best)
-        })
-    # add best proteins for duplicated genes
-    res_dt = rbind(res_dt, proteinGroups_data_table[best_couples])
-    setkey(res_dt, first_protein)
-    stopifnot( anyDuplicated(res_dt$first_gene)==0 )
-    
-    # report duplicates lost
-    num_duplicates_lost = nrow(proteinGroups_data_table) - nrow(res_dt)
-    message('Number of protein duplicates removed: ', num_duplicates_lost, '. Keep only most abundant among duplicates.')
     
     
     #
