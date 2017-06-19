@@ -13,6 +13,7 @@ suppressPackageStartupMessages({
     library(data.table)
     library(knitr)
     library(rmarkdown)
+    library(tidyr)
 })
 
 ##--------------------------------------------
