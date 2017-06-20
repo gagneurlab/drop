@@ -135,6 +135,42 @@ filter_proteome_for_duplicated_genes <- function(
 }
 
 
+replace_groupid_with_firstid <- function(
+    proteome_data_table,
+    columns_groupid=c('PROTEIN_ID', 'GENE_NAME'),
+    remove_groupid_columns=TRUE
+){
+    first_suffix <- "_FIRST"
+    group_prefix <- 'GROUP_'
+    
+    # select group representative
+    for(i in columns_groupid){
+        proteome_data_table[,eval(paste0(i, first_suffix)):=tstrsplit(
+                get(i), ';', fixed=T, keep=1
+            )
+        ]
+    }
+    
+    # rename columns
+    for(i in columns_groupid){
+        setnames(
+            proteome_data_table, 
+            sub(paste0(i,'$'), paste0(group_prefix, i), names(proteome_data_table))
+        )
+    }
+    setnames(
+        proteome_data_table, 
+        gsub(first_suffix, "", names(proteome_data_table))
+    )
+    
+    # return with our without group ids
+    if(remove_groupid_columns){
+        # remove GROUP_
+        proteome_data_table[,grep(group_prefix, names(proteome_data_table), value=T):=list(NULL)]
+    }
+    return(proteome_data_table)
+}
+
 #' filter_proteome_for_genes
 #' 
 filter_proteome_by_gene_properties <- function(
@@ -164,34 +200,17 @@ filter_proteome_by_gene_properties <- function(
     
     
     #
+    # Keep only first ID of protein group
+    #
+    proteome_data_table <- replace_groupid_with_firstid(proteome_data_table)
+    
+    #
     # Choose best among gene duplicates
     #
     proteome_data_table <- filter_proteome_for_duplicated_genes(
         proteome_data_table
     )
     print(dim(proteome_data_table))
-    
-    
-    
-    
-########################################
-    column_ids=c(column_protein_id, column_gene_id)
-    
-    # select group representative
-    for(i in column_ids){
-        proteome_data_table[,eval(paste0(i, "_FIRST")):=tstrsplit(
-                get(i), ';', fixed=T, keep=1
-            )
-        ]
-    }
-    head(proteome_data_table)
-    
-    
-    
-    
-    
-
-    
 }
 
 
@@ -208,26 +227,7 @@ proteinGroups_dt_quality_control = function( proteinGroups_data_table,
     return_matrix=TRUE, 
     verbose=FALSE
 ){
-    #
-    # Treat IDs
-    #
-    message('Number of entries in table: ', nrow(proteinGroups_data_table))
-    
-    noid = proteinGroups_data_table[ is.na(Protein.IDs)]
-    if(nrow(noid)>0)
-        message('Number of proteins without protein ID: ', nrow(noid))
-    
-    #
-    # first_protein as KEY
-    setkey(proteinGroups_data_table, first_protein)
-    
-    # replace 0 in intensity columns
-    cols_intensity = grep(intensity_column_pattern, colnames(proteinGroups_data_table), value=T)
-    stopifnot(length(cols_intensity)>0)
-    replace_value_in_dt_columns(proteinGroups_data_table, 0, cols_intensity, NA)
-    
-    
-    
+   
     #
     # OUTLIER SAMPLES
     #

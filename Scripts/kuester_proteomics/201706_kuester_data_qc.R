@@ -16,7 +16,9 @@ source("src/r/config.R")
 
 #' # Data
 
-protdir <- file.path(RAWDIR, "proteome", "20170614_kopajtich_kuester_proteome")
+#protdir <- file.path(RAWDIR, "proteome", "20170614_kopajtich_kuester_proteome")
+protdir <- file.path("~/Documents/tmp_kuester_proteome")
+
 files_kuester <- list.files(protdir, pattern = "^m.*txt$", full.names = T)
 
 #' Kuester proteome files:
@@ -39,7 +41,12 @@ protein_table <- proteinGroups_read_table(
     tmp_file_kuester, 
     intensity_column_pattern = "LFQ" 
 )
-print(head(protein_table))
+
+proteome_data_table <- get_expression_from_proteinGroups_dt(protein_table)
+print(head(proteome_data_table))
+
+
+
 
 #' Create expression matrix
 #+ message='show'
