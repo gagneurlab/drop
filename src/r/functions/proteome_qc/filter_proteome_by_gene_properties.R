@@ -140,7 +140,8 @@ filter_proteome_for_duplicated_genes <- function(
     proteome_data_table,
     column_protein_id='PROTEIN_ID',
     column_gene_id='GENE_NAME',
-    column_intensity='LFQ_INTENSITY'
+    column_intensity='LFQ_INTENSITY',
+    verbose=FALSE
 ){
     dupl_gene_pid <- get_unique_protein_ids(
         get_proteome_with_duplicated_genes(
@@ -153,9 +154,11 @@ filter_proteome_for_duplicated_genes <- function(
     )
     # report duplicates lost
     num_duplicates_lost = length(dupl_gene_pid) - length(dupl_gene_names)
-    message('Number of duplicates gene names: ', length(dupl_gene_names))
-    message('Number of protein duplicates removed: ', num_duplicates_lost)
     
+    if(verbose){
+        message('Number of duplicates gene names: ', length(dupl_gene_names))
+        message('Number of protein duplicates removed: ', num_duplicates_lost)
+    }
     
     # select best for each duplicated gene
     best_dupl_proteome_dt <- data.table()
@@ -227,7 +230,8 @@ filter_proteome_by_gene_properties <- function(
         proteome_data_table,
         column_protein_id = column_protein_id,
         column_gene_id = column_gene_id,
-        column_intensity = column_intensity
+        column_intensity = column_intensity,
+        verbose = verbose
     )
     
     # END
