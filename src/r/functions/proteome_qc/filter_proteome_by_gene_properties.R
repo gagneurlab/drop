@@ -173,19 +173,23 @@ replace_groupid_with_firstid <- function(
     return(proteome_data_table)
 }
 
+
+
+
+
 #' filter_proteome_for_genes
 #' 
+#' meta function to call multiple sub filters
+#' 
 filter_proteome_by_gene_properties <- function(
-    proteome_data_table
+    proteome_data_table,
+    column_protein_id='PROTEIN_ID',
+    column_gene_id='GENE_NAME',
+    column_intensity='LFQ_INTENSITY',
+    remove_proteins_without_gene_name=TRUE,
+    keep_first_id_only=TRUE,
+    verbose=FALSE
 ){
-    column_protein_id='PROTEIN_ID'
-    column_gene_id='GENE_NAME'
-    column_intensity='LFQ_INTENSITY'
-    remove_proteins_without_gene_name=TRUE
-    
-    
-    print(dim(proteome_data_table))
-    
     # 
     # Remove proteins w/o gene name
     #
@@ -196,96 +200,38 @@ filter_proteome_by_gene_properties <- function(
         proteome_data_table <- proteome_data_table[
             !get(column_protein_id) %in% nogene_pid
         ]
-        message("Number of proteins without gene name: ", length(nogene_pid))
+        if(verbose){
+            message("Number of proteins without gene name: ", length(nogene_pid))
+        }
     }
-    print(dim(proteome_data_table))
-    
     
     #
     # Keep only first ID of protein group
     #
-    proteome_data_table <- replace_groupid_with_firstid(proteome_data_table)
+    if(keep_first_id_only){
+        proteome_data_table <- replace_groupid_with_firstid(
+            proteome_data_table,
+            columns_groupid = c(column_protein_id, column_gene_id),
+            remove_groupid_columns = TRUE,
+            separator = ';'
+        )
+    }
     
     
     #
     # Choose best among gene duplicates
     #
     proteome_data_table <- filter_proteome_for_duplicated_genes(
-        proteome_data_table
+        proteome_data_table,
+        column_protein_id = column_protein_id,
+        column_gene_id = column_gene_id,
+        column_intensity = column_intensity
     )
-    print(dim(proteome_data_table))
-}
-
-
-
-compute_sample_na_frequency <- function(
-    proteome_data_table,
-    column_intensity='LFQ_INTENSITY',
-    column_sample='PROTEOME_ID'
-){
-    proteome_data_table[,
-        SAMPLE_NA_FREQ := sum(is.na(get(column_intensity)))/.N, 
-        by=get(column_sample)
-    ]
-}
-
-
-compute_gene_na_frequency <- function(
-    proteome_data_table,
-    column_intensity='LFQ_INTENSITY',
-    column_id='GENE_NAME'
-){
-    proteome_data_table[,
-        GENE_NA_FREQ := sum(is.na(get(column_intensity)))/.N, 
-        by=get(column_id)
-    ]
-}
-
-
-
-#' proteinGroups_quality_control
-#' 
-#' @param proteinGroups_data_table result of proteinGroups_read_table
-#' 
-proteinGroups_dt_quality_control = function( proteinGroups_data_table, 
-    intensity_column_pattern= 'LFQ', 
-    max_na_frequency= 0.5, 
-    low_expr_quantile=NULL, 
-    return_matrix=TRUE, 
-    verbose=FALSE
-){
-   
-    #
-    # OUTLIER GENES
-    #
     
-
-    # remove genes with low expression (treat NA as 0)
-    if(!is.null(low_expr_quantile)){
-        ugly_idx = get_low_expression_indices(
-            replace_na(res_dt[,cols_intensity, with=F],0), low_expr_quantile, 1
-        )
-        if(sum(ugly_idx)>0)
-            message('Number of proteins with ',low_expr_quantile,' quantile not measured: ', sum(ugly_idx))
-        
-        res_dt= res_dt[!ugly_idx]
-    }else{
-        message('low_expr_quantile=',low_expr_quantile,'. Do you want to keep proteins with very low expression?')
-    }
-    
-    #
-    # RETURN filtered result
-    #
-    message('Final number of quality approved genes/proteins: ', nrow(res_dt))
-    
-    # convert to gene x sample matrix?
-    if(return_matrix){
-        m= as.matrix(res_dt[,cols_intensity, with=F])
-        rownames(m)= res_dt[,first_gene]
-        return(m)
-    }else
-        return(res_dt)
+    # END
+    return(proteome_data_table)
 }
+
 
 
 
