@@ -14,7 +14,7 @@ get_unique_protein_ids <- function(
 
 get_unique_gene_ids <- function(
     proteome_data_table,
-    column_genen_id='GENE_NAME'
+    column_gene_id='GENE_NAME'
 ){
     unique(proteome_data_table[, get(column_gene_id)])
 }
@@ -90,6 +90,47 @@ select_best_among_duplicates <- function(
 }
 
 
+replace_groupid_with_firstid <- function(
+    proteome_data_table,
+    columns_groupid=c('PROTEIN_ID', 'GENE_NAME'),
+    remove_groupid_columns=TRUE,
+    separator=';'
+){
+    library(data.table)
+    first_suffix <- "_FIRST"
+    group_prefix <- 'GROUP_'
+    
+    # select group representative
+    for(i in columns_groupid){
+        proteome_data_table[,eval(paste0(i, first_suffix)):=tstrsplit(
+                get(i), separator, fixed=T, keep=1
+            )
+        ]
+    }
+    
+    # rename columns
+    for(i in columns_groupid){
+        setnames(
+            proteome_data_table, 
+            sub(paste0(i,'$'), paste0(group_prefix, i), names(proteome_data_table))
+        )
+    }
+    setnames(
+        proteome_data_table, 
+        gsub(first_suffix, "", names(proteome_data_table))
+    )
+    
+    # return with our without group ids
+    if(remove_groupid_columns){
+        # remove GROUP_
+        proteome_data_table[,grep(group_prefix, names(proteome_data_table), value=T):=list(NULL)]
+    }
+    return(proteome_data_table)
+}
+
+
+
+
 #' filter_proteome_for_duplicated_genes
 #' 
 #' Return subset of input proteome. 
@@ -132,45 +173,6 @@ filter_proteome_for_duplicated_genes <- function(
     ]
     # add best duplicates back 
     proteome_data_table <- rbind(proteome_data_table, best_dupl_proteome_dt)
-}
-
-
-replace_groupid_with_firstid <- function(
-    proteome_data_table,
-    columns_groupid=c('PROTEIN_ID', 'GENE_NAME'),
-    remove_groupid_columns=TRUE,
-    separator=';'
-){
-    library(data.table)
-    first_suffix <- "_FIRST"
-    group_prefix <- 'GROUP_'
-    
-    # select group representative
-    for(i in columns_groupid){
-        proteome_data_table[,eval(paste0(i, first_suffix)):=tstrsplit(
-                get(i), separator, fixed=T, keep=1
-            )
-        ]
-    }
-    
-    # rename columns
-    for(i in columns_groupid){
-        setnames(
-            proteome_data_table, 
-            sub(paste0(i,'$'), paste0(group_prefix, i), names(proteome_data_table))
-        )
-    }
-    setnames(
-        proteome_data_table, 
-        gsub(first_suffix, "", names(proteome_data_table))
-    )
-    
-    # return with our without group ids
-    if(remove_groupid_columns){
-        # remove GROUP_
-        proteome_data_table[,grep(group_prefix, names(proteome_data_table), value=T):=list(NULL)]
-    }
-    return(proteome_data_table)
 }
 
 
