@@ -9,14 +9,13 @@
 #'
 
 
-
 #' Get expression table from proteinGroups.txt based data.table.
 #' 
 #' @param column_ids character vector; first entry should point to unique IDs
 #' @return data.table
 #' 
-get_expression_from_proteinGroups_dt <- function(
-    proteinGroups_data_table,
+read_data_table_from_proteinGroupsTxt <- function(
+    inputfile,
     intensity_column_pattern='LFQ.intensity.',
     column_ids=c('Protein.IDs', "Gene.names"),
     column_sample_id='PROTEOME_ID',
@@ -26,6 +25,25 @@ get_expression_from_proteinGroups_dt <- function(
     stopifnot(exists('replace_value_in_dt_columns'))
     library(tidyr)
     library(data.table)
+    
+    #
+    # read file
+    #
+    
+    # use read.delim for big integers
+    proteinGroups_data_table= data.table(read.delim( inputfile, 
+            comment.char='#', na.strings=c('',NaN, 'NA', 'NaN'), stringsAsFactors = FALSE, as.is=T
+        ))
+    
+    # remove multi dots
+    setnames( proteinGroups_data_table, gsub('\\.\\.+', '\\.', colnames(proteinGroups_data_table)))
+    # remove trailing dots
+    setnames( proteinGroups_data_table, gsub('\\.+$', '', colnames(proteinGroups_data_table)))
+    
+    
+    #
+    # process table
+    #
     
     # remove rows without ID
     noid <- is.na(proteinGroups_data_table[, get(column_ids[1])])
@@ -40,7 +58,12 @@ get_expression_from_proteinGroups_dt <- function(
         colnames(proteinGroups_data_table), 
         value=TRUE
     )
-    stopifnot(length(cols_intensity)>0)
+    if(length(cols_intensity)==0){
+        stop(paste("Bad intensity search pattern. No columns selected.\n",
+                colnames(proteinGroups_data_table))
+        )
+    }
+    
     
     # reduce columns
     proteinGroups_data_table <- proteinGroups_data_table[ 
@@ -55,7 +78,7 @@ get_expression_from_proteinGroups_dt <- function(
     }
     
     # make tidy expression table
-    protein_intensity_dt <- as.data.table(gather_(
+    pdt_tidy <- as.data.table(gather_(
             proteinGroups_data_table, 
             key=column_sample_id, 
             value=column_intensity, 
@@ -64,23 +87,23 @@ get_expression_from_proteinGroups_dt <- function(
     )
     
     # remove intensity prefix
-    protein_intensity_dt[
+    pdt_tidy[
         ,c(column_sample_id):=list(
             gsub(intensity_column_pattern, '', get(column_sample_id))
         )]
     
     # rename ID columns: remove plural s, replace '.' by '_', make upper case
     for(i in column_ids){
-        setnames(protein_intensity_dt, 
+        setnames(pdt_tidy, 
             sub(i, 
                 toupper(sub('s$', '', sub('\\.', '_', i))), 
-                names(protein_intensity_dt)
+                names(pdt_tidy)
             )
         )
     }
     
     # return
-    return(protein_intensity_dt)
+    return(pdt_tidy)
 }
 
 
