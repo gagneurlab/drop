@@ -42,28 +42,42 @@ protein_table <- proteinGroups_read_table(
     intensity_column_pattern = "LFQ" 
 )
 
-proteome_data_table <- get_expression_from_proteinGroups_dt(protein_table)
-print(head(proteome_data_table))
-
-
-
-
-#' Create expression matrix
-#+ message='show'
-mat <- proteinGroups_quality_control(
-    protein_table, 
-    intensity_column_pattern = "LFQ", 
-    max_na_frequency = RELIABLE_PROT_FRACTION_NA, 
-    low_expr_quantile = LOW_EXPR_QUANTILE,
-    return_matrix = TRUE
+#' Create tidy proteome data table "pdt"
+pdt <- read_data_table_from_proteinGroupsTxt(
+    tmp_file_kuester, 
+    intensity_column_pattern = "LFQ.intensity.", 
+    column_ids = c("Protein.IDs", "Gene.names"), 
+    column_sample_id = "PROTEOME_ID", 
+    column_intensity = "LFQ_INTENSITY"
 )
-head(mat)
+print(head(pdt))
+
+
+#' Filter protein expression by gene properties
+#' 
+pdt <- filter_proteome_by_gene_properties(
+    pdt, verbose=T
+)
+print(pdt)
+
+
+#' Compute NA frequencies
+#' 
+compute_na_frequency(pdt, column_id = 'GENE_NAME')
+compute_na_frequency(pdt, column_id = 'PROTEOME_ID')
+print(pdt)
 
 
 #' 
 #' ## iBAQ
 #'
 
+#' Extract intensities from proteinGroups.txt
+protein_table_ibaq <- proteinGroups_read_table( 
+    tmp_file_kuester, 
+    intensity_column_pattern = "iBAQ"
+)
+protein_table_ibaq
 
 
 
