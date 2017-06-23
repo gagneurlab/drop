@@ -12,6 +12,7 @@ suppressPackageStartupMessages({
     library(Biobase)
     library(data.table)
     library(knitr)
+    library(plotly)
     library(rmarkdown)
     library(tidyr)
 })
