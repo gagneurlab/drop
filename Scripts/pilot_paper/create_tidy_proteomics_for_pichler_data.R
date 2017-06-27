@@ -3,7 +3,7 @@
 #' author: Daniel Bader
 #' wb:
 #'   input: /s/project/mitoMultiOmics/raw_data/proteome/20160202_pichler_proteome/20151005_QExacitveHF_100min_proteinGroups.txt
-#'   output: 
+#'   output: "/s/project/patient_report/tidy_results//proteome_pichler_100min.tsv"
 #' output: 
 #'   html_document:
 #'     toc_float: yes
