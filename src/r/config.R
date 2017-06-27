@@ -41,7 +41,11 @@ DATADIR     <- "/s/project/mitoMultiOmics/"		# main project folder on ouga
 RAWDIR      <- file.path(DATADIR,"raw_data/")	# all original files from the collaborators (read only files) 
 NGSDIR      <- file.path(RAWDIR, "helmholtz/")	# all raw sequencing data (BAM,VCF,RNAseq,...)
 BADERDIR    <- file.path(DATADIR,'tmp_baderda/')
+
+# results
 #PROCDIR     <- file.path(DATADIR,'processed_expression/')	# folder for the processed data
+TIDYDIR <- "/s/project/patient_report/tidy_results/"
+
 
 # files
 FILE_GO_HUMAN    <- "/s/genomes/human/GO/gene_association.goa_human"
