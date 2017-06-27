@@ -158,8 +158,8 @@ p <- plot_ly(
     yaxis=list(type="log")
 )
 
-#+ results='asis'
-show(p)
+#+ warnings=F
+p
 
 
 
