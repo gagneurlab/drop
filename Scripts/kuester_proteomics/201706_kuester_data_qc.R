@@ -18,13 +18,14 @@ opts_chunk$set(message=T)
 
 #' # Data
 
-#protdir <- file.path(RAWDIR, "proteome", "20170614_kopajtich_kuester_proteome")
-protdir <- file.path("~/Documents/tmp_kuester_proteome")
+protdir <- file.path(RAWDIR, "proteome", "20170614_kopajtich_kuester_proteome")
+#protdir <- file.path("~/Documents/tmp_kuester_proteome")
 
 files_kuester <- list.files(protdir, pattern = "^m.*txt$", full.names = T)
 
 #' Kuester proteome files:
 print(files_kuester)
+
 
 
 
@@ -69,7 +70,7 @@ print(head(protein_table_ibaq))
 #' ## rphp
 pdt2 <- wrapper_proteinGroupsTxt_to_tidy_table(
     files_kuester[2],
-    intensity_column_pattern = "Intensity.TMT_10plex_Test_"
+    intensity_column_pattern = "LFQ.intensity."
 )
 pdt2[,ms_method:='rphp']
 print(pdt2)
@@ -78,7 +79,7 @@ print(pdt2)
 #' ## TMT   
 pdt3 <- wrapper_proteinGroupsTxt_to_tidy_table(
     files_kuester[3],
-    intensity_column_pattern = "Intensity."
+    intensity_column_pattern = "Reporter.intensity.corrected."
 )
 pdt3[,ms_method:='tmt']
 print(pdt3)
@@ -125,14 +126,12 @@ ms_summary <- unique(pdtall[,
 DT::datatable(ms_summary, filter='top', rownames = F)
 
 #+
-plot_ly(data=ms_summary,
+plot_ly(data=unique(ms_summary[,.(ms_method, N)]),
     type='bar',
-    x=~paste(ms_method,PROTEOME_ID),
+    x=~ms_method,
     y=~N,
-    color=~ms_method
-)%>% layout(
-    xaxis=list(categoryorder='array', categoryarray=~ms_method, title=''),
-    margin=list(b=100)
+    color=~ms_method,
+    showlegend=F
 )
 
 #+
@@ -149,6 +148,7 @@ plot_ly(data=ms_summary,
 #'
 #' ## Gene stats
 #' 
+
 
 #+
 plot_ly(data=pdtall,
@@ -174,6 +174,52 @@ p <- ggplot(
 ggplotly(p)
 
 #+
+plot_ly(
+        data= pdtall[,
+            .(inter_quartile_range_log10 = IQR(x=log10(LFQ_INTENSITY), na.rm=T)), 
+            by=ms_method
+        ],
+        x=~ms_method,
+        y=~inter_quartile_range_log10
+    )%>% 
+    add_bars(
+        color=~ms_method
+    )
+
+
+
+#'
+#' Missing values per detected protein
+
+
+#+
+plot_ly(
+        data = pdtall[,
+            .(mean_na_freq_by_gene=mean(NA_FREQ_BY_GENE_NAME)), by=ms_method
+        ],
+        x=~ms_method,
+        y=~mean_na_freq_by_gene
+    )%>% 
+    add_bars(
+        color=~ms_method
+    )
+
+
+#+
+p <- plot_ly(
+        data=pdtall, 
+        x=~paste(ms_method,PROTEOME_ID),
+        y=~NA_FREQ_BY_GENE_NAME
+    ) %>%
+    add_boxplot(
+        color=~ms_method, boxpoints=FALSE
+    )%>% layout(
+        xaxis=list(categoryorder='array', categoryarray=~ms_method, title=''),
+        margin=list(b=100)
+)
+p
+
+#+
 p <- ggplot(
         pdtall, 
         aes(x=paste(ms_method,PROTEOME_ID), y=NA_FREQ_BY_GENE_NAME)
@@ -182,6 +228,8 @@ p <- ggplot(
     labs(x='') + theme(axis.text.x = element_text(angle = 45, hjust = 1))
 
 ggplotly(p)
+
+
 
 #+
 # END
