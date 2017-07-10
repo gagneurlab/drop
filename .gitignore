@@ -1,3 +1,10 @@
+# dirs
+# data heavy folders structure
+data/
+Data/
+Output/
+.snakemake/
+
 # typical latex tmp files
 *.aux
 *.log
@@ -5,17 +12,16 @@
 *.bbl
 *.blg
 *.out
-# data heavy folders structure
-data/
-Data/
-Output/
+
 # snakemake build
 auto
 .wBuild
-.snakemake/
+
 # IDE project files
-*.Rproj
 *.project
+readme.html
+.Rproj.user
+
 # other
 *~
 .ipynb_
@@ -27,5 +33,4 @@ _cache
 *_cache
 *_files
 *.cache
-/readme.html
-.Rproj.user
+
