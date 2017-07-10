@@ -57,6 +57,9 @@ wrapper_proteinGroupsTxt_to_tidy_table <- function(
         column_intensity=column_intensity
     )
     
+    # remove NA-only genes
+    pdt <- pdt[NA_FREQ_BY_GENE_NAME!=1]
+    
     # END
     return(pdt)
 }
