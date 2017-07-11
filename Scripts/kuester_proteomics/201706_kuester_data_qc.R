@@ -45,6 +45,7 @@ tmp_file_kuester <- files_kuester[1]
 
 pdt <- wrapper_proteinGroupsTxt_to_tidy_table(tmp_file_kuester)
 print(pdt)
+pdt[PROTEOME_ID=='nhdf.p9.rep1', PROTEOME_ID:="nhdf.p9"]
 pdt[,ms_method:='single_shot']
 
 
@@ -72,6 +73,7 @@ pdt2 <- wrapper_proteinGroupsTxt_to_tidy_table(
     files_kuester[2],
     intensity_column_pattern = "LFQ.intensity."
 )
+pdt2[PROTEOME_ID=='nhdf.p9.rep1', PROTEOME_ID:="nhdf.p9"]
 pdt2[,ms_method:='rphp']
 print(pdt2)
 
@@ -82,6 +84,19 @@ pdt3 <- wrapper_proteinGroupsTxt_to_tidy_table(
     intensity_column_pattern = "Reporter.intensity.corrected."
 )
 pdt3[,ms_method:='tmt']
+
+#' remove "TMT_10plex_Test_Trinity" samples
+pdt3 <- pdt3[!grepl("TMT_10plex_Test_Trinity",PROTEOME_ID)]
+
+#' add sample IDs from separate table
+file_tmt_sample_map <- file.path(
+    'resources', '201706_kuester_tmt_sample_mapping.tsv'
+)
+tmt_map <- fread(file_tmt_sample_map)
+for(i in 0:9){
+    pdt3[PROTEOME_ID==i, PROTEOME_ID:=tmt_map[ID==i, PROTEOME_ID]]
+}
+
 print(pdt3)
 
 
@@ -90,6 +105,7 @@ pdt4 <- wrapper_proteinGroupsTxt_to_tidy_table(
     files_kuester[4],
     intensity_column_pattern = "Intensity."
 )
+pdt4[, PROTEOME_ID:="nhdf.p9"]
 pdt4[,ms_method:='trinity']
 print(pdt4)
 
@@ -122,6 +138,7 @@ ms_summary <- unique(pdtall[,
     ]
 )
 
+
 #+
 DT::datatable(ms_summary, filter='top', rownames = F)
 
@@ -146,7 +163,7 @@ plot_ly(data=ms_summary,
 )
 
 #'
-#' ## Gene stats
+#' ## Intensity distribution
 #' 
 
 
@@ -173,6 +190,8 @@ p <- ggplot(
 
 ggplotly(p)
 
+
+#' ## Investigate Dynamic range
 #+
 plot_ly(
         data= pdtall[,
@@ -186,10 +205,26 @@ plot_ly(
         color=~ms_method
     )
 
+#+
+plot_ly(
+        data= pdtall[, .(q90_range_log10 = I(
+                    quantile(x=log10(LFQ_INTENSITY), probs=0.95, na.rm=T) -
+                    quantile(x=log10(LFQ_INTENSITY), probs=0.05, na.rm=T)
+                )
+            ), 
+            by=ms_method
+        ],
+        x=~ms_method,
+        y=~q90_range_log10
+    )%>% 
+    add_bars(
+        color=~ms_method
+    )
+
 
 
 #'
-#' Missing values per detected protein
+#' ## Missing values per detected protein
 
 
 #+
@@ -229,6 +264,70 @@ p <- ggplot(
 
 ggplotly(p)
 
+
+
+#' 
+#' # Compare NHDF betw methods
+#' 
+
+#+
+pdt_nhdf <- dcast(
+    pdtall[PROTEOME_ID=='nhdf.p9'], 
+    GENE_NAME ~ ms_method, 
+    value.var = 'LFQ_INTENSITY'
+)
+pmat_nhdf <- as.data.frame(pdt_nhdf)
+rownames(pmat_nhdf) <- pmat_nhdf[,'GENE_NAME']
+pmat_nhdf <- pmat_nhdf[,setdiff(colnames(pmat_nhdf),'GENE_NAME')]
+
+#+
+tmp= cor(pmat_nhdf, use="pairwise.complete.obs")
+plot_ly(z=tmp, type='heatmap', 
+    x=rownames(tmp), y=colnames(tmp),
+    colors=c('grey95', 'dodgerblue')
+)%>% layout(title="Pearson correlation")
+
+
+#+
+tmp= cor(pmat_nhdf, use="pairwise.complete.obs", method='spear')
+plot_ly(
+        z=tmp, type='heatmap', 
+        x=rownames(tmp), y=colnames(tmp),
+        colors=c('grey95', 'dodgerblue')
+    )%>% layout(
+        title="Spearman rank correlation"
+    )
+
+
+#+
+mydiag <- list(
+    type = "line",
+    line = list(color = "pink"),
+    xref = "x",
+    yref = "y",
+    x0 = 1e4, y0 = 1e4,
+    x1 = 1e12, y1 = 1e12
+)
+nhdf_trinity <- plot_ly(
+        data=pdt_nhdf, x=~trinity, text=~GENE_NAME, alpha=0.2
+    ) %>%
+    layout(
+        shapes=list(mydiag),
+        xaxis=list(type='log'),
+        yaxis=list(type='log')
+    )
+p <- nhdf_trinity %>% add_markers(y=~rphp)
+
+#+ rphp vs trinity
+p
+
+#+ tmt vs trinity
+p <- nhdf_trinity %>% add_markers(y=~tmt)
+p
+
+#+
+plot(tmt ~ rphp, data=pdt_nhdf, log='xy')
+abline(0,1)
 
 
 #+
