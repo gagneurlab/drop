@@ -6,7 +6,7 @@
 - scared results: 
     - tidy table --> SummarizedExperiment
     - getResults returns table
-- MAE pkg later use scripts for now
+- MAE pkg later, use scripts for now
 - devtools load folder <=> library()
 - function names
     - think twice about it
