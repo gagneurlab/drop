@@ -41,8 +41,8 @@ get_protein_limma_differential_expression <- function(
         number=Inf, confint=T, sort.by='none', genelist=rownames(mod_tstats)
     ))
     setnames(prot_limma_de_res, c(
-        'gene', 'prot_log2fc', 'prot_ci_left', 'prot_ci_right', 'prot_baseMean',
-        'prot_mod_t_stat', 'prot_pvalue', 'prot_fdr', 'prot_logodds'
+        'GENE_NAME', 'prot_log2fc', 'prot_ci_left', 'prot_ci_right', 'prot_baseMean',
+        'prot_mod_t_stat', 'prot_pvalue', 'prot_padj', 'prot_logodds'
     ))
     
     return(prot_limma_de_res)
