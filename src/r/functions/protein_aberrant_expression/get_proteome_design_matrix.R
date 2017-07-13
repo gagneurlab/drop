@@ -16,7 +16,7 @@ get_proteome_design_matrix = function(
     stopifnot(!is.null(proteome_ids))
     setkey(sample_anno_dt, PROTEOME_ID)
     design_model_dt = unique(
-        MITOMAP_DATATABLE[ proteome_ids, c('PROTEOME_ID', sample_anno_columns), with=F ]
+        sample_anno_dt[ proteome_ids, c('PROTEOME_ID', sample_anno_columns), with=F ]
     )
     
     # tmp_df_rownames = design_model_dt$FIBROBLAST_ID
