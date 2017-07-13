@@ -321,12 +321,17 @@ p <- nhdf_trinity %>% add_markers(y=~rphp)
 #+ rphp vs trinity
 p
 
+#+
+plot(rphp ~ trinity, data=pdt_nhdf, log='xy')
+abline(0,1)
+
+
 #+ tmt vs trinity
 p <- nhdf_trinity %>% add_markers(y=~tmt)
 p
 
 #+
-plot(tmt ~ rphp, data=pdt_nhdf, log='xy')
+plot(tmt ~ trinity, data=pdt_nhdf, log='xy')
 abline(0,1)
 
 
