@@ -11,6 +11,7 @@ Sys.umask(mode = "0002")
 suppressPackageStartupMessages({
     library(Biobase)
     library(data.table)
+    library(DESeq2)
     library(knitr)
     library(plotly)
     library(rmarkdown)
@@ -30,6 +31,7 @@ stopifnot(dir.exists("../gagneurlab_shared"))
 
 source("src/r/functions/load_rscripts_from_folder.R")
 load_rscripts_from_folder("src/r/functions/")
+load_rscripts_from_folder("../sample_annotation/src/r/functions/")
 
 
 
@@ -50,6 +52,8 @@ TIDYDIR <- "/s/project/patient_report/tidy_results/"
 # files
 FILE_GO_HUMAN    <- "/s/genomes/human/GO/gene_association.goa_human"
 
+
+##--------------------------------------------
 # cutoffs
 
 #' ## low expression filter
@@ -57,4 +61,10 @@ FILE_GO_HUMAN    <- "/s/genomes/human/GO/gene_association.goa_human"
 LOW_EXPR_QUANTILE= 0.95
 RELIABLE_PROT_FRACTION_NA = 0.5
 
+PADJ_METHOD <- 'hochberg'
 
+
+##--------------------------------------------
+## data
+
+SAMPLE_ANNOTATION <- load_sample_annotation()
