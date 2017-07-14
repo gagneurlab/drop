@@ -13,8 +13,10 @@
 #'---
 #'
 
+#+ echo=F
+source("src/r/config.R")
 
-
+#+
 file_tidy_pichler_100min <- file.path(
     TIDYDIR,
     "proteome_pichler_100min.tsv"

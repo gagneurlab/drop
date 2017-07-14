@@ -62,6 +62,8 @@ LOW_EXPR_QUANTILE= 0.95
 RELIABLE_PROT_FRACTION_NA = 0.5
 
 PADJ_METHOD <- 'hochberg'
+PADJ_LIMIT <- 0.05
+ZSCORE_LIMIT <- 3
 
 
 ##--------------------------------------------
