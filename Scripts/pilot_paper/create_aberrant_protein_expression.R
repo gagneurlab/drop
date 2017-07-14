@@ -55,6 +55,7 @@ prot_intensity <- convert_tidy_table_to_numeric_matrix(
 #' * generate design matrix
 #' * check if some samples are not respected in the design
 #' * limma DE fit
+#' * compute Z-score
 #' 
 prot_aberexp <- wrapper_aberrant_protein_expr(prot_intensity)
 head(prot_aberexp)

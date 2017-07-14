@@ -25,13 +25,20 @@ protdir <- file.path(
     BADERDIR
 )
 
+#+ input
 file_reused_samples <- file.path(
     RAWDIR, "proteome", "protein_ids_measured_2nd_time_in_pichler100min.txt"
 )
-
 file_samples_bad_exome2rna <- file.path(
     RAWDIR, "proteome", "protein_ids_with_bad_exome_to_rna_identity.txt"
 )
+
+file_pichler_100min <- file.path(
+    protdir,
+    "pichler100min_combined_corrected_proteinGroups.txt"
+)
+
+#+ output 
 file_tidy_pichler_100min_raw <- file.path(
     TIDYDIR,
     "proteome_pichler_100min_unfiltered_all_samples.tsv"
@@ -51,10 +58,6 @@ protein_ids_bad_ex2rna <- readLines(file_samples_bad_exome2rna)
 #' 
 
 #+
-file_pichler_100min <- file.path(
-    protdir,
-    "pichler100min_combined_corrected_proteinGroups.txt"
-)
 stopifnot(file.exists(file_pichler_100min))
 print(file_pichler_100min)
 
