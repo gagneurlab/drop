@@ -5,7 +5,7 @@
 #'   input: [
 #'     "/s/project/patient_report/tidy_results/proteome_pichler_100min.tsv"
 #'   ]
-#'   output: "/s/project/patient_report/tidy_results/roteome_aberrant_expression.tsv"
+#'   output: "/s/project/patient_report/tidy_results/proteome_aberrant_expression.tsv"
 #' output: 
 #'   html_document:
 #'     toc_float: yes
