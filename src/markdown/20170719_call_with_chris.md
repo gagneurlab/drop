@@ -25,4 +25,9 @@ Daniel was late, then Chris was late.
 - Chris: shiny has threads, but I do not know how
 - add IGV-alike to patient report: [lightweight plugin](https://github.com/igvteam/igv.js)
 
+## wBuild
+
+- add check for each push: scared --> helps correcting Max' thesis
+- patient report: decide if webserver push based on test result
+- sample annotation: define consistency checks
 
