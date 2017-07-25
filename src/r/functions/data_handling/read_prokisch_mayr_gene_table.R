@@ -21,7 +21,11 @@ create_clean_prokisch_mayr_table <- function(
     }
     
     # process
-    prokisch_mayr_dt <- as.data.table(read.delim(file = input_file, na.strings = ''))
+    prokisch_mayr_dt <- as.data.table(read.delim(
+        file = input_file, 
+        na.strings = '', 
+        stringsAsFactors = F
+        ))
     prokisch_mayr_dt <- clean_prokisch_mayr_gene_table(prokisch_mayr_dt)
     
     # rename
@@ -34,6 +38,12 @@ create_clean_prokisch_mayr_table <- function(
     # make list column to character
     prokisch_mayr_dt[, MIM_NUMBERS:=paste(unlist(MIM_NUMBER),collapse = ','), by=ID]
     prokisch_mayr_dt[, MIM_NUMBER:=NULL]
+    
+    # fix entries
+    # 
+    prokisch_mayr_dt[, HGNC_GENE_NAME:=gsub(' ','',HGNC_GENE_NAME)]
+    prokisch_mayr_dt <- prokisch_mayr_dt[,lapply(.SD, function(j) gsub(' +$', '', j))]
+    # prokisch_mayr_dt[,lapply(.SD, class)]
     
     # write clean output file
     # 
