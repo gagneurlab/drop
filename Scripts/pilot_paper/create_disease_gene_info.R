@@ -159,4 +159,41 @@ sort(names(meta_disease_gene_dt))
 
 
 
+#' 
 #' ## FILE: mito associated genes
+#' 
+
+mito_asso_dt <- as.data.table(read.delim(
+    file.path(dir_gene_info, 'mito_associated_genes.tsv'), 
+    na.strings = '', 
+    stringsAsFactors = F
+))
+mito_asso_dt <- mito_asso_dt[,lapply(.SD, function(j) gsub(' +$', '', j))]
+mito_asso_dt[, c('alternativeName', 'encodingOrigin'):=NULL]
+setnames(mito_asso_dt, 'GeneName', 'HGNC_GENE_NAME')
+setnames(mito_asso_dt, 'Complex', 'FUNCTION')
+
+#' Are there new gene to add?
+#' 
+nrow(mito_asso_dt[!HGNC_GENE_NAME %in% meta_disease_gene_dt$HGNC_GENE_NAME])>0
+
+#' **==> GENE TABLE IS COMPLETE**
+
+#'
+#' # Consistency checks
+#'
+#' ## Validate gene names 
+#' 
+#' Are the duplicates?
+genes_dupl <- meta_disease_gene_dt[,.N,HGNC_GENE_NAME][N>1, HGNC_GENE_NAME]
+genes_dupl
+meta_disease_gene_dt[HGNC_GENE_NAME %in% genes_dupl]
+#' 
+#' --> duplicate origins from Prokisch Mayr table
+#' 
+
+
+
+
+
+
