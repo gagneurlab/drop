@@ -270,6 +270,8 @@ ggplotly(p)
 #' # Compare NHDF betw methods
 #' 
 
+#' ## Heatmap
+#' 
 #+
 pdt_nhdf <- dcast(
     pdtall[PROTEOME_ID=='nhdf.p9'], 
@@ -298,7 +300,9 @@ plot_ly(
         title="Spearman rank correlation"
     )
 
-
+#' 
+#' ## Scatter protein vs protein
+#' 
 #+
 mydiag <- list(
     type = "line",
@@ -316,10 +320,10 @@ nhdf_trinity <- plot_ly(
         xaxis=list(type='log'),
         yaxis=list(type='log')
     )
-p <- nhdf_trinity %>% add_markers(y=~rphp)
 
 #+ rphp vs trinity
-p
+p1 <- nhdf_trinity %>% add_markers(y=~rphp)
+p1
 
 #+
 plot(rphp ~ trinity, data=pdt_nhdf, log='xy')
@@ -327,13 +331,25 @@ abline(0,1)
 
 
 #+ tmt vs trinity
-p <- nhdf_trinity %>% add_markers(y=~tmt)
-p
+nhdf_trinity <- plot_ly(
+    data=pdt_nhdf, x=~trinity, text=~GENE_NAME, alpha=0.2
+) %>%
+    layout(
+        shapes=list(mydiag),
+        xaxis=list(type='log'),
+        yaxis=list(type='log')
+    )
+nhdf_trinity %>% add_markers(y=~tmt)
+
 
 #+
-plot(tmt ~ trinity, data=pdt_nhdf, log='xy')
-abline(0,1)
+x=as.matrix(na.omit(log2(pdt_nhdf[,c(5,4), with=F])))
+pca=prcomp(x)
+a= mean(x[,2], na.rm=T)- (0.51/0.86)*mean(x[,1], na.rm=T)
 
+plot(x, xlim=c(15,40), ylim=c(5,30))
+abline(0,1)
+abline(a=a , b=0.51/0.86)
 
 #+
 # END
