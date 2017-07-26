@@ -43,6 +43,9 @@ create_clean_prokisch_mayr_table <- function(
     # 
     prokisch_mayr_dt[, HGNC_GENE_NAME:=gsub(' ','',HGNC_GENE_NAME)]
     prokisch_mayr_dt <- prokisch_mayr_dt[,lapply(.SD, function(j) gsub(' +$', '', j))]
+    prokisch_mayr_dt[, OTHER_DESIGNATIONS:=gsub('Other Designations: ','',OTHER_DESIGNATIONS)]
+    prokisch_mayr_dt[, ANNOTATION:=gsub('Annotation: ','',ANNOTATION)]
+    prokisch_mayr_dt[, OTHER_ALIASES:=gsub('Other Aliases: ','',OTHER_ALIASES)]
     # prokisch_mayr_dt[,lapply(.SD, class)]
     
     # write clean output file
