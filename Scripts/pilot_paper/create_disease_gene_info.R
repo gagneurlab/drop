@@ -98,6 +98,7 @@ dim(dt)
 #' * drop full gene names; can be inferred later, if needed
 dt[,FULL_GENE_NAME.x:=NULL]
 dt[,FULL_GENE_NAME.y:=NULL]
+dt[,ID:=NULL]
 
 #' * fill NAs in duplicated columns bi-directional
 icols <- c('HGNC_GENE_NAME', 'DISEASE.x', 'DISEASE.y', 'ENTREZ_GENE_ID.x', 'ENTREZ_GENE_ID.y')
@@ -128,6 +129,7 @@ dt[is.na(ENTREZ_GENE_ID), ENTREZ_GENE_ID:= ENTREZ_GENE_ID.x]
 #' * remove duplicated columns
 dupl_coln <- grep('\\.[xy]', names(dt), value=T)
 dt[,c(dupl_coln):=NULL]
+
 
 #' MIM numbers
 #' 
