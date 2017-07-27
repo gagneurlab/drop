@@ -1,8 +1,5 @@
 # Genetic diagnosis of Mendelian disorders
 
-Contributors: 
-Daniel Bader, Christian Mertes, Vicente Yepez
-
 Goals:
 
 * Setup pipeline from Kremer, Bader paper.
@@ -11,4 +8,10 @@ Goals:
     * using splicing pkg
     * develop MAE functions/pkg
 * extend  pipeline by proteomics
+
+## Diagnosis tools:
+- [TABLE of disease associated genes](https://i12g-gagneurweb.in.tum.de/project/genetic_diagnosis/#Scripts_diagnosis_tools_disease_associated_genes.html)
+- [Patient reports](https://i12g-gagneurweb.in.tum.de/shinyserver/)
+
+
 
