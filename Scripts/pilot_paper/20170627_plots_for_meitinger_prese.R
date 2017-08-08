@@ -4,7 +4,7 @@
 #' wb:
 #'   input: [
 #'     "/s/project/patient_report/tidy_results/proteome_pichler_100min.tsv",
-#'     "/s/project/patient_report/tidy_results/rna_aberrant_expression.tsv"
+#'     "/s/project/patient_report/tidy_results/rna_aberrant_expression.RDS"
 #'   ]
 #'   output: 
 #' output: 
@@ -21,9 +21,9 @@ source("src/r/config.R")
 #' # Read tidy data
 #+ 
 file_tidy_rna <- file.path(
-    TIDYDIR, "rna_aberrant_expression.tsv"
+    TIDYDIR, "rna_aberrant_expression.RDS"
 )
-rna_dt <- fread(file_tidy_rna)
+rna_dt <- as.data.table(readRDS(file_tidy_rna))
 rna_dt[,FIBROBLAST_ID:=as.character(FIBROBLAST_ID)]
 
 #' tidy proteomics
