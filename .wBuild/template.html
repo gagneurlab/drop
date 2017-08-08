@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>$title</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="lib/theme/bootstrap.min.css">
+  <script src="lib/theme/jquery.min.js"></script>
+  <script src="lib/theme/bootstrap.min.js"></script>
+  <script>
+      function wol(){
+      var hash = window.location.hash.substr(1);
+      if(hash==''){hash='readme.html';}
+      window.frames['Iframe'].src =  hash;
+      }
+      window.onload = wol;
+
+      function navigate(url){
+	window.location.href =  window.location.href.split('#')[0]+ '#' + url;
+	window.frames['Iframe'].src =  url;
+
+  }    
+  </script>
+  <style>
+    /* Remove the navbar's default margin-bottom and rounded borders */ 
+    .navbar {
+      margin-bottom: 0;
+      border-radius: 0;
+    }
+    
+    /* Set height of the grid so .sidenav can be 100% (adjust as needed) */
+    .row.content {height: 100%}
+    
+    /* Set gray background color and 100% height */
+    .sidenav {
+      padding-top: 20px;
+      background-color: #f1f1f1;
+      height: 100%;
+    }
+    
+    /* Set black background color, white text and some padding */
+    footer {
+      background-color: #555;
+      color: white;
+      padding: 15px;
+    }
+    
+    /* On small screens, set height to 'auto' for sidenav and grid */
+    @media screen and (max-width: 767px) {
+      .sidenav {
+        height: auto;
+        padding: 15px;
+      }
+      .row.content {height:auto;} 
+    }
+
+    iframe {
+   display: block;       /* iframes are inline by default */
+    border: none;         /* Reset default border */
+    height: 90vh;        /* Viewport-relative units */
+    width: 100%;
+    }
+    .dropdown-submenu {
+	position: relative;
+    }
+
+    .dropdown-submenu>.dropdown-menu {
+	top: 0;
+	left: 100%;
+	margin-top: -6px;
+	margin-left: -1px;
+	-webkit-border-radius: 0 6px 6px 6px;
+	-moz-border-radius: 0 6px 6px;
+	border-radius: 0 6px 6px 6px;
+    }
+
+    .dropdown-submenu:hover>.dropdown-menu {
+	display: block;
+    }
+
+    .dropdown-submenu>a:after {
+	display: block;
+	content: " ";
+	float: right;
+	width: 0;
+	height: 0;
+	border-color: transparent;
+	border-style: solid;
+	border-width: 5px 0 5px 5px;
+	border-left-color: #ccc;
+	margin-top: 5px;
+	margin-right: -10px;
+    }
+
+    .dropdown-submenu:hover>a:after {
+	border-left-color: #fff;
+    }
+
+    .dropdown-submenu.pull-left {
+	float: none;
+    }
+
+    .dropdown-submenu.pull-left>.dropdown-menu {
+	left: -100%;
+	margin-left: 10px;
+	-webkit-border-radius: 6px 0 6px 6px;
+	-moz-border-radius: 6px 0 6px 6px;
+	border-radius: 6px 0 6px 6px;
+    }
+  </style>
+</head>
+<body>
+
+<nav class="navbar navbar-inverse">
+  <div class="container-fluid">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#myNavbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>                        
+      </button>
+      <a class="navbar-brand" href="https://i12g-gagneurweb.informatik.tu-muenchen.de/gitlab/wachutka/wBuild">wBuild</a>
+    </div>
+    <div class="collapse navbar-collapse" id="myNavbar">
+      <ul class="nav navbar-nav">
+        <li><a href="javascript:navigate('readme.html');">Readme</a></li>
+        <li><a href="javascript:navigate('dep.svg');">Dependency</a></li>
+	$menu
+        <!--
+	<li><a href="#">Projects</a></li>
+	<li class="dropdown">
+          <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Dropdown <span class="caret"></span></a>
+          <ul class="dropdown-menu">
+            <li><a href="#">Action</a></li>
+            <li><a href="#">Another action</a></li>
+            <li><a href="#">Something else here</a></li>
+            <li role="separator" class="divider"></li>
+            <li><a href="#">Separated link</a></li>
+            <li role="separator" class="divider"></li>
+            <li><a href="#">One more separated link</a></li>
+          </ul>
+        </li>
+	-->
+
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        <li><a href="javascript:navigate('todo.html');"><span class="glyphicons glyphicons-pencil"></span>> Todo</a></li>
+      </ul>
+    </div>
+  </div>
+</nav>
+  
+<div class="container-fluid text-left" >    
+  <div class="row content">
+    <div class="col-sm-2 sidenav" >
+      <p><b>Recent Files</b></p>
+      $rf
+      <!--
+      <p><a href="#">Link</a></p>
+      <p><a href="#">Link</a></p>
+      <p><a href="#">Link</a></p>
+      -->
+    </div>
+    <div class="col-sm-10 text-left"> 
+      <iframe id="Iframe" src="readme.html" width=100% height=95% ></iframe> 
+    </div>
+  </div>
+</div>
+
+<footer class="container-fluid text-center">
+  <p>wBuild by <a href="mailto:wachutka@in.tum.de">Leonhard Wachutka</a></p>
+</footer>
+
+</body>
+</html>

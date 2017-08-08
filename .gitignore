@@ -15,7 +15,6 @@ Output/
 
 # snakemake build
 auto
-.wBuild
 
 # IDE project files
 *.project
