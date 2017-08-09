@@ -2,18 +2,19 @@
 #' title: Compare RNA vs Protein for NHDF
 #' author: Daniel Bader
 #' wb:
-#'   input: [ "/s/project/mitoMultiOmics//raw_data//proteome/20170614_kopajtich_kuester_proteome/m3_lfq_tmt_proteinGroups.txt",
+#'   input: [ 
+#'   "/s/project/mitoMultiOmics//raw_data//proteome/20170614_kopajtich_kuester_proteome/m3_lfq_tmt_proteinGroups.txt",
 #'   "/s/project/mitoMultiOmics//raw_data//proteome/20170614_kopajtich_kuester_proteome/m4_lfq_id_trinity_proteinGroups.txt",
 #'   "/s/project/mitoMultiOmics/counttable_galignment/rna/raw_counttable_rna_no_strand.tsv"
 #'   ]
 #'   output: "/s/project/patient_report/tidy_results//nhdf_rna_proteome_tmt_trinity.tsv"
-
 #' output: 
 #'   html_document:
 #'     toc_float: yes
 #'     toc: yes
 #'---
 #'
+
 
 
 #+ echo=F
