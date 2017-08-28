@@ -41,10 +41,10 @@ load_rscripts_from_folder("../sample_annotation/src/r/functions/")
 # folders
 DATADIR     <- "/s/project/mitoMultiOmics/"		# main project folder on ouga
 RAWDIR      <- file.path(DATADIR,"raw_data/")	# all original files from the collaborators (read only files) 
-BADERDIR    <- file.path(DATADIR,'tmp_baderda/')
 
 # results
-TIDYDIR <- "/s/project/patient_report/tidy_results/"
+PROC_RESULTS <- "/s/project/genetic_diagnosis/processed_results/"
+PROC_DATA <- "/s/project/genetic_diagnosis/processed_data/"
 
 
 # files

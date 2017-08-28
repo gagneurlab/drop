@@ -8,7 +8,7 @@
 #'     "/s/project/mitoMultiOmics//raw_data//proteome/20170614_kopajtich_kuester_proteome/m3_lfq_tmt_proteinGroups.txt",
 #'     "/s/project/mitoMultiOmics//raw_data//proteome/20170614_kopajtich_kuester_proteome/m4_lfq_id_trinity_proteinGroups.txt"
 #'     ]
-#'   output: 
+#'   output: "/s/project/genetic_diagnosis/processed_data//proteome_kuester_method_trial_lfq.tsv"
 #' output: 
 #'   html_document:
 #'     toc_float: yes
@@ -28,9 +28,7 @@ protdir <- file.path(RAWDIR, "proteome", "20170614_kopajtich_kuester_proteome")
 files_kuester <- list.files(protdir, pattern = "^m.*txt$", full.names = T)
 print(files_kuester)
 
-file_out <- file.path(
-    "/s/project/patient_report/tidy_results/proteome_kuester_method_trial_lfq.tsv"
-)
+file_out <- file.path(PROC_DATA, "proteome_kuester_method_trial_lfq.tsv")
 
 
 #' 

@@ -5,9 +5,10 @@
 #'   input: [ 
 #'   "/s/project/mitoMultiOmics//raw_data//proteome/20170614_kopajtich_kuester_proteome/m3_lfq_tmt_proteinGroups.txt",
 #'   "/s/project/mitoMultiOmics//raw_data//proteome/20170614_kopajtich_kuester_proteome/m4_lfq_id_trinity_proteinGroups.txt",
-#'   "/s/project/mitoMultiOmics/counttable_galignment/rna/raw_counttable_rna_no_strand.tsv"
+#'   "/s/project/mitoMultiOmics/counttable_galignment/rna/raw_counttable_rna_no_strand.tsv",
+#'   "resources/201706_kuester_tmt_sample_mapping.tsv"
 #'   ]
-#'   output: "/s/project/patient_report/tidy_results//nhdf_rna_proteome_tmt_trinity.tsv"
+#'   output: "/s/project/genetic_diagnosis/processed_data/nhdf_rna_proteome_tmt_trinity.tsv"
 #' output: 
 #'   html_document:
 #'     toc_float: yes
@@ -28,7 +29,12 @@ files_kuester <- list.files(protdir, pattern = "^m.*txt$", full.names = T)
 file_rna_raw_counts <- file.path(
     '/s/project/mitoMultiOmics/counttable_galignment/rna/raw_counttable_rna_no_strand.tsv'
 )
-file_nhdf_out <- file.path(TIDYDIR, "nhdf_rna_proteome_tmt_trinity.tsv")
+file_tmt_sample_map <- file.path(
+    'resources', '201706_kuester_tmt_sample_mapping.tsv'
+)
+
+# out
+file_nhdf_out <- file.path(PROC_DATA, "nhdf_rna_proteome_tmt_trinity.tsv")
 
 
 #' 
@@ -46,9 +52,6 @@ pdt_tmt <- wrapper_proteinGroupsTxt_to_tidy_table(
 pdt_tmt <- pdt_tmt[!grepl("TMT_10plex_Test_Trinity",PROTEOME_ID)]
 
 #' add sample IDs from separate table
-file_tmt_sample_map <- file.path(
-    'resources', '201706_kuester_tmt_sample_mapping.tsv'
-)
 tmt_map <- fread(file_tmt_sample_map)
 for(i in 0:9){
     pdt_tmt[PROTEOME_ID==i, PROTEOME_ID:=tmt_map[ID==i, PROTEOME_ID]]
