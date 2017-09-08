@@ -2,10 +2,14 @@
 #' title: Tidy proteomics from Pichler 
 #' author: Daniel Bader
 #' wb:
-#'   input: 
+#'   input: [
+#'     "/s/project/mitoMultiOmics/raw_data//proteome/protein_ids_measured_2nd_time_in_pichler100min.txt",
+#'     "/s/project/mitoMultiOmics/raw_data//proteome/protein_ids_with_bad_exome_to_rna_identity.txt",
+#'     "/s/project/mitoMultiOmics/raw_data//proteome/20160202_pichler_proteome//pichler100min_combined_corrected_proteinGroups.txt"
+#'   ]
 #'   output: [
-#'     "/s/project/patient_report/tidy_results/proteome_pichler_100min_unfiltered_all_samples.tsv",
-#'     "/s/project/patient_report/tidy_results/proteome_pichler_100min.tsv"
+#'     "/s/project/genetic_diagnosis/processed_data/proteome_pichler_100min_unfiltered_all_samples.tsv",
+#'     "/s/project/genetic_diagnosis/processed_data/proteome_pichler_100min.tsv"
 #'   ]
 #' output: 
 #'   html_document:
@@ -17,12 +21,9 @@
 #+ echo=F
 source("src/r/config.R")
 
-# protdir <- file.path(
-#     RAWDIR, 
-#     "proteome/20160202_pichler_proteome/"
-# )
 protdir <- file.path(
-    BADERDIR
+    RAWDIR,
+    "proteome/20160202_pichler_proteome/"
 )
 
 #+ input
@@ -40,11 +41,11 @@ file_pichler_100min <- file.path(
 
 #+ output 
 file_tidy_pichler_100min_raw <- file.path(
-    TIDYDIR,
+    PROC_DATA,
     "proteome_pichler_100min_unfiltered_all_samples.tsv"
 )
 file_tidy_pichler_100min <- file.path(
-    TIDYDIR,
+    PROC_DATA,
     "proteome_pichler_100min.tsv"
 )
 

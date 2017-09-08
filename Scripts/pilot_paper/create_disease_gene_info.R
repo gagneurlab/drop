@@ -3,7 +3,7 @@
 #' author: Daniel Bader
 #' wb:
 #'   input: 
-#'   output: 
+#'   output: "/s/project/mitoMultiOmics/raw_data/gene_info/meta_disease_genes.tsv"
 #' output: 
 #'   html_document:
 #'     toc_float: yes

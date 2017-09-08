@@ -2,10 +2,7 @@
 #' title: R script
 #' author: Daniel Bader
 #' wb:
-#'   input: [
-#'     "/s/project/patient_report/tidy_results/proteome_pichler_100min.tsv",
-#'     "/s/project/patient_report/tidy_results/rna_aberrant_expression.RDS"
-#'   ]
+#'   input: 
 #'   output: 
 #' output: 
 #'   html_document:
