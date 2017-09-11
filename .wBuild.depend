@@ -35,7 +35,7 @@ rule Scripts_pilot_paper_create_aberrant_protein_expression_R:
 
 rule Scripts_pilot_paper_create_disease_gene_info_R:
     input: RScript = 'Scripts/pilot_paper/create_disease_gene_info.R'
-    output: wBhtml = 'Output/html/Scripts_pilot_paper_create_disease_gene_info.html'
+    output: '/s/project/mitoMultiOmics/raw_data/gene_info/meta_disease_genes.tsv', wBhtml = 'Output/html/Scripts_pilot_paper_create_disease_gene_info.html'
     script: '.wBuild/wBRender.R'
 
 

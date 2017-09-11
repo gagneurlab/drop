@@ -344,5 +344,34 @@ plot(x, xlim=c(15,40), ylim=c(5,30))
 abline(0,1)
 abline(a=a , b=0.51/0.86)
 
+
+
+#' 
+#' # Correlation within TMT data
+#' 
+
+#' * Spearman rank correlation with use=="complete.obs" 
+#'   then missing values are handled by casewise deletion 
+#'   (and if there are no complete cases, that gives an error). 
+#' * Hierarchical clustering.
+
+tmt_log2fc_intensity = normalize_expression_matrix(
+    convert_tidy_table_to_numeric_matrix(
+        tidytable = pdtall[ms_method=='tmt'], 
+        coln_rownames = 'GENE_NAME',
+        coln_colnames = 'PROTEOME_ID',
+        coln_values = 'LFQ_INTENSITY'
+    ), 
+    sizefactor = T, rowcenter = T, log2scale = T, nonzero = 0
+)
+tmt_cormat <- cor(tmt_log2fc_intensity, method = 's', use = 'complete.obs')
+
+#+
+# hc <- as.dendrogram(hclust(dist(tmt_cormat)))
+# heatmap_notrace(tmt_cormat, Rowv=hc, Colv=hc)
+
+#+ fig.width=8, fig.height=8
+heatmaply_cor(tmt_cormat)
+
 #+
 # END
