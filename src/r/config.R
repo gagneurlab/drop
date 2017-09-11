@@ -28,7 +28,7 @@ opts_knit$set(root.dir = getwd())
 ##--------------------------------------------
 ## functions
 
-stopifnot(dir.exists("../gagneurlab_shared"))
+stopifnot(dir.exists("../sample_annotation"))
 
 source("src/r/functions/load_rscripts_from_folder.R")
 load_rscripts_from_folder("src/r/functions/")
@@ -40,16 +40,15 @@ load_rscripts_from_folder("../sample_annotation/src/r/functions/")
 ## parameters
 
 # folders
-DATADIR     <- "/s/project/mitoMultiOmics/"		# main project folder on ouga
-RAWDIR      <- file.path(DATADIR,"raw_data/")	# all original files from the collaborators (read only files) 
+DATADIR <- "/s/project/mitoMultiOmics/"		# main project folder on ouga
+RAWDIR  <- file.path(DATADIR,"raw_data/")	# all original files from the collaborators (read only files) 
 
-# results
+# result folders
 PROC_RESULTS <- "/s/project/genetic_diagnosis/processed_results/"
-PROC_DATA <- "/s/project/genetic_diagnosis/processed_data/"
-
+PROC_DATA    <- "/s/project/genetic_diagnosis/processed_data/"
 
 # files
-FILE_GO_HUMAN    <- "/s/genomes/human/GO/gene_association.goa_human"
+FILE_GO_HUMAN <- "/s/genomes/human/GO/gene_association.goa_human"
 
 
 ##--------------------------------------------
