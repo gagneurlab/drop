@@ -12,10 +12,12 @@ suppressPackageStartupMessages({
     library(Biobase)
     library(data.table)
     library(DESeq2)
+    library(GenomicFeatures)
     library(heatmaply)
     library(knitr)
     library(plotly)
     library(rmarkdown)
+    library(Rsamtools)
     library(tidyr)
 })
 
