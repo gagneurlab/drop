@@ -40,8 +40,8 @@ rule Scripts_pilot_paper_create_disease_gene_info_R:
 
 
 rule Scripts_pilot_paper_create_tidy_proteomics_for_pichler_data_R:
-    input: '/s/project/mitoMultiOmics/raw_data//proteome/protein_ids_measured_2nd_time_in_pichler100min.txt', '/s/project/mitoMultiOmics/raw_data//proteome/protein_ids_with_bad_exome_to_rna_identity.txt', '/s/project/mitoMultiOmics/raw_data//proteome/20160202_pichler_proteome//pichler100min_combined_corrected_proteinGroups.txt', RScript = 'Scripts/pilot_paper/create_tidy_proteomics_for_pichler_data.R'
-    output: '/s/project/genetic_diagnosis/processed_data/proteome_pichler_100min_unfiltered_all_samples.tsv', '/s/project/genetic_diagnosis/processed_data/proteome_pichler_100min.tsv', wBhtml = 'Output/html/Scripts_pilot_paper_create_tidy_proteomics_for_pichler_data.html'
+    input: reused_samples = '/s/project/mitoMultiOmics/raw_data//proteome/protein_ids_measured_2nd_time_in_pichler100min.txt', bad_exome2rna = '/s/project/mitoMultiOmics/raw_data//proteome/protein_ids_with_bad_exome_to_rna_identity.txt', pichler_100min = '/s/project/mitoMultiOmics/raw_data//proteome/20160202_pichler_proteome//pichler100min_combined_corrected_proteinGroups.txt', pichler_60min = '/s/project/mitoMultiOmics/raw_data//proteome/20160202_pichler_proteome//pichler60min_combined_corrected_proteinGroups.txt', kuester_tmt201706 = '/s/project/mitoMultiOmics//raw_data//proteome/20170614_kopajtich_kuester_proteome/m3_lfq_tmt_proteinGroups.txt', RScript = 'Scripts/pilot_paper/create_tidy_proteomics_for_pichler_data.R'
+    output: raw_pichler_100min = '/s/project/genetic_diagnosis/processed_data/proteome_pichler_100min_unfiltered_all_samples.tsv', pichler_100min = '/s/project/genetic_diagnosis/processed_data/proteome_pichler_100min.tsv', kuester_tmt201706 = '/s/project/genetic_diagnosis/processed_data/proteome_kuester_tmt201706.tsv', wBhtml = 'Output/html/Scripts_pilot_paper_create_tidy_proteomics_for_pichler_data.html'
     script: '.wBuild/wBRender.R'
 
 
