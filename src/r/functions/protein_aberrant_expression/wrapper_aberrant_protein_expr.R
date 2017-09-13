@@ -29,11 +29,12 @@ wrapper_aberrant_protein_expr <- function(
     prot_log2_intensity_by_fibro <- summarize_ematrix_by_fibroblast(
         prot_log2_intensity, 'get_fibro_for_proteome', sample_annotation
     )
-    
+
     all_sample_ids <- sapply(
         colnames(prot_log2_intensity_by_fibro), get_fibro_for_proteome, sample_annotation
     )
     
+    # call limma with specific design for each sample
     for(FIB in all_sample_ids){
         mydesign= get_proteome_design_matrix(
             FIB, 
@@ -42,18 +43,18 @@ wrapper_aberrant_protein_expr <- function(
             sample_anno_dt = sample_annotation,
             binarize_fibro_id= TRUE,
             return_contrasts = FALSE
-        )
+        )[['design_mat']]
         
         # check
         sample_diff <- setdiff(
-            colnames(prot_log2_intensity_by_fibro), rownames(mydesign$design_mat)
+            colnames(prot_log2_intensity_by_fibro), rownames(mydesign)
         )
         stopifnot(length(sample_diff)==0)
         
         # limma fit
         single_proteome_limma_res= get_protein_limma_differential_expression(
             prot_log2_intensity_by_fibro, 
-            design_matrix = mydesign[['design_mat']],
+            design_matrix = mydesign,
             coeff_patient = paste0(coln_sample_id, 'case')
         )
         
