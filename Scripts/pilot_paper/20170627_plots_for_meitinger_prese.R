@@ -18,7 +18,7 @@ source("src/r/config.R")
 #' # Read tidy data
 #+ 
 file_tidy_rna <- file.path(
-    TIDYDIR, "rna_aberrant_expression.RDS"
+    DATADIR, "processed_expression/rna_aberrant_expression.RDS"
 )
 rna_dt <- as.data.table(readRDS(file_tidy_rna))
 rna_dt[,FIBROBLAST_ID:=as.character(FIBROBLAST_ID)]
@@ -26,8 +26,7 @@ rna_dt[,FIBROBLAST_ID:=as.character(FIBROBLAST_ID)]
 #' tidy proteomics
 #+
 file_tidy_pichler_100min <- file.path(
-    TIDYDIR,
-    "proteome_pichler_100min.tsv"
+    PROC_DATA, "proteome_pichler_100min.tsv"
 )
 prot_dt <- fread(file_tidy_pichler_100min)
 head(prot_dt)
