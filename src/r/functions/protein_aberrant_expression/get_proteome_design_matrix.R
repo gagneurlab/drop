@@ -3,20 +3,40 @@
 # Author: baderd
 ###############################################################################
 
+get_proteome_design_matrix_simple <- function(
+    patient_fibro = NULL,
+    all_sample_ids = NULL,
+    column_name = 'FIBROBLAST_IDcase'
+){
+    design_mat <- matrix(0, 
+        nrow=length(all_sample_ids), 
+        ncol=2, 
+        dimnames=list(all_sample_ids, c('Intercept', column_name))
+    )
+    design_mat[, "Intercept"]=1
+    design_mat[patient_fibro, column_name]=1
+    
+    return(design_mat)
+}
+
 
 get_proteome_design_matrix = function(
     patient_fibro= NULL,
     proteome_ids = colnames(prot_intensity),
     sample_anno_columns = c('FIBROBLAST_ID', 'RNA_HOX_GROUP', 'GENDER'),
-    sample_anno_dt = MITOMAP_DATATABLE,
+    sample_anno_dt = SAMPLE_ANNOTATION,
+    sample_anno_key_column = 'PROTEOME_ID',
     binarize_fibro_id= TRUE,
     return_contrasts= FALSE,
     verbose= FALSE
 ){
     stopifnot(!is.null(proteome_ids))
-    setkey(sample_anno_dt, PROTEOME_ID)
+    setkeyv(sample_anno_dt, sample_anno_key_column)
     design_model_dt = unique(
-        sample_anno_dt[ proteome_ids, c('PROTEOME_ID', sample_anno_columns), with=F ]
+        sample_anno_dt[ proteome_ids, 
+            c(sample_anno_key_column, sample_anno_columns), 
+            with=F 
+        ]
     )
     
     # tmp_df_rownames = design_model_dt$FIBROBLAST_ID
@@ -25,7 +45,9 @@ get_proteome_design_matrix = function(
                 FIBROBLAST_ID==patient_fibro, 'case', 'control'
             ), levels=c('control', 'case'))]
     }
-    design_model_df = data.frame( design_model_dt, row.names= design_model_dt$PROTEOME_ID)
+    design_model_df = data.frame( 
+        design_model_dt, row.names= design_model_dt[[sample_anno_key_column]]
+    )
     # design_model_df = data.frame( design_model_dt, row.names= tmp_df_rownames)
     
     if(verbose){
@@ -70,5 +92,5 @@ get_proteome_design_matrix = function(
 }
 
 
-#get_proteome_design_matrix('35791')
+# get_proteome_design_matrix('35791',sample_anno_columns = c('FIBROBLAST_ID'), sample_anno_key_column = 'PROTEOME_ID')
 
