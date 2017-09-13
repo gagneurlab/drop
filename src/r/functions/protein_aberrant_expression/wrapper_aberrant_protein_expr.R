@@ -9,6 +9,25 @@
 #'
 
 
+wrapper_aberrant_protein_expr_simple <- function(
+    
+){
+    library(data.table)
+    res <- data.table()
+    
+    # normalize input by size factors
+    prot_log2_intensity_by_fibro = normalize_expression_matrix(
+        prot_intensity, sizefactor = T, rowcenter = F, log2scale = T, nonzero = 0
+    )
+    all_sample_ids <- colnames(prot_log2_intensity_by_fibro)
+    
+    
+    mydesign <- get_proteome_design_matrix_simple(
+        patient_id=FIB, 
+        all_sample_ids = colnames(prot_log2_intensity_by_fibro)
+    )
+}
+
 
 wrapper_aberrant_protein_expr <- function(
     prot_intensity,
@@ -20,11 +39,12 @@ wrapper_aberrant_protein_expr <- function(
     library(data.table)
     res <- data.table()
     
+    
     # normalize input by size factors
     prot_log2_intensity = normalize_expression_matrix(
         prot_intensity, sizefactor = T, rowcenter = F, log2scale = T, nonzero = 0
     )
-    
+
     # summarize to fibroblasts
     prot_log2_intensity_by_fibro <- summarize_ematrix_by_fibroblast(
         prot_log2_intensity, 'get_fibro_for_proteome', sample_annotation
@@ -37,8 +57,8 @@ wrapper_aberrant_protein_expr <- function(
     # call limma with specific design for each sample
     for(FIB in all_sample_ids){
         mydesign= get_proteome_design_matrix(
-            FIB, 
-            proteome_ids = colnames(prot_log2_intensity_by_fibro), 
+            FIB,
+            proteome_ids = colnames(prot_log2_intensity_by_fibro),
             sample_anno_columns = c(coln_sample_id, coln_normalization_coeff),
             sample_anno_dt = sample_annotation,
             binarize_fibro_id= TRUE,
