@@ -4,7 +4,7 @@
 ###############################################################################
 
 get_proteome_design_matrix_simple <- function(
-    patient_fibro = NULL,
+    patient_id = NULL,
     all_sample_ids = NULL,
     column_name = 'FIBROBLAST_IDcase'
 ){
