@@ -10,22 +10,93 @@
 
 
 wrapper_aberrant_protein_expr_simple <- function(
-    
+    prot_intensity,
+    coln_sample_id = 'FIBROBLAST_ID',
+    p_adjust_method = 'hochberg'
 ){
     library(data.table)
-    res <- data.table()
     
     # normalize input by size factors
-    prot_log2_intensity_by_fibro = normalize_expression_matrix(
+    prot_log2_norm_intensity_mat = normalize_expression_matrix(
         prot_intensity, sizefactor = T, rowcenter = F, log2scale = T, nonzero = 0
     )
-    all_sample_ids <- colnames(prot_log2_intensity_by_fibro)
     
-    
-    mydesign <- get_proteome_design_matrix_simple(
-        patient_id=FIB, 
-        all_sample_ids = colnames(prot_log2_intensity_by_fibro)
+    # call limma with specific design for each sample
+    res <- sapply(colnames(prot_log2_norm_intensity_mat), 
+        function(sample_id){
+            mydesign <- get_proteome_design_matrix_simple(
+                patient_id = sample_id, 
+                all_sample_ids = colnames(prot_log2_norm_intensity_mat),
+                column_name = paste0(coln_sample_id, 'case')
+            )
+            # limma fit
+            single_proteome_limma_res= get_protein_limma_differential_expression(
+                prot_log2_norm_intensity_mat, 
+                design_matrix = mydesign,
+                coeff_patient = paste0(coln_sample_id, 'case')
+            )
+            
+            # multiple testing correction
+            single_proteome_limma_res[,
+                prot_padj := p.adjust(prot_pvalue, method = p_adjust_method)
+                ]
+            # add sample
+            single_proteome_limma_res[,eval(coln_sample_id):= sample_id]
+            
+            # update res
+            setnames(
+                single_proteome_limma_res, toupper(names(single_proteome_limma_res))
+            )
+            return(single_proteome_limma_res)
+        }, 
+        simplify = FALSE
     )
+    resdt <- do.call("rbind", res)
+    
+    # get tidy normalized expression
+    prot_norm_intensity_dt <- melt(
+        as.data.table(prot_log2_norm_intensity_mat, keep.rownames = T), 
+        id.vars='rn',
+        measure.vars = colnames(prot_log2_norm_intensity_mat),
+        value.name = 'NORM_LOG2_LFQ',
+        variable.name = coln_sample_id
+    )
+    setnames(prot_norm_intensity_dt, 'rn', 'GENE_NAME')
+    
+    # get rank on normalized intensity
+    prot_norm_intensity_dt[, 
+        RANK_NORM_LOG2_LFQ_BY_GENE_NAME := frank(NORM_LOG2_LFQ), 
+        by=GENE_NAME
+    ]
+    
+    # merge norm intensity with limma 
+    return(merge(prot_norm_intensity_dt, resdt))
+}
+
+
+compute_protein_zscore <- function(
+    protein_limma_dt,
+    column_intensity = 'NORM_LOG2_LFQ',
+    column_foldchange = 'PROT_LOG2FC',
+    limit_pvalue = PADJ_LIMIT,
+    limit_zscore = ZSCORE_LIMIT
+){
+    
+    # compute std deviation per gene
+    protein_limma_dt[, 
+        SD_NORM_LOG2_LFQ := sd(get(column_intensity), na.rm=T), 
+        by=GENE_NAME
+    ]
+    
+    # compute Z-score
+    protein_limma_dt[, PROT_ZSCORE := get(column_foldchange)/SD_NORM_LOG2_LFQ]
+    
+    # compute significance
+    protein_limma_dt[, PROT_IS_ABER_EXP := 
+            PROT_PADJ < limit_pvalue & abs(PROT_ZSCORE) > limit_zscore
+    ]
+    
+    return(protein_limma_dt)
 }
 
 
