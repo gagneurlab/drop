@@ -11,7 +11,11 @@
 #'   output: 
 #'     - raw_pichler_100min: "`sm config['PROC_DATA'] + 'proteome_pichler_100min_unfiltered_all_samples.tsv'`"
 #'     - pichler_100min: "`sm config['PROC_DATA'] + 'proteome_pichler_100min.tsv'`"
+#'     - raw_pichler_60min: "`sm config['PROC_DATA'] + 'proteome_pichler_60min_unfiltered_all_samples.tsv'`"
+#'     - pichler_60min: "`sm config['PROC_DATA'] + 'proteome_pichler_60min.tsv'`"
+#'     - raw_kuester_tmt201706: "`sm config['PROC_DATA'] + 'proteome_kuester_tmt201706_unfiltered_all_samples.tsv'`"
 #'     - kuester_tmt201706: "`sm config['PROC_DATA'] + 'proteome_kuester_tmt201706.tsv'`"
+#'     - tidy_proteomics: "`sm config['PROC_DATA'] + 'proteome_intensities_all_merged.tsv'`"
 #' output: 
 #'   html_document:
 #'     toc_float: yes
@@ -25,9 +29,10 @@ source("src/r/config.R")
 #+ input
 file_pichler_100min <- snakemake@input[['pichler_100min']]
 file_pichler_60min <- snakemake@input[['pichler_60min']]
-# file_pichler_100min  <- "/s/project/mitoMultiOmics/raw_data//proteome/20160202_pichler_proteome//pichler100min_combined_corrected_proteinGroups.txt"
-file_kuester_tmt201706 <- "/s/project/mitoMultiOmics//raw_data//proteome/20170614_kopajtich_kuester_proteome/m3_lfq_tmt_proteinGroups.txt"
-
+file_kuester_tmt201706 <- snakemake@input[['kuester_tmt201706']]
+file_kuester_tmt_sample_map <- file.path(
+    'resources', '201706_kuester_tmt_sample_mapping.tsv'
+)
 #+ input data
 protein_ids_reused <- readLines(snakemake@input[['reused_samples']])
 protein_ids_bad_ex2rna <- readLines(snakemake@input[['bad_exome2rna']])
@@ -40,21 +45,21 @@ protein_ids_bad_ex2rna <- readLines(snakemake@input[['bad_exome2rna']])
 #' 
 #' ## Read and process data
 #' 
-pdt <- wrapper_proteinGroupsTxt_to_tidy_table(
+raw_prot_pi100 <- wrapper_proteinGroupsTxt_to_tidy_table(
     file_pichler_100min, 
     intensity_column_pattern = "LFQ.intensity."
 )
-pdt[,ms_method:='Pichler_QExactiveHF_100min']
-head(pdt)
+raw_prot_pi100[,MS_METHOD:='Pichler_QExactiveHF_100min']
+head(raw_prot_pi100)
 
 
 #' 
 #' ## Save tidy table
 #' 
-write_tsv(pdt, file= snakemake@output[['raw_pichler_100min']])
+write_tsv(raw_prot_pi100, file= snakemake@output[['raw_pichler_100min']])
 
 #' Samples measured
-unique(pdt$PROTEOME_ID)
+unique(raw_prot_pi100$PROTEOME_ID)
 
 
 #' 
@@ -72,123 +77,169 @@ protein_ids_bad_ex2rna
 #' * Samples with transduced genes or grown 2 weeks
 #' 
 protein_ids_non_standard <- c( 
-    grep("2w", unique(pdt$PROTEOME_ID), value=T),
-    grep("\\.T\\.", unique(pdt$PROTEOME_ID), value=T)
+    grep("2w", unique(raw_prot_pi100$PROTEOME_ID), value=T),
+    grep("\\.T\\.", unique(raw_prot_pi100$PROTEOME_ID), value=T)
 )
 protein_ids_non_standard
 
 #' * REOMVE THEM
 #' 
-filtered_prot_dt <- pdt[! PROTEOME_ID %in% c(
+filtered_prot_pi100 <- raw_prot_pi100[! PROTEOME_ID %in% c(
     protein_ids_reused, protein_ids_bad_ex2rna, protein_ids_non_standard
     )]
 
 #' Samples still included
-unique(filtered_prot_dt$PROTEOME_ID)
+unique(filtered_prot_pi100$PROTEOME_ID)
 
 #' * Recompute NA frequencies
 #' 
-compute_na_frequency(filtered_prot_dt, 
+compute_na_frequency(filtered_prot_pi100, 
     column_id = "GENE_NAME"
 )
-compute_na_frequency(filtered_prot_dt, 
+compute_na_frequency(filtered_prot_pi100, 
     column_id = "PROTEOME_ID"
 )
 
 #' ## Save filtered tidy table
 #' 
-write_tsv(filtered_prot_dt, file=snakemake@output[['pichler_100min']])
+write_tsv(filtered_prot_pi100, file=snakemake@output[['pichler_100min']])
 
-
-
-#' 
-#' ## Basic statistics
-#' 
-#' Samples measured
-unique(filtered_prot_dt[, NA_FREQ_BY_PROTEOME_ID, by=PROTEOME_ID])
-
-#' Number proteins detected
-filtered_prot_dt[PROTEOME_ID=='33254',.N]
-
-#' Avg. NA freq by sample
-mean(unique(filtered_prot_dt[, NA_FREQ_BY_PROTEOME_ID, by=PROTEOME_ID])$NA_FREQ_BY_PROTEOME_ID)
 
 
 
 #' 
 #' # Pichler QExactive 60min
 #' 
+#file_pichler_60min <- "/s/project/mitoMultiOmics/raw_data//proteome/20160202_pichler_proteome//pichler60min_combined_corrected_proteinGroups.txt"
 
-
-pdt_pi60 <- wrapper_proteinGroupsTxt_to_tidy_table(
+raw_pdt_pi60 <- wrapper_proteinGroupsTxt_to_tidy_table(
     file_pichler_60min, 
     intensity_column_pattern = "LFQ.intensity."
 )
-print(pdt_pi60)
-pdt_pi60[,ms_method:='Pichler_QExactive_60min']
+raw_pdt_pi60[,MS_METHOD:='Pichler_QExactive_60min']
+head(raw_pdt_pi60)
 
-
-#' Samples measured
-unique(pdt_pi60[, NA_FREQ_BY_PROTEOME_ID, by=PROTEOME_ID])
-
-#' Number proteins detected
-pdt_pi60[PROTEOME_ID=='NHDF1',.N]
-
-#' Avg. NA freq by sample
-mean(unique(pdt_pi60[, NA_FREQ_BY_PROTEOME_ID, by=PROTEOME_ID])$NA_FREQ_BY_PROTEOME_ID)
+write_tsv(raw_pdt_pi60, file= snakemake@output[['raw_pichler_60min']])
 
 #' 
 #' ## Summarize technical replicates
 #' 
 
+#' Build mean over technical replicates ignoring missing values. 
+#' Which is the same as imputing them with the mean, 
+#' i.e. the other value from one of the 2 replicates.
+
+raw_pdt_pi60[, sample:=gsub('*_..','', PROTEOME_ID)]
+raw_pdt_pi60[grepl('NHDF', PROTEOME_ID), sample:='NHDF']
+# reduce by mean
+reduced_pi60 <- raw_pdt_pi60[, .
+    (LFQ_INTENSITY=mean(LFQ_INTENSITY, na.rm=T)), 
+    by=c("sample", "PROTEIN_ID", "GENE_NAME")
+]
+reduced_pi60[,MS_METHOD:=unique(raw_pdt_pi60$MS_METHOD)]
+setnames(reduced_pi60, 'sample', 'PROTEOME_ID')
+
+#' * Recompute NA frequencies
+#' 
+compute_na_frequency(reduced_pi60, 
+    column_id = "GENE_NAME"
+)
+compute_na_frequency(reduced_pi60, 
+    column_id = "PROTEOME_ID"
+)
+
+
 #' ## Save filtered tidy table
 #' 
+write_tsv(reduced_pi60, file= snakemake@output[['pichler_60min']])
+
+
 
 
 #' 
 #' # Kuester TMT labeling from June 2017
 #' 
 
-pdt_ku201706 <- wrapper_proteinGroupsTxt_to_tidy_table(
+raw_pdt_ku201706 <- wrapper_proteinGroupsTxt_to_tidy_table(
     file_kuester_tmt201706,
     intensity_column_pattern = "Reporter.intensity.corrected."
 )
-pdt_ku201706[,ms_method:='Kuester_TMT_201706']
+raw_pdt_ku201706[,MS_METHOD:='Kuester_TMT_201706']
 
-#' remove "TMT_10plex_Test_Trinity" samples
-pdt_ku201706 <- pdt_ku201706[!grepl("TMT_10plex_Test_Trinity",PROTEOME_ID)]
+#' * remove "TMT_10plex_Test_Trinity" samples, 
+#'   since they are duplicated columns.
+raw_pdt_ku201706 <- raw_pdt_ku201706[!grepl("TMT_10plex_Test_Trinity",PROTEOME_ID)]
 
-#' add sample IDs from separate table
-file_tmt_sample_map <- file.path(
-    'resources', '201706_kuester_tmt_sample_mapping.tsv'
-)
-tmt_map <- fread(file_tmt_sample_map)
+#' * add sample IDs from separate table
+tmt_map <- fread(file_kuester_tmt_sample_map)
 for(i in 0:9){
-    pdt_ku201706[PROTEOME_ID==i, PROTEOME_ID:=tmt_map[ID==i, PROTEOME_ID]]
+    raw_pdt_ku201706[PROTEOME_ID==i, PROTEOME_ID:=tmt_map[ID==i, PROTEOME_ID]]
 }
 
-print(pdt_ku201706)
+head(raw_pdt_ku201706)
+unique(raw_pdt_ku201706$PROTEOME_ID)
+write_tsv(raw_pdt_ku201706, file=snakemake@output[['raw_kuester_tmt201706']])
+
+
+
+#' 
+#' ## Summarize technical replicates
+#' 
+
+#' Build mean over technical replicates ignoring missing values. 
+#' Which is the same as imputing them with the mean, 
+#' i.e. the other value from one of the 2 replicates.
+
+raw_pdt_ku201706[, sample:=gsub('(*)\\..*$', toupper('\\1'), PROTEOME_ID)]
+raw_pdt_ku201706[, sample:= toupper(sample)]
+unique(raw_pdt_ku201706$sample)
+# reduce by mean
+reduced_pdt_ku201706 <- raw_pdt_ku201706[, 
+    .(LFQ_INTENSITY=mean(LFQ_INTENSITY, na.rm=T)), 
+    by=c("sample", "PROTEIN_ID", "GENE_NAME")]
+reduced_pdt_ku201706[,MS_METHOD:=unique(raw_pdt_ku201706$MS_METHOD)]
+setnames(reduced_pdt_ku201706, 'sample', 'PROTEOME_ID')
+
+#' * Recompute NA frequencies
+#' 
+compute_na_frequency(reduced_pdt_ku201706, 
+    column_id = "GENE_NAME"
+)
+compute_na_frequency(reduced_pdt_ku201706, 
+    column_id = "PROTEOME_ID"
+)
+
+
 
 #' ## Save filtered tidy table
 #' 
-write_tsv(pdt_ku201706, file=snakemake@output[['kuester_tmt201706']])
+write_tsv(reduced_pdt_ku201706, file=snakemake@output[['kuester_tmt201706']])
 
-
-#' 
-#' ## Basic statistics
-#' 
-#' Samples measured
-unique(pdt_ku201706[, NA_FREQ_BY_PROTEOME_ID, by=PROTEOME_ID])
-
-#' Number proteins detected
-pdt_ku201706[PROTEOME_ID=='nhdf.p9',.N]
-
-#' Avg. NA freq by sample
-mean(unique(pdt_ku201706[, NA_FREQ_BY_PROTEOME_ID, by=PROTEOME_ID])$NA_FREQ_BY_PROTEOME_ID)
 
 
 #'
 #' # Merge data sets
 #'
-print(snakemake@config['rawdir_proteome_kuester_201706'])
+
+proteomics_tidy_dt <- rbind(
+    filtered_prot_pi100, reduced_pi60, reduced_pdt_ku201706
+)
+head(proteomics_tidy_dt)
+
+write_tsv(proteomics_tidy_dt, file=snakemake@output[['tidy_proteomics']])
+
+#' 
+#' ## Basic statistics
+#' 
+#' Samples measured
+unique(proteomics_tidy_dt[, PROTEOME_ID, by=MS_METHOD])[,.N, by=MS_METHOD]
+
+#' Number proteins detected
+unique(proteomics_tidy_dt[, .N, by=c("PROTEOME_ID","MS_METHOD")][,.(MS_METHOD, N)])
+
+#' Avg. NA freq by sample
+proteomics_tidy_dt[, 
+    .(mean_NA_freq_by_sample=mean(NA_FREQ_BY_PROTEOME_ID)), 
+    by=MS_METHOD
+]
 

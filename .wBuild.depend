@@ -41,7 +41,7 @@ rule Scripts_proteomics_create_aberrant_protein_expression_R:
 
 rule Scripts_proteomics_create_tidy_proteomics_R:
     input: reused_samples = config['rawdir_proteome'] + 'protein_ids_measured_2nd_time_in_pichler100min.txt', bad_exome2rna = config['rawdir_proteome'] + 'protein_ids_with_bad_exome_to_rna_identity.txt', pichler_100min = config['rawdir_proteome'] + '20160202_pichler_proteome//pichler100min_combined_corrected_proteinGroups.txt', pichler_60min = config['rawdir_proteome'] + '20160202_pichler_proteome//pichler60min_combined_corrected_proteinGroups.txt', kuester_tmt201706 = config['rawdir_proteome'] + '20170614_kopajtich_kuester_proteome/m3_lfq_tmt_proteinGroups.txt', RScript = 'Scripts/proteomics/create_tidy_proteomics.R'
-    output: raw_pichler_100min = config['PROC_DATA'] + 'proteome_pichler_100min_unfiltered_all_samples.tsv', pichler_100min = config['PROC_DATA'] + 'proteome_pichler_100min.tsv', kuester_tmt201706 = config['PROC_DATA'] + 'proteome_kuester_tmt201706.tsv', wBhtml = 'Output/html/Scripts_proteomics_create_tidy_proteomics.html'
+    output: raw_pichler_100min = config['PROC_DATA'] + 'proteome_pichler_100min_unfiltered_all_samples.tsv', pichler_100min = config['PROC_DATA'] + 'proteome_pichler_100min.tsv', raw_pichler_60min = config['PROC_DATA'] + 'proteome_pichler_60min_unfiltered_all_samples.tsv', pichler_60min = config['PROC_DATA'] + 'proteome_pichler_60min.tsv', raw_kuester_tmt201706 = config['PROC_DATA'] + 'proteome_kuester_tmt201706_unfiltered_all_samples.tsv', kuester_tmt201706 = config['PROC_DATA'] + 'proteome_kuester_tmt201706.tsv', tidy_proteomics = config['PROC_DATA'] + 'proteome_intensities_all_merged.tsv', wBhtml = 'Output/html/Scripts_proteomics_create_tidy_proteomics.html'
     script: '.wBuild/wBRender.R'
 
 
