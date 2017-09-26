@@ -14,7 +14,7 @@ get_proteome_design_matrix_simple <- function(
         dimnames=list(all_sample_ids, c('Intercept', column_name))
     )
     design_mat[, "Intercept"]=1
-    design_mat[patient_fibro, column_name]=1
+    design_mat[patient_id, column_name]=1
     
     return(design_mat)
 }
