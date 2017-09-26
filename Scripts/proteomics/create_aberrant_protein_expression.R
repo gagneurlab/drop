@@ -1,5 +1,5 @@
 #'---
-#' title: R script
+#' title: Aberrant protein expression using LIMMA
 #' author: Daniel Bader
 #' wb:
 #'   input: [
