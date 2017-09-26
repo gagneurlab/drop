@@ -34,8 +34,8 @@ rule Scripts_pilot_paper_create_disease_gene_info_R:
 
 
 rule Scripts_proteomics_create_aberrant_protein_expression_R:
-    input: '/s/project/genetic_diagnosis/processed_data/proteome_pichler_100min.tsv', RScript = 'Scripts/proteomics/create_aberrant_protein_expression.R'
-    output: '/s/project/genetic_diagnosis/processed_results/proteome_aberrant_expression.tsv', wBhtml = 'Output/html/Scripts_proteomics_create_aberrant_protein_expression.html'
+    input: proteome_merged = config['PROC_DATA'] + 'proteome_intensities_all_merged.tsv', RScript = 'Scripts/proteomics/create_aberrant_protein_expression.R'
+    output: proteome_aberexp = config['PROC_RESULTS'] + 'proteome_aberrant_expression.tsv', wBhtml = 'Output/html/Scripts_proteomics_create_aberrant_protein_expression.html'
     script: '.wBuild/wBRender.R'
 
 

@@ -3,9 +3,11 @@
 #' author: Daniel Bader
 #' wb:
 #'   input: [
-#'     "/s/project/genetic_diagnosis/processed_data/proteome_pichler_100min.tsv"
+#'     proteome_merged: "`sm config['PROC_DATA'] + 'proteome_intensities_all_merged.tsv'`"
 #'   ]
-#'   output: "/s/project/genetic_diagnosis/processed_results/proteome_aberrant_expression.tsv"
+#'   output: [
+#'     proteome_aberexp: "`sm config['PROC_RESULTS'] + 'proteome_aberrant_expression.tsv'`"
+#'   ]
 #' output: 
 #'   html_document:
 #'     toc_float: yes
@@ -15,43 +17,24 @@
 
 #+ echo=F
 source("src/r/config.R")
+# file_proteome_merged <- file.path(PROC_DATA, "proteome_intensities_all_merged.tsv")
+# file_aber_prot_exp <- file.path(PROC_RESULTS, "proteome_aberrant_expression.tsv")
+file_proteome_merged <- snakemake@input[['proteome_merged']]
+file_aber_prot_exp <- snakemake@output[['proteome_aberexp']]
 
-#+ input
-file_tidy_pichler_100min <- file.path(
-    PROC_DATA,
-    "proteome_pichler_100min.tsv"
-)
 
-# output
-file_aber_prot_exp <- file.path(
-    PROC_RESULTS,
-    "proteome_aberrant_expression.tsv"
-)
+#' Input table tidy raw proteome LFQ intensities
+proteome_merged <- fread(file_proteome_merged)
+head(proteome_merged)
 
-pdt <- fread(file_tidy_pichler_100min)
+#' Available proteomics measurements:
+all_ms_methods <- unique(proteome_merged$MS_METHOD)
+all_ms_methods
 
 
 #'
 #' # Aberrant expression
 #'
-
-prot_intensity <- convert_tidy_table_to_numeric_matrix(
-    pdt, 'GENE_NAME', 'PROTEOME_ID', 'LFQ_INTENSITY'
-)
-# head(prot_intensity)
-
-#' 
-#' ## Check clustering
-#' 
-# prot_log2fc_intensity = normalize_expression_matrix(
-#    prot_intensity, sizefactor = T, rowcenter = T, log2scale = T, nonzero = 0
-# )
-# d <- dist(prot_log2fc_intensity)
-# hc <- hclust(d)
-# heatmap_notrace()
-
-
-#' 
 #' ## Compute DE with limma
 #' 
 #' * transform protein intensity to log2 space
@@ -61,12 +44,50 @@ prot_intensity <- convert_tidy_table_to_numeric_matrix(
 #' * limma DE fit
 #' * compute Z-score
 #' 
-prot_aberexp <- wrapper_aberrant_protein_expr(prot_intensity)
+
+# result object
+prot_aberexp <- data.table()
+
+#' Perform test separately for each measurement
+#' 
+for(tmp_ms_method in all_ms_methods){
+    message(tmp_ms_method)
+    # select one measurement
+    prot_intensity_dt <- proteome_merged[MS_METHOD==tmp_ms_method]
+    # get matrix representation for limma
+    prot_intensity_mat <- convert_tidy_table_to_numeric_matrix(
+        prot_intensity_dt, 'GENE_NAME', 'PROTEOME_ID', 'LFQ_INTENSITY'
+    )
+    
+    # differential expression with limma
+    single_prot_aberexp <- wrapper_aberrant_protein_expr_simple(prot_intensity_mat)
+    # compute Z-score with fold change from limma 
+    # and sd of normalized log intensities
+    single_prot_aberexp <- compute_protein_zscore(single_prot_aberexp)
+    
+    # merge with raw intensities
+    setnames(prot_intensity_dt, 'PROTEOME_ID', 'FIBROBLAST_ID')
+    single_prot_aberexp <- merge(
+        prot_intensity_dt, 
+        single_prot_aberexp, 
+        by=c('FIBROBLAST_ID', 'GENE_NAME'), 
+        all=T
+    )
+    
+    # add to result object
+    prot_aberexp <- rbind(prot_aberexp, single_prot_aberexp)
+}
+
+#' ## Examine output
 head(prot_aberexp)
 
-#'
-#' ## SAVE
-#'
+#' Number of samples by Method
+unique(prot_aberexp[, FIBROBLAST_ID, by=MS_METHOD])[, .N, by=MS_METHOD]
+#' Number of proteins by Method
+unique(prot_aberexp[, .N, by=c('FIBROBLAST_ID', 'MS_METHOD')][,.(N, MS_METHOD)])
+
+
+#' SAVE
 file_aber_prot_exp
 write_tsv(prot_aberexp, file = file_aber_prot_exp)
 
