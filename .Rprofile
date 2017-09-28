@@ -1,8 +1,8 @@
 ## my Rprofile. I will put a link of it also into src/r.
 
-message("Loading packages and configuration from src/r/config.R...")
-suppressMessages(source("./src/r/config.R")) # load your own functions
-message("Done")
+# message("Loading packages and configuration from src/r/config.R...")
+# suppressMessages(source("./src/r/config.R")) # load your own functions
+# message("Done")
 
 
 ## set the appropriate path
