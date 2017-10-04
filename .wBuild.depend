@@ -9,6 +9,18 @@ rule Scripts_diagnosis_tools_disease_associated_genes_R:
     script: '.wBuild/wBRender.R'
 
 
+rule Scripts_diagnosis_tools_exome_candidates_R:
+    input: RScript = 'Scripts/diagnosis_tools/exome_candidates.R'
+    output: wBhtml = 'Output/html/Scripts_diagnosis_tools_exome_candidates.html'
+    script: '.wBuild/wBRender.R'
+
+
+rule Scripts_diagnosis_tools_strong_candidates_R:
+    input: RScript = 'Scripts/diagnosis_tools/strong_candidates.R'
+    output: wBhtml = 'Output/html/Scripts_diagnosis_tools_strong_candidates.html'
+    script: '.wBuild/wBRender.R'
+
+
 rule Scripts_kuester_proteomics_201706_kuester_data_qc_R:
     input: '/s/project/mitoMultiOmics//raw_data//proteome/20170614_kopajtich_kuester_proteome/m1_lfq_single_shot_proteinGroups.txt', '/s/project/mitoMultiOmics//raw_data//proteome/20170614_kopajtich_kuester_proteome/m2_lfq_rphp_proteinGroups.txt', '/s/project/mitoMultiOmics//raw_data//proteome/20170614_kopajtich_kuester_proteome/m3_lfq_tmt_proteinGroups.txt', '/s/project/mitoMultiOmics//raw_data//proteome/20170614_kopajtich_kuester_proteome/m4_lfq_id_trinity_proteinGroups.txt', RScript = 'Scripts/kuester_proteomics/201706_kuester_data_qc.R'
     output: '/s/project/genetic_diagnosis/processed_data//proteome_kuester_method_trial_lfq.tsv', wBhtml = 'Output/html/Scripts_kuester_proteomics_201706_kuester_data_qc.html'
@@ -48,6 +60,8 @@ rule Scripts_proteomics_create_tidy_proteomics_R:
 rule Index:
     input: 
         "Output/html/Scripts_diagnosis_tools_disease_associated_genes.html",
+        "Output/html/Scripts_diagnosis_tools_exome_candidates.html",
+        "Output/html/Scripts_diagnosis_tools_strong_candidates.html",
         "Output/html/Scripts_kuester_proteomics_201706_kuester_data_qc.html",
         "Output/html/Scripts_kuester_proteomics_20170727_create_nhdf_rna_vs_protein_table.html",
         "Output/html/Scripts_pilot_paper_20170627_plots_for_meitinger_prese.html",
