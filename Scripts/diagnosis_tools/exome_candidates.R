@@ -2,7 +2,9 @@
 #' title: Exome candidates by variant prioritization
 #' author: Daniel Bader
 #' wb:
-#'   input: 
+#'   input: [
+#'     exome_candy: "`sm config['PROC_RESULTS'] + 'variants_wes_candidates.RDS'`"
+#'   ]
 #'   output: 
 #' output: 
 #'   html_document
@@ -11,8 +13,7 @@
 
 #+ echo=F
 source("src/r/config.R")
-# file_aber_prot_exp <- snakemake@output[['proteome_aberexp']]
-file_exome_candy <- file.path(PROC_RESULTS, "variants_wes_candidates.RDS")
+file_exome_candy <- snakemake@input[['exome_candy']]
 file_disease_gene_anno <- file.path(RAWDIR, "gene_info/meta_disease_genes.tsv")
 
 GENE_ANNO <- fread(file_disease_gene_anno, na.strings=c('NA',''))
@@ -31,7 +32,7 @@ exome_candy[
 
 # subset columns
 columns_to_show <- c(
-    'FIBROBLAST_ID',
+    'sample',
     'hgncid',
     'gt',
     'mtype',
@@ -41,6 +42,7 @@ columns_to_show <- c(
     'pph1',
     'exacmaf',
     'sample_freq',
+    'FIBROBLAST_ID',
     'chr',
     'pos',
     'ref',
@@ -68,6 +70,7 @@ setnames(exome_display_dt, 'mstype', 'variant effect')
 setnames(exome_display_dt, 'pph1', 'polyphen score')
 setnames(exome_display_dt, 'sift1', 'sift score')
 setnames(exome_display_dt, 'exacmaf', 'ExAC MAF')
+setnames(exome_display_dt, 'sample', 'EXOME ID')
 
 
 
@@ -81,7 +84,12 @@ setnames(exome_display_dt, 'exacmaf', 'ExAC MAF')
 
 #+ echo=F
 #head(exome_display_dt)
-DT::datatable(exome_display_dt, filter='top', rownames = FALSE)
+DT::datatable(
+    exome_display_dt, 
+    filter='top', 
+    rownames = FALSE
+    # ,options = list(scrollX = TRUE)
+)
 
 
 

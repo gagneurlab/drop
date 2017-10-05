@@ -18,7 +18,7 @@
 #'---
 #'
 
-#+ echo=F, warning=F, message=F
+#+ echo=F, warning=F, message=F, results='hide'
 source("src/r/config.R")
 file_all_candidates <- snakemake@output[['all_candidates']]
 
@@ -89,7 +89,7 @@ write_tsv(merged_candy_dt, file = file_all_candidates)
 #' 
 
 
-## STRONG CANDIDATES
+#' ## STRONG CANDIDATES
 #+
 DT::datatable(
     merged_candy_dt[is.na(DIAGNOSED_GENE) & !is.na(DISEASE)], 
@@ -100,7 +100,7 @@ DT::datatable(
 
 
 
-## All candidates
+#' ## All candidates
 #+ echo=F
 #head(exome_display_dt)
 DT::datatable(

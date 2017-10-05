@@ -10,14 +10,20 @@ rule Scripts_diagnosis_tools_disease_associated_genes_R:
 
 
 rule Scripts_diagnosis_tools_exome_candidates_R:
-    input: RScript = 'Scripts/diagnosis_tools/exome_candidates.R'
+    input: exome_candy = config['PROC_RESULTS'] + 'variants_wes_candidates.RDS', RScript = 'Scripts/diagnosis_tools/exome_candidates.R'
     output: wBhtml = 'Output/html/Scripts_diagnosis_tools_exome_candidates.html'
     script: '.wBuild/wBRender.R'
 
 
+rule Scripts_diagnosis_tools_rna_candidates_R:
+    input: rna_aber_exp = config['PROC_RESULTS'] + 'rna_aberrant_expression.RDS', rna_mae = config['PROC_RESULTS'] + 'rna_mae_deseq_results.RDS', RScript = 'Scripts/diagnosis_tools/rna_candidates.R'
+    output: wBhtml = 'Output/html/Scripts_diagnosis_tools_rna_candidates.html'
+    script: '.wBuild/wBRender.R'
+
+
 rule Scripts_diagnosis_tools_strong_candidates_R:
-    input: RScript = 'Scripts/diagnosis_tools/strong_candidates.R'
-    output: wBhtml = 'Output/html/Scripts_diagnosis_tools_strong_candidates.html'
+    input: exome_candy = config['PROC_RESULTS'] + 'variants_wes_candidates.RDS', rna_aber_exp = config['PROC_RESULTS'] + 'rna_aberrant_expression.RDS', rna_splice = config['PROC_RESULTS'] + 'rna_splicing_fraser_results.RDS', rna_mae = config['PROC_RESULTS'] + 'rna_mae_deseq_results.RDS', prot_aber_exp = config['PROC_RESULTS'] + 'proteome_aberrant_expression.tsv', RScript = 'Scripts/diagnosis_tools/strong_candidates.R'
+    output: all_candidates = config['PROC_RESULTS'] + 'all_candidates.tsv', wBhtml = 'Output/html/Scripts_diagnosis_tools_strong_candidates.html'
     script: '.wBuild/wBRender.R'
 
 
@@ -61,6 +67,7 @@ rule Index:
     input: 
         "Output/html/Scripts_diagnosis_tools_disease_associated_genes.html",
         "Output/html/Scripts_diagnosis_tools_exome_candidates.html",
+        "Output/html/Scripts_diagnosis_tools_rna_candidates.html",
         "Output/html/Scripts_diagnosis_tools_strong_candidates.html",
         "Output/html/Scripts_kuester_proteomics_201706_kuester_data_qc.html",
         "Output/html/Scripts_kuester_proteomics_20170727_create_nhdf_rna_vs_protein_table.html",
