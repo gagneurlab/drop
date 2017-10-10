@@ -25,6 +25,7 @@ file_all_candidates <- snakemake@output[['all_candidates']]
 # very noisy gene anno file
 file_disease_gene_anno <- file.path(RAWDIR, "gene_info/meta_disease_genes.tsv")
 
+
 # tidy results
 file_exome_candy <- snakemake@input[['exome_candy']]
 file_rna_aber_exp <- snakemake@input[['rna_aber_exp']]
@@ -62,14 +63,31 @@ merged_candy_dt <- merge(merge(merge(
 
 merged_candy_dt <- merge(
     merged_candy_dt, 
-    SAMPLE_ANNOTATION[,.(FIBROBLAST_ID, EXOME_ID, DIAGNOSED_GENE=KNOWN_MUTATION)],
+    SAMPLE_ANNOTATION[,
+        .(FIBROBLAST_ID, EXOME_ID, DIAGNOSED_GENE=KNOWN_MUTATION, CANDIDATE_GENE)
+    ],
     by=c('FIBROBLAST_ID', 'EXOME_ID'),
     all.x=T
 )
 
 # SAVE
 write_tsv(merged_candy_dt, file = file_all_candidates)
+# merged_candy_dt=fread(file.path(PROC_RESULTS, 'all_candidates.tsv'))
 
+#
+# Indices strong candidates
+#
+idx_strong <- which( with(merged_candy_dt, is.na(DIAGNOSED_GENE) & !is.na(DISEASE)))
+
+# 
+# ADD HTML LINKS TO TABLE
+#
+merged_candy_dt[,GENE_ID:=get_html_link(GENE_ID, 'genecards')]
+merged_candy_dt[,DIAGNOSED_GENE:=get_html_link(DIAGNOSED_GENE, 'genecards')]
+merged_candy_dt[,CANDIDATE_GENE:=get_html_link(CANDIDATE_GENE, 'genecards')]
+merged_candy_dt[,MIM_NUMBERS:=
+    lapply(strsplit(MIM_NUMBERS, ','), get_html_link, website='omim')
+]
 
 
 #' ## Results 
@@ -90,11 +108,15 @@ write_tsv(merged_candy_dt, file = file_all_candidates)
 
 
 #' ## STRONG CANDIDATES
+#' 
+#' - no DIAGNOSED GENE
+#' - candidate gene with DISEASE annotation
 #+
 DT::datatable(
-    merged_candy_dt[is.na(DIAGNOSED_GENE) & !is.na(DISEASE)], 
+    merged_candy_dt[idx_strong], 
     filter='top', 
-    rownames = FALSE
+    rownames = FALSE,
+    escape = FALSE
     # ,options = list(scrollX = TRUE)
 )
 
@@ -106,7 +128,8 @@ DT::datatable(
 DT::datatable(
     merged_candy_dt, 
     filter='top', 
-    rownames = FALSE
+    rownames = FALSE,
+    escape = FALSE
     # ,options = list(scrollX = TRUE)
 )
 
