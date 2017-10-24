@@ -46,7 +46,7 @@ GENE_ANNO <- fread(file_disease_gene_anno, na.strings=c('NA',''))
 # reduce tables to candidates only
 #
 gene_anno_diet <- GENE_ANNO[,.(GENE_ID=HGNC_GENE_NAME, DISEASE, MIM_NUMBERS)]
-exome_diet_candy <- exome_candy[,.(EXOME_ID=sample, FIBROBLAST_ID, GENE_ID=hgncid, EXOME_IS_SIGNI=TRUE)]
+exome_diet_candy <- unique(exome_candy[,.(EXOME_ID=sample, FIBROBLAST_ID, GENE_ID=hgncid, EXOME_IS_SIGNI=TRUE)])
 rna_diet_aber_exp <- rna_aber_exp[rna_is_signi==TRUE, .(FIBROBLAST_ID, GENE_ID=hgncid, RNA_IS_ABER_EXP=rna_is_signi)]
 rna_diet_mae <- rna_mae[MAE_IS_SIGNI==TRUE, .(FIBROBLAST_ID, GENE_ID=HGNCID, MAE_IS_SIGNI)]
 prot_diet_aber_exp <- prot_aber_exp[PROT_IS_ABER_EXP==TRUE, .(FIBROBLAST_ID, GENE_ID=GENE_NAME, PROT_IS_ABER_EXP)]
