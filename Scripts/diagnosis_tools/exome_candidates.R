@@ -23,13 +23,14 @@ exome_candy <- readRDS(file_exome_candy)
 #+ echo=F
 exome_candy <- exome_candy[order(FIBROBLAST_ID, chr, pos)]
 
-# compute size of variant
+#' compute size of variant
 exome_candy[mtype=='snp', var_size:=1]
 exome_candy[
     mtype %in% c('ins','del'),
     var_size:=abs(length(levels(ref))-length(levels(alt)))
     ]
 
+#+ echo=F
 # subset columns
 columns_to_show <- c(
     'sample',
