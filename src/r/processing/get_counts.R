@@ -14,6 +14,7 @@ gene_mapping = readRDS("./resources/GENCODEv19Mapping.RDS")
 # UCSC file
 ucsc_txdb= makeTxDbFromGFF('/s/genomes/human/hg19/ucsc/ucsc.translated.gtf', format='gtf')
 gencode_txdb= makeTxDbFromGFF('./resources/gencode.v19.genes.patched_contigs.gtf.gz', format='gtf')
+gencode_txdb = readRDS('./resources/gencode.v19.genes.patched_contigs.Rds')
  
 # only canonical chromosomes
 std_chr = paste0('chr',c('X','Y','M',1:22))
@@ -37,6 +38,7 @@ saveRDS(g2, "./resources/gencode.v19_with_gene_name.Rds")
   
 seqlevels(exons_en) = paste0("chr", seqnames(exons_en)@values)
 seqlevels(exons_en) = gsub("MT", "M", seqnames(exons_en)@values)
+exons_en = readRDS("./resources/exons_en.Rds")
   
 genes_gr= with(genes_gr, genes_gr[seqnames %in% std_chr,])
 seqlevels(genes_gr) = as.character(seqnames(genes_gr)@values)
@@ -83,6 +85,7 @@ if(length(se_already_counted)>0){
 }
 
 b_files <- substr(scan("./resources/201708_gusic_rna_seq_samples.tsv", what = character()), 3, 100)
+b_files <- substr(scan("./resources/201711_nadel_rna_seq_samples.txt", what = character()), 3, 100)
 samples <- vapply(strsplit(b_files, "/"), "[", "", 1)
 bf = b_files
 
@@ -133,15 +136,15 @@ my_bpparam = register_bplapply_for_clustering(slurm = F,
 
 starttime= Sys.time()
 # !!! THIS CALL IS SENSITIVE TO VERSION OF bplapply/biocparallel !!!
-
+library(GenomicAlignments)
 se_strand = summarizeOverlaps(
   exons_en, 
   bamfiles, 
-  mode='IntersectionStrict',
-  singleEnd=FALSE,
-  ignore.strand= F, # TRUE,
-  inter.feature=TRUE, 	# TRUE, reads mapping to multiple features are dropped
-  fragments=FALSE,
+  mode = 'IntersectionStrict',
+  singleEnd = FALSE,
+  ignore.strand = F, # TRUE,
+  inter.feature = TRUE, 	# TRUE, reads mapping to multiple features are dropped
+  fragments = FALSE, 
   # BPPARAM=NULL) # ,  		# should singletons, reads with unmapped pairs and 
   #   other fragments be included in counting
   BPPARAM = my_bpparam    # SerialParam()
