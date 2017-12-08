@@ -154,6 +154,7 @@ message('Processed all fibros in: ', format(Sys.time()- starttime))
 # outfile= paste0(outfile_dir, outfile_prefix,'3.rse.RDS')
 # saveRDS(se, outfile)
 
+se_strand <- readRDS("/s/project/mitoMultiOmics/processed_expression/counts_batch3.Rds")
 
 # Create exon <-> transcript table
 exons_tx = exonsBy(gencode_txdb, by = "tx") %>% unlist %>% as.data.table
@@ -168,7 +169,7 @@ setorder(exons_gene_dt, start)
 setorder(exons_gene_dt, seqnames)
 setnames(exons_gene_dt, old = "gene_name", new = "gene_id")
 exons_gene_dt = merge(exons_gene_dt, gene_mapping, by = "gene_id")
-
+exons_gene_dt <- readRDS("./resources/exons_gene_dt.Rds")
 
 # Seems not to be a difference between tx and gene, so aggregate by gene
 identical(transcripts_en$tx_name, genes_en$gene_id)
@@ -176,8 +177,8 @@ identical(transcripts_en$tx_name, genes_en$gene_id)
 
 ### Strand specific
 se = readRDS(file.path(PROC_DATA, "Rds/se_batch2_strand_specific.Rds"))
+se = readRDS(file.path(PROC_DATA, "Rds/se_batch3.Rds"))
 head(assay(se))
-
 
 # Add gene info to exon count
 se_ex = assay(se) %>% as.data.table()
@@ -189,11 +190,11 @@ se_ex = merge(se_ex, exons_gene_dt, by = "exon_id")
 se_gene = se_ex[, lapply(.SD, sum), by = gene_name, .SDcols = colnames(assay(se))]
 se_matrix = as.matrix(se_gene[, colnames(assay(se)), with = F])
 row.names(se_matrix) = se_gene$gene_name
-dim(se_matrix)   # 54356 rows
+dim(se_matrix)   # 54,356 rows
 se_matrix = se_matrix[rowSums2(se_matrix) > 0, ]
-dim(se_matrix)   # 30220 rows
+dim(se_matrix)   # ~ 30,000 rows
 
-write.table(se_matrix, file.path(PROC_DATA, "rna_batch2_strand_specific.txt"), quote = F, col.names = T, row.names = T)
+write.table(se_matrix, file.path(PROC_DATA, "rna_batch3_strand_specific.txt"), quote = F, col.names = T, row.names = T)
 
 ### Strand non - specific
 se_n = readRDS(file.path(PROC_DATA, "Rds/se_batch1_2_non_strand_specific.Rds"))

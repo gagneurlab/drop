@@ -1,31 +1,39 @@
 library(ggpval)
 library(ggthemes)
-ss2 <- read.table(file.path(PROC_DATA, "rna_batch2_strand_specific.txt"))
-nss_matrix <- read.table(file.path(PROC_DATA, "rna_batch1_2_non_strand_specific.txt"))
+ss2 <- read.table(file.path(PROC_DATA, "rna_batch2_strand_specific.txt"), check.names = F)
+ss3 <- read.table(file.path(PROC_DATA, "rna_batch3_strand_specific.txt"), check.names = F)
+nss_matrix <- read.table(file.path(PROC_DATA, "rna_batch1_2_non_strand_specific.txt"), check.names = F)
 # ss_reversed <- readRDS("./resources/rna_count_matrix_strand_specific_reversed.Rds")
-sso <- read.table(file.path(PROC_DATA, "rna_batch0_new_annotation.txt"))
+ss0 <- read.table(file.path(PROC_DATA, "rna_batch0_new_annotation.txt"), check.names = F)
 ssf <- read.table(file.path(PROC_DATA, "rna_batch0_old_annotation.txt"), sep = "\t", check.names = F)
 
-sa = fread("/data/ouga/home/ag_gagneur/yepez/Desktop/batch_1_2.csv")
+sa = fread("/data/ouga/home/ag_gagneur/yepez/Desktop/batch_1_2_3.csv")
+sa0 = SAMPLE_ANNOTATION[RNA_ID %in% colnames(ss0)][, .(EXOME_ID, RNA_ID, FIBROBLAST_ID, GENDER, TISSUE, RNA_PERSON)]
+sa0[, BATCH := "B0"]
+sa_all = rbind(sa0, sa, use.names = T)
+sa_all[TISSUE == "fibroblasts", TISSUE := "FIBROBLAST"]
+write.table(sa_all, file.path(PROC_DATA, "sample_annotation_0to3.txt"), quote = F, col.names = T, row.names = T)
+
 batch2 = sa[BATCH == "B2", RNA_ID]
 batch1 = sa[BATCH == "B1", RNA_ID]
 batch1_fib = sa[BATCH == "B1" & TISSUE == "fibroblasts", RNA_ID]
 
 nss1 = nss_matrix[, batch1_fib]
+write.table(nss1, file.path(PROC_DATA, "rna_batch1.txt"), quote = F, col.names = T, row.names = T)
 nss2 = nss_matrix[, batch2]
 
 # Cut to include genes whose 95% have more than 10 reads only
-ss95 = ss2[ apply(ss2, 1, quantile, .95) > 10, ] 
+ss95 = ss2[apply(ss2, 1, quantile, .95) > 10, ] 
 dim(ss95) # 16001
 
-nssB195 = nss1[ apply(nss1, 1, quantile, .95) > 10, ] 
+nssB195 = nss1[apply(nss1, 1, quantile, .95) > 10, ] 
 dim(ssB195) # 19283 with all tissues, 16297 only fibroblasts
 
 nss95 = nss2[apply(nss2, 1, quantile, .95) > 10, ] 
 dim(nss95)   # 16507
 
-sso95 = sso[apply(sso, 1, quantile, .95) > 10, ] 
-dim(sso95)  # 16645
+ss095 = sso[apply(ss0, 1, quantile, .95) > 10, ] 
+dim(ss095)  # 16645
 
 
 hist(log10(nss2+1), breaks=100)
