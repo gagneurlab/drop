@@ -171,7 +171,10 @@ setnames(exons_gene_dt, old = "gene_name", new = "gene_id")
 exons_gene_dt = merge(exons_gene_dt, gene_mapping, by = "gene_id")
 exons_gene_dt <- readRDS("./resources/exons_gene_dt.Rds")
 
-# Seems not to be a difference between tx and gene, so aggregate by gene
+gene_length_dt = exons_gene_dt[, .(gene_length = sum(width)), by = .(gene_name, seqnames)]
+setnames(gene_length_dt, "seqnames", "chromosome")
+write.table(gene_length_dt, file.path(PROC_DATA, "gene_length.txt"), quote = F, col.names = T, row.names = F)
+
 identical(transcripts_en$tx_name, genes_en$gene_id)
 
 
