@@ -26,18 +26,22 @@ genes_en = sort(genes(gencode_txdb))
 transcripts_en = sort(transcripts(gencode_txdb))
 exons_en = sort(exons(gencode_txdb))
 
-# Genes annotated in the opposite strand
-strand(exons_en[strand(exons_en) == "-",]) <- "*"
-strand(exons_en[strand(exons_en) == "+",]) <- "-"
-strand(exons_en[strand(exons_en) == "*",]) <- "+"
+seqlevels(exons_en) = paste0("chr", seqnames(exons_en)@values)
+seqlevels(exons_en) = gsub("MT", "M", seqnames(exons_en)@values)
 
+saveRDS(exons_en, "./resources/exons_en.Rds")
+
+# Genes annotated in the opposite strand
+exons_op <- copy(exons_en)
+strand(exons_op[strand(exons_op) == "-",]) <- "*"
+strand(exons_op[strand(exons_op) == "+",]) <- "-"
+strand(exons_op[strand(exons_op) == "*",]) <- "+"
+saveRDS(exons_op, "./resources/exons_op.Rds")
 
 genes_dt = as.data.table(genes_en)
 g2 = merge(genes_dt, gene_mapping, by = "gene_id")
 saveRDS(g2, "./resources/gencode.v19_with_gene_name.Rds")
-  
-seqlevels(exons_en) = paste0("chr", seqnames(exons_en)@values)
-seqlevels(exons_en) = gsub("MT", "M", seqnames(exons_en)@values)
+
 exons_en = readRDS("./resources/exons_en.Rds")
   
 genes_gr= with(genes_gr, genes_gr[seqnames %in% std_chr,])
