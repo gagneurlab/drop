@@ -8,7 +8,9 @@
 #'---
 #'
 
-
+#'
+#' TODO: !!! USE only upper letter for coln_sample_id !!!
+#'
 wrapper_aberrant_protein_expr_simple <- function(
     prot_intensity,
     coln_sample_id = 'FIBROBLAST_ID',

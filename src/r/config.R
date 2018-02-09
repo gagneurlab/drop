@@ -70,3 +70,17 @@ ZSCORE_LIMIT <- 3
 ## data
 
 SAMPLE_ANNOTATION <- load_sample_annotation()
+
+## Needed for get_helmholtz_file()
+HHZ_FILE_SOURCES =  c("GENOME", "EXOME", "RNA") 
+HHZ_FILES = structure(list(BAM = "merged.bam", BAM.BAI = "merged.bam.bai", 
+                           BAM.STAR = "STAR.bam", BAM.BAI.STAR = "STAR.bam.bai", VCF = "ontarget.varfilter.dbSNP.plus.checked.vcf", 
+                           VCF = "ontarget.varfilter.dbSNP.plus.checked.vcf.gz", VCF.DD = "ontarget.dd.out.vcf", 
+                           VCF.DD2 = "ontarget.dd2.out.vcf", VCF.CSI = "ontarget.varfilter.dbSNP.plus.checked.vcf.gz.csi", 
+                           VCF.PIN = "pindel.vcf", GVCF = "all.gatk.ontarget.haplotypecaller.gvcf", 
+                           GATKVCF = "gatk.ontarget.haplotypecaller.filtered.dbSNP.plus.checked.vcf", 
+                           VEP = "_annotated_data_table.rds"), .Names = c("BAM", "BAM.BAI", 
+                                                                          "BAM.STAR", "BAM.BAI.STAR", "VCF", "VCF", "VCF.DD", "VCF.DD2", 
+                                                                          "VCF.CSI", "VCF.PIN", "GVCF", "GATKVCF", "VEP"))
+
+
