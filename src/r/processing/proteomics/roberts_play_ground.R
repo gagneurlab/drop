@@ -3,10 +3,19 @@
 #' 
 source("./src/r/config.R")
 
+#' Global variables to use 
+#'   * read only [raw]
+#'   * processed data to save [proc]
+DIR_RAW_PROT  <- "/s/project/mitoMultiOmics/raw_data/proteome"
+DIR_PROC_PROT <- "/s/project/mitoMultiOmics/processed_proteomics"
 
 # mapping IDs between gene protein and hgnc_symbol
-library(biomaRt)
-library(magrittr)
+suppressPackageStartupMessages({
+    library(biomaRt)
+    library(magrittr)
+    library(limma)
+    library(DESeq2)
+})
 
 ?getBM()
 mart <- useMart(biomart = "ensembl", dataset = "hsapiens_gene_ensembl")
@@ -16,13 +25,13 @@ getBM(attributes = c("affy_hg_u95av2", "hgnc_symbol", "chromosome_name", "band")
       mart       = mart)
 
 # check out which attribute you need
-grep("prot", ignore.case = TRUE, value = TRUE, listAttributes(mart)[,"description"])
+head(grep("prot", ignore.case = TRUE, value = TRUE, listAttributes(mart)[,"description"]))
 
 
 # read data 
 library(readxl)
-DIR_PROT <- "/s/project/mitoMultiOmics/raw_data/proteome"
-norm_prot <- read_excel(file.path(DIR_PROT, "20180209_robert_proteomics/proteingroups_normalized.xlsx")) %>% as.data.table
+
+norm_prot <- read_excel(file.path(DIR_RAW_PROT, "20180209_robert_proteomics/proteingroups_normalized.xlsx")) %>% as.data.table
 setnames(norm_prot, "X__1", "Protein_id")
 mat_norm_prot <- as.matrix(t(norm_prot[,2:ncol(norm_prot)]))
 colnames(mat_norm_prot) <- norm_prot[,Protein_id]
@@ -48,3 +57,4 @@ res[PROT_PADJ < 0.1 & SAMPLEID != "P33281 failed"]
 
 # have fun
 hist(res[SAMPLEID != "P33281 failed", PROT_PVALUE])
+
