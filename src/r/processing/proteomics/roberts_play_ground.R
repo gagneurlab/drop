@@ -25,8 +25,8 @@ getBM(attributes = c("affy_hg_u95av2", "hgnc_symbol", "chromosome_name", "band")
       mart       = mart)
 
 # check out which attribute you need
-head(grep("prot", ignore.case = TRUE, value = TRUE, listAttributes(mart)[,"description"]))
-
+head(grep("uniprot", ignore.case = TRUE, value = TRUE, listAttributes(mart)[,"description"]))
+listAttributes(mart)[grep("uniprot", ignore.case = TRUE, listAttributes(mart)[,"description"]),]
 
 # read data 
 library(readxl)
@@ -37,7 +37,7 @@ mat_norm_prot <- as.matrix(t(norm_prot[,2:ncol(norm_prot)]))
 colnames(mat_norm_prot) <- norm_prot[,Protein_id]
 # TODO check how to filter the samples / genes
 table(mat_norm_prot == 0)
-mat_norm_prot <- t(mat_norm_prot + 1)
+mat_norm_prot <- t(mat_norm_prot)
 mat_norm_prot[1:10, 1:10]
 
 # look at raw data and correlation
@@ -46,15 +46,44 @@ library(LSD)
 heatpairs(log10(mat_norm_prot[,c(1:4,18)]))
 
 library(gplots)
-heatmap.2(cor(log10(mat_norm_prot)), trace = "none")
-heatmap.2(cor(log10(mat_norm_prot[,-18])), trace = "none")
+heatmap.2(cor(log10(mat_norm_prot + 1)), trace = "none")
+
+# filter prot data
+# 
+# use only samples where less than 10% of the samples have NA or 0 
+sampleZeroFreq <- apply(mat_norm_prot,2,function(x){ sum(x == 0)/length(x) })
+table(round(sampleZeroFreq, 3))
+mat_norm_prot <- mat_norm_prot[, sampleZeroFreq < 0.1]
+dim(mat_norm_prot)
+heatmap.2(cor(log10(mat_norm_prot + 1)), trace = "none")
+
+# use only genes where less than of the proteins have 10% NA or 0
+protZeroFreq <- apply(mat_norm_prot,1,function(x){ sum(x == 0)/length(x) })
+table(round(protZeroFreq, 3))
+mat_norm_prot <- mat_norm_prot[protZeroFreq < 0.1,]
+dim(mat_norm_prot)
+heatmap.2(cor(log10(mat_norm_prot + 1)), trace = "none")
+
+sum(mat_norm_prot < 100)
+hist(log10(mat_norm_prot+1), breaks = 100)
 
 # run full APA (aberrant protein abundancies) analysis
+#mat_norm_prot <- mat_norm_prot + 1
 res <- wrapper_aberrant_protein_expr_simple(prot_intensity=mat_norm_prot, coln_sample_id = "SAMPLEID")
 
+# add HGNC symbol
+hgnc_mapping <- data.table(getBM(attributes=c("hgnc_symbol", "uniprotswissprot"),
+      filters="uniprotswissprot",
+      values=unique(res[,GENE_NAME]),
+      mart=mart
+))
+setnames(res, "GENE_NAME", "UNIPROT_ID")
+res <- merge(res, hgnc_mapping, by.x="UNIPROT_ID", by.y="uniprotswissprot", all=TRUE)
+setnames(res, "hgnc_symbol", "GENE_NAME")
+
 # good results
-res[PROT_PADJ < 0.1 & SAMPLEID != "P33281 failed"]
+res[PROT_PADJ < 0.1]
 
 # have fun
-hist(res[SAMPLEID != "P33281 failed", PROT_PVALUE])
+hist(res[, PROT_PVALUE])
 
