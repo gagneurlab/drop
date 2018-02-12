@@ -81,6 +81,13 @@ setnames(res, "GENE_NAME", "UNIPROT_ID")
 res <- merge(res, hgnc_mapping, by.x="UNIPROT_ID", by.y="uniprotswissprot", all=TRUE)
 setnames(res, "hgnc_symbol", "GENE_NAME")
 
+# check multi mappings
+# uniprot id wise
+hgnc_mapping[duplicated(uniprotswissprot) | duplicated(uniprotswissprot, fromLast=TRUE)]
+# hgnc symbol wise
+hgnc_mapping[duplicated(hgnc_symbol) | duplicated(hgnc_symbol, fromLast=TRUE)]
+
+
 # good results
 res[PROT_PADJ < 0.1]
 
