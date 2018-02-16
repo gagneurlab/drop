@@ -2,10 +2,12 @@
 #' Roberts Test script
 #' 
 source("./src/r/config.R")
+library(R.utils)
+sourceDirectory("../gagneurlab_shared/r/knitr_helper/")
 
 #' Global variables to use 
-#'   * read only [raw]
-#'   * processed data to save [proc]
+#'  * read only [raw]
+#'  * processed data to save [proc]
 DIR_RAW_PROT  <- "/s/project/mitoMultiOmics/raw_data/proteome"
 DIR_PROC_PROT <- "/s/project/mitoMultiOmics/processed_proteomics"
 
@@ -15,9 +17,17 @@ suppressPackageStartupMessages({
     library(magrittr)
     library(limma)
     library(DESeq2)
+    library(tidyr)
+    library(readxl)
+    library(LSD)
+    library(gplots)
+    library(knitr)
+    library(markdown)
 })
 
-?getBM()
+# render_webserver_html("./src/r/processing/proteomics/roberts_play_ground.R",project_webserver_dir = "/s/public_webshare/project/genetic_diagnosis/proteome/")
+
+# ?getBM()
 mart <- useMart(biomart = "ensembl", dataset = "hsapiens_gene_ensembl")
 getBM(attributes = c("affy_hg_u95av2", "hgnc_symbol", "chromosome_name", "band"),
       filters    = "affy_hg_u95av2",
@@ -29,26 +39,20 @@ head(grep("uniprot", ignore.case = TRUE, value = TRUE, listAttributes(mart)[,"de
 listAttributes(mart)[grep("uniprot", ignore.case = TRUE, listAttributes(mart)[,"description"]),]
 
 # read data 
-library(readxl)
-
 norm_prot <- read_excel(file.path(DIR_RAW_PROT, "20180209_robert_proteomics/proteingroups_normalized.xlsx")) %>% as.data.table
 setnames(norm_prot, "X__1", "Protein_id")
-mat_norm_prot <- as.matrix(t(norm_prot[,2:ncol(norm_prot)]))
-colnames(mat_norm_prot) <- norm_prot[,Protein_id]
+mat_norm_prot <- as.matrix(norm_prot[,2:ncol(norm_prot)])
+rownames(mat_norm_prot) <- norm_prot[,Protein_id]
 # TODO check how to filter the samples / genes
 table(mat_norm_prot == 0)
-mat_norm_prot <- t(mat_norm_prot)
 mat_norm_prot[1:10, 1:10]
 
 # look at raw data and correlation
-
-library(LSD)
-heatpairs(log10(mat_norm_prot[,c(1:4,18)]))
-
-library(gplots)
+# heatpairs(log10(mat_norm_prot[,c(1:4,18)]))
 heatmap.2(cor(log10(mat_norm_prot + 1)), trace = "none")
 
-# filter prot data
+#' 
+#' # Filter prot data
 # 
 # use only samples where less than 10% of the samples have NA or 0 
 sampleZeroFreq <- apply(mat_norm_prot,2,function(x){ sum(x == 0)/length(x) })
@@ -89,8 +93,26 @@ hgnc_mapping[duplicated(hgnc_symbol) | duplicated(hgnc_symbol, fromLast=TRUE)]
 
 
 # good results
-res[PROT_PADJ < 0.1]
+res[PROT_PADJ < 0.1][order(PROT_PADJ)]
 
 # have fun
 hist(res[, PROT_PVALUE])
+
+
+# calc zscore
+l2fc_mat <- t(matrix(res[,PROT_LOG2FC], nrow=ncol(mat_norm_prot)))
+zscores <- (l2fc_mat - rowMeans(l2fc_mat))/rowSds(l2fc_mat)
+hist(zscores)
+table(abs(zscores) >= 3)
+
+res[,L2FC_ZSCORE:=as.vector(zscores)]
+
+#' 
+#' # Results
+#' 
+DT::datatable(res[order(PROT_PADJ)])
+
+# write it out to disk
+write_tsv(res, file.path(DIR_PROC_PROT, "myResultTable.tsv"))
+
 
