@@ -109,6 +109,12 @@ disp_new_batches <- left_join(disp_new_batches, b123[, .(RNA_ID, CANDIDATE_GENE,
 
 setnames(disp_new_batches, old = "sampleId", "RNA_ID")
 
+# round columns with numbers
+columns_signif <- c("zScore", "pvalue", "padj")
+for(j in columns_signif){
+    disp_new_batches[, c(j):= list(signif(get(j), digits = 3))]
+}
+disp_new_batches[, normalizedCounts := round(normalizedCounts, digits = 2)]
 
 #'  
 #'  RNA aberrant expression: absolute Z-score > 3, adjusted P-value < 0.05, New Batches
