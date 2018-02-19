@@ -6,7 +6,7 @@
 
 
 ## set the appropriate path
-options(repos=structure(c(CRAN="http://ftp5.gwdg.de/pub/misc/cran/")))
+options(repos=structure(c(CRAN="https://ftp5.gwdg.de/pub/misc/cran/")))
 options(browser = "google-chrome")
 
 
