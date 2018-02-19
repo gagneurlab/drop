@@ -16,7 +16,7 @@ rule Scripts_diagnosis_tools_exome_candidates_R:
 
 
 rule Scripts_diagnosis_tools_rna_candidates_R:
-    input: rna_aber_exp = config['PROC_RESULTS'] + 'rna_aberrant_expression.RDS', rna_mae = config['PROC_RESULTS'] + 'rna_mae_deseq_results.RDS', RScript = 'Scripts/diagnosis_tools/rna_candidates.R'
+    input: rna_aber_exp = config['PROC_RESULTS'] + 'rna_aberrant_expression.RDS', rna_aber_b1_b2 = config['PROC_RESULTS'] + 'rna_aberrant_expression_b1_b2.RDS', rna_aber_b3 = config['PROC_RESULTS'] + 'rna_aberrant_expression_b3.RDS', rna_mae = config['PROC_RESULTS'] + 'rna_mae_deseq_results.RDS', RScript = 'Scripts/diagnosis_tools/rna_candidates.R'
     output: wBhtml = 'Output/html/Scripts_diagnosis_tools_rna_candidates.html'
     script: '.wBuild/wBRender.R'
 
