@@ -2,30 +2,17 @@
 # 
 
 create_clean_prokisch_mayr_table <- function(
-    input_file=NULL, 
-    output_file=NULL
+    input_file = NULL, 
+    output_file = NULL
 ){
     # set files
     # 
     dir_gene_info <- "/s/project/mitoMultiOmics/raw_data/gene_info/"
-    if(is.null(input_file)){
-        input_file <- file.path(
-            dir_gene_info, 'mitochondrial_disorder_genes_prokisch_mayr.tsv'
-        )
-    }
-    if(is.null(output_file)){
-        output_file <- file.path(
-            dir_gene_info, 
-            'mitochondrial_disorder_genes_prokisch_mayr_cleaned.tsv'
-        )
-    }
+    if(is.null(input_file)){input_file <- file.path(dir_gene_info, 'mitochondrial_disorder_genes_prokisch_mayr.tsv')}
+    if(is.null(output_file)){output_file <- file.path(dir_gene_info, 'mitochondrial_disorder_genes_prokisch_mayr_cleaned.tsv')}
     
     # process
-    prokisch_mayr_dt <- as.data.table(read.delim(
-        file = input_file, 
-        na.strings = '', 
-        stringsAsFactors = F
-        ))
+    prokisch_mayr_dt <- as.data.table(read.delim(input_file, na.strings = '', stringsAsFactors = F))
     prokisch_mayr_dt <- clean_prokisch_mayr_gene_table(prokisch_mayr_dt)
     
     # rename
@@ -36,17 +23,16 @@ create_clean_prokisch_mayr_table <- function(
     setnames(prokisch_mayr_dt, 'OMIM', 'MIM_NUMBER')
 
     # make list column to character
-    prokisch_mayr_dt[, MIM_NUMBERS:=paste(unlist(MIM_NUMBER),collapse = ','), by=ID]
-    prokisch_mayr_dt[, MIM_NUMBER:=NULL]
+    prokisch_mayr_dt[, MIM_NUMBERS := paste(unlist(MIM_NUMBER),collapse = ','), by = 1:nrow(prokisch_mayr_dt)]
+    prokisch_mayr_dt[, MIM_NUMBER := NULL]
     
     # fix entries
     # 
-    prokisch_mayr_dt[, HGNC_GENE_NAME:=gsub(' ','',HGNC_GENE_NAME)]
-    prokisch_mayr_dt <- prokisch_mayr_dt[,lapply(.SD, function(j) gsub(' +$', '', j))]
-    prokisch_mayr_dt[, OTHER_DESIGNATIONS:=gsub('Other Designations: ','',OTHER_DESIGNATIONS)]
-    prokisch_mayr_dt[, ANNOTATION:=gsub('Annotation: ','',ANNOTATION)]
-    prokisch_mayr_dt[, OTHER_ALIASES:=gsub('Other Aliases: ','',OTHER_ALIASES)]
-    # prokisch_mayr_dt[,lapply(.SD, class)]
+    prokisch_mayr_dt <- prokisch_mayr_dt[, lapply(.SD, function(j) gsub(' +$', '', j))]
+    prokisch_mayr_dt[, OTHER_DESIGNATIONS := gsub('Other Designations: ', '', OTHER_DESIGNATIONS)]
+    prokisch_mayr_dt[, ANNOTATION := gsub('Annotation: ','',ANNOTATION)]
+    prokisch_mayr_dt[, OTHER_ALIASES := gsub('Other Aliases: ','',OTHER_ALIASES)]
+    # prokisch_mayr_dt[, lapply(.SD, class)]
     
     # write clean output file
     # 
@@ -63,14 +49,16 @@ clean_prokisch_mayr_gene_table <- function(input_data){
     empty_coln
     
     # remove empty columns
-    data[,c(empty_coln[V1==T, rn]) := NULL]
+    data[, c(empty_coln[V1==T, rn]) := NULL]
     
     # clean colnames
     colnames <- gsub("(\\.| )+$", "", colnames(data))
     colnames <- gsub("\\.+", " ", colnames)
     colnames <- gsub("_", " ", colnames)
     colnames <- gsub("\\s*1.*", "", colnames)
-    data <- setnames(data, colnames)
+    colnames <- gsub("Clinical synopsis", "CS", colnames)
+    
+    setnames(data, colnames)
     
     # rename some columns
     setnames(data, "GENE", "Gene")
@@ -79,45 +67,55 @@ clean_prokisch_mayr_gene_table <- function(input_data){
     setnames(data, "Gene Localisation", "Locus")
     setnames(data, "Name A K A", "Full Gene Name")
     setnames(data, "Mit Energy Metab", "Energy Metab")
+    setnames(data, "Associated disease phenotype s", "Associated_disease_phenotypes")
+    
     
     # remove new lines within a cell
-    data[,`Associated disease phenotype s`:=gsub("\\s*\n\\s*", "; ", `Associated disease phenotype s`, perl = T)]
+    data[, Associated_disease_phenotypes := gsub("\\s*\n\\s*", "; ", Associated_disease_phenotypes, perl = T)]
     # change number into real factor
-    data[,Leigh:=ifelse(Leigh == 1, "yes", NA)]
-    data[,Neuro:=ifelse(Neuro == '1', "yes",
+    try(data[,Leigh:=ifelse(Leigh == 1, "yes", NA)], silent = TRUE)
+    try(data[,Neuro:=ifelse(Neuro == '1', "yes",
         ifelse(Neuro == 'N', "no",
             ifelse(Neuro == '?', "unclear", 
                 ifelse(Neuro == 'T', "tissue specific",
-                    NA
-                ))))]
+                    NA))))] , silent = TRUE)
+    
     data[,`Energy Metab`:=ifelse(`Energy Metab` == '1', "MITO",
         ifelse(`Energy Metab` == '2', "maybe",
             ifelse(`Energy Metab` == '3', "other",
-                NA
-            )))]
+                NA)))]
+    try(data[, Cardiomyopathy := ifelse(Cardiomyopathy == 1, "major",
+                                    ifelse(Cardiomyopathy == 2, "minor", NA))], silent = TRUE)
     
+    omim_cols <- c("OMIM", "MIM", "CS", "CS2", "CS3", "CS4", "CS5", "CS6")
     # merge omim IDs
-    omim_list <- apply(data[,.(OMIM,MIM,`Clinical synopsis`,CS2,CS3,CS4,CS5,CS6)],1,function(x){
+    omim_list <- apply(data[, ..omim_cols],1,function(x){
         ids <- unique(gsub(" +$", "", gsub("MIM: |[#*?%]| new OMIM number", "", na.omit(x))))
         ids[ids == 'No_MIM' | ids == ''] <- NA
         if(length(ids) > 0)
             return(as.character(na.omit(ids)))
         return(NA)
     })
-    data[,OMIM:=omim_list]
+    data[, OMIM := omim_list]
     
     # readable Entrez ID
-    data[,EntrezID:=gsub("ID: ", "", EntrezID)]
-    data[,Chromosome:=gsub("Chromosome: .?.?; Location: ", "", Chromosome)]
-    data[,Locus:=gsub(" ", "", Locus)]
+    data[, EntrezID := gsub("ID: ", "", EntrezID)]
+    data[, Chromosome := gsub("Chromosome: .?.?; Location: ", "", Chromosome)]
+    data[, Locus := gsub(" ", "", Locus)]
+    data[, Gene := gsub(" ", "", Gene)]
     
     # remove omim columns
-    data[,c("Official Symbol", "Chromosome", "Gene Name", "MIM", 
-        "Clinical synopsis", "CS2", "CS3", "CS4", "CS5", "CS6"):=NULL
-        ]
+    data[, c("Official Symbol", "Chromosome", "Gene Name", "MIM", 
+        "CS", "CS2", "CS3", "CS4", "CS5", "CS6") := NULL]
     
-    # sort it by ID
-    setkey(data, ID)
+    # remove authors
+    data[, c("Count", "Sperl", "Prokisch", "Zeviani", "Thorburn", "Falk", "Taylor",
+             "Authors I", "Authors II") := NULL]
+    
+    # remove other useless columns
+    data[, c("Group", "ID", "Full Gene Name") := NULL]
+    
+    data <- data[!is.na(Gene)]
     
     return(data)
 }
