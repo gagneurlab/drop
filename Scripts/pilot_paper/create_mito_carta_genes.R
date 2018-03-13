@@ -28,13 +28,16 @@ cols <- c(
     'Description',
     'Synonyms',
     'hg19_Chromosome',
-    'Tissues')
+    'Tissues',
+    'MCARTA2.0_score')
 
 mito_carta <- mito_carta[, cols, with=F]
 
 setnames(mito_carta, "Symbol", "HGNC_GENE_NAME")
 setnames(mito_carta, "EnsemblGeneID", "ENSEMBL_ID")
 setnames(mito_carta, "hg19_Chromosome", "Chromosome")
+setnames(mito_carta, "MCARTA2.0_score", "MCARTA_SCORE")
+
 names(mito_carta) <- toupper(names(mito_carta))
 
 write.table(mito_carta, file = file_out_mito_carta, quote = F, sep = "\t", row.names = F)
