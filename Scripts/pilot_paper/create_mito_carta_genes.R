@@ -29,7 +29,8 @@ cols <- c(
     'Synonyms',
     'hg19_Chromosome',
     'Tissues',
-    'MCARTA2.0_score')
+    'MCARTA2.0_score',
+    'MCARTA2_FDR')
 
 mito_carta <- mito_carta[, cols, with=F]
 
@@ -37,6 +38,7 @@ setnames(mito_carta, "Symbol", "HGNC_GENE_NAME")
 setnames(mito_carta, "EnsemblGeneID", "ENSEMBL_ID")
 setnames(mito_carta, "hg19_Chromosome", "Chromosome")
 setnames(mito_carta, "MCARTA2.0_score", "MCARTA_SCORE")
+setnames(mito_carta, "MCARTA2_FDR", "FDR")
 
 names(mito_carta) <- toupper(names(mito_carta))
 
