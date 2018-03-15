@@ -126,3 +126,48 @@ both_genes = intersect(rownames(nss95), rownames(ss95))
 png(file.path(DIR_retreat, "hist_b2_nss_sub.png"), width = 600, height = 500, res = 115)
 hist(log10(nss95[nss_genes, ] + 1), breaks=100, xlab = "B2, Non Strand Specific Only", cex.axis = 1.4, cex.lab = 1.4)
 dev.off()
+
+
+g2 <- readRDS("./resources/gencode.v19_with_gene_name.Rds")
+g2 <- unique(g2[, .(gene_name, gene_type)])
+
+create_dt_from_vector <- function(v, name, value = "Total"){
+    table <- table(v)
+    dt <- data.table(table)
+    setnames(dt, "v", name)
+    setnames(dt, "N", value)
+}
+
+dt_annot <- create_dt_from_vector(g2$gene_type, name = "Gene_type")
+
+b2 <- data.table(Gene_name = row.names(ss2))
+dim(b2)
+b2 <- merge(b2, g2, by.x = "Gene_name", by.y = "gene_name", all.x = T)
+dim(b2)
+dt2 <- create_dt_from_vector(b2$gene_type, name = "Gene_type", value = "Counted")
+
+
+ss95 = filter_percentage(ss2)
+b2f <- data.table(Gene_name = row.names(ss95))
+b2f <- merge(b2f, g2, by.x = "Gene_name", by.y = "gene_name", all.x = T)
+dt2f <- create_dt_from_vector(b2f$gene_type, name = "Gene_type", value = "After filter")
+dt2
+
+aux_dt <- merge(dt_annot, dt2, by = "Gene_type", all = T)
+dt_all <- merge(aux_dt, dt2f, by = "Gene_type", all = T)
+dt_melt <- melt(dt_all, id.vars = "Gene_type")
+
+
+
+gene_types = c("snRNA", "snoRNA", "sense_overlapping", "pseudogene", "protein_coding", "misc_RNA", "miRNA", "lincRNA", "antisense")
+
+png("/data/ouga/home/ag_gagneur/yepez/LRZ Sync+Share/LMU/Group_meetings/2017_12_journal_club/count_barplot.png",
+    width = 1400, height = 700, res = 140)
+ggplot(dt_melt[Gene_type %in% gene_types], aes(Gene_type, value, fill = variable)) + 
+    geom_bar(stat = "identity", position = position_dodge()) + 
+    geom_text(aes(label = value), position = position_dodge(.9)) + 
+    scale_fill_ptol() + theme_bw(base_size = 14) + coord_flip() + scale_y_log10()
+dev.off()
+
+
+
