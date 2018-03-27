@@ -2,7 +2,7 @@
 #' title: MitoCarta genes
 #' author: Vicente Yépez
 #' wb:
-#'   input: "/s/project/mitoMultiOmics/raw_data/gene_info/Human.MitoCarta2.0xls"
+#'   input: "/s/project/mitoMultiOmics/raw_data/gene_info/Human.MitoCarta2.0.xls"
 #'   output: 
 #' output: 
 #'   html_document
