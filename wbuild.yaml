@@ -1,6 +1,7 @@
 ---
 webDir: /s/public_webshare/project/genetic_diagnosis
 projectTitle: Genetic diagnosis of Mendelian disorders
+htmlOutputPath: Output/html
 
 rawdir_proteome: /s/project/mitoMultiOmics/raw_data//proteome/
 PROC_DATA: /s/project/genetic_diagnosis/processed_data/

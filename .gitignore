@@ -4,6 +4,7 @@ data/
 Data/
 Output/
 .snakemake/
+.wBuild*
 
 # typical latex tmp files
 *.aux
