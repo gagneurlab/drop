@@ -18,7 +18,6 @@ source("src/r/config.R")
 #' # Collect disease genes
 #' 
 dir_gene_info <- '/s/project/mitoMultiOmics/raw_data/gene_info/'
-dir_gene_info
 
 file_meta_disease_gene <- file.path(dir_gene_info, 'meta_disease_genes.tsv')
 
