@@ -35,6 +35,7 @@ disgene_dt <- disgene_dt[!is.na(HGNC_GENE_NAME)][order(HGNC_GENE_NAME)]
 #' * set SPG7 to MITO
 disgene_dt[HGNC_GENE_NAME=='SPG7', DISEASE:='MITO']
 disgene_dt <- disgene_dt[HGNC_GENE_NAME != "mtDNA"]
+disgene_dt[, HGNC_GENE_NAME := toupper(HGNC_GENE_NAME)]
 
 #+
 head(disgene_dt)
@@ -46,6 +47,7 @@ dim(disgene_dt)
 #' 
 paper_dt <- fread(file.path(dir_gene_info, 'kremer_bader_2016_biorxiv_mitochondrial_disease_genes.tsv'), na.strings=c("NA", ''))
 setnames(paper_dt, c('HGNC_GENE_NAME', 'FULL_GENE_NAME', 'MIM_NUMBER', 'OMIM_LINK', 'ENTREZ_GENE_ID'))
+paper_dt[, HGNC_GENE_NAME := toupper(HGNC_GENE_NAME)]
 paper_dt[is.na(MIM_NUMBER), OMIM_LINK:=NA]
 paper_dt[, DISEASE:='MITO']
 #+

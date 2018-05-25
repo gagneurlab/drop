@@ -28,6 +28,7 @@ create_clean_prokisch_mayr_table <- function(
     
     # fix entries
     # 
+    prokisch_mayr_dt[, HGNC_GENE_NAME := toupper(HGNC_GENE_NAME)]
     prokisch_mayr_dt <- prokisch_mayr_dt[, lapply(.SD, function(j) gsub(' +$', '', j))]
     prokisch_mayr_dt[, OTHER_DESIGNATIONS := gsub('Other Designations: ', '', OTHER_DESIGNATIONS)]
     prokisch_mayr_dt[, ANNOTATION := gsub('Annotation: ','',ANNOTATION)]
