@@ -1,0 +1,646 @@
+Patient_ID;Pedigree_ID;Gene;Variant;Inheritance_pattern;Reduced_protein_level_WB
+-;-;NDUFB3;c.64T>C, p.Trp22Arg ;hom;-
+-;-;NDUFB3;c.64T>C, p.Trp22Arg ;hom;-
+-;-;NDUFB3;c.64T>C, p.Trp22Arg ;hom;-
+-;-;NDUFB3;c.64T>C, p.Trp22Arg ;hom;-
+-;-;NDUFB3;c.64T>C, p.Trp22Arg ;hom;-
+-;-;NDUFB3;c.64T>C, p.Trp22Arg ;hom;-
+-;-;NDUFB3;c.64T>C, p.Trp22Arg ;hom;-
+-;-;NDUFB3;c.64T>C, p.Trp22Arg ;hom;-
+-;-;NDUFB3;c.64T>C, p.Trp22Arg ;hom;-
+-;-;NDUFB3;c.64T>C, p.Trp22Arg ;hom;-
+73387;MITO363;PET100;c.142C>T, p.(Gln48*) ;hom;-
+61691;MITO008;DNAJC3;c.580C>T (p.Arg194*) ;hom;Y
+61693;MITO008;DNAJC3;c.580C>T (p.Arg194*) ;hom;Y
+61695;MITO008;DNAJC3;c.580C>T (p.Arg194*) ;hom;Y
+66050;MITO651;DNAJC3;deletion of exons 6Ð12 (p.?) ;hom;Y
+66051;MITO651;DNAJC3;deletion of exons 6Ð12 (p.?) ;hom;Y
+49905;NBIA026;SQSTM1;"c.[2T>A];[2T>A], p.[?];[?] ";hom;-
+49906;NBIA026;SQSTM1;"c.[2T>A];[2T>A], p.[?];[?] ";hom;-
+49908;NBIA026;SQSTM1;"c.[2T>A];[2T>A], p.[?];[?] ";hom;Y
+-;-;SQSTM1;"c.[311_312del]; [311_312del], p.[Glu104Valfs48* ];[Glu104Valfs48*]";hom;-
+-;-;SQSTM1;"c.[311_312del]; [311_312del], p.[Glu104Valfs48* ];[Glu104Valfs48*]";hom;-
+-;-;SQSTM1;"c.[311_312del]; [311_312del], p.[Glu104Valfs48* ];[Glu104Valfs48*]";hom;-
+-;-;SQSTM1;"c.[286C>T];[286C>T], p.[Arg96*];[Arg96*]";hom;Y
+-;-;SQSTM1;"c.[286C>T];[286C>T], p.[Arg96*];[Arg96*]";hom;Y
+-;-;SQSTM1;"c.[286C>T];[286C>T], p.[Arg96*];[Arg96*]";hom;Y
+-;-;ADCK4;c.645delT c.1430G>A ;-;-
+-;-;ADCK4;c.645delT c.1430G>A ;-;-
+-;-;ADCK4;c.101G>A c.954_956dup ;-;-
+-;-;ADCK4;c.532C>T ;-;-
+-;-;ADCK4;c.532C>T ;-;-
+-;-;ADCK4;c.1199-1200insA ;-;-
+-;-;ADCK4;c.857A>G c.1447G>T ;-;-
+-;-;ADCK4;c.857A>G c.1447G>T ;-;-
+-;-;ADCK4;c.857A>G c.1447G>T ;-;-
+-;-;ADCK4;c.958C>T ;-;-
+-;-;ADCK4;c.958C>T ;-;-
+-;-;ADCK4;c.1027C>T ;-;-
+-;-;ADCK4;c.1027C>T ;-;-
+-;-;ADCK4;c.1356_1362del GGGCCCT ;-;-
+-;-;ADCK4;c.1356_1362del GGGCCCT ;-;-
+-;-;TAZ;c.655_656insAAGT, p.(Asp219Glufs*6) ;-;-
+70652;MITO274;TAZ;c.281G>A, p.(Arg94His) ;-;-
+-;-;ASXL3;chr18:g.31,318,587delA c.1219delA. p.(Ser407AlafsTer2) ;comp het;-
+-;-;ASXL3;chr18: g.31,318,737G4T c.1369G4T p.(Glu457Ter);comp het;-
+-;-;ASXL3;chr18: g.31,322,918C4T c.3106C4T p.(Arg1036Ter);comp het;-
+-;-;ASXL3;chr18:g.31,323,306_31,323, 307delGT c.3494_3495delGT p.(Cys1165Ter) ;comp het;-
+-;-;ASXL3;chr18: g.31,323,425G4T c. 3613G4T p.(Glu1205Ter) ;comp het;-
+-;-;ASXL3;chr18:g.31,323,884_31323885delGT c.4072_4073delGT p.(Val1358LeufsTer8) ;comp het;-
+-;-;TANGO2;"c.[4delT]; [(56_1_57-1)_ (*1_?)del] p.[Cys2Alafs* 35];[?] ";comp het;-
+-;-;TANGO2;"c.[418C>T]; [418C>T] p.[Arg140*]; [Arg140*] ";hom;-
+-;-;TANGO2;"c.[(56_1_57-1)_ (*1_?)del]; [(56_1_57-1)_ (*1_?)del] p.[?];[?] ";hom;-
+-;-;C1QBP;"c.[557G>C];[612C>G] ";comp het;Y
+-;-;C1QBP;"c.[739G>T];[c.824T>C] ";comp het;Y
+67524;MITOEX110;C1QBP;"c.[823C>T];[823C>T] ";hom;Y
+-;-;C1QBP;"c.[562_564delTAT];[562_ 564delTAT] ";comp het;Y
+65269;MITO152;IARS;"c.[1252C>T];[3521T>A]; p.[Arg418*];[Ile1174Asn] ";comp het;Y
+83921;;IARS;"c.[1109T>G];[2974A>G]; p.[Val370Gly];[Asn992Asp] ";comp het;Y (protein not reduced)
+85880;;IARS;"c.[760C>T];[1310C>T]; p.[Arg254*];[Pro437Leu] ";comp het;Y (protein not reduced)
+-;-;DNAJC12;-;-;Y
+-;-;DNAJC12;-;-;-
+-;-;DNAJC12;-;-;Y
+-;-;DNAJC12;-;-;Y
+-;-;DNAJC12;-;-;Y
+-;-;DNAJC12;-;-;-
+84203;MITO677;LIPT2;c.89T>C tran- sition and c.377T>G ;comp het;-
+93352;ExDiag0540;LIPT2;c.314T>G and c.377T>G;comp het;-
+-;-;LIPT2;c.314T>G and c.377T>G;comp het;-
+63138;STOFFW003;NBAS;"c.[558_560del];[686dup],p.[Ile187del];[Ser230Glnfs*4]";AR;Y
+63225;STOFFW010;NBAS;"c.[2708T>G];[2708T>G],p.[Leu903Arg];[Leu903Arg]";AR;Y
+63139;STOFFW004;NBAS;"c.[603_605del];[3164T>C],p.[Leu202del];[Leu1055Pro]";AR;Y
+65531;STOFFW009;NBAS;"c.[2708T>G];[2827G>T],p.[Leu903Arg];[Glu943*]";AR;Y
+57337;MITO297;NBAS;"c.[3010C>T];[3164T>C],p.[Arg1004*];[Leu1055Pro]";AR;Y
+-;-;NBAS;"c.1533_1545del];[2951T>G],p.[Ile512Thrfs*4];[Ile984Ser]";AR;-
+-;-;NBAS;"c.[1042C>T];[2203 3C>G],p.[Pro348Ser];[?]";AR;Y
+-;-;NBAS;"c.[1042C>T];[2203 3C>G],p.[Pro348Ser];[?]";AR;Y
+72690;MITO669;NBAS;"c.[1187G>A];[2330C>A],p.[Trp396*];[Pro777His]";AR;-
+-;-;NBAS;"c.[118 2A>G];[2524G>T],p.[?(;)Val842Phe]";AR;-
+-;-;NBAS;"c.[686dup];[3164T>C],p.[Ser230Glnfs*4];[Leu1055Pro]";AR;-
+-;-;SLC1A2;c.1421+1G>C ;hom;-
+68553;MITO288;TMEM126B;"c.[635G>T];[635G>T], p.[Gly212Val];[Gly212Val] ";hom;-
+-;-;TMEM126B;"c.[401delA];[635G>T], p.[Asn134Ilefs*2];[Gly212Val] ";comp het;-
+-;-;TMEM126B;"c.[401delA];[635G>T], p.[Asn134Ilefs*2];[Gly212Val] ";comp het;-
+-;-;TMEM126B;"c.[401delA];[635G>T], p.[Asn134Ilefs*2];[Gly212Val] ";comp het;-
+-;-;TMEM126B;"c.[401delA];[635G>T], p.[Asn134Ilefs*2];[Gly212Val] ";comp het;-
+-;-;TMEM126B;"c.[635G>T];[635G>T], p.[ Gly212Val];[Gly212Val] ";hom;-
+-;-;UBA5;"c.1111G>A (p.Ala371Thr); c.904C>T (p.Gln302*) ";comp het;Y
+-;-;UBA5;"c.1111G>A (p.Ala371Thr); c.904C>T (p.Gln302*) ";comp het;Y
+-;-;UBA5;"c.1111G>A (p.Ala371Thr); c.971_972insC (p.Lys324Asnfs*14) ";comp het;-
+-;-;UBA5;"c.778G>A (p.Val260Met); c.1165G>T (p.Asp389Tyr) ";comp het;-
+-;-;UBA5;"c.169A>G (p.Met57Val); c.503G>A (p.Gly168Glu) ";comp het;-
+-;-;WARS2;c.91-8725_348+27113 del36096, c.1045G>C;comp het;Y
+-;-;WARS2;c.797del, c.938A>T;comp het;Y (ESI- MS/MS)
+-;-;WARS2;c.797del, c.938A>T;comp het;Y (ESI- MS/MS)
+62337;MITO137;WARS2;c.231C>G, c.1054G>A;comp het;-
+93352;ExDiag0540;WARS2;c.532G>C, c.532G>C ;hom;Y
+-;-;WARS2;c.134G>T, c.938A>T;comp het;-
+96227;ExdDiag0671;CAD;c.1843-3C>T and c.5365C>T;comp het;-
+87974;ExdDiag0227;CAD;c.98T>G ;hom;-
+92229;ExDiag0134;CAD;c.98T>G ;hom;-
+86261;ExDiag0134;CAD;c.98T>G ;hom;-
+-;-;YARS2;c.1175T>C ;hom;-
+-;-;YARS2;-;-;-
+81316;MITO445;YARS2;c.1175T>C ;hom;-
+73350;MITO354;YARS2;c.1106G>A/ c.1147_1164dup ;comp het;Y - protein not reduced
+-;-;YARS2;c.137G>A ;hom;-
+-;-;YARS2;c.137G>A ;hom;-
+;;VARS2;c.1100C>T ;hom;Y - protein NOT reduced
+;;VARS2;c.1258G>A ;hom;
+;;VARS2;c.1100C>T ;hom;
+;;VARS2;c.1100C>T ;hom;
+;;VARS2;c.1100C>T ;hom;
+;;VARS2;c.2557-2A>G, c.1100C>T;comp het;
+74285;MITO270;VARS2;c.1546G>T, c.2239G>A;comp het;
+;;VARS2;c.1100C>T, c.1150G>A;comp het;Y
+;;VARS2;c.1135G>A, c.1877C>A;comp het;Y - protein NOT reduced
+;;VARS2;c.1100C>T, c.1490G>A;comp het;
+;;VARS2;c.1100C>T, c.1490G>A;comp het;
+;;VARS2;c.1258G>A ;hom;
+;;VARS2;c.1258G>A ;hom;
+35834;;ACAD9;c.130T>A, c.797G>A;comp het;26%
+;;ACAD9;c.187G>T, c.1237G>A;comp het;
+;;ACAD9;c.187G>T, c.1237G>A;comp het;
+59029, 72545;;ACAD9;c.1594C>T, c.1594C>T;hom;
+59033;;ACAD9;c.1594C>T, c.1594C>T;hom;
+59036;;ACAD9;c.1594C>T, c.1594C>T;hom;
+;;ACAD9;c.260T>A,  c.976G>A  ;comp het;
+;;ACAD9;c.1240C>T, c.1240C>T;hom;
+;;ACAD9;c.659C>T, c.659C>T;hom;
+;;ACAD9;c.1030-1G>T, c.1249C>T;comp het;present
+;;ACAD9;c.976G>A, c.1595G>A;comp het;
+52935;;ACAD9;c.130T>A, c.797G>A;comp het;21%
+62343;;ACAD9;c.358delT , c.1594C>T;comp het;23%
+62340;;ACAD9;c.976G>C , c.1595G>A ;comp het;19%
+62006;;ACAD9;c.151-2A>G, c.1298G>A;comp het;16%
+62347;;ACAD9;c.1237G>A, c.1552C>T;comp het;38%
+;;ACAD9;c.1552C>T, c.1564-6_1569del;comp het;
+;;ACAD9;c.1A>G, c.796C>T;comp het;
+;;ACAD9;c.1150G>A, c.1817T>A;comp het;
+;;ACAD9;c.811T>G, c.1766-2A>G;comp het;decreased
+;;ACAD9;c.187G>T, c.941T>C;comp het;
+;;ACAD9;c.514G>A, c.803C>T;comp het;
+52933;;ACAD9;c.797G>A, c.1249C>T;comp het;21%
+;;ACAD9;c.1552C>T, c.1553G>A;comp het;
+;;ACAD9;c.728C>G, c.1552C>T;comp het;
+;;ACAD9;c.1636G>C, c.1636G>C;hom;
+;;ACAD9;c.1636G>C, c.1636G>C;hom;
+;;ACAD9;c.1636G>C, c.1636G>C;hom;
+;;ACAD9;c.1636G>C, c.1636G>C;hom;
+;;ACAD9;c.509C>T, c.1687C>G;comp het;
+;;ACAD9;c.509C>T, c.1687C>G;comp het;
+;;ACAD9;c.1240C>A, c.1650_1672dup;comp het;
+;;ACAD9;c.1240C>A, c.1650_1672dup;comp het;
+52674;;ACAD9;c.976G>C, c.1594C>T;comp het;
+;;ACAD9;c.1240C>A, c.1650_1672dup;comp het;
+;;ACAD9;c.1240C>T, c.1240C>T;hom;
+68891;;ACAD9;c.1690G>A, c.1832A>G;comp het;13%
+61980;;ACAD9;c.1553G>A, c.1553G>A ;hom;70%
+68541;;ACAD9;c.293T>C, c.293T>C;hom;11%
+63869, 71266;;ACAD9;c.1253A>G, c.1253A>G;hom;41%
+69297;;ACAD9;c.1253A>G, c.1253A>G;hom;
+;;ACAD9;c.1253A>G, c.1253A>G;hom;
+71680;;ACAD9;c.857T>C , c.1240C>T;comp het;21%
+71265;;ACAD9;c.976G>C, c.1651A>G;comp het;
+;;ACAD9;c.1594C>T, c.1594C>T;hom;
+54900;;ACAD9;c.1684G>A, c.1684G>A;hom;
+75826;;ACAD9;c.1805C>T, c.1805C>T;hom;
+75827;;ACAD9;c.1805C>T, c.1805C>T;hom;
+;;ACAD9;c.868G>A, c.1237G>A;comp het;
+;;ACAD9;c.868G>A, c.1237G>A;comp het;
+;;ACAD9;c.868G>A, c.1237G>A;comp het;
+;;ACAD9;c.976G>C, c.1594C>T;comp het;
+;;ACAD9;c.665T>A, c.1249C>T;comp het;
+;;ACAD9;c.665T>A, c.1249C>T;comp het;
+;;ACAD9;c.1150G>A, c.1168G>A;comp het;
+49591;;ACAD9;c.1594C>T, c.1594C>T;hom;19%
+;;ACAD9;c.1150G>A, c.1168G>A;comp het;
+;;ACAD9;c.1552C>T, c.1715G>A;comp het;
+;;ACAD9;c.976G>C,  c.1552C>T;comp het;
+99714;MITO1002;ACAD9;c.1240C>T, c.1646G>A;comp het;
+;;ACAD9;c.569C>T,  c.1405C>T;comp het;
+;;ACAD9;c.1240C>T, c.1240C>T;hom;n.a
+;;ACAD9;c.1240C>T, c.1240C>T;hom;n.a.
+;;ACAD9;c.555-2A>G, c.1168G>A;comp het;n.a
+;;ACAD9;c.797G>A, c.1359-1G>A;comp het;
+;;ACAD9;c.1737T>G, c.1240C>T;comp het;
+;;ACAD9;c.1594C>T, c.1594C>T;hom;
+;;ACAD9;c.988A>C, c.988A>C;hom;
+;;ACAD9;c.380G>A, c.1405C>T;comp het;
+69842;;ACAD9;c.1553G>A, c.1553G>A ;hom;94%
+;;FBXL4;"c.[1304G>T]; [1304G>T]; p.[Arg435Leu]; [Arg435Leu]";hom;
+;;FBXL4;"c.[513-1G>A]; [513-1G>A];           p.[172?]; [172?]";hom;
+;;FBXL4;"c.[1555C>T]; [1555C>T];         p.[Gln519*]; [Gln519*]";hom;
+;;FBXL4;"c.[1361A>C]; [1361A>C];    p.[Gln454Pro]; [Gln454Pro]";hom;
+;;FBXL4;"c.[1232G>A]; [1232G>A];    p.[Cys411Tyr]; [Cys411Tyr]";hom;
+69338;MITO290;FBXL4;"c.[445G>A]; [445G>A];        p.[Gly149Arg];  [Gly149Arg]";hom;
+71246;MITOEX078;FBXL4;"c.[662A>T]; [662A>T];         p.[Asp221Val]; [Asp221Val]";hom;
+;;FBXL4;"c.[1555C>T]; [1555C>T];         p.[Gln519*]; [Gln519*]";hom;
+;;FBXL4;"c.[1555C>T]; [1555C>T];         p.[Gln519*]; [Gln519*]";hom;
+;;FBXL4;"c.[1303C>T]; [1303C>T];         p.[Arg435*]; [Arg435*]";hom;
+;;FBXL4;"c.[1304G>A]; [1232G>A];    p.[Arg435Gln]; [Cys411Tyr]";comp het;
+;;FBXL4;"c.[1444C>T]; [1546_1563del]; p.[Arg482Trp]; [Pro516_Ser521del]";comp het;
+;;FBXL4;"c.[1304G>A]; [1232G>A];    p.[Arg435Gln]; [Cys411Tyr]";comp het;
+;;FBXL4;"c.[661G>C]; [1641_1642del]; p.[Asp221His]; [Cys547*]";comp het;
+;;FBXL4;"c.[1067delG]; [1067delG]; p.[Gly356Alafs*15]; Gly356Alafs*15]";hom;
+83936;MITO672;FBXL4;"c.[1772A>G]; [1772A>G];    p.[Asp591Gly]; [Asp591Gly]";hom;
+75812;MITO411;FBXL4;"c.[1703G>C]; [316C>T];        p.[Gly568Ala]; [Gln106*]";comp het;
+;;FBXL4;"c.[1703G>C]; [1703G>C];      p.[Gly568Ala];  [Gly568Ala]";hom;
+51969;MITO037;FBXL4;"c.[1652T>A]; [1652T>A];      p.[Ile551Asn]; [Ile551Asn]";hom;
+63046;MITO087;FBXL4;"c.[614T>C]; [106A>T];            p.[Ile205Thr]; [Arg36*]";comp het;
+;;FBXL4;"c.[1229C>T]; [1229C>T];     p.[Ser410Phe]; [Ser410Phe]";hom;
+-;-;NFU1;g.69400462C>A g.69592691_ 69648327del ;comp het;-
+64060;MITO263;NFU1;c.565G>A c.568G>A ;comp het;-
+104440;MITOHH009;NFU1;c.544C>T ? ;comp het;-
+68557;MITO251;NFU1;c.302+3A>G c.302+3A>G ;hom;-
+-;-;NFU1;c.302+3A>G c.302+3A>G ;hom;-
+-;-;NFU1;c.302+3A>G c.302+3A>G;hom;-
+-;-;NFU1;c.62G>C c.622G>T ;comp het;-
+-;-;CLPB;p.Met411Ile and p.Tyr617Cys ;comp het ;-
+-;-;CLPB;p.Tyr272Cys and p.Tyr567Cys ;comp het ;-
+-;-;CLPB;p.Tyr272Cys and p.Tyr567Cys ;comp het ;-
+-;-;CLPB;p.Cys647Leufs*26 and p.Ile682Asn ;comp het ;-
+-;-;CLPB;p.Arg250*, p.Arg417*, and p.Glu501Lys ;comp het ;-
+-;-;CLPB;p.Arg250*, p.Arg417*, and p.Glu501Lys ;comp het ;-
+-;-;CLPB;p.Met411Ile and p.Tyr617Cys ;comp het ;-
+-;-;CLPB;p.Arg408Gly and p.Arg417 ;comp het ;-
+-;-;CLPB;p.Arg408Gly and p.Arg417 ;comp het ;-
+-;-;CLPB;p.Arg408Gly and p.Arg417 ;comp het ;-
+-;-;CLPB;p.Glu435_Gly436delinsAspPro and p.Gly646Val ;comp het ;-
+-;-;CLPB;p.Cys486Arg homozygous ;hom;-
+-;-;CLPB;p.Cys486Arg homozygous ;hom;-
+68754;MITO163;CLPB;p.Ala591Val homozygous ;hom;-
+74947;MITO397;UQCC2;"c.[23G>C;28C>T];[23G>C;28C>T] ";hom (x2);Y
+-;-;TMEM70;"c.317-2A > G; c.349_352del ";comp het ;Y
+55557;MITO029;TMEM70;"c.317-2A > G; c.317-2A > G ";hom;-
+-;-;TMEM70;"c.317-2A > G; c.317-2A > G ";hom;Y
+-;-;TMEM70;"c.317-2A > G; c.783A > G ";comp het ;Y
+-;-;TMEM70;"c.317-2A > G; c.317-2A > G ";hom;Y
+-;-;TMEM70;"c.701A > C; c.701A > C ";hom;Y
+-;-;TMEM70;"c.317-2A > G; c.317-2A > G ";hom;-
+-;-;TMEM70;"c.238C > T; c.238C > T ";hom;Y
+-;-;TMEM70;"c.317-2A > G; c.317-2A > G ";hom;Y
+;;TMEM70;"c.317-2A > G; c.317-2A > G ";hom;-
+62597;MITO095;COQ4;c.433C>G(p.Arg145Gly);homozygous;Y
+;;COQ4;"c.[421C>T];[718C>T], p.[Arg141*];[Arg240Cys]";compound heterozygous;
+75111;MITO419;COQ4;"c.[155T>C];[521_523delCCA], p.[Leu52Ser];[Thr174del";compound heterozygous;
+;;COQ4;"c.[155T>C];[521_523delCCA], p.[Leu52Ser];[Thr174del";compound heterozygous;Y
+82691;MITO634;COQ4;c.190C>T (p.Pro64Ser);homozygous;Y
+;;ECHS1;"c.[176A>G];[476A>G].p.[Asn59Ser];[Gln159Arg]";compound heterozygous;
+;;ECHS1;"c.[98T>C];[176A>G]p.[Phe33Ser];[Asn59Ser]";compound heterozygous;
+;;ECHS1;"c.[197T>C];[449A>G].p.[Ile66Thr];[Asp150Gly]";compound heterozygous;
+52236;MITOEX009;ECHS1;"c.[229G>C];[476A>G]p.[Glu77Gln];[Gln159Arg]";compound heterozygous;
+57277;MITOEX045;ECHS1;"c.[161G>A];[431dup]p.[Arg54His];[Leu145Alafs*6]";compound heterozygous;
+68552;MITO287;ECHS1;"c.[476A>G];[476A>G].p.[Gln159Arg];[Gln159Arg]";homozygous;
+68761;MITO190;ECHS1;"c.[161G>A(;)817A>G].p.[Arg54His(;) Lys273Glu]";compound heterozygous;
+73663;MITO315;ECHS1;"c.[673T>C];[673T>C]p.[Cys225Arg];[Cys225Arg]";homozygous;
+76656;MITO471;ECHS1;"c.[268G>A];[583G>A]p.[Gly90Arg];[Gly195Ser]";compound heterozygous;
+;;ECHS1;"c.[161G>A];[394G>A]p.[Arg54His];[Ala132Thr]";compound heterozygous;
+67007;MITOEX030;NSUN3;c.295C>T;-;Y
+77016;MITO558;MFF;"c.(184dup);(892C>T), p.(Leu62Profs*13);(Arg298*) ";comp het;-
+-;-;MFF;"c.(453_454del);(453_454del), p.(Glu153Alafs*5);(Glu153Alafs*5) ";hom;-
+81556;ExDiag0022;MFF;"c.(453_454del);(453_454del), p.(Glu153Alafs*5);(Glu153Alafs*5) ";hom;-
+84759;MITO712;EARS2;c.320G > A, p.(Arg107His) and c.328G > A, p.(Gly110Ser) ;comp het;Y
+36355;MITO280;ELAC2;"c.[1267C>T; 1267C>T], p.[Leu423Phe; Leu423Phe]";hom;-
+57415;MITO054;ELAC2;"c.[631C>T; 1559C>T], p.[Arg211*; Thr520Ile]";comp het ;-
+61525;MITO054;ELAC2;"c.[631C>T; 1559C>T], p.[Arg211*; Thr520Ile]";comp het ;-
+61982;MITO117;ELAC2;"c.[460T>C; 460T>C], p.[Phe154Leu; Phe154Leu]";hom;-
+65937;MITO280;ELAC2;"c.[1267C>T; 1267C>T], p.[Leu423Phe; Leu423Phe]";hom;-
+;;COASY;c.1495C>T (p.Arg499Cys), c.175C>T (p.Gln59*);comp het;Y
+55633;NBIA158;COASY;c.1495C>T (p.Arg499Cys);hom;Y
+-;-;ACAD9;c.130T>A, p.Phe44Ile, c.797G>A, p.Arg266Gln;comp het;-
+-;-;ACAD9;c.130T>A, p.Phe44Ile, c.797G>A, p.Arg266Gln;comp het;-
+-;-;ACAD9;c.797G>A, p.Arg266Gln, c.1249C>T, p.Arg417Cys ;comp het;-
+-;-;ACAD9;c.976G>A, p.Ala326Pro c.1594C>T, p.Arg532Trp ;comp het;-
+60251;NBIA170;WDR45;c.1007_1008del ;X-linked dominant ;-
+63700;NBIA178;WDR45;c.38G>C ;X-linked dominant ;-
+63701;NBIA179;WDR45;c.-1_5del ;X-linked dominant ;-
+63702;NBIA180;WDR45;c.293T>C ;X-linked dominant ;-
+63703;NBIA181;WDR45;c.476del ;X-linked dominant ;-
+63704;NBIA182;WDR45;c.19C>T ;X-linked dominant ;-
+63705;NBIA183;WDR45;c.56-1G>A ;X-linked dominant ;-
+63706;NBIA184;WDR45;c.700C>T ;X-linked dominant ;-
+63707;NBIA185;WDR45;c.400C>T ;X-linked dominant ;-
+63708;NBIA186;WDR45;c.228_229del ;X-linked dominant ;-
+63709;NBIA187;WDR45;c.405_409del ;X-linked dominant ;-
+63710;NBIA188;WDR45;-;X-linked dominant ;-
+63711;NBIA189;WDR45;c.359dup ;X-linked dominant ;-
+63712;NBIA190;WDR45;c.830_1G>A ;X-linked dominant ;-
+73952;MITO338;COQ9;c.521+1del, p.(Ser127_Arg202del);AR;-
+35791;MITO014;TIMMDC1;-;-;Y
+58955;MITO065;CLPP;-;-;-
+62346;MITO146;Non-conclusive(MAE MCOLN1);MAE c.681-19A4C ;-;Y
+66744;MITO237;TIMMDC1;-;-;Y
+73804;MITO373;MGST1;-;-;-
+80256;MITOEX055;Non-conclusive(MAE ALDH18A1);MAE c.1864C4T, p.Arg622Trp ;-;-
+96687;MITO890;TIMMDC1;-;-;Y
+-;-;ACAD9;"c.1249C>T, c.1030Ð1G4Tc.1030Ð1G>T,p.(Arg417Cys)";AR;-
+-;-;ACAD9;"c.2T>G, c.1015T 4Gc.1015T>G,p.(Met1?)";AR;-
+-;-;ACAD9;"c.358delT, c.1594C4Tc.1594C>T,p.(Phe120Serfs*9)p.(Arg532Trp)";AR;-
+62340;MITO140;ACAD9;"c.976G>C, c.1595G4Ac.1595G4A,p.(Ala326Pro)p.(Arg532Gln)";AR;-
+62006;MITO134;ACAD9;"c.151-2A>G, c.1298G4Ac.1298G4A,p.(Arg433Gln)";AR;-
+62347;MITO147;ACAD9;"c.1237G>A, c.1552C4Tc.1552C4T,p.(Glu413Lys)p.(Arg518Cys)";AR;-
+-;-;ACAD9;"c.1552C>T, c.1564-6_1569delc.1564-6_1569del,p.(Arg518Cys)";AR;-
+-;-;ACAD9;"c.1 A>G, c.796C4Tc.796C4T,p.(Met1?)p.(Arg266Trp)";AR;-
+49720;MITO006;BOLA3;c.200T>A ;hom;-
+56712;MITO006;BOLA3;c.200T>A ;hom;-
+74436;MITO407;TXN2;"c.[71G4A];[71G4A] ";AR;Y
+54994;MITO050;SLC52A2;c.368T>C, p.Leu123Pro, c.1016T>C, p.Leu339Pro;comp het;-
+74115;MITO378;SLC19A3;"c.[982del];[982del], p.[Ala328Leufs*10];[Ala328Leufs*10]";homozygous;
+75709;;SLC19A3;"c.[982del];[982del], p.[Ala328Leufs*10];[Ala328Leufs*10]";homozygous;
+54027;MITO016;AGK;c.306C>T c.841C>T ;-;Y
+60182;No ID;AGK;c.1131+5G>A c.1131+5G>A ;-;-
+60183;No ID;AGK;c.1131+5G>A c.1131+5G>A ;-;-
+60186;No ID;AGK;c.1131+5G>A c.1131+5G>A ;-;-
+60453;No ID;AGK;c.3G>C c.517C>T ;-;Y
+60455;No ID;AGK;c.412C>T c.1137_1143del ;-;-
+60456;No ID;AGK;c.3G>C c.672C>A;-;-
+62013;No ID;AGK;-;-;-
+62014;No ID;AGK;-;-;-
+62216;MITO896;AGK;c.672C>A c.870del ;-;-
+62217;Matched but no ID;AGK;c.101+?_222-?del c.101+?_222-?del ;-;-
+62218;MITO068;AGK;c.221+1G>A c.1213C>T ;-;-
+55560;MITO030;EARS2;Maternal allele (two mutations): missense c.502A>G p.Arg168Gly and c.1279_1280insTCC p.Thr426_Arg427insLeu. Paternal allele: c.322C>T p.Arg108Trp;comp het ;-
+-;-;EARS2;Maternal allele: c.322C>T p.Arg108Trp Paternal allele: c.19A>T p.Arg7X;comp het ;-
+-;-;EARS2;Maternal allele: c.500G>A p.Cys167Tyr Paternal allele: c.286G>A p.Glu96Lys;comp het ;-
+-;-;EARS2;Maternal allele: c.500G>A p.Cys167Tyr Paternal allele: c.286G>A p.Glu96Lys;comp het ;-
+-;-;EARS2;Maternal allele: c.1194C>G p.Tyr398X Paternal allele: c.322C>T p.Arg108Trp;comp het ;-
+-;-;EARS2;Maternal allele: c.322C>T p.Arg108Trp Paternal allele: c.328G>A p.Gly110Ser;comp het ;-
+-;-;EARS2;c.328G>A p.Gly110Ser and c.610G>A p.Gly204Ser;comp het ;-
+-;-;EARS2;Maternal allele: c.500G>A p.Cys167Tyr Paternal allele: c.286G>A p.Glu96Lys;comp het ;-
+-;-;EARS2;Maternal allele: c.322C>T p.Arg108Trp Paternal allele: c.949G>T p.Gly317Cys;comp het ;-
+-;-;EARS2;Maternal allele: c.670G>A p.Gly224Ser Paternal allele: c.164G>A p.Arg55His;comp het ;-
+-;-;EARS2;Maternal allele: c.1A>G p.Met1? Paternal allele: c.320G>A p.Arg107His;comp het ;-
+-;-;EARS2;Maternal allele: c.1547G>A p.Arg516Gln Paternal allele: c.322C>T p.Arg108Trp;comp het ;-
+50898;MITO002;MGME1;c.456G>A, p.Trp152*;hom;Y
+-;-;MGME1;c.456G>A, p.Trp152*;hom;-
+-;-;MGME1;c.456G>A, p.Trp152*;hom;-
+-;-;MGME1;c.456G>A, p.Trp152*;hom;-
+-;-;MGME1;c.456G>A, p.Trp152*;hom;-
+53861;MITOEX075;MGME1;c.698A>G, p.Tyr233Cys;hom;-
+73352;MITO355;LRPPRC;c.3900 + 1G4T:p.Arg1276_Lys1300del;homozygous;Y
+;;LRPPRC;c.3900 + 1G4T:p.Arg1276_Lys1300del;homozygous;Y
+;;LRPPRC;c.3900 + 1G4T:p.Arg1276_Lys1300del;homozygous;
+;;LRPPRC;"c.[1582 + 7A4G];[3147dupA]:p.[=, Glu497*];[Gly1050Argfs*4]";compound heterozygous;Y
+;;LRPPRC;c.3900 + 1G4T:p.Arg1276_Lys1300del;homozygous;
+;;LRPPRC;c.3900 + 1G4T:p.Arg1276_Lys1300del;homozygous;
+;;LRPPRC;c.3900 + 1G4T:p.Arg1276_Lys1300del;homozygous;
+63041;MITO083;LRPPRC;c.2595_2597delGGT:p.(Val866del);homozygous;
+;;LRPPRC;c.3900 + 1G4T:p.Arg1276_Lys1300del;homozygous;
+84927;ExDiag0083;LRPPRC;c.2726_2728delAGA:p.(Lys909del);homozygous;
+66754;MITO214;LYRM7;"(c. [243_244 + 2delGAGT];[243_244 + 2delGAGT]) ";hom;-
+-;-;LYRM7;"(c. [243_244 + 2delGAGT];[243_244 + 2delGAGT]) ";hom;-
+-;-;LYRM7;"(c. [243_244 + 2delGAGT];[243_244 + 2delGAGT]) ";hom;-
+54902;MITO019;SFXN4;c.233delC, p.Pro78Leufs*26;hom;-
+46072;MITO038;SFXN4;c.739dup, p.Arg247Lysfs*19 and c.471_1G>A, p.Thr158Metfs*38;comp het ;-
+-;-;FBXL4;c.616C>T (p.R206*), c.616C>T (p.R206*);-;-
+-;-;FBXL4;c.616C>T (p.R206*), c.616C>T (p.R206*);-;-
+-;-;FBXL4;c.1750T>C (p.C584R), c.1750T>C (p.C584R);-;-
+-;-;FBXL4;c.1703G>C (p.G568A), c.1703G>C (p.G568A);-;-
+-;-;FBXL4;c.1555C>T (p.Q519*), c.1555C>T (p.Q519*);-;-
+-;-;FBXL4;c.219T>A (p.Y73*), c.219T>A (p.Y73*);-;-
+-;-;FBXL4;c.292C>T p.(R98*), c.292C>T p.(R98*);-;-
+-;-;FBXL4;c.1698A>G (p.I566M), c.1698A>G (p.I566M);-;-
+-;-;FBXL4;c.1317G>A, c.1317G>A;-;-
+-;-;FBXL4;c.1555C>T (p.Q519*), c.1555C>T (p.Q519*);-;-
+-;-;FBXL4;c.1698A>G (p.I566M), c.1698A>G (p.I566M);-;-
+-;-;FBXL4;c.292C>T (p.R98*), c.292C>T (p.R98*);-;-
+-;-;FBXL4;c.1698A>G (p.I566M), c.1698A>G (p.I566t);-;-
+-;-;FBXL4;c.1698A>G (p.I566M), c.1698A>G (p.I566M);-;-
+-;-;FBXL4;c.1698A>G (p.I566M), c.1698A>G (p.I566M);-;-
+-;-;FBXL4;c.1698A>G (p.I566M), c.1698A>G (p.I566M);-;-
+-;-;FBXL4;c.1698A>G (p.I566M), c.1698A>G (p.I566M);-;-
+-;-;FBXL4;c.1698A>G (p.I566M), c.1698A>G (p.I566M);-;-
+-;-;FBXL4;c.1698A>G (p.I566M), c.1698A>G (p.I566M);-;-
+-;-;FBXL4;c.1698A>G (p.I566M), c.1698A>G (p.I566M);-;-
+-;-;FBXL4;c.1698A>G (p.I566M), c.1698A>G (p.I566M);-;-
+-;-;FBXL4;c.1698A>G (p.I566M), c.1698A>G (p.I566M);-;-
+-;-;FBXL4;c.1698A>G (p.I566M), c.1698A>G (p.I566M);-;-
+-;-;FBXL4;c.1698A>G (p.I566M), c.1698A>G (p.I566M);-;-
+-;-;FBXL4;c.1703G>C (p.G568A), c.1703G>C (p.G568A);-;-
+-;-;FBXL4;c.316C>T (p.Q106*), c.1703G>C (p.G568A);-;-
+84992;ExDiag0081;FBXL4;c.1648_1649del (p.D550Hfs*2), c.1648_1649del (p.D550Hfs*2);-;-
+-;-;FBXL4;c.1641_1642delTG (p.C547*), c.419T>C (p.V140A);-;-
+-;-;FBXL4;c.1210C>T (p.Q404*), c.1210C>T (p.Q404*) ;-;-
+-;-;FBXL4;c.419T>C (p.V140A), c.419T>C (p.V140A);-;-
+-;-;FBXL4;c.618_621dupACTG (p.E208Tfs*5), c.1641_1642delTG (p.C547*);-;-
+94553;ExDiag0613;FBXL4;c.1540T>G (p.W514G), c.1540T>G (p.W514G);-;-
+-;-;FBXL4;c.326delG (p.S109Mfs*35), c.1622C>T (p.T541I);-;-
+-;-;FBXL4;c.316C>T (p.Q106*), c.1703G>C (p.G568A);-;-
+62601;MITO108;FBXL4;c.1694A>G (p.D565G), c.1694A>G (p.D565G);-;-
+-;-;FBXL4;c.1648_1649delGA (p.D550Hfs*2), c.1648_1649delGA (p.D550Hfs*2);-;-
+-;-;FBXL4;Deletion of exons 2, 3 and 4, Deletion of exons 2, 3 and 4 ;-;-
+33027;MITO021 ;NDUFS8;-;hom ;-
+33281;MITO028 ;Unclear;-;-;-
+33284;MITO004 ;NDUFS8;-;comp het ;-
+33463;MITO036 ;NDUFS3;-;hom ;-
+37796;MITO023 ;Unclear;-;-;-
+37800;MITO028 ;Unclear;-;-;-
+44409;MITO049 ;MTFMT;-;comp het ;Y
+44559;MITO021 ;NDUFS8;-;hom ;-
+46072;MITO038 ;Unclear;-;-;-
+50845;MITO005 ;NDUFB3;-;comp het ;-
+59029;MITO053 ;ACAD9;-;hom ;-
+59033;MITO053 ;ACAD9;-;hom ;-
+59036;MITO053 ;ACAD9;-;hom ;-
+61606;MITO061;MTFMT;-;hom ;-
+80246;MITO630;MRPL44;c.467T>G, p.Leu156Arg.c.233G>A, p.Arg78Gln;AR;-
+66737;MITOEX027;MRPL44;c.467T>G, p.Leu156Arg;AR;-
+78325;MITO610;MRPS22;c.1032_1035dup, p.Leu346Asnfs*21;AR;Y
+70490;MITO302;MTO1;"P[Ile408Phe];";homozygous;
+-;-;MTO1;"p.[Ala428Thr]; [Arg477His]";comp het ;-
+-;-;MTO1;"p.[Thr411Ile]; [Thr411Ile] ";hom;-
+-;-;MTO1;"p.[Thr411Ile]; [Thr411Ile] ";hom;-
+-;-;MTO1;"p.[Thr411Ile]; [Thr411Ile] ";hom;-
+-;-;MTO1;"p.[Thr411Ile]; [Thr411Ile] ";hom;-
+62222;MITO210;APOPT1;c.235C>T p.Arg79*;homozygous;
+62223;MITO210;APOPT1;c.235C>T p.Arg79*;homozygous;
+68555;MITO298;APOPT1;"c.163 1G>A Ex2 skipping;p.Val55_Lys120del";homozygous;
+;;APOPT1;"Ex3 deletion Ex3 deletion; p.Glu121Valfs*6";homozygous;
+;;APOPT1;c.353T>C p.Phe118Ser;compound heterozygous;
+;;APOPT1;"c.235C>T p.Arg79*; c.370_372del p.Glu124del";compound heterozygous;
+-;-;FBXL4;"c.[1703G>C]; p.[Gly568Ala]; [Gly568Ala]";hom;-
+-;-;FBXL4;"c.[1444C>T]; [1444C>T]; p.[Arg482Trp]; [Arg482Trp] ";hom;-
+-;-;FBXL4;"c.[1444C>T]; [1444C>T]; p.[Arg482Trp]; [Arg482Trp] ";hom;-
+-;-;FBXL4;"c.[1444C>T]; [1444C>T]; p.[Arg482Trp]; [Arg482Trp] ";hom;-
+-;-;FBXL4;"c.[1790A>C]; [1067delG]; p.[Gln597Pro]; [Gly356fs] ";comp het ;-
+62601;MITO108;FBXL4;"c.[1694A>G]; [1694A>G]; p.[Asp565Gly]; [Asp565Gly] ";hom;-
+51969;MITO037;FBXL4;"c.[1652T>A]; [1652T>A]; p.[Ile551Asn]; [Ile551Asn] ";hom;-
+63046;MITO087;FBXL4;"c.[614T>C]; [106A>T], p.[Ile205Thr; [Arg36Stop] ";comp het ;-
+-;-;FBXL4;"c.[1229C>T]; [1229C>T]; p.[Ser410Phe]; [Ser410Phe] ";hom;-
+36349;MITO026;GTPBP3;"c.[1291dupC; 1375G>A], p.[Pro430Argfs*86; Glu459Lys] ";comp het ;-
+49665;MITO026;GTPBP3;"c.[1291dupC; 1375G>A], p.[Pro430Argfs*86; Glu459Lys] ";comp het ;Y
+66143;MITO156;GTPBP3;"c.[476A>T; 964G>C], p.[Glu159Val; Ala322Pro] ";comp het ;Y
+72425;MITO648;GTPBP3;"c.[484G>C; 673G>A; 964G>C], p.[Ala162Pro; Glu225Lys; Ala322Pro] ";comp het ;-
+75168;MITO399;GTPBP3;"c.[770C>A; 770C>A] , p.[Pro257His; Pro257His]";hom;-
+;;GTPBP3;"c.[1009G>C; 1009G>C], p.[Asp337His; Asp337His] ";hom;Y
+;;GTPBP3;"c.[665 2delA; 665 2delA], p.[Ala222Gly; Asp223_Ser270del; Ala222Gly; Asp223_Ser270del] ";hom;-
+;;GTPBP3;"c.[424G>A; 424G>A], p.[Glu142Lys; Glu142Lys] ";hom;-
+;;GTPBP3;"c.[8G>T; 934_957del], p.[Arg3Leu; Gly312_Val319del]";comp het ;-
+66654;MITO254;GTPBP3;"c.[32_33delinsGTG; 32_33delinsGTG],p.[Gln11Argfs*98; Gln11Argfs*98]";hom;Y
+;;GTPBP3;"c.[32_33delinsGTG; I 32_33delinsGTG], p.[Gln11Argfs*98; Gln11Argfs*98] ";hom;Y
+-;-;MDH2;c.398C>T and c.620C>T;comp het;Y
+-;-;MDH2;c.398C>T and c.596delG;comp het;-
+62004;MITO123;MDH2;c.109G>A and c.398C>T;comp het;Y
+-;-;SDHD;c.205G>A, p. E69 K and c.479G>T, p.*164Lext*3 ;comp het ;-
+67515;MITOEX109;TTC19;"c.971T>C; p.Leu324Pro ";hom;Y
+71356;MITO371;TTC19;"c.656T>G; p.Leu219* ";hom;Y
+-;-;TTC19;"c.554T>C; p.Leu185Pro ";hom;Y
+-;-;TTC19;"c.554T>C; p.Leu185Pro ";hom;-
+-;-;MTO1;Maternal: c.1858dup p.Arg620Lysfs*8 frameshift Paternal c.1282G>A p.Ala428Thr missense;comp het ;-
+55554;MITO055;MTO1;Maternal: c.1858dup p.Arg620Lysfs*8 frameshift Paternal c.1282G>A p.Ala428Thr missense;comp het ;-
+-;-;MTO1;c.1282G>A p.Ala428Thr missense;hom;-
+73803;MITO384;NAXE;"c.[177C>A];[177C>A] ";hom;Y
+-;-;NAXE;"c.[177C>A];[177C>A] ";hom;-
+77305;MITO490;NAXE;"c.[196C>T];[516+1G>A] ";comp het;Y
+-;-;NAXE;"c.[804_807delinsA];[804_807delinsA] ";comp het;Y
+-;-;NAXE;"c.[653A>T];[743delC] ";comp het;-
+-;-;NAXE;"c.[653A>T];[743delC] ";comp het;-
+94070;ExDiag0583;VARS2;c.601C > T, p.(Arg201Trp), c.1100C > T, p.(Thr367Ile);comp het;Y
+-;-;RTN4IP1;c.308G>AHM ;hom;-
+75147;MITO421;RTN4IP1;c.314C>A HM Pro105His;hom;Y
+-;-;RTN4IP1;c.500C>T + c.806 + 1G>Aa ;comp het;Y
+-;-;RTN4IP1;c.308G>AHM ;hom;-
+-;-;RTN4IP1;c.308G>AHM ;hom;-
+-;-;RTN4IP1;c.308G>AHM ;hom;-
+-;-;RTN4IP1;c.308G>AHM ;hom;-
+-;-;RTN4IP1;c.1084A>THM ;hom;-
+-;-;RTN4IP1;c.129G>A + c.152A>G ;comp het;-
+-;-;RTN4IP1;c.313C>T HM ;hom;-
+-;-;RTN4IP1;c.1067T>CHM ;hom;-
+-;-;RTN4IP1;c.432G>A + c.962G>A ;comp het;Y
+55559;MITO051;AARS2;"c.149T.G p.Phe50Cys;c.1561C.T p.Arg521*";compound heterozygous;
+;;AARS2;"c.2893G.A p.Gly965Arg;c.1213G.A p.Glu405Lys";compound heterozygous;
+;;AARS2;"c.1609C.T and c.2350del p.Gln537* and p.Glu784Serfs*9;c.595C.T and c.2188G.A p.Arg199Cys and p.Val730Met";compound heterozygous;
+;;AARS2;"c.230C.T p.Ala77Val;c.595C.T and c.2188G.A p.Arg199Cys and p.Val730Met";compound heterozygous;
+;;AARS2;"c.595C.T and c.2188G.A p.Arg199Cys and p.Val730Met; c.390_392del p.Phe131del";compound heterozygous;
+;;AARS2;"c.595C.T and c.2188G.A p.Arg199Cys and p.Val730Met;c.2611dup p.Thr871Asnfs*21";compound heterozygous;
+-;-;GFM2;"c.569G>A, p.(Arg190Gln); c.636delA, p.(Glu213Argfs*3 ";comp het;-
+-;-;GFM2;c.275A>C, p.(Tyr92Ser) ;hom;-
+;;MTFMT;c.146_153del c.626C>T , p.Arg49Leufs*58 p.Arg181Serfs*5;comp het ;-
+;;MTFMT;c.146_153del c.626C>T , p.Arg49Leufs*58 p.Arg181Serfs*5;comp het ;-
+;;MTFMT;c.626C>T c.878G>A , p.Arg181Serfs*5 p.Ser293Asn;comp het ;-
+52181;MITO003;MTFMT;c.219_222del c.626C>T, p.Glu74Lysfs*3 p.Arg181Serfs*5;comp het ;-
+54502;MITO018;MTFMT;c.626C>T c.994C>T, p.Arg181fs*5 p.Arg332*;comp het ;Y
+56713;MITO032;MTFMT;c.73C>T c.626C>T, p.Gln25* p.Arg181Serfs*5;comp het ;-
+56902;MITOEX044;MTFMT;c.452C>T c.994C>T, p.Pro151Leu p.Arg332*;comp het ;Y
+73922;MITO314;MTFMT;c.452C>T c.626C>T, p.Pro151Leu p.Arg181Serfs*5;comp het ;Y
+;-;MTFMT;c.626C>T c.766C>T, p.Arg181Serfs*5 p.Gln256* ;comp het ;Y
+;;PNPLA6;"c.2212-1G4C p.Val738Glnfs*98;c.3328G4A p.Val1110Met";compound heterozygous;
+;;PNPLA6;"c.2212-1G4C p.Val738Glnfs*98;c.3328G4A p.Val1110Met";compound heterozygous;
+;;PNPLA6;c.3173C4T p.Thr1058Ile;homozygous;
+;;PNPLA6;c.3173C4T p.Thr1058Ile;homozygous;
+;;PNPLA6;c.3173C4T p.Thr1058Ile;homozygous;
+;;PNPLA6;c.3173C4T p.Thr1058Ile;homozygous;
+;;PNPLA6;"c.3084_3085insGCCA p.Arg1031Glufs*38;c.4084C4G p.Arg1362Gly";compound heterozygous;
+;;PNPLA6;"c.1732G4T p.Gly578Trp;c.3197T4C p.Phe1066Ser";compound heterozygous;
+;;PNPLA6;"c.1732G4T p.Gly578Trp;c.3197T4C p.Phe1066Ser";compound heterozygous;
+;;PNPLA6;"c.3134C4T p.Ser1045Leu; c.3365C4T p.Pro1122Leu";compound heterozygous;
+;;PNPLA6;"c.787G4A p.Val263Ile;c.2519G4A p.Gly840Glu";compound heterozygous;
+;;PNPLA6;"c.3084_3085insGCCA p.Arg1031Glufs*38;c.3299T4G p.Val1100Gly";compound heterozygous;
+;;SERAC1;c.1167_1170del, c.1167_1170del;homo;
+;;SERAC1;c.1627_1628dup, c.1627_1628dup;homo;
+;;SERAC1;c.442G>A, c.442G>A;homo;
+;;SERAC1;c.1435_1437del, c.1435_1437del;homo;
+;;SERAC1;c.1403+1G>C, c.1403+1G>C;homo;
+;;SERAC1;c.442G>A, c.442G>A;homo;
+;;SERAC1;c.442G>A, c.442G>A;homo;
+;;SERAC1;c.1211G>A, c.1211G>A;homo;
+;;SERAC1;c.1598_1599ins17, c.1598_1599ins17;homo;
+;;SERAC1;c.1309_1313dup, c.1822_1828+10delinsACCAACAGG ;comp het;
+;;SERAC1;c.1924C>T, c.1822_1828+10delinsACCAACAGG ;comp het;
+;;SERAC1;c.1403+1G>C, c.1403+1G>C;homo;
+;;SERAC1;c.1202G>A, c.1822_1828+10delinsACCAACAGG ;comp het;
+;;SERAC1;c.1493G>C, c.456_466dup;comp het;
+;;SERAC1;c.1493G>C, c.576delT;comp het;
+;;SERAC1;c.202C>T, c.202C>T;homo;
+;;SERAC1;c.1822_1828+10delinsACCAACAGG, c.1822_1828+10delinsACCAACAGG;homo;
+;;SERAC1;c.1822_1828+10delinsACCAACAGG, deletion Ex4-8;comp het;
+;;SERAC1;c.1339C>T , c.1339C>T ;homo;
+;;SERAC1;c.547C>T, c.1822_1828+10delinsACCAACAGG  ;comp het;
+;;SERAC1;c.442C>T, c.1963dup;comp het;
+;;SERAC1;c.1228T>C, c.1228T>C;homo;
+;;SERAC1;c.1822_1828+10delinsACCAACAGG, c.1822_1828+10delinsACCAACAGG;homo;
+;;SERAC1;c.1642dup, c.1642dup;homo;
+;;SERAC1;c.1644T>G, c.1644T>G;homo;
+;;SERAC1;c.576dup, c.576dup;homo;
+;;SERAC1;c.1493G>C , c.1493G>C ;homo;
+;;SERAC1;c.763_770dup , c.763_770dup ;homo;
+;;SERAC1;c.916C>T, c.1822_1828+10delinsACCAACAGG;comp het;
+;;SERAC1;c.T1822A, c.T1822A;homo;
+;;SERAC1;c.1228T>C, c.1228T>C;homo;
+;;SERAC1;c.91A>T, c.91A>T;homo;
+;;SERAC1;c.442C>T, c.442C>T;homo;
+;;SERAC1;c.442C>T, c.442C>T;homo;
+;;SERAC1;c.1822_1828+10delinsACCAACAGG, c.1822_1828+10delinsACCAACAGG;homo;
+76870;MITO452;SERAC1;c.1112_1113del, c.1112_1113del;homo;
+;;SERAC1;c.1822_1828+10delinsACCAACAGG, c.1822_1828+10delinsACCAACAGG;homo;
+;;SERAC1;c.442C>T, c.442C>T;homo;
+;;SERAC1;c.1644T>G, c.1644T>G;homo;
+;;SERAC1;c.1646_1647insAGAT, c.1646_1647insAGAT;homo;
+;;SERAC1;c.1646_1647insAGAT, c.1646_1647insAGAT;homo;
+;;SERAC1;c.1403+1G>C , c.1403+1G>C ;homo;
+;;SERAC1;c.92-92delG, c.92-92delG;homo;
+;;SERAC1;c.92-92delG, c.92-92delG;homo;
+;;SERAC1;c.942delA, c.1647_1648insATCT;comp het;
+89404;Paed030;SERAC1;c.1403+1G>C, c.1403+1G>C;homo;
+;;SERAC1;c.202C>T, c.202C>T;homo;
+;;SERAC1;c.1822_1828+10delinsACCAACAGG, c.1403+4A>G;comp het;
+;;SERAC1;c.310A>T, c.609+5_609+8del;comp het;
+;;SERAC1;c.202C>T, c.202C>T;homo;
+;;SERAC1;c.799_800delC , c.799_800delC ;homo;
+;;SERAC1;c.799_800delC, c.799_800delC;homo;
+;;SERAC1;c.1015G>C, c.1015G>C;homo;
+;;SERAC1;c.1015G>C, c.1015G>C;homo;
+;;SERAC1;c.1403+1G>C, c.1403+1G>C;homo;
+;;SERAC1;c.1822_1828+ 10delinsACCAACAGG, c.1822_1828+ 10delinsACCAACAGG;homo;
+;;SERAC1;c.1822_1828+ 10delinsACCAACAGG, c.1822_1828+ 10delinsACCAACAGG;homo;
+;;SERAC1;c.442C>T, c.438delC;comp het;
+;;SERAC1;c.1493G>C (p.Ser498Thr), c.916C>T (p.Arg306*);comp het;
+87581;ExDiag0205;SERAC1;"c.91+6T>C; p.(?) (splice variant), c.91+6T>C; p.(?) (splice variant)";homo;
+87582;ExDiag0205;SERAC1;"c.91+6T>C; p.(?) (splice variant), c.91+6T>C; p.(?) (splice variant)";homo;
+87586;ExDiag0205;SERAC1;"c.91+6T>C; p.(?) (splice variant), c.91+6T>C; p.(?) (splice variant)";homo;
+87585;ExDiag0205;SERAC1;"c.91+6T>C; p.(?) (splice variant), c.91+6T>C; p.(?) (splice variant)";homo;
+;;SERAC1;"c.91+6T>C; p.(?) (splice variant), c.91+6T>C; p.(?) (splice variant)";homo;
+;;SERAC1;"c.1102C>T;p.Arg368*, c.1822_1828delinsACCAACAGGT";comp het;
+;;SERAC1;c.671A>G  (p.D224G), c.671A>G  (p.D224G);hom;
+;;SERAC1;c.1667T>A, c.1667T>A;hom;
+-;-;PSEN1;c.508 T > C ;het (dom);-
+;;NBAS;"c.[2827G>T];[exons 39Ð40 del], p.[Glu943*]; [Val2145_Glu2237del]";compound heterozygous;
+;;NBAS;"c.[1278A>C];[exons 49Ð50 del], p.[Cys426Trp]; [Val1528Glyfs*2]";compound heterozygous;
+;;NBAS;"c.[173-2A>G];[3363A>G], p.[=];[Ile1121Met]";compound heterozygous;
+;;NBAS;"c.[284C>T];[850A>T], p.[Ala95Val];[Lys284Ter]";compound heterozygous;
+;;NBAS;"c.[409C>T];[1186 T>A], p.[Arg137Trp];[Trp396Arg]";compound heterozygous;
+;;FLAD1;"c.[1484_1486delCCT]; [1484_1486delCCT] ";hom;Y - protein level NOT reduced
+;;FLAD1;"c.[1484_1486delCCT]; [1484_1486delCCT] ";hom;
+;;FLAD1;"c.[568_569dupGC]; [1588C>T] ";comp het;Y
+;;FLAD1;"c.[836delT]; [1588C>T] ";comp het;
+;;FLAD1;"c.[526_537delinsCA]; [526_537delinsCA] ";hom;Y
+;;FLAD1;"c.[526_537delinsCA]; [526_537delinsCA] ";hom;
+;;FLAD1;"c.[401_404delTTCT]; [401_404delTTCT] ";hom;Y
+;;FLAD1;"c.[324delG]; [498delC;508T>C] ";comp het;
+;;FLAD1;"c.[401_404delTTCT]; [401_404delTTCT]";hom;
+;;AGK;c.523_524delAT(p.Ile175Tyrfs*2;homozygous;
+;;AGK;c.424-1G>A(splicing defect);homozygous;
+;;AGK;c.424-1G>A(splicing defect);homozygous;
+62002;MITO122;AGK;c.409C>T(p.Arg137*);homozygous;
+;;AGK;c.409C>T(p.Arg137*);homozygous;
+;;AGK;c.871C>T(p.Gln291*),c.1035dup(p.Ile346Tyrfs*39);compound heterozygous;
+;;AGK;c.297+2T>C(p.Lys75Glnfs*12),c.841C>T(p.Arg281*);compound heterozygous;
+;;AGK;c.877+3G>T(splicing defect);homozygous;
+66754;MITO214;LYRM7;c.52 A>delA ;hom;Y
+90354;MITO716;PPA2;"c.[514G>A];[683C>T], p.[Glu172Lys];[Pro228Leu] ";comp het;-
+-;-;PPA2;"c.[514G>A];[683C>T], p.[Glu172Lys];[Pro228Leu] ";comp het;-
+-;-;PPA2;"c.[514G>A];[683C>T], p.[Glu172Lys];[Pro228Leu] ";comp het;-
+89300;MITO716;PPA2;"c.[514G>A];[683C>T], p.[Glu172Lys];[Pro228Leu] ";comp het;-
+85155;MITO705;PPA2;"c.[500C>T];[500C>T], p.[Pro167Leu];[Pro167Leu] ";hom;Y (protein not reduced)
+85154;MITO705;PPA2;"c.[500C>T];[500C>T], p.[Pro167Leu];[Pro167Leu] ";hom;Y (protein not reduced)
+85152;MITO703;PPA2;"c.[500C>T];[500C>T], p.[Pro167Leu];[Pro167Leu] ";hom;Y (protein not reduced)
+-;-;PPA2;"c.[500C>T];[500C>T], p.[Pro167Leu];[Pro167Leu] ";hom;-
+-;-;PPA2;"c.[500C>T];[500C>T], p.[Pro167Leu];[Pro167Leu] ";hom;Y
+68551;MITO286;PPA2;"c.[380G>T];[514G>A], p.[Arg127Leu];[Glu172Lys] ";comp het;Y
+;;MTO1;"c.1451G > A; p.Arg484Gln, c.1273G > A; p.Gly425Arg ";comp het;
+;;MTO1;"c.1451G > A; p.Arg484Gln, c.1273G > A; p.Gly425Arg ";comp het;
+;;MTO1;c.1222A>T ;hom;
+88283;ExDiag0137;MTO1;c.963A>C c.1429C>T ;comp het;
+87990;ExDiag0231;MTO1;c.1261-5T > G c.1430G > A ;comp het;
+;;MTO1;c.1390C > T ;hom;
+;;MTO1;c.1232C > T ;hom;
+;;MTO1;c.122T > G c.1282G > A ;comp het;
+;;MTO1;c.1282G > A c.402_403delTA ;comp het;
+;;MTO1;c.631-631delG c.I282G > A ;comp het;
+;;MTO1;c.1232C > T ;hom;
+;;MTO1;c.1232C > T ;hom;
+;;MTO1;c.122T > G c.767A > G c.1282G > A ;comp het;
+;;MTO1;c.1282G > A c.1858dup ;comp het;
+;;MTO1;c.1282G > A c.1858dup ;comp het;
+;;MTO1;c.1282G > A ;hom;
+;;MTO1;c.1282G > A c.1430G > A ;comp het;
+;;MTO1;c.1232C > T ;hom;
+;;MTO1;c.1232C > T ;hom;
+;;MTO1;c.1232C > T ;hom;
+;;MTO1;c.1232C > T ;hom;
+;;MTO1;c.1222A > T ;hom;
+;;MTO1;c.1273G > A c.1417C > T ;comp het;
+;;MTO1;c.1273G > A c.1417C > T ;comp het;
+;;MTO1;c.1390C > T c.1430G > A ;comp het;
+;;MTO1;c.1390C > T c.1430G > A ;comp het;
+62813;MITO159;MTO1;c.1430G > A c.1450C > T ;comp het;
+83975;ExDiag0052;MTO1;c.1430G > A c.1450C > T ;comp het;
+;;MTO1;c.1390C > T ;hom;
+;;MTO1;c.1390C > T ;hom;
+;;MTO1;c.1390C > T ;hom;
+;;MTO1;c.1390C > T ;hom;
+;;MTO1;c.1390C > T ;hom;
+;;MTO1;c.1436A > T ;hom;
+;;MTO1;c.1949C > T c.722C > T ;comp het;
+-;-;SLC19A2;c.[148A>C]_[501_4A>T] (p.[Asn50His]_[Val119_Pro167 del]) ;comp het;-
+-;-;SLC19A2;c.[148A>C]_[501_4A>T] (p.[Asn50His]_[Val119_Pro167 del]) ;comp het;Y
+-;-;SLC19A2;c.119T>C (p.Leu40Pro) ;hom;Y
+-;-;SLC19A2;c.119T>C (p.Leu40Pro) ;hom;-
+-;-;SLC19A2;c.[179_182delGAGA]_[656A>G] (p.[Arg60LysfsX52]_ [Asn219Ser]) ;comp het;Y
+59714;MITO077;TRMT5;"c.[312_315del;1156A>G],p.[Ile105Serfs*4;Met386Val]";AR;-
+73901;MITO288;TRMT5;"c.[312_315del;872G>A],p.[Ile105Serfs*4;Arg291His]";AR;-
+55569;MITO098;VARS2;c.1100C>T, p.Thr367Ile;homozygous;Y
+62224;MITO209;TARS2;"c.845C>T, p.Pro282Leu; c.695+3A>G";compound heterozygous;Y
+;;TARS2;"c.845C>T, p.Pro282Leu; c.695+3A>G";compound heterozygous;
