@@ -65,6 +65,10 @@ download.file(fasta.url, destfile = file.path(out.dir, fasta.file))
 
 # Create gene annotation file -------------------------------------------
 gtf <- readGFF(file.path(out.dir, gtf.file)) %>% as.data.table
+
 gtf_gene <- gtf[type == "gene", .(seqid, source, type, start, end, strand, gene_id, gene_type, gene_name)]
 write.table(gtf_gene, file.path(out.dir, "gene_annotation.tsv"), sep = "\t", quote = F, row.names = F)
+
+gtf_transcript <- gtf[type == "transcript", .(gene_id, transcript_id, transcript_type, transcript_name, protein_id)]
+write.table(gtf_transcript, file.path(out.dir, "transcript_info.tsv"), sep = "\t", quote = F, row.names = F)
 
