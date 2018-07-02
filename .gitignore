@@ -3,8 +3,8 @@
 data/
 Data/
 Output/
-#.snakemake/
-#.wBuild*
+.snakemake/
+.wBuild*
 
 # typical latex tmp files
 *.aux
