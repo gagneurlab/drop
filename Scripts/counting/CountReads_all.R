@@ -4,9 +4,8 @@
 #' wb:
 #'  input: 
 #'  - sample_bam: '`sm config["RAW_DATA"] + "/{sampleID}R/RNAout/paired-endout/stdFilenames/{sampleID}R.bam", sampleID=config["SAMPLE_IDS"]`'
-#'  - sample_anno: '`sm config[]`
 #'  output:
-#'  - counts: '`sm config["DATA_DIR"] + "/{features}/total_counts.RDS"`'
+#'  - counts: '`sm config["DATA_DIR"] + "/total_counts.RDS"`'
 #'---
 
 saveRDS(snakemake, "tmp/count_all.RDS")

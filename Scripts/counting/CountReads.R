@@ -4,10 +4,10 @@
 #' wb:
 #'  input: 
 #'  - sample_bam: '`sm config["RAW_DATA"] + "/{sampleID}R/RNAout/paired-endout/stdFilenames/{sampleID}R.bam"`'
-#'  - features: '`sm "resources/exons_op.Rds"`'
+#'  - features: '`sm "resources/exons_en.Rds"`'
 #'  output:
-#'  - counts: '`sm config["PROC_DATA"] + "/{sampleID}_counts.RDS"`'
-#'  - wBhtml: 'Output/html/{features}/{sampleID}/counts.html'
+#'  - counts: '`sm config["PROC_DATA"] + "/{sampleID}_counts_unspec.RDS"`'
+#'  - wBhtml: 'Output/html/{sampleID}/counts.html'
 #'  type: noindex
 #'---
 
