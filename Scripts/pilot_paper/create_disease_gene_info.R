@@ -36,6 +36,9 @@ disgene_dt <- disgene_dt[!is.na(HGNC_GENE_NAME)][order(HGNC_GENE_NAME)]
 disgene_dt[HGNC_GENE_NAME=='SPG7', DISEASE:='MITO']
 disgene_dt <- disgene_dt[HGNC_GENE_NAME != "mtDNA"]
 disgene_dt[, HGNC_GENE_NAME := toupper(HGNC_GENE_NAME)]
+# disgene_dt[HGNC_GENE_NAME == "APOA1BP", HGNC_GENE_NAME := "NAXE"]
+disgene_dt[HGNC_GENE_NAME == "C8ORF38", HGNC_GENE_NAME := "NDUFAF6"]
+
 
 #+
 head(disgene_dt)
@@ -69,7 +72,7 @@ meta_disease_gene_dt <- meta_disease_gene_dt[, lapply(.SD, function(j) gsub(' +$
 #' ## File: manually curated list by Prokisch and Mayr
 #'
 cleaned_file <- 'mitochondrial_disorder_genes_prokisch_mayr_cleaned.tsv'
-create_clean_prokisch_mayr_table(file.path(dir_gene_info, '20171205_prokish_Mito-Disease-Genes.csv'),
+create_clean_prokisch_mayr_table(file.path(dir_gene_info, '201805_mito_disorder_genes_prokisch_mayr.tsv'),
                                  file.path(dir_gene_info, cleaned_file))
 #' 
 prokisch_mayr_dt <- fread(file.path(dir_gene_info, cleaned_file))

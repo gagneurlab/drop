@@ -8,7 +8,7 @@ create_clean_prokisch_mayr_table <- function(
     # set files
     # 
     dir_gene_info <- "/s/project/mitoMultiOmics/raw_data/gene_info/"
-    if(is.null(input_file)){input_file <- file.path(dir_gene_info, 'mitochondrial_disorder_genes_prokisch_mayr.tsv')}
+    if(is.null(input_file)){input_file <- file.path(dir_gene_info, '201805_mito_disorder_genes_prokisch_mayr.tsv')}
     if(is.null(output_file)){output_file <- file.path(dir_gene_info, 'mitochondrial_disorder_genes_prokisch_mayr_cleaned.tsv')}
     
     # process
@@ -47,7 +47,6 @@ clean_prokisch_mayr_gene_table <- function(input_data){
     # find empty columns
     empty_coln <- t(data[,lapply(.SD, function(j) all(is.na(j)))])
     empty_coln <- as.data.table(empty_coln, keep.rownames=T)
-    empty_coln
     
     # remove empty columns
     data[, c(empty_coln[V1==T, rn]) := NULL]
@@ -74,14 +73,14 @@ clean_prokisch_mayr_gene_table <- function(input_data){
     # remove new lines within a cell
     data[, Associated_disease_phenotypes := gsub("\\s*\n\\s*", "; ", Associated_disease_phenotypes, perl = T)]
     # change number into real factor
-    try(data[,Leigh:=ifelse(Leigh == 1, "yes", NA)], silent = TRUE)
-    try(data[,Neuro:=ifelse(Neuro == '1', "yes",
+    try(data[, Leigh := ifelse(Leigh == 1, "yes", NA)], silent = TRUE)
+    try(data[, Neuro := ifelse(Neuro == '1', "yes",
         ifelse(Neuro == 'N', "no",
             ifelse(Neuro == '?', "unclear", 
                 ifelse(Neuro == 'T', "tissue specific",
                     NA))))] , silent = TRUE)
     
-    data[,`Energy Metab`:=ifelse(`Energy Metab` == '1', "MITO",
+    data[, `Energy Metab` := ifelse(`Energy Metab` == '1', "MITO",
         ifelse(`Energy Metab` == '2', "maybe",
             ifelse(`Energy Metab` == '3', "other",
                 NA)))]
@@ -114,7 +113,7 @@ clean_prokisch_mayr_gene_table <- function(input_data){
              "Authors I", "Authors II") := NULL]
     
     # remove other useless columns
-    data[, c("Group", "ID", "Full Gene Name") := NULL]
+    data[, c("Group", "ID", "Full Gene Name", "Statistik") := NULL]
     
     data <- data[!is.na(Gene)]
     
