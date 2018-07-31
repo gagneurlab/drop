@@ -67,6 +67,7 @@ download.file(fasta.url, destfile = file.path(out.dir, fasta.file))
 gtf <- readGFF(file.path(out.dir, gtf.file)) %>% as.data.table
 
 gtf_gene <- gtf[type == "gene", .(seqid, source, type, start, end, strand, ID, gene_type, gene_name)]
+gtf_gene[, gene_name := toupper(gene_name)]
 gtf_gene[, gene_id := substr(ID, 1, 15)]
 write.table(gtf_gene, file.path(out.dir, "gene_annotation.tsv"), sep = "\t", quote = F, row.names = F)
 

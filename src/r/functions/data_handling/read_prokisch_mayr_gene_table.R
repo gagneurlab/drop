@@ -35,6 +35,9 @@ create_clean_prokisch_mayr_table <- function(
     prokisch_mayr_dt[, OTHER_ALIASES := gsub('Other Aliases: ','',OTHER_ALIASES)]
     # prokisch_mayr_dt[, lapply(.SD, class)]
     
+    prokisch_mayr_dt[HGNC_GENE_NAME == "C19ORF70,QIL1", HGNC_GENE_NAME := "C19ORF70"]
+    prokisch_mayr_dt[HGNC_GENE_NAME == "RPN4IP1", HGNC_GENE_NAME := "RTN4IP1"]
+    
     # write clean output file
     # 
     write_tsv(prokisch_mayr_dt, file = output_file)
@@ -80,6 +83,7 @@ clean_prokisch_mayr_gene_table <- function(input_data){
                 ifelse(Neuro == 'T', "tissue specific",
                     NA))))] , silent = TRUE)
     
+    # Told by Hans
     data[, `Energy Metab` := ifelse(`Energy Metab` == '1', "MITO",
         ifelse(`Energy Metab` == '2', "maybe",
             ifelse(`Energy Metab` == '3', "other",

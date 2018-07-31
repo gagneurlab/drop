@@ -36,8 +36,22 @@ disgene_dt <- disgene_dt[!is.na(HGNC_GENE_NAME)][order(HGNC_GENE_NAME)]
 disgene_dt[HGNC_GENE_NAME=='SPG7', DISEASE:='MITO']
 disgene_dt <- disgene_dt[HGNC_GENE_NAME != "mtDNA"]
 disgene_dt[, HGNC_GENE_NAME := toupper(HGNC_GENE_NAME)]
-# disgene_dt[HGNC_GENE_NAME == "APOA1BP", HGNC_GENE_NAME := "NAXE"]
+disgene_dt = disgene_dt[HGNC_GENE_NAME != "CLPB2"]  # CLPB2 doesn't exist in humans
+disgene_dt = disgene_dt[HGNC_GENE_NAME != "TMEM126"]  # TMEM126 doesn't exist by itself. TMEM126A and TMEM126B exist.
+disgene_dt = disgene_dt[HGNC_GENE_NAME != "TRMT1"]  # Confusion between TRMT1 and TRMU
+
+# New names
 disgene_dt[HGNC_GENE_NAME == "C8ORF38", HGNC_GENE_NAME := "NDUFAF6"]
+disgene_dt[HGNC_GENE_NAME == "TRX2", HGNC_GENE_NAME := "TXN2"]
+
+# Change disease
+disgene_dt[HGNC_GENE_NAME == "NBAS", DISEASE := "RALF"]
+disgene_dt[HGNC_GENE_NAME %in% c("COASY", "SPG7"), DISEASE := "NBIA"]
+disgene_dt[HGNC_GENE_NAME == "DNAJC3", DISEASE := "DNAJC3"]
+disgene_dt[HGNC_GENE_NAME == "OCLN", DISEASE := "CNV"]
+disgene_dt[HGNC_GENE_NAME %in% c("DHTKD1", "PRODH2"), DISEASE := "STOFFW"]
+disgene_dt[HGNC_GENE_NAME == "SPG21", DISEASE := "NPC"]
+
 
 
 #+
