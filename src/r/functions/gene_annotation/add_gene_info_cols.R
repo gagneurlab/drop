@@ -1,0 +1,148 @@
+### Functions to add:
+# 1. MITOCARTA T/F column
+# 2. Hans mito list of disease associated genes
+# 3. Disease associated genes from SAMPLE ANNOTATION
+# 4. OMIM columns
+
+
+# Read the gene annotation and subset it
+# out.dir <- "/s/genomes/human/hg19/gencode28"   # This can change with a newer version
+# gene_annot <- fread(file.path(out.dir, "gene_annotation.tsv"))
+# gene_annot[, c("source", "type", "ID") := NULL]
+
+
+##############
+### Add MITOCARTA T/F column
+##############
+
+# Read MitoCarta genes
+add_mitocarta_col <- function(DT, gene_name_col = "gene_name"){
+    DT <- copy(DT)
+    dir_gene_info <- '/s/project/mitoMultiOmics/raw_data/gene_info/'
+    mito_carta <- fread(file.path(dir_gene_info, 'mito_carta_genes.tsv'))
+    
+    # sds = setdiff(mito_carta$HGNC_GENE_NAME, gene_annot$gene_name) %>% sort
+    
+    # Create an alias table
+    alias_dt_mc = data.table(v1 = c("ATP6", "ATP8","ND1","ND2","ND3","ND4","ND4L","ND5","ND6"))
+    alias_dt_mc[, v2 := paste0("MT-", v1)]
+    alias_dt_mc = rbind(alias_dt_mc, 
+                    data.table(v1 = c("ACN9", "APOA1BP", "C10ORF2", "C6ORF57", "CARKD", "COA3", "COA4",
+                              "COX1", "COX2", "COX3", "CYTB", "HRSP12", "MTERF", "MTERFD1", "MTERFD2",
+                              "NRD1", "PET100", "PET112", "SLIRP", "SLMO1", "SLMO2", "TOMM70A", "XRCC6BP1"), 
+                              v2 = c("SDHAF3", "NAXE", "TWNK", "SDHAF4", "NAXD", "CCDC56", "CHCHD8", 
+                              "MT-CO1", "MT-CO2", "MT-CO3", "MT-CYB", "RIDA", "MTERF1", "MTERF3", "MTERF4",
+                              "NRDC", "C19ORF79", "GATB", "C14orf156", "PRELID3A", "PRELID3B", "TOMM70", "ATP23"))
+                 )
+    
+    # Add MITOCARTA T/F column
+    setnames(DT, gene_name_col, "gene_name")
+    DT[, MITOCARTA := gene_name %in% c(mito_carta$HGNC_GENE_NAME, alias_dt$v1, alias_dt$v2)]
+    setnames(DT, "gene_name", gene_name_col)
+    
+    return(DT)
+}
+
+# gene_annot <- add_mitocarta_col(gene_annot, gene_name_col = "gene_name")
+
+##############
+### Add Hans type of disease column
+##############
+
+# Read Hans gene disease list
+add_hans_class <- function(DT, gene_name_col = "gene_name"){
+    dir_gene_info <- '/s/project/mitoMultiOmics/raw_data/gene_info/'
+    prokisch_mayr_dt <- fread(file.path(dir_gene_info, 'mitochondrial_disorder_genes_prokisch_mayr_cleaned.tsv'))
+    
+    # Some of the genes have aliases, v1: way they are in Hans table
+    alias_dt_hans = data.table(v1 = c("C19ORF70", "ATP5F1A", "ATP5F1E", "COQ8A", "COQ8B", "ATP5F1D", "PET100", 
+                                  "MRM2", "NDUFAF8", "RTN4IP1", "UQCC3"),
+                           v2 = c("QIL1", "ATP5A1", "ATP5E", "ADCK3", "ADCK4", "ATP5D", "C19ORF79", 
+                                  "FTSJ2", "C17ORF89", "NIMP", "C11ORF83"))
+    
+    al = prokisch_mayr_dt[HGNC_GENE_NAME %in% alias_dt_hans$v1]
+    al = merge(al, alias_dt_hans, by.x = "HGNC_GENE_NAME", by.y = "v1")
+    al[, HGNC_GENE_NAME := v2]
+    al[, v2 := NULL]
+    
+    pt = rbind(prokisch_mayr_dt, al)
+    
+    # sds = setdiff(prokisch_mayr_dt$HGNC_GENE_NAME, c(gene_annot$gene_name, alias_dt_hans$v1, alias_dt_hans$v2)) %>% sort
+    
+    setnames(pt, "DISEASE", "HANS_CLASS")
+    
+    setnames(DT, gene_name_col, "gene_name")
+    DT <- left_join(DT, pt[,.(HGNC_GENE_NAME, HANS_CLASS, ASSOCIATED_DISEASE_PHENOTYPES)], 
+                by = c("gene_name" = "HGNC_GENE_NAME")) %>% as.data.table
+    setnames(DT, "gene_name", gene_name_col)
+    
+    return(DT)
+}
+# gene_annot = add_hans_class(gene_annot, gene_name_col = "gene_name")
+
+
+
+##############
+### Add disease genes columns
+##############
+add_disease_gene_info <- function(DT, gene_name_col = "gene_name"){
+    dir_gene_info <- '/s/project/mitoMultiOmics/raw_data/gene_info/'
+    disgene_dt <- fread(file.path(dir_gene_info, 'disease_genes_from_sample_anno.tsv'))
+    
+    # sds = setdiff(disgene_dt$HGNC_GENE_NAME, gene_annot$gene_name) %>% sort
+    
+    alias_dt_dis = data.table(v1 = c("APOA1BP", "PET100", "C10ORF2", "MNF1"),
+                           v2 = c("NAXE", "C19ORF79", "TWNK", "UQCC2" ))
+    
+    al = disgene_dt[HGNC_GENE_NAME %in% alias_dt_dis$v1]
+    al = merge(al, alias_dt_dis, by.x = "HGNC_GENE_NAME", by.y = "v1")
+    al[, HGNC_GENE_NAME := v2]
+    al[, v2 := NULL]
+    
+    pt = rbind(disgene_dt, al)
+    
+    setnames(pt, "DISEASE", "GENE_ASSO_DISEASE")
+    
+    setnames(DT, gene_name_col, "gene_name")
+    DT <- left_join(DT, pt[,.(HGNC_GENE_NAME, GENE_ASSO_DISEASE)], 
+                by = c("gene_name" = "HGNC_GENE_NAME")) %>% as.data.table
+    setnames(DT, "gene_name", gene_name_col)
+    
+    return(DT)
+}
+
+# gene_annot = add_disease_gene_info(gene_annot, gene_name_col = "gene_name")
+
+##############
+### Add OMIM columns
+##############
+# Adds 3 columns with OMIM number per gene, PINH: mode of inheritance, and PMIM: mim number of the phenotype
+# Mind the script on "../mitomultiomics/src/r/functions/variant_handling/omim_parser.R"
+
+add_omim_cols <- function(DT, gene_name_col = "gene_name"){
+    omim_dt = readRDS("/s/project/mitoMultiOmics/db_data/omim-gene-pheno-cache.RDS")
+    # omim_dt <- readRDS("../mitomultiomics/resource/omim_dt.Rds")
+    omim_dt <- omim_dt[SYMBOL != "", .(SYMBOL, GMIM, PINH, PMIM)]
+    omim_dt <- omim_dt[, SYMBOL := toupper(SYMBOL)]
+    omim_dt <- omim_dt[, .SD[1], by = SYMBOL]   # In case of many GMIM, take the first only
+    setnames(omim_dt, "GMIM", "OMIM")
+    setnames(DT, gene_name_col, "gene_name")
+    DT <- left_join(DT, omim_dt, by = c("gene_name" = "SYMBOL")) %>% as.data.table
+    setnames(DT, "gene_name", gene_name_col)
+    
+    return(DT)
+}
+
+# gene_annot = add_omim_cols(gene_annot, gene_name_col = "gene_name")
+
+##############
+### Add all columns
+##############
+add_all_gene_info <- function(DT, gene_name_col = "gene_name"){
+    dt <- add_mitocarta_col(DT, gene_name_col)
+    dt <- add_hans_class(dt, gene_name_col)
+    dt <- add_disease_gene_info(dt, gene_name_col)
+    dt <- add_omim_cols(dt, gene_name_col)
+}
+
+# gene_annot <- add_all_gene_info(gene_annot, gene_name_col = "gene_name")

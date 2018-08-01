@@ -1,14 +1,16 @@
 # R function
 # 
 
-create_clean_prokisch_mayr_table <- function(
-    input_file = NULL, 
-    output_file = NULL
-){
-    # set files
-    # 
+
+
+# Create a link to the latest mito_disorder_prokisch_mayr table
+#  ln -s '/s/project/mitoMultiOmics/raw_data/gene_info/201805_mito_disorder_genes_prokisch_mayr.tsv' '/s/project/mitoMultiOmics/raw_data/gene_info/latest_mito_disorder_genes_prokish_mayr.tsv'
+
+
+create_clean_prokisch_mayr_table <- function(input_file = NULL, output_file = NULL){
+
     dir_gene_info <- "/s/project/mitoMultiOmics/raw_data/gene_info/"
-    if(is.null(input_file)){input_file <- file.path(dir_gene_info, '201805_mito_disorder_genes_prokisch_mayr.tsv')}
+    if(is.null(input_file)){input_file <- file.path(dir_gene_info, 'latest_mito_disorder_genes_prokish_mayr.tsv')}
     if(is.null(output_file)){output_file <- file.path(dir_gene_info, 'mitochondrial_disorder_genes_prokisch_mayr_cleaned.tsv')}
     
     # process
@@ -27,7 +29,6 @@ create_clean_prokisch_mayr_table <- function(
     prokisch_mayr_dt[, MIM_NUMBER := NULL]
     
     # fix entries
-    # 
     prokisch_mayr_dt[, HGNC_GENE_NAME := toupper(HGNC_GENE_NAME)]
     prokisch_mayr_dt <- prokisch_mayr_dt[, lapply(.SD, function(j) gsub(' +$', '', j))]
     prokisch_mayr_dt[, OTHER_DESIGNATIONS := gsub('Other Designations: ', '', OTHER_DESIGNATIONS)]
@@ -36,10 +37,9 @@ create_clean_prokisch_mayr_table <- function(
     # prokisch_mayr_dt[, lapply(.SD, class)]
     
     prokisch_mayr_dt[HGNC_GENE_NAME == "C19ORF70,QIL1", HGNC_GENE_NAME := "C19ORF70"]
-    prokisch_mayr_dt[HGNC_GENE_NAME == "RPN4IP1", HGNC_GENE_NAME := "RTN4IP1"]
+    prokisch_mayr_dt = prokisch_mayr_dt[HGNC_GENE_NAME != "RPN4IP1"]  # ambiguous gene
     
     # write clean output file
-    # 
     write_tsv(prokisch_mayr_dt, file = output_file)
 }
 
@@ -69,7 +69,7 @@ clean_prokisch_mayr_gene_table <- function(input_data){
     setnames(data, "Gene ID", "EntrezID")
     setnames(data, "Gene Localisation", "Locus")
     setnames(data, "Name A K A", "Full Gene Name")
-    setnames(data, "Mit Energy Metab", "Energy Metab")
+    setnames(data, "Mit Energy Metab", "Energy_Metab")
     setnames(data, "Associated disease phenotype s", "Associated_disease_phenotypes")
     
     
@@ -84,9 +84,10 @@ clean_prokisch_mayr_gene_table <- function(input_data){
                     NA))))] , silent = TRUE)
     
     # Told by Hans
-    data[, `Energy Metab` := ifelse(`Energy Metab` == '1', "MITO",
-        ifelse(`Energy Metab` == '2', "maybe",
-            ifelse(`Energy Metab` == '3', "other",
+    data[Energy_Metab == "1?", Energy_Metab := '2']
+    data[, Energy_Metab := ifelse(Energy_Metab == '1', "MITO",
+        ifelse(Energy_Metab == '2', "maybe",
+            ifelse(Energy_Metab == '3', "other",
                 NA)))]
     try(data[, Cardiomyopathy := ifelse(Cardiomyopathy == 1, "major",
                                     ifelse(Cardiomyopathy == 2, "minor", NA))], silent = TRUE)
@@ -124,3 +125,8 @@ clean_prokisch_mayr_gene_table <- function(input_data){
     return(data)
 }
 
+
+# Create the table
+cleaned_file <- 'mitochondrial_disorder_genes_prokisch_mayr_cleaned.tsv'
+create_clean_prokisch_mayr_table(file.path(dir_gene_info, 'latest_mito_disorder_genes_prokish_mayr.tsv'),
+                                 file.path(dir_gene_info, cleaned_file))
