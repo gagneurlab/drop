@@ -127,6 +127,7 @@ clean_prokisch_mayr_gene_table <- function(input_data){
 
 
 # Create the table
+dir_gene_info <- "/s/project/mitoMultiOmics/raw_data/gene_info/"
 cleaned_file <- 'mitochondrial_disorder_genes_prokisch_mayr_cleaned.tsv'
 create_clean_prokisch_mayr_table(file.path(dir_gene_info, 'latest_mito_disorder_genes_prokish_mayr.tsv'),
                                  file.path(dir_gene_info, cleaned_file))

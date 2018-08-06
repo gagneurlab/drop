@@ -37,7 +37,7 @@ add_mitocarta_col <- function(DT, gene_name_col = "gene_name"){
     
     # Add MITOCARTA T/F column
     setnames(DT, gene_name_col, "gene_name")
-    DT[, MITOCARTA := gene_name %in% c(mito_carta$HGNC_GENE_NAME, alias_dt$v1, alias_dt$v2)]
+    DT[, MITOCARTA := gene_name %in% c(mito_carta$HGNC_GENE_NAME, alias_dt_mc$v1, alias_dt_mc$v2)]
     setnames(DT, "gene_name", gene_name_col)
     
     return(DT)
