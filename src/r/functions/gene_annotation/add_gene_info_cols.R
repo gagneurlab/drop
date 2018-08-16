@@ -28,11 +28,11 @@ add_mitocarta_col <- function(DT, gene_name_col = "gene_name"){
     alias_dt_mc[, v2 := paste0("MT-", v1)]
     alias_dt_mc = rbind(alias_dt_mc, 
                     data.table(v1 = c("ACN9", "APOA1BP", "C10ORF2", "C6ORF57", "CARKD", "COA3", "COA4",
-                              "COX1", "COX2", "COX3", "CYTB", "HRSP12", "MTERF", "MTERFD1", "MTERFD2",
-                              "NRD1", "PET100", "PET112", "SLIRP", "SLMO1", "SLMO2", "TOMM70A", "XRCC6BP1"), 
+                                      "COX1", "COX2", "COX3", "CYTB", "HRSP12", "MTERF", "MTERFD1", "MTERFD2",
+                                      "NRD1", "PET100", "PET112", "SLIRP", "SLMO1", "SLMO2", "TOMM70A", "XRCC6BP1"), 
                               v2 = c("SDHAF3", "NAXE", "TWNK", "SDHAF4", "NAXD", "CCDC56", "CHCHD8", 
-                              "MT-CO1", "MT-CO2", "MT-CO3", "MT-CYB", "RIDA", "MTERF1", "MTERF3", "MTERF4",
-                              "NRDC", "C19ORF79", "GATB", "C14orf156", "PRELID3A", "PRELID3B", "TOMM70", "ATP23"))
+                                     "MT-CO1", "MT-CO2", "MT-CO3", "MT-CYB", "RIDA", "MTERF1", "MTERF3", "MTERF4",
+                                     "NRDC", "C19ORF79", "GATB", "C14orf156", "PRELID3A", "PRELID3B", "TOMM70", "ATP23"))
                  )
     
     # Add MITOCARTA T/F column
@@ -57,7 +57,7 @@ add_hans_class <- function(DT, gene_name_col = "gene_name"){
     # Some of the genes have aliases, v1: way they are in Hans table
     alias_dt_hans = data.table(v1 = c("C19ORF70", "ATP5F1A", "ATP5F1E", "COQ8A", "COQ8B", "ATP5F1D", "PET100", 
                                   "MRM2", "NDUFAF8", "RTN4IP1", "UQCC3"),
-                           v2 = c("QIL1", "ATP5A1", "ATP5E", "ADCK3", "ADCK4", "ATP5D", "C19ORF79", 
+                               v2 = c("QIL1", "ATP5A1", "ATP5E", "ADCK3", "ADCK4", "ATP5D", "C19ORF79", 
                                   "FTSJ2", "C17ORF89", "NIMP", "C11ORF83"))
     
     al = prokisch_mayr_dt[HGNC_GENE_NAME %in% alias_dt_hans$v1]
@@ -92,7 +92,7 @@ add_disease_gene_info <- function(DT, gene_name_col = "gene_name"){
     # sds = setdiff(disgene_dt$HGNC_GENE_NAME, gene_annot$gene_name) %>% sort
     
     alias_dt_dis = data.table(v1 = c("APOA1BP", "PET100", "C10ORF2", "MNF1"),
-                           v2 = c("NAXE", "C19ORF79", "TWNK", "UQCC2" ))
+                              v2 = c("NAXE", "C19ORF79", "TWNK", "UQCC2" ))
     
     al = disgene_dt[HGNC_GENE_NAME %in% alias_dt_dis$v1]
     al = merge(al, alias_dt_dis, by.x = "HGNC_GENE_NAME", by.y = "v1")
@@ -138,11 +138,14 @@ add_omim_cols <- function(DT, gene_name_col = "gene_name"){
 ##############
 ### Add all columns
 ##############
-add_all_gene_info <- function(DT, gene_name_col = "gene_name"){
-    dt <- add_mitocarta_col(DT, gene_name_col)
-    dt <- add_hans_class(dt, gene_name_col)
-    dt <- add_disease_gene_info(dt, gene_name_col)
-    dt <- add_omim_cols(dt, gene_name_col)
+add_all_gene_info <- function(DT, gene_name_col = "gene_name", mitocarta = T, hans = T, dis_genes = T, omim = T){
+    require(dplyr)
+    dt <- copy(DT)
+    if(mitocarta == T) dt <- add_mitocarta_col(dt, gene_name_col)
+    if(hans == T) dt <- add_hans_class(dt, gene_name_col)
+    if(dis_genes == T) dt <- add_disease_gene_info(dt, gene_name_col)
+    if(omim == T) dt <- add_omim_cols(dt, gene_name_col)
+    return(dt)
 }
 
 # gene_annot <- add_all_gene_info(gene_annot, gene_name_col = "gene_name")

@@ -34,3 +34,4 @@ setorder(res, AberrantBySample)
 dim(res)
 
 saveRDS(res, "/s/project/genetic_diagnosis/processed_results/res_4batches.Rds")
+res <- readRDS("/s/project/genetic_diagnosis/processed_results/res_4batches.Rds")
