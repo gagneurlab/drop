@@ -10,6 +10,8 @@
 # gene_annot <- fread(file.path(out.dir, "gene_annotation.tsv"))
 # gene_annot[, c("source", "type", "ID") := NULL]
 
+require(data.table)
+require(dplyr)
 
 ##############
 ### Add MITOCARTA T/F column
@@ -55,10 +57,10 @@ add_hans_class <- function(DT, gene_name_col = "gene_name"){
     prokisch_mayr_dt <- fread(file.path(dir_gene_info, 'mitochondrial_disorder_genes_prokisch_mayr_cleaned.tsv'))
     
     # Some of the genes have aliases, v1: way they are in Hans table
-    alias_dt_hans = data.table(v1 = c("C19ORF70", "ATP5F1A", "ATP5F1E", "COQ8A", "COQ8B", "ATP5F1D", "PET100", 
-                                  "MRM2", "NDUFAF8", "RTN4IP1", "UQCC3"),
-                               v2 = c("QIL1", "ATP5A1", "ATP5E", "ADCK3", "ADCK4", "ATP5D", "C19ORF79", 
-                                  "FTSJ2", "C17ORF89", "NIMP", "C11ORF83"))
+    alias_dt_hans = data.table(v1 = c("APOA1BP", "C19ORF70", "ATP5F1A", "ATP5F1E", "COQ8A", "COQ8B", "ATP5F1D", "PET100", 
+                                  "MRM2", "NDUFAF8", "RTN4IP1", "UQCC3", "C10ORF2", "FDX1L", "SELRC1"),
+                               v2 = c("NAXE", "QIL1", "ATP5A1", "ATP5E", "ADCK3", "ADCK4", "ATP5D", "C19ORF79", 
+                                  "FTSJ2", "C17ORF89", "NIMP", "C11ORF83", "TWNK", "FDX2", "COA7"))
     
     al = prokisch_mayr_dt[HGNC_GENE_NAME %in% alias_dt_hans$v1]
     al = merge(al, alias_dt_hans, by.x = "HGNC_GENE_NAME", by.y = "v1")
@@ -136,14 +138,30 @@ add_omim_cols <- function(DT, gene_name_col = "gene_name"){
 # gene_annot = add_omim_cols(gene_annot, gene_name_col = "gene_name")
 
 ##############
+### Respiratory chain complexes columns
+##############
+add_rcc_info <- function(DT, gene_name_col = "gene_name"){
+    rcc_dt <- fread("/s/project/mitoMultiOmics/ncRNA/raw_data/ribosome_rcc_genes.tsv")
+    rcc_dt = rcc_dt[Protein_Complex != "Ribosome"]
+    rcc_dt[, Type := gsub("subunits", "subunit", Type)]
+    rcc_dt[, Type := gsub("factors", "factor", Type)]
+    rcc_dt[, RCC := paste(Protein_Complex, Type)]
+    setnames(DT, gene_name_col, "gene_name")
+    DT <- left_join(DT, rcc_dt[,.(Gene, RCC)], by = c("gene_name" = "Gene")) %>% as.data.table
+    setnames(DT, "gene_name", gene_name_col)
+    return(DT)
+}
+
+##############
 ### Add all columns
 ##############
-add_all_gene_info <- function(DT, gene_name_col = "gene_name", mitocarta = T, hans = T, dis_genes = T, omim = T){
+add_all_gene_info <- function(DT, gene_name_col = "gene_name", mitocarta = T, hans = T, dis_genes = T, omim = T, rcc = T){
     require(dplyr)
     dt <- copy(DT)
     if(mitocarta == T) dt <- add_mitocarta_col(dt, gene_name_col)
     if(hans == T) dt <- add_hans_class(dt, gene_name_col)
     if(dis_genes == T) dt <- add_disease_gene_info(dt, gene_name_col)
+    if(rcc == T) dt <- add_rcc_info(dt, gene_name_col)
     if(omim == T) dt <- add_omim_cols(dt, gene_name_col)
     return(dt)
 }
