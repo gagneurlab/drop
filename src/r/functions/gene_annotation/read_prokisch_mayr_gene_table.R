@@ -39,6 +39,9 @@ create_clean_prokisch_mayr_table <- function(input_file = NULL, output_file = NU
     prokisch_mayr_dt[HGNC_GENE_NAME == "C19ORF70,QIL1", HGNC_GENE_NAME := "C19ORF70"]
     prokisch_mayr_dt = prokisch_mayr_dt[HGNC_GENE_NAME != "RPN4IP1"]  # ambiguous gene
     
+    prokisch_mayr_dt[CATEGORY == "Unclear function", CATEGORY := "Unclear Function"]
+    prokisch_mayr_dt[CATEGORY == "homeostasis", CATEGORY := "Homeostasis"]
+    
     # write clean output file
     write_tsv(prokisch_mayr_dt, file = output_file)
 }

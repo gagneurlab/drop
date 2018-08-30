@@ -12,6 +12,7 @@
 
 require(data.table)
 require(dplyr)
+require(magrittr)
 
 ##############
 ### Add MITOCARTA T/F column
@@ -56,6 +57,8 @@ add_hans_class <- function(DT, gene_name_col = "gene_name"){
     dir_gene_info <- '/s/project/mitoMultiOmics/raw_data/gene_info/'
     prokisch_mayr_dt <- fread(file.path(dir_gene_info, 'mitochondrial_disorder_genes_prokisch_mayr_cleaned.tsv'))
     
+    setnames(prokisch_mayr_dt, "CATEGORY", "MITOGENE_CATEGORY")
+    
     # Some of the genes have aliases, v1: way they are in Hans table
     alias_dt_hans = data.table(v1 = c("APOA1BP", "C19ORF70", "ATP5F1A", "ATP5F1E", "COQ8A", "COQ8B", "ATP5F1D", "PET100", 
                                   "MRM2", "NDUFAF8", "RTN4IP1", "UQCC3", "C10ORF2", "FDX1L", "SELRC1"),
@@ -74,7 +77,7 @@ add_hans_class <- function(DT, gene_name_col = "gene_name"){
     setnames(pt, "DISEASE", "HANS_CLASS")
     
     setnames(DT, gene_name_col, "gene_name")
-    DT <- left_join(DT, pt[,.(HGNC_GENE_NAME, HANS_CLASS, ASSOCIATED_DISEASE_PHENOTYPES)], 
+    DT <- left_join(DT, pt[,.(HGNC_GENE_NAME, HANS_CLASS, MITOGENE_CATEGORY, ASSOCIATED_DISEASE_PHENOTYPES)], 
                 by = c("gene_name" = "HGNC_GENE_NAME")) %>% as.data.table
     setnames(DT, "gene_name", gene_name_col)
     
@@ -155,14 +158,15 @@ add_rcc_info <- function(DT, gene_name_col = "gene_name"){
 ##############
 ### Add all columns
 ##############
-add_all_gene_info <- function(DT, gene_name_col = "gene_name", mitocarta = T, hans = T, dis_genes = T, omim = T, rcc = T){
-    require(dplyr)
+add_all_gene_info <- function(DT, gene_name_col = "gene_name", mitocarta = T, hans = T, dis_genes = T, omim = T, rcc = F,
+                              NA_as_dot = F){
     dt <- copy(DT)
     if(mitocarta == T) dt <- add_mitocarta_col(dt, gene_name_col)
     if(hans == T) dt <- add_hans_class(dt, gene_name_col)
     if(dis_genes == T) dt <- add_disease_gene_info(dt, gene_name_col)
     if(rcc == T) dt <- add_rcc_info(dt, gene_name_col)
     if(omim == T) dt <- add_omim_cols(dt, gene_name_col)
+    if(NA_as_dot == T) dt[is.na(dt)] = "."
     return(dt)
 }
 
