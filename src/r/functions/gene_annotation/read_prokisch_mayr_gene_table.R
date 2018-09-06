@@ -1,10 +1,5 @@
-# R function
-# 
-
-
-
 # Create a link to the latest mito_disorder_prokisch_mayr table
-#  ln -s '/s/project/mitoMultiOmics/raw_data/gene_info/201805_mito_disorder_genes_prokisch_mayr.tsv' '/s/project/mitoMultiOmics/raw_data/gene_info/latest_mito_disorder_genes_prokish_mayr.tsv'
+# ln -s '/s/project/mitoMultiOmics/raw_data/gene_info/201805_mito_disorder_genes_prokisch_mayr.tsv' '/s/project/mitoMultiOmics/raw_data/gene_info/latest_mito_disorder_genes_prokish_mayr.tsv'
 
 
 create_clean_prokisch_mayr_table <- function(input_file = NULL, output_file = NULL){
@@ -38,6 +33,7 @@ create_clean_prokisch_mayr_table <- function(input_file = NULL, output_file = NU
     
     prokisch_mayr_dt[HGNC_GENE_NAME == "C19ORF70,QIL1", HGNC_GENE_NAME := "C19ORF70"]
     prokisch_mayr_dt = prokisch_mayr_dt[HGNC_GENE_NAME != "RPN4IP1"]  # ambiguous gene
+    prokisch_mayr_dt[HGNC_GENE_NAME == "SACS", DISEASE := "MITO"] # new gene
     
     prokisch_mayr_dt[CATEGORY == "Unclear function", CATEGORY := "Unclear Function"]
     prokisch_mayr_dt[CATEGORY == "homeostasis", CATEGORY := "Homeostasis"]

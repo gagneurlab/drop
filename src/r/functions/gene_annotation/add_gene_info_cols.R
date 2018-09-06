@@ -5,7 +5,7 @@
 # 4. OMIM columns
 
 
-# Read the gene annotation and subset it
+# Read the latest gene annotation and subset it
 # out.dir <- "/s/genomes/human/hg19/gencode28"   # This can change with a newer version
 # gene_annot <- fread(file.path(out.dir, "gene_annotation.tsv"))
 # gene_annot[, c("source", "type", "ID") := NULL]
@@ -155,17 +155,38 @@ add_rcc_info <- function(DT, gene_name_col = "gene_name"){
     return(DT)
 }
 
+add_nuclear_mito_DNA <- function(DT, gene_name_col = "gene_name"){
+    ge <- readRDS("resources/gencode.v19_with_gene_name.Rds")
+    ge[, nDNA_mtDNA := "nDNA"]
+    ge[seqnames == "MT", nDNA_mtDNA := "mtDNA"]
+    setnames(DT, gene_name_col, "gene_name")
+    DT <- left_join(DT, ge[,.(gene_name, nDNA_mtDNA)], by = "gene_name") %>% as.data.table
+    setnames(DT, "gene_name", gene_name_col)
+    return(DT)
+}
+
+add_ensembl_id <- function(DT, gene_name_col = "gene_name"){
+    require(tidyr)
+    ge <- readRDS("resources/gencode.v19_with_gene_name.Rds")
+    ge = separate(ge, gene_id, into = c("gene_id", "useless"), sep = "\\.", remove = T)
+    setnames(DT, gene_name_col, "gene_name")
+    DT <- left_join(DT, ge[,.(gene_name, gene_id)], by = "gene_name") %>% as.data.table
+    setnames(DT, "gene_name", gene_name_col)
+    return(DT)
+}
+
 ##############
 ### Add all columns
 ##############
 add_all_gene_info <- function(DT, gene_name_col = "gene_name", mitocarta = T, hans = T, dis_genes = T, omim = T, rcc = F,
-                              NA_as_dot = F){
+                              nDNA_mtDNA = F, NA_as_dot = F){
     dt <- copy(DT)
     if(mitocarta == T) dt <- add_mitocarta_col(dt, gene_name_col)
     if(hans == T) dt <- add_hans_class(dt, gene_name_col)
     if(dis_genes == T) dt <- add_disease_gene_info(dt, gene_name_col)
     if(rcc == T) dt <- add_rcc_info(dt, gene_name_col)
     if(omim == T) dt <- add_omim_cols(dt, gene_name_col)
+    if(nDNA_mtDNA == T) dt <- add_nuclear_mito_DNA(dt, gene_name_col)
     if(NA_as_dot == T) dt[is.na(dt)] = "."
     return(dt)
 }
