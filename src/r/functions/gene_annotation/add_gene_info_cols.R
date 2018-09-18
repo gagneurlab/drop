@@ -32,10 +32,12 @@ add_mitocarta_col <- function(DT, gene_name_col = "gene_name"){
     alias_dt_mc = rbind(alias_dt_mc, 
                     data.table(v1 = c("ACN9", "APOA1BP", "C10ORF2", "C6ORF57", "CARKD", "COA3", "COA4",
                                       "COX1", "COX2", "COX3", "CYTB", "HRSP12", "MTERF", "MTERFD1", "MTERFD2",
-                                      "NRD1", "PET100", "PET112", "SLIRP", "SLMO1", "SLMO2", "TOMM70A", "XRCC6BP1"), 
+                                      "NRD1", "PET100", "PET112", "SLIRP", "SLMO1", "SLMO2", "TOMM70A", "XRCC6BP1",
+                                      "C17ORF89", "ADCK3"), 
                               v2 = c("SDHAF3", "NAXE", "TWNK", "SDHAF4", "NAXD", "CCDC56", "CHCHD8", 
                                      "MT-CO1", "MT-CO2", "MT-CO3", "MT-CYB", "RIDA", "MTERF1", "MTERF3", "MTERF4",
-                                     "NRDC", "C19ORF79", "GATB", "C14orf156", "PRELID3A", "PRELID3B", "TOMM70", "ATP23"))
+                                     "NRDC", "C19ORF79", "GATB", "C14orf156", "PRELID3A", "PRELID3B", "TOMM70", "ATP23",
+                                     "NDUFAF8", "COQ8A"))
                  )
     
     # Add MITOCARTA T/F column
@@ -74,7 +76,9 @@ add_hans_class <- function(DT, gene_name_col = "gene_name"){
     
     # sds = setdiff(prokisch_mayr_dt$HGNC_GENE_NAME, c(gene_annot$gene_name, alias_dt_hans$v1, alias_dt_hans$v2)) %>% sort
     
-    setnames(pt, "DISEASE", "HANS_CLASS")
+    setnames(pt, old = "DISEASE", new = "HANS_CLASS")
+    
+    # write.table(pt[HANS_CLASS == "MITO", sort(unique(HGNC_GENE_NAME))], "../mito-ncRNA/Data/mito_disease_genes.tsv", sep = "\n", row.names = F, col.names = F, quote = F)
     
     setnames(DT, gene_name_col, "gene_name")
     DT <- left_join(DT, pt[,.(HGNC_GENE_NAME, HANS_CLASS, MITOGENE_CATEGORY, ASSOCIATED_DISEASE_PHENOTYPES)], 
