@@ -61,11 +61,11 @@ add_hans_class <- function(DT, gene_name_col = "gene_name"){
     
     setnames(prokisch_mayr_dt, "CATEGORY", "MITOGENE_CATEGORY")
     
-    # Some of the genes have aliases, v1: way they are in Hans table
-    alias_dt_hans = data.table(v1 = c("APOA1BP", "C19ORF70", "ATP5F1A", "ATP5F1E", "COQ8A", "COQ8B", "ATP5F1D", "PET100", 
-                                  "MRM2", "NDUFAF8", "RTN4IP1", "UQCC3", "C10ORF2", "FDX1L", "SELRC1"),
-                               v2 = c("NAXE", "QIL1", "ATP5A1", "ATP5E", "ADCK3", "ADCK4", "ATP5D", "C19ORF79", 
-                                  "FTSJ2", "C17ORF89", "NIMP", "C11ORF83", "TWNK", "FDX2", "COA7"))
+    # Some of the genes have aliases, v1: must be the way they appear in Hans table
+    alias_dt_hans = data.table(v1 = c("NAXE", "C19ORF70", "ATP5F1A", "ATP5F1E", "COQ8A", "COQ8B", "ATP5F1D", "PET100", 
+                                  "MRM2", "NDUFAF8", "RTN4IP1", "UQCC3", "TWNK", "FDX1L", "COA7"),
+                               v2 = c("APOA1BP", "QIL1", "ATP5A1", "ATP5E", "ADCK3", "ADCK4", "ATP5D", "C19ORF79", 
+                                  "FTSJ2", "C17ORF89", "NIMP", "C11ORF83", "C10ORF2", "FDX2",  "SELRC1"))
     
     al = prokisch_mayr_dt[HGNC_GENE_NAME %in% alias_dt_hans$v1]
     al = merge(al, alias_dt_hans, by.x = "HGNC_GENE_NAME", by.y = "v1")
