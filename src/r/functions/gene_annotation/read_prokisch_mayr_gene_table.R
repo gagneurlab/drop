@@ -40,6 +40,8 @@ create_clean_prokisch_mayr_table <- function(input_file = NULL, output_file = NU
     prokisch_mayr_dt[CATEGORY == "Unclear function", CATEGORY := "Unclear Function"]
     prokisch_mayr_dt[CATEGORY == "homeostasis", CATEGORY := "Homeostasis"]
     
+    prokisch_mayr_dt <- prokisch_mayr_dt[! HGNC_GENE_NAME %in% c("REMOVEDSACS", "REMOVEDHSPA9", "REMOVEDRTN4IP1")]
+    
     # write clean output file
     write.table(prokisch_mayr_dt, file = output_file, quote=FALSE, sep='\t', row.names = F)
 }
