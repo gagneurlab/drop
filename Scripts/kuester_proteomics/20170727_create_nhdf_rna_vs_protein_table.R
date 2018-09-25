@@ -36,7 +36,6 @@ file_tmt_sample_map <- file.path(
 # out
 file_nhdf_out <- file.path(PROC_DATA, "nhdf_rna_proteome_tmt_trinity.tsv")
 
-
 #' 
 #' # Get iBAQ proteome expression
 #' 
@@ -121,6 +120,7 @@ rna_ids_nhdf <- get_rna_for_fibro(
     SAMPLE_ANNOTATION[GROWTH_MEDIUM=='GLU' & is.na(TRANSDUCED_GENE) & TISSUE=='FIBROBLAST']
     )
 rna_ids_nhdf
+rna_ids_nhdf = rna_ids_nhdf[1:8]
 
 #' * read and subset raw counts
 #' 

@@ -4,15 +4,20 @@ ss2 <- read.table(file.path(PROC_DATA, "rna_batch2_strand_specific.txt"), check.
 ss3 <- read.table(file.path(PROC_DATA, "rna_batch3_strand_specific.txt"), check.names = F)
 nss_matrix <- read.table(file.path(PROC_DATA, "rna_batch1_2_non_strand_specific.txt"), check.names = F)
 # ss_reversed <- readRDS("./resources/rna_count_matrix_strand_specific_reversed.Rds")
-ss0 <- read.table(file.path(PROC_DATA, "rna_batch0_new_annotation.txt"), check.names = F)
-ssf <- read.table(file.path(PROC_DATA, "rna_batch0_old_annotation.txt"), sep = "\t", check.names = F)
+ss_new <- read.table(file.path(PROC_DATA, "rna_batch0_new_annotation.txt"), check.names = F)
+ss_old <- read.table(file.path(PROC_DATA, "rna_batch0_old_annotation.txt"), sep = "\t", check.names = F)
 
 sa = fread("/data/ouga/home/ag_gagneur/yepez/Desktop/batch_1_2_3.csv")
+sa[FIBROBLAST_ID == "", FIBROBLAST_ID := NA]
+sa[GENDER == "", GENDER := NA]
+sa[EXOME_ID == "", EXOME_ID := NA]
+
 sa0 = SAMPLE_ANNOTATION[RNA_ID %in% colnames(ss0)][, .(EXOME_ID, RNA_ID, FIBROBLAST_ID, GENDER, TISSUE, RNA_PERSON)]
 sa0[, BATCH := "B0"]
 sa_all = rbind(sa0, sa, use.names = T)
 sa_all[TISSUE == "fibroblasts", TISSUE := "FIBROBLAST"]
-write.table(sa_all, file.path(PROC_DATA, "sample_annotation_0to3.txt"), quote = F, col.names = T, row.names = T)
+write.table(sa_all, file.path(PROC_DATA, "sample_annotation_0to3.txt"), quote = F, col.names = T, row.names = F, sep = ",")
+
 
 batch2 = sa[BATCH == "B2", RNA_ID]
 batch1 = sa[BATCH == "B1", RNA_ID]
@@ -23,18 +28,62 @@ write.table(nss1, file.path(PROC_DATA, "rna_batch1.txt"), quote = F, col.names =
 nss2 = nss_matrix[, batch2]
 
 # Cut to include genes whose 95% have more than 10 reads only
-ss95 = ss2[apply(ss2, 1, quantile, .95) > 10, ] 
+filter_percentage <- function(count_matrix, percentage = .95, min_reads = 10){
+    count_matrix[apply(count_matrix, 1, quantile, percentage) > min_reads, ]
+}
+
+ss95 = filter_percentage(ss2)
 dim(ss95) # 16001
 
-nssB195 = nss1[apply(nss1, 1, quantile, .95) > 10, ] 
+nssB195 = filter_percentage(nss1)
 dim(ssB195) # 19283 with all tissues, 16297 only fibroblasts
 
-nss95 = nss2[apply(nss2, 1, quantile, .95) > 10, ] 
+nss95 = filter_percentage(nss2)
 dim(nss95)   # 16507
 
-ss095 = sso[apply(ss0, 1, quantile, .95) > 10, ] 
-dim(ss095)  # 16645
+ss_new = filter_percentage(ss_new)
+dim(ss_new)  # 15285
 
+ss_old = filter_percentage(ss_old)
+dim(ss_old)  # 12606
+
+ss395 = filter_percentage(ss3)
+dim(ss395)  # 15436
+
+
+medians_dt = data.table(gene_name = row.names(ss_new), Median = rowMedians(as.matrix(ss_new)) )
+medians_dt = left_join(medians_dt, et, by = "gene_name") %>% as.data.table
+
+png("/data/ouga/home/ag_gagneur/yepez/LRZ Sync+Share/LMU/Group_meetings/2017_12_journal_club/transcript_boxplot.png",
+    width = 700, height = 500, res = 140)
+ggplot(medians_dt[transcript_type %in% c("protein_coding", "lincRNA", "pseudogene", "antisense")], aes( transcript_type, Median)) + 
+    geom_boxplot() + scale_y_log10() + theme_bw(base_size = 14)
+dev.off()
+
+et = unique(exons_gene_dt[, .(gene_name, transcript_type)]) 
+unique(et$transcript_type)
+table(et$transcript_type)
+
+old_genes <- intersect(rownames(ss_old), et[transcript_type != "protein_coding", gene_name]) # 537
+new_genes <- intersect(rownames(ss_new), et[transcript_type != "protein_coding", gene_name]) # 3623
+table_old <- table(et[gene_name %in% old_genes & transcript_type != "protein_coding", transcript_type]) %>% as.data.table
+table_old[, Count_Type := "Old"]
+table_new <- table(et[gene_name %in% new_genes & transcript_type != "protein_coding", transcript_type]) %>% as.data.table
+table_new[, Count_Type := "New"]
+table_both = rbind(table_old, table_new)
+setnames(table_both, "V1", "Transcript_type")
+table_both[, Count_Type := factor(Count_Type, levels = c("Old", "New"))]
+
+png("/data/ouga/home/ag_gagneur/yepez/LRZ Sync+Share/LMU/Group_meetings/2017_12_journal_club/nc_barplot.png",
+    width = 1400, height = 700, res = 140)
+ggplot(table_both[N>3], aes(Transcript_type, N, fill = Count_Type)) + 
+    geom_bar(stat = "identity", position = "dodge") + 
+    geom_text(aes(label = N), color="black",
+              position = position_dodge(width = .9), size=4, hjust = -.1) +
+    coord_flip() + theme_minimal(base_size = 14) +
+    scale_fill_brewer(palette="Paired") + scale_y_log10()
+    
+dev.off()
 
 hist(log10(nss2+1), breaks=100)
 hist(log10(ss95 + 1), breaks=100)
@@ -77,3 +126,48 @@ both_genes = intersect(rownames(nss95), rownames(ss95))
 png(file.path(DIR_retreat, "hist_b2_nss_sub.png"), width = 600, height = 500, res = 115)
 hist(log10(nss95[nss_genes, ] + 1), breaks=100, xlab = "B2, Non Strand Specific Only", cex.axis = 1.4, cex.lab = 1.4)
 dev.off()
+
+
+g2 <- readRDS("./resources/gencode.v19_with_gene_name.Rds")
+g2 <- unique(g2[, .(gene_name, gene_type)])
+
+create_dt_from_vector <- function(v, name, value = "Total"){
+    table <- table(v)
+    dt <- data.table(table)
+    setnames(dt, "v", name)
+    setnames(dt, "N", value)
+}
+
+dt_annot <- create_dt_from_vector(g2$gene_type, name = "Gene_type")
+
+b2 <- data.table(Gene_name = row.names(ss2))
+dim(b2)
+b2 <- merge(b2, g2, by.x = "Gene_name", by.y = "gene_name", all.x = T)
+dim(b2)
+dt2 <- create_dt_from_vector(b2$gene_type, name = "Gene_type", value = "Counted")
+
+
+ss95 = filter_percentage(ss2)
+b2f <- data.table(Gene_name = row.names(ss95))
+b2f <- merge(b2f, g2, by.x = "Gene_name", by.y = "gene_name", all.x = T)
+dt2f <- create_dt_from_vector(b2f$gene_type, name = "Gene_type", value = "After filter")
+dt2
+
+aux_dt <- merge(dt_annot, dt2, by = "Gene_type", all = T)
+dt_all <- merge(aux_dt, dt2f, by = "Gene_type", all = T)
+dt_melt <- melt(dt_all, id.vars = "Gene_type")
+
+
+
+gene_types = c("snRNA", "snoRNA", "sense_overlapping", "pseudogene", "protein_coding", "misc_RNA", "miRNA", "lincRNA", "antisense")
+
+png("/data/ouga/home/ag_gagneur/yepez/LRZ Sync+Share/LMU/Group_meetings/2017_12_journal_club/count_barplot.png",
+    width = 1400, height = 700, res = 140)
+ggplot(dt_melt[Gene_type %in% gene_types], aes(Gene_type, value, fill = variable)) + 
+    geom_bar(stat = "identity", position = position_dodge()) + 
+    geom_text(aes(label = value), position = position_dodge(.9)) + 
+    scale_fill_ptol() + theme_bw(base_size = 14) + coord_flip() + scale_y_log10()
+dev.off()
+
+
+

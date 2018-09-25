@@ -1,8 +1,8 @@
 library(ggpval)
 library(ggthemes)
-ss_matrix <- readRDS("./resources/rna_count_matrix_strand_specific.Rds")
-nss_matrix <- readRDS("./resources/rna_count_matrix_non_strand_specific.Rds")
-ss_reversed <- readRDS("./resources/rna_count_matrix_strand_specific_reversed.Rds")
+ss_matrix <- read.table(file.path(PROC_DATA, "rna_batch2_strand_specific.txt"))
+nss_matrix <- read.table(file.path(PROC_DATA, "rna_batch1_2_non_strand_specific.txt"))
+
 
 neg = genes_en[strand(genes_en) == "-", ]
 strand(neg) <- "*"

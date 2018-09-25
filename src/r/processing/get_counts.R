@@ -11,10 +11,16 @@ suppressPackageStartupMessages(source("src/r/config.R"))
 gene_mapping = readRDS("./resources/GENCODEv19Mapping.RDS")
 
 
-# UCSC file
-ucsc_txdb= makeTxDbFromGFF('/s/genomes/human/hg19/ucsc/ucsc.translated.gtf', format='gtf')
-gencode_txdb= makeTxDbFromGFF('./resources/gencode.v19.genes.patched_contigs.gtf.gz', format='gtf')
-gencode_txdb = readRDS('./resources/gencode.v19.genes.patched_contigs.Rds')
+### UCSC annotation. Already created, just load it.
+# ucsc_txdb = makeTxDbFromGFF('/s/genomes/human/hg19/ucsc/ucsc.translated.gtf', format='gtf')
+# saveDb(ucsc_txdb, "./resources/ucsc.translated.Db")
+ucsc_txdb <- loadDb("./resources/ucsc.translated.Db")
+
+## Gencode annotation. Already created, just load it.
+# gencode_txdb = makeTxDbFromGFF('./resources/gencode.v19.genes.patched_contigs.gtf.gz', format='gtf')
+# saveDb(gencode_txdb, "./resources/gencode.v19.genes.patched_contigs.Db")
+gencode_txdb <- loadDb("./resources/gencode.v19.genes.patched_contigs.Db")
+
  
 # only canonical chromosomes
 std_chr = paste0('chr',c('X','Y','M',1:22))
