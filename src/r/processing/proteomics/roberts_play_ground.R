@@ -43,13 +43,19 @@ norm_prot <- read_excel(file.path(DIR_RAW_PROT, "20180209_robert_proteomics/prot
 setnames(norm_prot, "X__1", "Protein_id")
 mat_norm_prot <- as.matrix(norm_prot[,2:ncol(norm_prot)])
 rownames(mat_norm_prot) <- norm_prot[,Protein_id]
+
 # TODO check how to filter the samples / genes
 table(mat_norm_prot == 0)
 mat_norm_prot[1:10, 1:10]
 
+log_mat <- log10(mat_norm_prot + 1)
+center_mat_norm_prot <- log_mat - rowMeans(log_mat)
+
 # look at raw data and correlation
 # heatpairs(log10(mat_norm_prot[,c(1:4,18)]))
-heatmap.2(cor(log10(mat_norm_prot + 1)), trace = "none")
+# heatmap.2(cor(log10(mat_norm_prot + 1)), trace = "none")
+heatmap.2(cor(center_mat_norm_prot), trace = "none", col = bluered(20))
+
 
 #' 
 #' # Filter prot data
@@ -61,7 +67,7 @@ mat_norm_prot <- mat_norm_prot[, sampleZeroFreq < 0.1]
 dim(mat_norm_prot)
 heatmap.2(cor(log10(mat_norm_prot + 1)), trace = "none")
 
-# use only genes where less than of the proteins have 10% NA or 0
+# use only genes where less than 10% of the proteins have NA or 0
 protZeroFreq <- apply(mat_norm_prot,1,function(x){ sum(x == 0)/length(x) })
 table(round(protZeroFreq, 3))
 mat_norm_prot <- mat_norm_prot[protZeroFreq < 0.1,]
@@ -97,7 +103,7 @@ res[PROT_PADJ < 0.1][order(PROT_PADJ)]
 
 # have fun
 hist(res[, PROT_PVALUE])
-
+hist(res[, PROT_PADJ])
 
 # calc zscore
 l2fc_mat <- t(matrix(res[,PROT_LOG2FC], nrow=ncol(mat_norm_prot)))
@@ -113,6 +119,6 @@ res[,L2FC_ZSCORE:=as.vector(zscores)]
 DT::datatable(res[order(PROT_PADJ)])
 
 # write it out to disk
-write_tsv(res, file.path(DIR_PROC_PROT, "myResultTable.tsv"))
+write_tsv(res, file.path(DIR_PROC_PROT, "20180227_TMT1-3_wo_zeroblocks_results.tsv"))
 
 
