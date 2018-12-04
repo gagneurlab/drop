@@ -6,12 +6,12 @@ library(OUTRIDER)
 ### TODO:
 # Check id mismatches
 
-
 # Read the OUTRIDER dataset object
 ods <- readRDS("/s/project/genetic_diagnosis/processed_results/ods_4batches.Rds")
+ods <- readRDS("/s/project/genetic_diagnosis/processed_results/ods_batches2_3_4_ss.Rds")
 
 # Gene information table
-genes_dt <- fread("/s/project/genetic_diagnosis/resource/genes_pc.txt")
+genes_dt <- readRDS("resources/gencode.v19_with_gene_name.Rds")
 
 # Subset sample annotation
 sa <- SAMPLE_ANNOTATION[LAB == "PROKISCH" & !is.na(RNA_ID)]
@@ -19,9 +19,8 @@ sa <- SAMPLE_ANNOTATION[LAB == "PROKISCH" & !is.na(RNA_ID)]
 
 # Get the results table
 res <- OUTRIDER::results(ods, all = F)
-res[, c("mu", "disp") := NULL]
 
-res <- add_all_gene_info(res, gene_name_col = "geneID")
+res <- add_all_gene_info(res, gene_name_col = "geneID", hans = T, omim = T, mitocarta = T, dis_genes = F, rcc = F)
 
 
 # Add sample annotation
@@ -33,5 +32,6 @@ res <- left_join(res, sa[, .(RNA_ID, FIBROBLAST_ID, EXOME_ID, PEDIGREE, KNOWN_MU
 setorder(res, AberrantBySample)
 dim(res)
 
-saveRDS(res, "/s/project/genetic_diagnosis/processed_results/res_4batches.Rds")
+# saveRDS(res, "/s/project/genetic_diagnosis/processed_results/res_4batches.Rds")
+saveRDS(res, "/s/project/genetic_diagnosis/processed_results/res_batches2_3_4_ss.Rds")
 res <- readRDS("/s/project/genetic_diagnosis/processed_results/res_4batches.Rds")
