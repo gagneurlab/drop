@@ -3,13 +3,13 @@
 #' author: Daniel Bader
 #' wb:
 #'   input: 
-#'     - exome_candy: "`sm config['PROC_RESULTS'] + 'variants_wes_candidates.RDS'`"
-#'     - rna_aber_exp: "`sm config['PROC_RESULTS'] + 'rna_aberrant_expression.RDS'`"
-#'     - rna_splice: "`sm config['PROC_RESULTS'] + 'rna_splicing_fraser_results.RDS'`"
-#'     - rna_mae: "`sm config['PROC_RESULTS'] + 'rna_mae_deseq_results.RDS'`"
-#'     - prot_aber_exp: "`sm config['PROC_RESULTS'] + 'proteome_aberrant_expression.tsv'`"
+#'     - exome_candy: "/s/project/genetic_diagnosis/processed_results/variants_wes_candidates.RDS"
+#'     - rna_aber_exp: "/s/project/genetic_diagnosis/processed_results/rna_aberrant_expression.RDS"
+#'     - rna_splice: "/s/project/genetic_diagnosis/processed_results/rna_splicing_fraser_results.RDS"
+#'     - rna_mae: "/s/project/genetic_diagnosis/processed_results/rna_mae_deseq_results.RDS"
+#'     - prot_aber_exp: "/s/project/genetic_diagnosis/processed_results/proteome_aberrant_expression.tsv"
 #'   output: [
-#'     all_candidates: "`sm config['PROC_RESULTS'] + 'all_candidates.tsv'`"
+#'     all_candidates: "/s/project/genetic_diagnosis/processed_results/all_candidates.tsv"
 #'   ]
 #' output: 
 #'   html_document:
@@ -19,6 +19,8 @@
 #'
 
 #+ echo=F, warning=F, message=F, results='hide'
+source('.wBuild/wBuildParser.R')
+parseWBHeader("Scripts/diagnosis_tools/strong_candidates.R")
 source("src/r/config.R")
 file_all_candidates <- snakemake@output[['all_candidates']]
 

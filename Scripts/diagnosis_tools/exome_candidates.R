@@ -3,7 +3,7 @@
 #' author: Daniel Bader
 #' wb:
 #'   input: [
-#'     exome_candy: "`sm config['PROC_RESULTS'] + 'variants_wes_candidates.RDS'`"
+#'     exome_candy: "/s/project/genetic_diagnosis/processed_results/variants_wes_candidates.RDS"
 #'   ]
 #'   output: 
 #' output: 
@@ -12,6 +12,8 @@
 #'
 
 #+ echo=F
+source('.wBuild/wBuildParser.R')
+parseWBHeader("Scripts/diagnosis_tools/exome_candidates.R")
 source("src/r/config.R")
 file_exome_candy <- file.path(PROC_RESULTS, 'variants_wes_candidates.RDS')
 file_disease_gene_anno <- file.path(RAWDIR, "gene_info/meta_disease_genes.tsv")

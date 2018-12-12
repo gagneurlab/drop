@@ -3,10 +3,10 @@
 #' author: Daniel Bader, Vicente Yépez
 #' wb:
 #'   input: 
-#'     - rna_aber_exp: "`sm config['PROC_RESULTS'] + 'rna_aberrant_expression.RDS'`"
-#'     - rna_aber_b1_b2: "`sm config['PROC_RESULTS'] + 'rna_aberrant_expression_b1_b2.RDS'`"
-#'     - rna_aber_b3: "`sm config['PROC_RESULTS'] + 'rna_aberrant_expression_b3.RDS'`"
-#'     - rna_mae: "`sm config['PROC_RESULTS'] + 'rna_mae_deseq_results.RDS'`"
+#'     - rna_aber_exp: "/s/project/genetic_diagnosis/processed_results/rna_aberrant_expression.RDS"
+#'     - rna_aber_b1_b2: "/s/project/genetic_diagnosis/processed_results/rna_aberrant_expression_b1_b2.RDS"
+#'     - rna_aber_b3: "/s/project/genetic_diagnosis/processed_results/rna_aberrant_expression_b3.RDS"
+#'     - rna_mae: "/s/project/genetic_diagnosis/processed_results/rna_mae_deseq_results.RDS"
 #'   output: 
 #' output: 
 #'   html_document
@@ -15,6 +15,8 @@
 
 
 #+ echo=F
+source('.wBuild/wBuildParser.R')
+parseWBHeader("Scripts/diagnosis_tools/rna_candidates.R")
 source("src/r/config.R")
 file_rna_aber_exp <- snakemake@input[['rna_aber_exp']]
 file_rna_aber_b1_b2 <- snakemake@input[['rna_aber_b1_b2']]
