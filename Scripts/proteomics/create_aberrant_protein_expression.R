@@ -3,10 +3,10 @@
 #' author: Daniel Bader
 #' wb:
 #'   input: [
-#'     proteome_merged: "`sm config['PROC_DATA'] + 'proteome_intensities_all_merged.tsv'`"
+#'     proteome_merged: "/s/project/genetic_diagnosis/processed_data/proteome_intensities_all_merged.tsv"
 #'   ]
 #'   output: [
-#'     proteome_aberexp: "`sm config['PROC_RESULTS'] + 'proteome_aberrant_expression.tsv'`"
+#'     proteome_aberexp: "/s/project/genetic_diagnosis/processed_results/proteome_aberrant_expression.tsv"
 #'   ]
 #' output: 
 #'   html_document:
@@ -16,9 +16,10 @@
 #'
 
 #+ echo=F
+source('.wBuild/wBuildParser.R')
+parseWBHeader("Scripts/proteomics/create_aberrant_protein_expression.R")
+
 source("src/r/config.R")
-# file_proteome_merged <- file.path(PROC_DATA, "proteome_intensities_all_merged.tsv")
-# file_aber_prot_exp <- file.path(PROC_RESULTS, "proteome_aberrant_expression.tsv")
 file_proteome_merged <- snakemake@input[['proteome_merged']]
 file_aber_prot_exp <- snakemake@output[['proteome_aberexp']]
 
@@ -26,6 +27,8 @@ file_aber_prot_exp <- snakemake@output[['proteome_aberexp']]
 #' Input table tidy raw proteome LFQ intensities
 proteome_merged <- fread(file_proteome_merged)
 head(proteome_merged)
+
+names(proteome_merged) = toupper(names(proteome_merged))
 
 #' Available proteomics measurements:
 all_ms_methods <- unique(proteome_merged$MS_METHOD)

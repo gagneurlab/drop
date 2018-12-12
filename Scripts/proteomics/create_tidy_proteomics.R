@@ -3,19 +3,19 @@
 #' author: Daniel Bader
 #' wb:
 #'   input: 
-#'     - reused_samples: "`sm config['rawdir_proteome'] + 'protein_ids_measured_2nd_time_in_pichler100min.txt'`"
-#'     - bad_exome2rna: "`sm config['rawdir_proteome'] + 'protein_ids_with_bad_exome_to_rna_identity.txt'`"
-#'     - pichler_100min: "`sm config['rawdir_proteome'] + '20160202_pichler_proteome//pichler100min_combined_corrected_proteinGroups.txt'`"
-#'     - pichler_60min: "`sm config['rawdir_proteome'] + '20160202_pichler_proteome//pichler60min_combined_corrected_proteinGroups.txt'`"
-#'     - kuester_tmt201706: "`sm config['rawdir_proteome'] + '20170614_kopajtich_kuester_proteome/m3_lfq_tmt_proteinGroups.txt'`"
+#'     - reused_samples: "/s/project/mitoMultiOmics/raw_data/proteome/protein_ids_measured_2nd_time_in_pichler100min.txt"
+#'     - bad_exome2rna: "/s/project/mitoMultiOmics/raw_data/proteome/protein_ids_with_bad_exome_to_rna_identity.txt"
+#'     - pichler_100min: "/s/project/mitoMultiOmics/raw_data/proteome/20160202_pichler_proteome/pichler100min_combined_corrected_proteinGroups.txt"
+#'     - pichler_60min: "/s/project/mitoMultiOmics/raw_data/proteome/20160202_pichler_proteome/pichler60min_combined_corrected_proteinGroups.txt"
+#'     - kuester_tmt201706: "/s/project/mitoMultiOmics/raw_data/proteome/20170614_kopajtich_kuester_proteome/m3_lfq_tmt_proteinGroups.txt"
 #'   output: 
-#'     - raw_pichler_100min: "`sm config['PROC_DATA'] + 'proteome_pichler_100min_unfiltered_all_samples.tsv'`"
-#'     - pichler_100min: "`sm config['PROC_DATA'] + 'proteome_pichler_100min.tsv'`"
-#'     - raw_pichler_60min: "`sm config['PROC_DATA'] + 'proteome_pichler_60min_unfiltered_all_samples.tsv'`"
-#'     - pichler_60min: "`sm config['PROC_DATA'] + 'proteome_pichler_60min.tsv'`"
-#'     - raw_kuester_tmt201706: "`sm config['PROC_DATA'] + 'proteome_kuester_tmt201706_unfiltered_all_samples.tsv'`"
-#'     - kuester_tmt201706: "`sm config['PROC_DATA'] + 'proteome_kuester_tmt201706.tsv'`"
-#'     - tidy_proteomics: "`sm config['PROC_DATA'] + 'proteome_intensities_all_merged.tsv'`"
+#'     - raw_pichler_100min: "/s/project/genetic_diagnosis/processed_data/proteome_pichler_100min_unfiltered_all_samples.tsv"
+#'     - pichler_100min: "/s/project/genetic_diagnosis/processed_data/proteome_pichler_100min.tsv"
+#'     - raw_pichler_60min: "/s/project/genetic_diagnosis/processed_data/proteome_pichler_60min_unfiltered_all_samples.tsv"
+#'     - pichler_60min: "/s/project/genetic_diagnosis/processed_data/proteome_pichler_60min.tsv"
+#'     - raw_kuester_tmt201706: "/s/project/genetic_diagnosis/processed_data/proteome_kuester_tmt201706_unfiltered_all_samples.tsv"
+#'     - kuester_tmt201706: "/s/project/genetic_diagnosis/processed_data/proteome_kuester_tmt201706.tsv"
+#'     - tidy_proteomics: "/s/project/genetic_diagnosis/processed_data/proteome_intensities_all_merged.tsv"
 #' output: 
 #'   html_document:
 #'     toc_float: yes
@@ -24,6 +24,8 @@
 #'
 
 #+ echo=F
+source('.wBuild/wBuildParser.R')
+parseWBHeader("Scripts/proteomics/create_tidy_proteomics.R")
 source("src/r/config.R")
 
 #+ input
@@ -110,7 +112,7 @@ write_tsv(filtered_prot_pi100, file=snakemake@output[['pichler_100min']])
 #' 
 #' # Pichler QExactive 60min
 #' 
-#file_pichler_60min <- "/s/project/mitoMultiOmics/raw_data//proteome/20160202_pichler_proteome//pichler60min_combined_corrected_proteinGroups.txt"
+#file_pichler_60min <- "/s/project/mitoMultiOmics/raw_data/proteome/20160202_pichler_proteome//pichler60min_combined_corrected_proteinGroups.txt"
 
 raw_pdt_pi60 <- wrapper_proteinGroupsTxt_to_tidy_table(
     file_pichler_60min, 

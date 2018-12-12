@@ -21,6 +21,7 @@ auto
 *.project
 readme.html
 .Rproj.user
+.Rhistory
 
 # other
 *~

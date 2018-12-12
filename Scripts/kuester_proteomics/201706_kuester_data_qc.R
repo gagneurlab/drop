@@ -3,12 +3,12 @@
 #' author: Daniel Bader
 #' wb:
 #'   input: [ 
-#'     "/s/project/mitoMultiOmics//raw_data//proteome/20170614_kopajtich_kuester_proteome/m1_lfq_single_shot_proteinGroups.txt",
-#'     "/s/project/mitoMultiOmics//raw_data//proteome/20170614_kopajtich_kuester_proteome/m2_lfq_rphp_proteinGroups.txt",
-#'     "/s/project/mitoMultiOmics//raw_data//proteome/20170614_kopajtich_kuester_proteome/m3_lfq_tmt_proteinGroups.txt",
-#'     "/s/project/mitoMultiOmics//raw_data//proteome/20170614_kopajtich_kuester_proteome/m4_lfq_id_trinity_proteinGroups.txt"
+#'     "/s/project/mitoMultiOmics/raw_data/proteome/20170614_kopajtich_kuester_proteome/m1_lfq_single_shot_proteinGroups.txt",
+#'     "/s/project/mitoMultiOmics/raw_data/proteome/20170614_kopajtich_kuester_proteome/m2_lfq_rphp_proteinGroups.txt",
+#'     "/s/project/mitoMultiOmics/raw_data/proteome/20170614_kopajtich_kuester_proteome/m3_lfq_tmt_proteinGroups.txt",
+#'     "/s/project/mitoMultiOmics/raw_data/proteome/20170614_kopajtich_kuester_proteome/m4_lfq_id_trinity_proteinGroups.txt"
 #'     ]
-#'   output: "/s/project/genetic_diagnosis/processed_data//proteome_kuester_method_trial_lfq.tsv"
+#'   output: "/s/project/genetic_diagnosis/processed_data/proteome_kuester_method_trial_lfq.tsv"
 #' output: 
 #'   html_document:
 #'     toc_float: yes
@@ -49,7 +49,6 @@ pdt <- wrapper_proteinGroupsTxt_to_tidy_table(tmp_file_kuester)
 print(pdt)
 pdt[PROTEOME_ID=='nhdf.p9.rep1', PROTEOME_ID:="nhdf.p9"]
 pdt[,ms_method:='single_shot']
-
 
 
 #' # Read remaining Kuester files

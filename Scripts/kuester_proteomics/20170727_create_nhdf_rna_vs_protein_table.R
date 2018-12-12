@@ -3,8 +3,8 @@
 #' author: Daniel Bader
 #' wb:
 #'   input: [ 
-#'   "/s/project/mitoMultiOmics//raw_data//proteome/20170614_kopajtich_kuester_proteome/m3_lfq_tmt_proteinGroups.txt",
-#'   "/s/project/mitoMultiOmics//raw_data//proteome/20170614_kopajtich_kuester_proteome/m4_lfq_id_trinity_proteinGroups.txt",
+#'   "/s/project/mitoMultiOmics/raw_data/proteome/20170614_kopajtich_kuester_proteome/m3_lfq_tmt_proteinGroups.txt",
+#'   "/s/project/mitoMultiOmics/raw_data/proteome/20170614_kopajtich_kuester_proteome/m4_lfq_id_trinity_proteinGroups.txt",
 #'   "/s/project/mitoMultiOmics/counttable_galignment/rna/raw_counttable_rna_no_strand.tsv",
 #'   "resources/201706_kuester_tmt_sample_mapping.tsv"
 #'   ]
@@ -126,7 +126,8 @@ rna_ids_nhdf = rna_ids_nhdf[1:8]
 #' 
 rna_res <- as.data.table(read.delim(file_rna_raw_counts, check.names = F), keep.rownames=T)
 setnames(rna_res, 'rn', 'GENE_NAME')
-rna_nhdf <- rna_res[, c('GENE_NAME',rna_ids_nhdf), with=F]
+
+rna_nhdf <- rna_res[, intersect(colnames(rna_res), c('GENE_NAME',rna_ids_nhdf)), with=F]
 setnames(rna_nhdf, gsub('^[^G]', 'rna_gene_counts_nhdf_', names(rna_nhdf)))
 
 

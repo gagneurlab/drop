@@ -1,5 +1,5 @@
 #'---
-#' title: R script
+#' title:  
 #' author: Daniel Bader
 #' wb:
 #'   input: 
@@ -17,25 +17,19 @@ source("src/r/config.R")
 
 #' # Read tidy data
 #+ 
-file_tidy_rna <- file.path(
-    DATADIR, "processed_expression/rna_aberrant_expression.RDS"
-)
-rna_dt <- as.data.table(readRDS(file_tidy_rna))
-rna_dt[,FIBROBLAST_ID:=as.character(FIBROBLAST_ID)]
+file_tidy_rna <- file.path(DATADIR, "processed_expression/rna_aberrant_expression.RDS")
+rna_dt <- readRDS(file_tidy_rna) %>% as.data.table()
+rna_dt[,FIBROBLAST_ID := as.character(FIBROBLAST_ID)]
 
 #' tidy proteomics
 #+
-file_tidy_pichler_100min <- file.path(
-    PROC_DATA, "proteome_pichler_100min.tsv"
-)
-prot_dt <- fread(file_tidy_pichler_100min)
-head(prot_dt)
+file_tidy_pichler_100min <- file.path(PROC_DATA, "proteome_pichler_100min.tsv")
+# prot_dt <- fread(file_tidy_pichler_100min)
+# head(prot_dt)
 
 #' ## paper proteomics
 #+
-file_proteome_bundle <- file.path(
-    DATADIR, "processed_expression/proteome_normalize_fibro_bundle.Rdata"
-)
+file_proteome_bundle <- file.path(DATADIR, "processed_expression/proteome_normalize_fibro_bundle.Rdata")
 load(file_proteome_bundle, verbose = T)
 head(proteome_limma_res_list[[1]])
 
@@ -53,23 +47,15 @@ for(fib in names(proteome_limma_res_list)){
 head(proteome_tidy_dt)
 
 
-
 #' # Complex 1 genes
 #+
 extsuppl_prefix= '/s/project/mitoMultiOmics/paper_nature_genetics/paper_supplement_data/ext_suppl_'
 FILE_corum_database = paste0(extsuppl_prefix, "corum_mammalian_protein_complexes.tsv")
 corumdt = as.data.table(read.delim(FILE_corum_database, stringsAsFactor=F))
 
-genes_complex1= sort( unique( 
-        corumdt[
+genes_complex1 <- corumdt[
             grepl('Respiratory chain complex I', Complex.name), 
-            strsplit(gene, ',')[[1]]
-        ]
-    )
-)
-
-
-
+            strsplit(gene, ',')[[1]] ] %>% sort %>% unique
 #' 
 #' # RNA vs Protein fold change plots
 #' 
@@ -136,8 +122,6 @@ par(mar=c(6,6,4,1))
 myfcplot(rnaprot_dt, '80256', 'ALDH18A1', 0.008)
 
 
-
-
 #' ## Plotly version
 #' 
 #' to be extended
@@ -149,10 +133,7 @@ p <- plot_ly(
     x=~2^log2FoldChange, 
     y=~2^plotted_prot_fc,
     text=~hgncid
-)%>% layout(
-    xaxis=list(type="log"),
-    yaxis=list(type="log")
-)
+)%>% layout(xaxis=list(type="log"), yaxis=list(type="log"))
 
 #+ warnings=F
 p
