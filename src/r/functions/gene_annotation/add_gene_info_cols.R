@@ -120,7 +120,36 @@ add_disease_gene_info <- function(DT, gene_name_col = "gene_name"){
     return(DT)
 }
 
-# gene_annot = add_disease_gene_info(gene_annot, gene_name_col = "gene_name")
+
+##############
+### Rahman's disease genes columns
+##############
+add_rahman_disease_col <- function(DT, gene_name_col = "gene_name"){
+    rahman_table <- fread("../exomes1000/Data/MitoDiseaseGenes(Rahman).csv")
+    rahman_table[, Gene := toupper(Gene)]
+    
+    # v1 is the way it is in Rahman's table
+    alias_dt = data.table(v1 = c("NAXE", "ATP5A1", "ATP5E", "COQ8A", "COQ8B", "ATP5D", "PET100", 
+                                 "MRM2", "NDUFAF8", "RTN4IP1", "UQCC3", "TWNK", "FDX1L", "COA7"),
+                          v2 = c("APOA1BP", "ATP5F1A", "ATP5F1E", "ADCK3", "ADCK4", "ATP5F1D", "C19ORF79", 
+                                 "FTSJ2", "C17ORF89", "NIMP", "C11ORF83", "C10ORF2", "FDX2",  "SELRC1"))
+    
+    rt = rahman_table[Gene %in% alias_dt$v1]
+    rt = merge(rt, alias_dt, by.x = "Gene", by.y = "v1")
+    rt[, Gene := v2]
+    rt[, v2 := NULL]
+    
+    rt = rbind(rahman_table, rt)
+    
+    setnames(DT, gene_name_col, "gene_name")
+    DT[, rahman_disease_gene := gene_name %in% rt$Gene]
+    setnames(DT, "gene_name", gene_name_col)
+    
+    return(DT)
+}
+
+
+
 
 ##############
 ### Add OMIM columns
@@ -160,7 +189,7 @@ add_rcc_info <- function(DT, gene_name_col = "gene_name"){
 }
 
 add_nuclear_mito_DNA <- function(DT, gene_name_col = "gene_name"){
-    ge <- readRDS("resources/gencode.v19_with_gene_name.Rds")
+    ge <- readRDS("../genetic_diagnosis/resources/gencode.v19_with_gene_name.Rds")
     ge[, nDNA_mtDNA := "nDNA"]
     ge[seqnames == "MT", nDNA_mtDNA := "mtDNA"]
     setnames(DT, gene_name_col, "gene_name")
@@ -169,13 +198,36 @@ add_nuclear_mito_DNA <- function(DT, gene_name_col = "gene_name"){
     return(DT)
 }
 
-add_ensembl_id <- function(DT, gene_name_col = "gene_name"){
+add_ensembl_id <- function(DT, gene_name_col = "gene_name", gene_id_col = "gene_id"){
     require(tidyr)
-    ge <- readRDS("resources/gencode.v19_with_gene_name.Rds")
+    ge <- readRDS("../genetic_diagnosis/resources/gencode.v19_with_gene_name.Rds")
+    
+    ge[, gene_name := toupper(gene_name)]
+    
+    # v1 the way it is in this annotation
+    alias_dt = data.table(v1 = c("APOA1BP", "C19ORF70", "ATP5A1", "ATP5E", "ADCK3","ADCK4", "ATP5D", "PET100", 
+                                 "FTSJ2", "NDUFAF8", "RTN4IP1", "UQCC3", "C10ORF2", "FDX1L", "SELRC1", "SEPN1", "PRUNE"),
+                               v2 = c("NAXE", "QIL1", "ATP5F1A", "ATP5F1E", "COQ8A", "COQ8B", "ATP5F1D","C19ORF79", 
+                                      "MRM2", "C17ORF89", "NIMP", "C11ORF83", "TWNK", "FDX2","COA7", "SELENON", "PRUNE1"))
+    
+    al = ge[gene_name %in% alias_dt$v1]
+    al = merge(al, alias_dt, by.x = "gene_name", by.y = "v1")
+    al[, gene_name := v2]
+    al[, v2 := NULL]
+    
+    ge = rbind(ge, al)
+    
     ge = separate(ge, gene_id, into = c("gene_id", "useless"), sep = "\\.", remove = T)
     setnames(DT, gene_name_col, "gene_name")
     DT <- left_join(DT, ge[,.(gene_name, gene_id)], by = "gene_name") %>% as.data.table
-    setnames(DT, "gene_name", gene_name_col)
+    
+    # Add other ids
+    DT[gene_name == "MT-ND4",  gene_id := "ENSG00000198886"]
+    DT[gene_name == "MT-ATP6", gene_id := "ENSG00000198899"]
+    DT[gene_name == "MT-TI",   gene_id := "ENSG00000210100"]
+    setnames(DT, old = "gene_name", new = gene_name_col)
+    setnames(DT, old = "gene_id", new = gene_id_col)
+    
     return(DT)
 }
 
@@ -183,7 +235,7 @@ add_ensembl_id <- function(DT, gene_name_col = "gene_name"){
 ### Add all columns
 ##############
 add_all_gene_info <- function(DT, gene_name_col = "gene_name", mitocarta = T, hans = T, dis_genes = T, omim = T, rcc = F,
-                              nDNA_mtDNA = F, NA_as_dot = F){
+                              nDNA_mtDNA = F, gene_id = F, gene_id_col = "gene_id", NA_as_dot = F){
     dt <- copy(DT)
     if(mitocarta == T) dt <- add_mitocarta_col(dt, gene_name_col)
     if(hans == T) dt <- add_hans_class(dt, gene_name_col)
@@ -191,6 +243,7 @@ add_all_gene_info <- function(DT, gene_name_col = "gene_name", mitocarta = T, ha
     if(rcc == T) dt <- add_rcc_info(dt, gene_name_col)
     if(omim == T) dt <- add_omim_cols(dt, gene_name_col)
     if(nDNA_mtDNA == T) dt <- add_nuclear_mito_DNA(dt, gene_name_col)
+    if(gene_id == T) dt <- add_ensembl_id(dt, gene_name_col, gene_id_col)
     if(NA_as_dot == T) dt[is.na(dt)] = "."
     return(dt)
 }

@@ -21,6 +21,7 @@ sa <- SAMPLE_ANNOTATION[LAB == "PROKISCH" & !is.na(RNA_ID)]
 res <- OUTRIDER::results(ods, all = F)
 
 res <- add_all_gene_info(res, gene_name_col = "geneID", hans = T, omim = T, mitocarta = T, dis_genes = F, rcc = F)
+# res <- add_all_gene_info(res, gene_name_col = "gene_name", hans = T, omim = T, mitocarta = T, dis_genes = F, rcc = F)
 
 
 # Add sample annotation
@@ -34,4 +35,6 @@ dim(res)
 
 # saveRDS(res, "/s/project/genetic_diagnosis/processed_results/res_4batches.Rds")
 saveRDS(res, "/s/project/genetic_diagnosis/processed_results/res_batches2_3_4_ss.Rds")
+saveRDS(res, "/s/project/genetic_diagnosis/processed_results/res_all_batches_th.Rds")
+write.table(res, "/s/project/genetic_diagnosis/processed_results/res_all_batches_th.tsv", sep = "\t", row.names = F, quote = F)
 res <- readRDS("/s/project/genetic_diagnosis/processed_results/res_4batches.Rds")
