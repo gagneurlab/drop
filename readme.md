@@ -7,7 +7,7 @@ Goals:
     * using aberrant expression pkg
     * using splicing pkg
     * develop MAE functions/pkg
-* extend  pipeline by proteomics
+* extend pipeline by proteomics
 
 ## Diagnosis tools:
 - [Webserver](https://i12g-gagneurweb.in.tum.de/project/genetic_diagnosis/)

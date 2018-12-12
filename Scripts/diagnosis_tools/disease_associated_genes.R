@@ -2,7 +2,7 @@
 #' title: Disease associated genes
 #' author: Daniel Bader, Vicente Yépez
 #' wb:
-#'   input: "/s/project/mitoMultiOmics/raw_data/gene_info//meta_disease_genes.tsv"
+#'   input: "/s/project/mitoMultiOmics/raw_data/gene_info/meta_disease_genes.tsv"
 #'   output: 
 #' output: 
 #'   html_document
