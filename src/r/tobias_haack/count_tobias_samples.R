@@ -11,7 +11,14 @@ names(bamfiles) <- samples
 
 my_bpparam = register_bplapply_for_clustering(slurm = F, workers = 40, threads = 2, memory = 8000, jobname = "count_rna")
 
+# Test if the bam files exist
+bplapply(1:length(bamfiles), function(i){
+    file.exists(bamfiles[[i]]$path)
+    
+}, BPPARAM = my_bpparam
+)
 
+# Count
 library(GenomicAlignments)
 
 bplapply(1:length(bamfiles), function(i){
@@ -32,9 +39,3 @@ BPPARAM = my_bpparam
 message('counting done')
 
 
-# Test if the bam files exist
-bplapply(1:length(bamfiles), function(i){
-    file.exists(bamfiles[[i]]$path)
-    
-}, BPPARAM = my_bpparam
-)
