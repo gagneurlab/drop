@@ -24,6 +24,7 @@ sat <- fread(snakemake@input[['sample_anno']])
 
 res <- fread(snakemake@input[['ods_results']])
 res <- res[LAB == "HAACK"]
+setorder(res, l2fc)
 
 ods_ss <- readRDS("/s/project/genetic_diagnosis/processed_results/ods_batches2_3_4_th_ss.Rds")
 ods_nss <- readRDS("/s/project/genetic_diagnosis/processed_results/ods_batches0_1_th_nss.Rds")
@@ -48,18 +49,32 @@ DT::datatable(res, caption = "Expression outlier results table", style = 'bootst
 #' ## Mito disease or Mitocarta genes
 DT::datatable(res[!is.na(MITOGENE_CATEGORY) | MITOCARTA == TRUE])
 
-plotExpressionRank(ods_nss, 'ENSG00000203667.5', main = "COX20")
+plotExpressionRank(ods_nss, 'NDUFB9', normalized = T)
+plotExpressionRank(ods_nss, 'NDUFB9', normalized = F)
+plotVolcano(ods_nss, '99393')
 
-plotExpressionRank(ods_nss, 'ENSG00000130414.7', normalized = F)
-
-plotExpressionRank(ods_nss, 'ENSG00000130414.7', normalized = F)
+plotExpressionRank(ods_nss, 'NDUFA10', normalized = T)
+plotExpressionRank(ods_nss, 'NDUFA10', normalized = F)
+plotVolcano(ods_nss, '95385')
 
 #' ## Repeated genes
-dup_genes <- res[duplicated(gene_name), gene_name]
+dup_genes <- res[duplicated(geneID), geneID]
 dup_genes  # KIAA1586 is related to nucleic acid binding
-res[gene_name %in% dup_genes]  # TUEB004 and TUEB005 are siblings
+res[geneID %in% dup_genes]  # TUEB004 and TUEB005 are siblings
 
-plotExpressionRank(ods_nss, 'ENSG00000168116.9', main = "KIAA1586")
+plotExpressionRank(ods_nss, 'KIAA1586')
+plotVolcano(ods_nss, 'TUEB004')
+plotVolcano(ods_nss, 'TUEB005')
+
+#' ## Highest ranked genes
+plotExpressionRank(ods_nss, 'APOBEC3B', normalized = T)
+plotExpressionRank(ods_nss, 'APOBEC3B', normalized = F)
+plotVolcano(ods_nss, 'TUEB007')
+
+plotExpressionRank(ods_nss, 'DOK5', normalized = T)
+plotExpressionRank(ods_nss, 'DOK5', normalized = F)
+plotVolcano(ods_nss, '97808')
+
 
 
 #' ## Volcano plots
