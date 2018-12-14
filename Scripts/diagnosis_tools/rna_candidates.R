@@ -1,6 +1,6 @@
 #'---
 #' title: RNA candidates by aberrant and mono-allelic expression
-#' author: Daniel Bader, Vicente Yépez
+#' author: Daniel Bader, Vicente Yepez
 #' wb:
 #'   input: 
 #'     - rna_aber_exp: "/s/project/genetic_diagnosis/processed_results/rna_aberrant_expression.RDS"
