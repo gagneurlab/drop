@@ -37,6 +37,7 @@ dup_genes <- gtf_dt[duplicated(gtf_dt$gene_name), gene_name] # Get genes that ap
 # Get genes that appear more than twice
 repeated_genes <- names(table(gtf_dt[gene_name %in% dup_genes, gene_name])[table(gtf_dt[gene_name %in% dup_genes, gene_name]) > 2])
 
+# rename duplicate gene names
 for(d in repeated_genes){
     N = nrow(gtf_dt[gene_name == d])
     value = paste(d, 1:N, sep = "_")
@@ -49,6 +50,22 @@ dup_genes <- gtf_dt[duplicated(gtf_dt$gene_name), gene_name]
 View(gtf_dt[gene_name %in% dup_genes])
 
 
+#### NEW ANNOTATION AND EXON EXTRACTION
+invert_strand <- function(txdb) {
+    exons_by_gene <- exonsBy(txdb, by = "gene")
+    exons_by_gene_op <- copy(exons_by_gene)
+    unlisted <- unlist(exons_by_gene_op)
+    strand(unlisted) <- ifelse(strand(unlisted) == '+', '-', '+')
+    exons_by_gene_op <- relist(unlisted, exons_by_gene_op)
+    exons_by_gene_op
+}
+
+# gtex gencode 19
+seqlevels(gtex_txdb) <- paste0("chr", seqlevels(gtex_txdb))
+seqlevels(gtex_txdb) <- gsub("MT", "M", seqlevels(gtex_txdb))
+saveRDS(invert_strand(gtex_txdb), "resources/exons_by_gene_op_v19.rds")
+# gencode 29
+saveRDS(invert_strand(gencode_txdb), "resources/exons_by_gene_op_v29.rds")
 
 # all genes
 # Make sure that the chromosomes names from the bam and annotation files are the same (eg, 1 != chr1)
@@ -60,10 +77,8 @@ genes_en = sort(genes(gencode_txdb))
 transcripts_en = sort(transcripts(gtex_txdb))
 exons_en = sort(exonsBy(gtex_txdb, by = "gene"))
 
-seqlevels(exons_en) = paste0("chr", seqnames(exons_en)@values)
-seqlevels(exons_en) = gsub("MT", "M", seqnames(exons_en)@values)
-
 saveRDS(exons_en, "./resources/exons_en.Rds")
+exons_en <- readRDS("./resources/exons_en.Rds")
 
 # Genes annotated in the opposite strand
 exons_op <- copy(exons_en)
