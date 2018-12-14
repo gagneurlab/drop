@@ -28,10 +28,10 @@ res <- fread(snakemake@input[['ods_results']])
 res <- res[LAB == "HAACK"]
 setorder(res, l2fc)
 
-# ods_ss <- readRDS("/s/project/genetic_diagnosis/processed_results/ods_batches2_3_4_th_ss.Rds")
-ods_ss <- readRDS(file.path(DIR_lrz, "ods_batches2_3_4_th_ss.Rds"))
-# ods_nss <- readRDS("/s/project/genetic_diagnosis/processed_results/ods_batches0_1_th_nss.Rds")
-ods_nss <- readRDS(file.path(DIR_lrz, "ods_batches0_1_th_nss.Rds"))
+ods_ss <- readRDS("/s/project/genetic_diagnosis/processed_results/ods_batches2_3_4_th_ss.Rds")
+# ods_ss <- readRDS(file.path(DIR_lrz, "ods_batches2_3_4_th_ss.Rds"))
+ods_nss <- readRDS("/s/project/genetic_diagnosis/processed_results/ods_batches0_1_th_nss.Rds")
+# ods_nss <- readRDS(file.path(DIR_lrz, "ods_batches0_1_th_nss.Rds"))
 
 
 plot_expected_raw_counts <- function(gene, ods){
