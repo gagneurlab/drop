@@ -3,10 +3,10 @@ webDir: /s/public_webshare/project/genetic_diagnosis
 projectTitle: Genetic diagnosis of Mendelian disorders
 htmlOutputPath: Output/html
 
-rawdir_proteome: /s/project/mitoMultiOmics/raw_data//proteome/
-PROC_DATA: /s/project/genetic_diagnosis/processed_data/
-PROC_RESULTS: /s/project/genetic_diagnosis/processed_results/
-RAW_DATA: /s/project/mitoMultiOmics/raw_data/helmholtz/
+rawdir_proteome: /s/project/mitoMultiOmics/raw_data/proteome
+PROC_DATA: /s/project/genetic_diagnosis/processed_data
+PROC_RESULTS: /s/project/genetic_diagnosis/processed_results
+RAW_DATA: /s/project/mitoMultiOmics/raw_data/helmholtz
 
 # Samples from:
 # SAMPLE_ANNOTATION[BATCH %in% paste("Batch", 1:5, sep = "_") & TISSUE == 'FIBROBLAST' & GROWTH_MEDIUM == 'GLU' & is.na(TRANSDUCED_GENE), RNA_ID] -> samples

@@ -1,11 +1,11 @@
 #'---
 #' title: Merge the counts for all samples
-#' author: Michaela Müller
+#' author: Michaela Muller
 #' wb:
 #'  input: 
-#'  - counts: '`sm expand(config["PROC_DATA"] + "counts/{{annotation}}/{sampleID}_counts.RDS", sampleID=config["SAMPLE_IDS"])`'
+#'  - counts: '`sm expand(config["PROC_DATA"] + "/counts/{{annotation}}/{sampleID}_counts.RDS", sampleID=config["SAMPLE_IDS"])`'
 #'  output:
-#'  - merged_counts: '`sm config["PROC_DATA"] + "counts/{annotation}/total_counts.RDS"`'
+#'  - merged_counts: '`sm config["PROC_DATA"] + "/counts/{annotation}/total_counts.RDS"`'
 #'  threads: 60
 #'  type: script
 #'---
