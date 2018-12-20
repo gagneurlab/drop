@@ -172,12 +172,12 @@ saveRDS(ods_nss, "/s/project/genetic_diagnosis/processed_results/ods_batches0_1_
 
 ods_ss <- readRDS("/s/project/genetic_diagnosis/processed_results/ods_batches2_3_4_th_ss.Rds")
 
-res_ss <- results(ods_ss)
+res_ss <- OUTRIDER::results(ods_ss)
 res_ss[, IS_RNA_SEQ_STRANDED := T]
 
 
 ods_nss <- readRDS("/s/project/genetic_diagnosis/processed_results/ods_batches0_1_th_nss.Rds")
-res_nss <- results(ods_nss)
+res_nss <- OUTRIDER::results(ods_nss)
 res_nss[, IS_RNA_SEQ_STRANDED := F]
 
 res <- rbind(res_ss, res_nss)
