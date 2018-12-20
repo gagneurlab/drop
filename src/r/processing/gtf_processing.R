@@ -1,28 +1,24 @@
-# Author: baderd, vyepez
-#########################################################
+# Author: mumichae, vyepez
 
 suppressPackageStartupMessages(source("src/r/config.R"))
 
-# Contains HGSC to ENCODE gene mapping
-gene_mapping = readRDS("./resources/GENCODEv19Mapping.RDS")
-
-### UCSC annotation. Already created, just load it.
-# ucsc_txdb = makeTxDbFromGFF('/s/genomes/human/hg19/ucsc/ucsc.translated.gtf', format='gtf')
-# saveDb(ucsc_txdb, "./resources/ucsc.translated.Db")
-ucsc_txdb <- loadDb("./resources/ucsc.translated.Db")
-
-## GTEx annotation. Already created, just load it.
-# The gtf file was downloaded from 
+## Annotations. Already created, just load it.
+# v19 downloaded from https://storage.googleapis.com/gtex_analysis_v7/reference/gencode.v19.genes.v7.patched_contigs.gtf
 # gtex_txdb = makeTxDbFromGFF('./resources/gencode.v19.genes.patched_contigs.gtf.gz', format='gtf')
-# gencode_txdb = makeTxDbFromGFF('/s/genomes/human/hg19/gencode29/gencode.v29lift37.annotation.gtf.gz', format='gtf')
-gencode_txdb <- loadDb('/s/genomes/human/hg19/gencode29/gencode.v29lift37.annotation.Db')
-# saveDb(gencode_txdb, "/s/genomes/human/hg19/gencode29/gencode.v29lift37.annotation.Db")
 # saveDb(gtex_txdb, "./resources/gencode.v19.genes.patched_contigs.Db")
+# rename chromosomes for v19
 gtex_txdb <- loadDb("./resources/gencode.v19.genes.patched_contigs.Db")
+seqlevels(gtex_txdb) <- paste0("chr", seqlevels(gtex_txdb))
+seqlevels(gtex_txdb) <- gsub("MT", "M", seqlevels(gtex_txdb))
 
+# v29
+# gencode_txdb = makeTxDbFromGFF('/s/genomes/human/hg19/gencode29/gencode.v29lift37.annotation.gtf.gz', format='gtf')
+# saveDb(gencode_txdb, "/s/genomes/human/hg19/gencode29/gencode.v29lift37.annotation.Db")
+gencode_txdb <- loadDb('/s/genomes/human/hg19/gencode29/gencode.v29lift37.annotation.Db')
 # Subset to include only canonical chromosomes
 std_chr = paste0('chr',c('X','Y','M',1:22))
 seqlevels(gencode_txdb) <- std_chr  # Subset the whole txdb object
+
 
 # Get gene annotation
 gtf_or <- rtracklayer::import("/s/genomes/human/hg19/gencode29/gencode.v29lift37.annotation.gtf.gz") %>% as.data.table
@@ -35,37 +31,44 @@ head(gtf_dt)
 
 dup_genes <- gtf_dt[duplicated(gtf_dt$gene_name), gene_name] # Get genes that appear at least twice
 # Get genes that appear more than twice
-repeated_genes <- names(table(gtf_dt[gene_name %in% dup_genes, gene_name])[table(gtf_dt[gene_name %in% dup_genes, gene_name]) > 2])
+repeated_genes <- names(table(gtf_dt[gene_name %in% dup_genes, gene_name])[table(gtf_dt[gene_name %in% dup_genes, gene_name]) > 1])
 
 # rename duplicate gene names
-for(d in repeated_genes){
-    N = nrow(gtf_dt[gene_name == d])
-    value = paste(d, 1:N, sep = "_")
-    gtf_dt[gene_name == d, gene_name := value]
-}
-gtf_dt[gene_name %in% repeated_genes]
+gtf_dt[, N := 1:.N, by = gene_name]
+gtf_dt[, gene_name_unique := gene_name]
+gtf_dt[N > 1, gene_name_unique := paste(gene_name, N, sep = '_')]
+gtf_dt[, N := NULL]
 
+# check if successful
+gtf_dt[gene_name %in% repeated_genes]
 gtf_dt[duplicated(gtf_dt$gene_id)]  # 41 X-Y paralog genes
 dup_genes <- gtf_dt[duplicated(gtf_dt$gene_name), gene_name]
 View(gtf_dt[gene_name %in% dup_genes])
 
+fwrite(gtf_dt, "resources/gencode_v29_unique_gene_name.tsv", sep = '\t')
+
 
 #### NEW ANNOTATION AND EXON EXTRACTION
-invert_strand <- function(txdb) {
-    exons_by_gene <- exonsBy(txdb, by = "gene")
-    exons_by_gene_op <- copy(exons_by_gene)
-    unlisted <- unlist(exons_by_gene_op)
-    strand(unlisted) <- ifelse(strand(unlisted) == '+', '-', '+')
-    exons_by_gene_op <- relist(unlisted, exons_by_gene_op)
-    exons_by_gene_op
+invert_strand <- function(exons) {
+    exons_op <- copy(exons)
+    if (class(exons) == "GRanges") {
+        strand(exons_op) <- ifelse(strand(exons) == '+', '-', '+')
+    } else if (class(exons) %in% c("GRangesList", "CompressedGRangesList")) {
+        unlisted <- unlist(exons_op) # create genomic ranges object
+        strand(unlisted) <- ifelse(strand(unlisted) == '+', '-', '+')
+        exons_op <- relist(unlisted, exons_op) # change back to GRList
+    } else {
+        message(class(exons))
+    }
+    exons_op
 }
 
 # gtex gencode 19
-seqlevels(gtex_txdb) <- paste0("chr", seqlevels(gtex_txdb))
-seqlevels(gtex_txdb) <- gsub("MT", "M", seqlevels(gtex_txdb))
-saveRDS(invert_strand(gtex_txdb), "resources/exons_by_gene_op_v19.rds")
+gtex_op <- invert_strand(exonsBy(gtex_txdb, by = "gene"))
+saveRDS(gtex_op, "resources/exons_by_gene_op_v19.rds")
 # gencode 29
-saveRDS(invert_strand(gencode_txdb), "resources/exons_by_gene_op_v29.rds")
+gencode_op <- invert_strand(exonsBy(gencode_txdb, by = "gene"))
+saveRDS(gencode_op, "resources/exons_by_gene_op_v29.rds")
 
 # all genes
 # Make sure that the chromosomes names from the bam and annotation files are the same (eg, 1 != chr1)
@@ -80,12 +83,6 @@ exons_en = sort(exonsBy(gtex_txdb, by = "gene"))
 saveRDS(exons_en, "./resources/exons_en.Rds")
 exons_en <- readRDS("./resources/exons_en.Rds")
 
-# Genes annotated in the opposite strand
-exons_op <- copy(exons_en)
-strand(exons_op[strand(exons_op) == "-",]) <- "*"
-strand(exons_op[strand(exons_op) == "+",]) <- "-"
-strand(exons_op[strand(exons_op) == "*",]) <- "+"
-saveRDS(exons_op, "./resources/exons_op.Rds")
 
 genes_dt = as.data.table(genes_en)
 g2 = merge(genes_dt, gene_mapping, by = "gene_id")
