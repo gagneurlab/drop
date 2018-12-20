@@ -34,4 +34,5 @@ _cache
 *_cache
 *_files
 *.cache
+tmp/
 
