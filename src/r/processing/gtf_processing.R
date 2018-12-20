@@ -84,6 +84,7 @@ saveRDS(exons_en, "./resources/exons_en.Rds")
 exons_en <- readRDS("./resources/exons_en.Rds")
 
 
+gene_mapping <- readRDS("resources/GENCODEv19Mapping.RDS")
 genes_dt = as.data.table(genes_en)
 g2 = merge(genes_dt, gene_mapping, by = "gene_id")
 saveRDS(g2, "./resources/gencode.v19_with_gene_name.Rds")
@@ -100,7 +101,8 @@ seqlevels(genes_gr) = as.character(seqnames(genes_gr)@values)
 ## We might need to add _2, _3, ... for repeated gene names
 # We can use the following code
 genes_dt <- readRDS("./resources/gencode.v19_with_gene_name.Rds")
-genes_dt[, N := .N, by = gene_name]
+genes_dt <- copy(g2)
+genes_dt[, N := 1:.N, by = gene_name]
 genes_dt[N > 1]
 genes_dt[, gene_new_name := gene_name]
 genes_dt[N > 1, gene_new_name := paste(gene_name, N, sep = "_")]
