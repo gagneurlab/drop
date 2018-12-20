@@ -24,22 +24,22 @@ counts_v29 <- readRDS(snakemake@input$counts_v29)
 gene_counts <- readRDS("/s/project/genetic_diagnosis/processed_data/Rds/batches2_3_4_counts_ss.Rds")
 dim(gene_counts)
 
-gencodev29 <- fread("resources/gencode_v29_unique_gene_name.tsv")
-gencodev19 <- readRDS("resources/gencode.v19_with_gene_name.Rds")
+gencode_v29 <- fread("resources/gencode_v29_unique_gene_name.tsv")
+gencode_v19 <- readRDS("resources/gencode.v19_with_gene_name.Rds")
 
-total_counts[["v29"]]
 
 #' List of mito genes
-genes_robert <- c("NDUFAF5", "NDUFAF6",
-                  "NDUFA2", "NDUFA7", "NDUFA3", "NDUFA11", "NDUFA13",
-                  "DNAJC30", "GCDH", "MOCS1",
-                  "MRPL12", "MRPL30", "MRPL38", "MRPL45",
-                  "MRPS17", "MRPS21",
-                  "MSRB3", "MTG1", "RARS2", "SARS2",
-                  "SDHAF2", "SLC25A10", "SLC25A26",
-                  "TIMM9", "TIMM10B", "TIMM13", "TIMM23",
-                  "TK2", "TOMM5", "TSFM", "ACACA", "ACAD11", "FAHD1", "GATC")
-robert_ids <- gencodev19[gene_name %in% genes_robert, gene_id] %>% unique
+genes_to_check <- c("NDUFAF5", "NDUFAF6",
+                    "NDUFA2", "NDUFA7", "NDUFA3", "NDUFA11", "NDUFA13",
+                    "DNAJC30", "GCDH", "MOCS1",
+                    "MRPL12", "MRPL30", "MRPL38", "MRPL45",
+                    "MRPS17", "MRPS21",
+                    "MSRB3", "MTG1", "RARS2", "SARS2",
+                    "SDHAF2", "SLC25A10", "SLC25A26",
+                    "TIMM9", "TIMM10B", "TIMM13", "TIMM23",
+                    "TK2", "TOMM5", "TSFM", "ACACA", "ACAD11", "FAHD1", "GATC")
+
+robert_ids <- gencode_v19[gene_name %in% genes_robert, gene_id] %>% unique
 
 #' How many mito genes are in the GTF?
 
