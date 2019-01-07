@@ -4,9 +4,9 @@
 #' wb:
 #'  input:
 #'   - sample_bam: '`sm config["RAW_DATA"] + "/{sampleID}/RNAout/paired-endout/stdFilenames/{sampleID}.bam"`'
-#'   - features: '`sm "resources/exons_by_gene_op_{annotation}.rds"`'
+#'   - features: '`sm config["PROC_RESULTS"] + "/exons_by_gene_op_{annotation}.Rds"`'
 #'  output:
-#'   - counts: '`sm config["PROC_DATA"] + "/counts/{annotation}/{sampleID}_counts.RDS"`'
+#'   - counts: '`sm config["PROC_RESULTS"] + "/counts/{annotation}/{sampleID}_counts.Rds"`'
 #'  type: script
 #'---
 

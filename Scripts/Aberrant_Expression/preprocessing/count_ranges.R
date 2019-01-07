@@ -3,11 +3,11 @@
 #' author: mumichae, vyepez
 #' wb:
 #'  input:
-#'   - gtex_txdb: "resources/gencode.v19.genes.patched_contigs.Db"
-#'   - gencode_txdb: "/s/genomes/human/hg19/gencode29/gencode.v29lift37.annotation.Db"
+#'   - gtex_txdb: '`sm config["PROC_RESULTS"] + "/counts/v19/ods.Rds"`'
+#'   - gencode_txdb: '`sm config["PROC_RESULTS"] + "/counts/v29/ods.Rds"`'
 #'  output:
-#'   - gtex_op: "resources/exons_by_gene_op_v19.Rds"
-#'   - gencode_op: "resources/exons_by_gene_op_v29.Rds"
+#'   - gtex_op: '`sm config["PROC_RESULTS"] + "/exons_by_gene_op_v19.Rds"`'
+#'   - gencode_op: '`sm config["PROC_RESULTS"] + "/exons_by_gene_op_v29.Rds"`'
 #'  type: script
 #'---
 
@@ -16,13 +16,14 @@
 saveRDS(snakemake,  "tmp/count_ranges.snakemake")
 suppressPackageStartupMessages({
     library(GenomicFeatures)
+    library(GenomicRanges)
 })
 
 gtex_txdb <- loadDb(snakemake@input$gtex_txdb)
 gencode_txdb <- loadDb(snakemake@input$gencode_txdb)
 
 invert_strand <- function(exons) {
-    exons_op <- copy(exons)
+    exons_op <- data.table::copy(exons)
     if (class(exons) == "GRanges") {
         strand(exons_op) <- ifelse(strand(exons) == '+', '-', '+')
     } else if (class(exons) %in% c("GRangesList", "CompressedGRangesList")) {

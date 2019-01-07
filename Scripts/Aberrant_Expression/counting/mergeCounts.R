@@ -3,14 +3,14 @@
 #' author: Michaela Muller
 #' wb:
 #'  input: 
-#'  - counts: '`sm expand(config["PROC_DATA"] + "/counts/{{annotation}}/{sampleID}_counts.RDS", sampleID=config["SAMPLE_IDS"])`'
+#'  - counts: '`sm expand(config["PROC_RESULTS"] + "/counts/{{annotation}}/{sampleID}_counts.Rds", sampleID=config["SAMPLE_IDS"])`'
 #'  output:
-#'  - merged_counts: '`sm config["PROC_DATA"] + "/counts/{annotation}/total_counts.RDS"`'
+#'  - merged_counts: '`sm config["PROC_RESULTS"] + "/counts/{annotation}/total_counts.Rds"`'
 #'  threads: 60
 #'  type: script
 #'---
 
-saveRDS(snakemake, "tmp/count_all.RDS")
+saveRDS(snakemake, "tmp/count_all.snakemake")
 suppressPackageStartupMessages({
     library(BiocParallel)
     library(SummarizedExperiment)

@@ -6,8 +6,8 @@
 #'   - gtex_gtf: "resources/gencode.v19.genes.patched_contigs.gtf.gz"
 #'   - gencode_gtf: "/s/genomes/human/hg19/gencode29/gencode.v29lift37.annotation.gtf.gz"
 #'  output:
-#'   - gtex_txdb: "resources/gencode.v19.genes.patched_contigs.Db"
-#'   - gencode_txdb: "/s/genomes/human/hg19/gencode29/gencode.v29lift37.annotation.Db"
+#'   - gtex_txdb: '`sm config["PROC_RESULTS"] + "/counts/v19/txdb.Rds"`'
+#'   - gencode_txdb: '`sm config["PROC_RESULTS"] + "/counts/v29/txdb.Rds"`'
 #'  type: script
 #'---
 

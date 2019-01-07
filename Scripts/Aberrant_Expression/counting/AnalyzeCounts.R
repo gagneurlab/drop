@@ -3,15 +3,15 @@
 #' author: Michaela Muller
 #' wb:
 #'  input: 
-#'  - counts_v19: '`sm config["PROC_DATA"] + "/counts/v19/total_counts.RDS"`'
-#'  - counts_v29: '`sm config["PROC_DATA"] + "/counts/v29/total_counts.RDS"`'
+#'  - counts_v19: '`sm config["PROC_RESULTS"] + "/counts/v19/total_counts.Rds"`'
+#'  - counts_v29: '`sm config["PROC_RESULTS"] + "/counts/v29/total_counts.Rds"`'
 #'  output:
 #'  - out: "tmp/test"
 #' output: 
 #'   html_document
 #'---
 
-saveRDS(snakemake, "tmp/count_analysis.RDS")
+saveRDS(snakemake, "tmp/count_analysis.snakemake")
 suppressPackageStartupMessages({
     library(SummarizedExperiment)
     library(data.table)
@@ -62,4 +62,4 @@ robert_ids %in% row.names(ods)
 
 genes_robert %in% row.names(ods)
 
-fwrite("test", snakemake@output$out)
+
