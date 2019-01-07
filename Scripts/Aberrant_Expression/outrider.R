@@ -1,6 +1,28 @@
-# create outrider object
-library(OUTRIDER)
-ods <- OutriderDataSet(countData = ss_counts_gene)
+#'---
+#' title: Run OUTRIDER Pipeline
+#' author: Michaela Mueller
+#' wb:
+#'  input:
+#'   - counts: '`sm config["PROC_RESULTS"] + "/counts/{annotation}/total_counts.Rds"`'
+#'   - txdb: '`sm config["PROC_RESULTS"] + "/counts/{annotation}/txdb.Rds"`'
+#'   - unique_gene_names: "resources/gencode_{annotation}_unique_gene_name.tsv"
+#'  output:
+#'   - ods: '`sm config["PROC_RESULTS"] + "/counts/{annotation}/ods.Rds"`'
+#'   - plot: '`sm config["PROC_RESULTS"] + "/counts/{annotation}/filtered_hist.png"`'
+#'  type: script
+#'---
+
+suppressPackageStartupMessages({
+    library(OUTRIDER)
+    library(SummarizedExperiment)
+    library(ggplot2)
+    library(data.table)
+    library(dplyr)
+})
+
+saveRDS(snakemake, "tmp/outrider.snakemake")
+counts <- readRDS(snakemake@input$counts)
+ods <- OutriderDataSet(counts)
 colData(ods)$sampleID <- colnames(ods)
 
 # TODO: Add batches to colData for heatmap
@@ -11,29 +33,26 @@ colData(ods)$sampleID <- colnames(ods)
 # }
 
 # filter not expressed genes
+gencode_txdb <- loadDb(snakemake@input$txdb)
 ods <- filterExpression(ods, gtfFile=gencode_txdb, filter=FALSE)
 g <- plotFPKM(ods) + theme_bw(base_size = 14)
-g
-ggsave("/s/project/genetic_diagnosis/processed_results/hist_FPKM_3batches_ss.png", g)
-ggsave("/s/project/genetic_diagnosis/processed_results/hist_FPKM_2batches_nss.png", g)
+ggsave(snakemake@output$plot, g)
 
 ods <- filterExpression(ods, gtfFile=gencode_txdb, filter=TRUE)
-dim(ods)
+
+saveRDS(ods, snakemake@output$ods)
+
 
 # Add genes metainfo
 gene_name_as_row_name <- function(ods){
-    genes_dt <- readRDS("./resources/gencode.v19_with_gene_name.Rds")
+    genes_dt <- fread(snakemake@input$unique_gene_names)
     rowData(ods)$geneID = row.names(ods)
     rowData(ods) = left_join(as.data.table(rowData(ods)), genes_dt[,.(gene_id, gene_name, gene_type)], by = c("geneID" = "gene_id"))
     rownames(ods) = rowData(ods)$gene_name
     ods
 }
 
-ods_ss <- gene_name_as_row_name(ods_ss)
-ods_nss <- gene_name_as_row_name(ods_nss)
-ods_blood <- readRDS("/s/project/genetic_diagnosis/processed_results/ods_blood.Rds")
-ods_blood <- gene_name_as_row_name(ods_blood)
-saveRDS(ods_blood, "/s/project/genetic_diagnosis/processed_results/ods_blood.Rds")
+ods <- gene_name_as_row_name(ods)
 
 
 # run full outrider
