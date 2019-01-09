@@ -44,10 +44,11 @@ saveRDS(ods, snakemake@output$ods)
 
 
 # Add genes metainfo
-gene_name_as_row_name <- function(ods){
-    genes_dt <- fread(snakemake@input$unique_gene_names)
+genes_dt <- fread(snakemake@input$unique_gene_names)
+gene_name_as_row_name <- function(ods, genes_dt){
     rowData(ods)$geneID = row.names(ods)
-    rowData(ods) = left_join(as.data.table(rowData(ods)), genes_dt[,.(gene_id, gene_name, gene_type)], by = c("geneID" = "gene_id"))
+    # left join preserves order
+    rowData(ods) = left_join(as.data.table(rowData(ods)), genes_dt[,.(gene_id, gene_name, gene_type)], by = c("geneID" = "gene_id_unique"))
     rownames(ods) = rowData(ods)$gene_name
     ods
 }

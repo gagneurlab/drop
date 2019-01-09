@@ -3,8 +3,8 @@
 #' author: mumichae, vyepez
 #' wb:
 #'  input:
-#'   - gtex_txdb: '`sm config["PROC_RESULTS"] + "/counts/v19/ods.Rds"`'
-#'   - gencode_txdb: '`sm config["PROC_RESULTS"] + "/counts/v29/ods.Rds"`'
+#'   - gtex_txdb: '`sm config["PROC_RESULTS"] + "/counts/v19/txdb.Rds"`'
+#'   - gencode_txdb: '`sm config["PROC_RESULTS"] + "/counts/v29/txdb.Rds"`'
 #'  output:
 #'   - gtex_op: '`sm config["PROC_RESULTS"] + "/exons_by_gene_op_v19.Rds"`'
 #'   - gencode_op: '`sm config["PROC_RESULTS"] + "/exons_by_gene_op_v29.Rds"`'

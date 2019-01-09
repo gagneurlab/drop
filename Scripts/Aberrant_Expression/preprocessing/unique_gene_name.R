@@ -40,6 +40,7 @@ genes_dt[N > 1, gene_new_name := paste(gene_name, N, sep = "_")]
 genes_dt[, gene_name := gene_new_name]
 genes_dt[, N := NULL]
 genes_dt[, gene_new_name := NULL]
+genes_dt[, gene_id_unique := gene_id]
 fwrite(genes_dt, snakemake@output$gtex_dt)
 
 
@@ -48,8 +49,8 @@ gtf_or <- rtracklayer::import(snakemake@input$gencode_gtf) %>% as.data.table
 gtf_dt <- copy(gtf_or)
 gtf_dt <- gtf_dt[type == "gene", .(seqnames, start, end, strand, gene_id, gene_name, gene_type, gene_status)]
 gtf_dt <- gtf_dt[seqnames %in% GenomeInfoDb::standardChromosomes(BSgenome.Hsapiens.UCSC.hg19)]
-setnames(gtf_dt, "gene_id", "gene_id_full")
-gtf_dt <- separate(gtf_dt, "gene_id_full", into = "gene_id", sep = "\\.", remove = F)
+setnames(gtf_dt, "gene_id", "gene_id_unique")
+gtf_dt <- separate(gtf_dt, "gene_id_unique", into = "gene_id", sep = "\\.", remove = F)
 
 dup_genes <- gtf_dt[duplicated(gtf_dt$gene_name), gene_name] # Get genes that appear at least twice
 # Get genes that appear more than twice
