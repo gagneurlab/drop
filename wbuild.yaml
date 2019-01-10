@@ -30,3 +30,4 @@ SAMPLE_IDS: [
 
 ANNOTATIONS: ["v19", "v29"]
 
+fpkmCutoff: 1
