@@ -3,9 +3,8 @@
 #' author: Michaela Muller
 #' wb:
 #'  input: 
-#'  - counts_v19: '`sm config["PROC_RESULTS"] + "/v19/counts/total_counts.Rds"`'
-#'  - counts_v29: '`sm config["PROC_RESULTS"] + "/v29/counts/total_counts.Rds"`'
-#'  - filtered_counts: '`sm expand(config["PROC_RESULTS"] + "/{annotation}/outrider/filtered_counts.Rds", annotation=config["ANNOTATIONS"])`'
+#'  - counts: '`sm expand(config["PROC_RESULTS"] + "/{annotation}/counts/total_counts.Rds", annotation=config["ANNOTATIONS"])`'
+#'  - filtered_counts: '`sm expand(config["PROC_RESULTS"] + "/{annotation}/counts/filtered_counts.Rds", annotation=config["ANNOTATIONS"])`'
 #' output: 
 #'   html_document
 #'---
@@ -17,8 +16,8 @@ suppressPackageStartupMessages({
     library(data.table)
 })
 
-counts_v19 <- readRDS(snakemake@input$counts_v19)
-counts_v29 <- readRDS(snakemake@input$counts_v29)
+counts <- lapply(snakemake@input$counts_v19, readRDS)
+names(counts) <- snakemake@config$ANNOTATIONS
 
 # ods <- readRDS("/s/project/genetic_diagnosis/processed_results/ods_batches2_3_4_ss.Rds")
 gene_counts <- readRDS("/s/project/genetic_diagnosis/processed_data/Rds/batches2_3_4_counts_ss.Rds")

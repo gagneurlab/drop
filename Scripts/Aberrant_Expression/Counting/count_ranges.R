@@ -3,11 +3,11 @@
 #' author: mumichae, vyepez
 #' wb:
 #'  input:
-#'   - gtex_txdb: '`sm config["PROC_RESULTS"] + "/counts/v19/txdb.Rds"`'
-#'   - gencode_txdb: '`sm config["PROC_RESULTS"] + "/counts/v29/txdb.Rds"`'
+#'   - gtex_txdb: '`sm config["PROC_RESULTS"] + "/v19/txdb.db"`'
+#'   - gencode_txdb: '`sm config["PROC_RESULTS"] + "/v29/txdb.db"`'
 #'  output:
-#'   - gtex_op: '`sm config["PROC_RESULTS"] + "/exons_by_gene_op_v19.Rds"`'
-#'   - gencode_op: '`sm config["PROC_RESULTS"] + "/exons_by_gene_op_v29.Rds"`'
+#'   - gtex_op: '`sm config["PROC_RESULTS"] + "/v19/counts/exons_by_gene_op.Rds"`'
+#'   - gencode_op: '`sm config["PROC_RESULTS"] + "/v29/counts/exons_by_gene_op.Rds"`'
 #'  type: script
 #'---
 
@@ -20,7 +20,9 @@ suppressPackageStartupMessages({
 })
 
 gtex_txdb <- loadDb(snakemake@input$gtex_txdb)
+seqlevelsStyle(gtex_txdb) <- "UCSC"
 gencode_txdb <- loadDb(snakemake@input$gencode_txdb)
+gencode_txdb <- keepStandardChromosomes(gencode_txdb)
 
 invert_strand <- function(exons) {
     exons_op <- data.table::copy(exons)
