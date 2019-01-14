@@ -19,9 +19,17 @@ suppressPackageStartupMessages({
 counts <- lapply(snakemake@input$counts, readRDS)
 names(counts) <- snakemake@config$ANNOTATIONS
 
-# ods <- readRDS("/s/project/genetic_diagnosis/processed_results/ods_batches2_3_4_ss.Rds")
-gene_counts <- readRDS("/s/project/genetic_diagnosis/processed_data/Rds/batches2_3_4_counts_ss.Rds")
-dim(gene_counts)
+countsv19 <- readRDS("/s/project/genetic_diagnosis/processed_results/v19/counts/total_counts.Rds")
+filtv19 <- readRDS("/s/project/genetic_diagnosis/processed_results/v19/counts/filtered_counts.Rds")
+
+countsv29 <- readRDS("/s/project/genetic_diagnosis/processed_results/v29/counts/total_counts.Rds")
+filtv29 <- readRDS("/s/project/genetic_diagnosis/processed_results/v29/counts/filtered_counts.Rds")
+
+
+dim(countsv19)
+dim(countsv29)
+
+
 
 gencode_v29 <- fread("resources/gencode_v29_unique_gene_name.tsv")
 gencode_v19 <- readRDS("resources/gencode.v19_with_gene_name.Rds")
@@ -38,7 +46,7 @@ genes_to_check <- c("NDUFAF5", "NDUFAF6",
                     "TIMM9", "TIMM10B", "TIMM13", "TIMM23",
                     "TK2", "TOMM5", "TSFM", "ACACA", "ACAD11", "FAHD1", "GATC")
 
-robert_ids <- gencode_v19[gene_name %in% genes_robert, gene_id] %>% unique
+robert_ids <- gencode_v19[gene_name %in% genes_to_check, gene_id] %>% unique
 
 #' How many mito genes are in the GTF?
 
