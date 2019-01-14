@@ -13,6 +13,7 @@
 #'---
 
 saveRDS(snakemake,  "tmp/unique_name.snakemake")
+snakemake <- readRDS("tmp/unique_name.snakemake")
 suppressPackageStartupMessages({
     library(BSgenome.Hsapiens.UCSC.hg19)
     library(GenomicFeatures)
@@ -35,11 +36,9 @@ genes_dt = merge(genes_dt, gene_mapping, by = "gene_id")
 ## We might need to add _2, _3, ... for repeated gene names
 # We can use the following code
 genes_dt[, N := 1:.N, by = gene_name]
-genes_dt[, gene_new_name := gene_name]
-genes_dt[N > 1, gene_new_name := paste(gene_name, N, sep = "_")]
-genes_dt[, gene_name := gene_new_name]
+genes_dt[, gene_name_unique := gene_name]
+genes_dt[N > 1, gene_name_unique := paste(gene_name, N, sep = "_")]
 genes_dt[, N := NULL]
-genes_dt[, gene_new_name := NULL]
 genes_dt[, gene_id_unique := gene_id]
 fwrite(genes_dt, snakemake@output$gtex_dt)
 
