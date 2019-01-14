@@ -7,8 +7,8 @@
 #'   - gtex_txdb: "resources/gencode.v19.genes.patched_contigs.Db"
 #'   - gencode_gtf: "/s/genomes/human/hg19/gencode29/gencode.v29lift37.annotation.gtf.gz"
 #'  output:
-#'   - gtex_dt: "resources/gencode_v19_unique_gene_name.tsv"
-#'   - gencode_dt: "resources/gencode_v29_unique_gene_name.tsv"
+#'   - gtex_dt: "/s/project/genetic_diagnosis/resource/gencode_v19_unique_gene_name.tsv"
+#'   - gencode_dt: "/s/project/genetic_diagnosis/resource/gencode_v29_unique_gene_name.tsv"
 #'  type: script
 #'---
 
