@@ -16,7 +16,7 @@ suppressPackageStartupMessages({
     library(data.table)
 })
 
-counts <- lapply(snakemake@input$counts_v19, readRDS)
+counts <- lapply(snakemake@input$counts, readRDS)
 names(counts) <- snakemake@config$ANNOTATIONS
 
 # ods <- readRDS("/s/project/genetic_diagnosis/processed_results/ods_batches2_3_4_ss.Rds")
