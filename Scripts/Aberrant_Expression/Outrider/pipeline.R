@@ -4,7 +4,7 @@
 #' wb:
 #'  input:
 #'   - ods: '`sm config["PROC_RESULTS"] + "/{annotation}/outrider/ods_unfitted.Rds"`'
-#'   - unique_gene_names: "resources/gencode_{annotation}_unique_gene_name.tsv"
+#'   - unique_gene_names: "/s/project/genetic_diagnosis/resource/gencode_{annotation}_unique_gene_name.tsv"
 #'  output:
 #'   - ods: '`sm config["PROC_RESULTS"] + "/{annotation}/outrider/ods.Rds"`'
 #'  type: script

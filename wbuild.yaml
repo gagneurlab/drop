@@ -28,6 +28,8 @@ SAMPLE_IDS: [
     MUC3198, MUC3200, MUC3202
 ]
 
-ANNOTATIONS: ["v19", "v29"]
+ANNOTATIONS: ["v19", "v29", "v29_overlap"]
+# inter.feature setting values (T: reads mapping to multiple features are dropped)
+INTER_FEATURE: [1, 1, 0] # positions correspond to postitions in ANNOTATIONS, 0 : F, 1 : T
 
 fpkmCutoff: 1

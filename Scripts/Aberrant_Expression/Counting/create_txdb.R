@@ -8,6 +8,7 @@
 #'  output:
 #'   - gtex_txdb: '`sm config["PROC_RESULTS"] + "/v19/txdb.db"`'
 #'   - gencode_txdb: '`sm config["PROC_RESULTS"] + "/v29/txdb.db"`'
+#'   - gencode_ov_txdb: '`sm config["PROC_RESULTS"] + "/v29_overlap/txdb.db"`'
 #'  type: script
 #'---
 
@@ -33,3 +34,4 @@ gencode_txdb <- keepStandardChromosomes(gencode_txdb)
 message('v29')
 message(seqlevels(gencode_txdb))
 saveDb(gencode_txdb, snakemake@output$gencode_txdb)
+saveDb(gencode_txdb, snakemake@output$gencode_ov_txdb)

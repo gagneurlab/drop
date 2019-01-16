@@ -9,6 +9,7 @@
 #'  output:
 #'   - gtex_dt: "/s/project/genetic_diagnosis/resource/gencode_v19_unique_gene_name.tsv"
 #'   - gencode_dt: "/s/project/genetic_diagnosis/resource/gencode_v29_unique_gene_name.tsv"
+#'   - gencode_ov_dt: "/s/project/genetic_diagnosis/resource/gencode_v29_overlap_unique_gene_name.tsv"
 #'  type: script
 #'---
 
@@ -66,5 +67,7 @@ gtf_dt[gene_name %in% repeated_genes]
 gtf_dt[duplicated(gtf_dt$gene_id)]  # 41 X-Y paralog genes
 dup_genes <- gtf_dt[duplicated(gtf_dt$gene_name), gene_name]
 # View(gtf_dt[gene_name %in% dup_genes])
+
 fwrite(gtf_dt, snakemake@output$gencode_dt, sep = '\t')
+fwrite(gtf_dt, snakemake@output$gencode_ov_dt, sep = '\t')
 

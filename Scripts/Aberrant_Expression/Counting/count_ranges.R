@@ -8,6 +8,7 @@
 #'  output:
 #'   - gtex_op: '`sm config["PROC_RESULTS"] + "/v19/counts/exons_by_gene_op.Rds"`'
 #'   - gencode_op: '`sm config["PROC_RESULTS"] + "/v29/counts/exons_by_gene_op.Rds"`'
+#'   - gencode_ov_op: '`sm config["PROC_RESULTS"] + "/v29_overlap/counts/exons_by_gene_op.Rds"`'
 #'  type: script
 #'---
 
@@ -45,5 +46,5 @@ saveRDS(gtex_op, snakemake@output$gtex_op)
 # gencode 29
 gencode_op <- invert_strand(exonsBy(gencode_txdb, by = "gene"))
 saveRDS(gencode_op, snakemake@output$gencode_op)
-
+saveRDS(gencode_op, snakemake@output$gencode_ov_op)
 

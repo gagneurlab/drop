@@ -3,10 +3,10 @@
 #' author: Michaela Muller
 #' wb:
 #'  input: 
-#'  - counts: '`sm expand(config["PROC_RESULTS"] + "/counts/overlap/{{annotation}}/{sampleID}_counts.Rds", sampleID=config["SAMPLE_IDS"])`'
+#'  - counts: '`sm expand(config["PROC_RESULTS"] + "/{{annotation}}/counts/{sampleID}_counts.Rds", sampleID=config["SAMPLE_IDS"])`'
 #'  - gene_annot_dt: "/s/project/genetic_diagnosis/resource/gencode_{annotation}_unique_gene_name.tsv"
 #'  output:
-#'  - merged_counts: '`sm config["PROC_RESULTS"] + "/counts/overlap/{annotation}/total_counts.Rds"`'
+#'  - merged_counts: '`sm config["PROC_RESULTS"] + "/{annotation}/counts/total_counts.Rds"`'
 #'  threads: 30
 #'  type: script
 #'---
