@@ -5,6 +5,7 @@
 #'  input: 
 #'   - filtered_v19: '/s/project/genetic_diagnosis/processed_results/v19/outrider/ods_unfitted.Rds'
 #'   - filtered_v29: '/s/project/genetic_diagnosis/processed_results/v29/outrider/ods_unfitted.Rds'
+#'   - filtered_v29_ov: '/s/project/genetic_diagnosis/processed_results/v29_overlap/outrider/ods_unfitted.Rds'
 #' output: 
 #'   html_document:
 #'    code_folding: show
@@ -34,15 +35,17 @@ filtv19 <- readRDS(snakemake@input$filtered_v19)
 rd19 <- rowData(filtv19) %>% as.data.table()
 rd19[, version := 'v19']
 
+ov29 <- readRDS(snakemake@input$filtered_v29_ov)
+row.names(ov29) <- rowData(ov29)$gene_name_unique
+rd29ov <- rowData(ov29) %>% as.data.table()
+rd29ov[, version := 'v29ov']
+
+
 filtv29 <- readRDS(snakemake@input$filtered_v29)
 row.names(filtv29) <- rowData(filtv29)$gene_name_unique
-fp <- fpkm(filtv29)
-fp["ACAD11", ]
-fp["MRPL38", ]
-fp["ACAD9", ]
 rd29 <- rowData(filtv29) %>% as.data.table()
 rd29[, version := 'v29']
-rd <- rbind(rd19, rd29)
+rd <- rbind(rd19, rd29, rd29ov)
 
 # Add mito disease genes information
 rd[, gene_name_unique := toupper(gene_name_unique)]
@@ -64,7 +67,7 @@ length(genes_to_check)
 rd[gene_name_unique %in% genes_to_check, gene_to_check := TRUE]
 
 #' ## Create comparison table
-comp_dt <- data.table(annotation = c("v19", "v29"))
+comp_dt <- data.table(annotation = c("v19", "v29", "v29ov"))
 # How many genes are in the GTF file?
 comp_dt[, total_all := nrow(rd[version == annotation]), by = 1:nrow(comp_dt)]
 comp_dt[, total_pc := nrow(rd[version == annotation & gene_type == 'protein_coding']), by = 1:nrow(comp_dt)]
@@ -82,14 +85,15 @@ comp_dt[, passedFilter_all := sum(rd[version == annotation, passedFilter]), by =
 comp_dt[, passedFilter_pc := sum(rd[version == annotation & gene_type == 'protein_coding', passedFilter]), by = 1:nrow(comp_dt)]
 comp_dt[, passedFilter_mito := sum(rd[version == annotation & MITO_DISEASE_GENE == TRUE, passedFilter]), by = 1:nrow(comp_dt)]
 comp_dt[, passedFilter_sp := sum(rd[version == annotation & gene_to_check == TRUE, passedFilter]), by = 1:nrow(comp_dt)]
-comp_dt
+DT::datatable(comp_dt, style = 'bootstrap')
+
 
 #' ## Tidy up data and plotting
 mt <- melt(comp_dt)
 mt <- separate(mt, col = 'variable', into = c('group', 'category'), sep = "_")
 mt[, prop := value/max(value), by = category]
 mt[, group := factor(group, levels = c("total", "counted", "passedFilter"))]
-mt[, annotation := factor(annotation, levels = c("v29", "v19"))]
+mt[, annotation := factor(annotation, levels = c("v29", "v29ov", "v19"))]
 mt[category == 'mito', category := 'Mito_disease']
 mt[category == 'pc', category := 'protein_coding']
 
@@ -98,7 +102,7 @@ ggplot(mt[category == 'all'], aes(group, prop, fill = annotation)) + geom_bar(st
     geom_text(aes(label = value),  position = position_dodge(width = .8), vjust = -.5) + 
     theme_bw(base_size = 14) + scale_fill_brewer(palette="BuPu")
 
-#+ fig.width=9, fig.height=10
+#+ fig.width=10, fig.height=10
 ggplot(mt, aes(group, prop, fill = annotation)) + geom_bar(stat = 'identity', position = 'dodge') + 
     geom_text(aes(label = value),  position = position_dodge(width = .8), vjust = -.3) + 
     theme_bw(base_size = 14) + scale_fill_brewer(palette="BuPu") + facet_wrap(~category)
@@ -115,6 +119,10 @@ rd[version == 'v29' & gene_to_check == T & counted1sample == F, gene_name_unique
 
 #' Robert's special genes that didn't pass the OUTRIDER filter:
 rd[version == 'v29' & gene_to_check == T & counted1sample == T & passedFilter == F, gene_name_unique] %>% sort
+
+#' Mito disease genes appearing on v29, but not on v29ov
+setdiff(rd[version == 'v29' & MITO_DISEASE_GENE == T & passedFilter == T, gene_name_unique], 
+        rd[version == 'v29ov' & MITO_DISEASE_GENE == T & passedFilter == T, gene_name_unique])
 
 fp <- fpkm(filtv29)
 quantile(fp["ACAD11", ], prob = .95)

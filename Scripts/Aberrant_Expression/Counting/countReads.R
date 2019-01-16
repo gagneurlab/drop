@@ -33,6 +33,9 @@ message(paste('inter.feature:', dt[annotation == anno, inter_feature]))
 
 # read files
 bam_file <- Rsamtools::BamFile(snakemake@input$sample_bam, yieldSize = 2e6)
+
+file.exists(bam_file$path)
+
 feature_regions <- readRDS(snakemake@input$features)
 
 # start counting

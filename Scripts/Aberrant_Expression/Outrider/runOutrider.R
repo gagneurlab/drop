@@ -23,6 +23,8 @@ saveRDS(snakemake, "tmp/outrider.snakemake")
 ods <- readRDS(snakemake@input$ods)
 
 # OUTRIDER pipeline
+ods <- ods[mcols(ods)$passedFilter,] 
+    
 ods <- estimateSizeFactors(ods)
 pars <- c(seq(5, min(c(40, ncol(ods), nrow(ods))), 2), 50, 70)
 ods <- findEncodingDim(ods, lnorm = T, BPPARAM = MulticoreParam(snakemake@threads), params = pars)
