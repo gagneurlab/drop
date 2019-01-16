@@ -20,13 +20,14 @@ suppressPackageStartupMessages({
 })
 
 saveRDS(snakemake, "tmp/outrider.snakemake")
+# snakemake <- readRDS("tmp/outrider.snakemake")
 ods <- readRDS(snakemake@input$ods)
 
 # Add genes metainfo
 genes_dt <- fread(snakemake@input$unique_gene_names)
 rowData(ods)$geneID = row.names(ods)
 # left join preserves order
-rowData(ods) = left_join(as.data.table(rowData(ods)), genes_dt[,.(gene_id, gene_name, gene_type)], by = c("geneID" = "gene_id_unique"))
+rowData(ods) = left_join(as.data.table(rowData(ods)), genes_dt[,.(gene_id, gene_name, gene_type, gene_id_unique)], by = c("geneID" = "gene_id_unique"))
 rownames(ods) = rowData(ods)$gene_name
 
 # OUTRIDER pipeline

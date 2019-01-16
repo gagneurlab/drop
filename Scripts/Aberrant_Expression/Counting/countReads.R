@@ -6,7 +6,7 @@
 #'   - sample_bam: '`sm config["RAW_DATA"] + "/{sampleID}/RNAout/paired-endout/stdFilenames/{sampleID}.bam"`'
 #'   - features: '`sm config["PROC_RESULTS"] + "/{annotation}/counts/exons_by_gene_op.Rds"`'
 #'  output:
-#'   - counts: '`sm config["PROC_RESULTS"] + "/{annotation}/counts/{sampleID}_counts.Rds"`'
+#'   - counts: '`sm config["PROC_RESULTS"] + "/counts/overlap/{annotation}/{sampleID}_counts.Rds"`'
 #'  type: script
 #'---
 
@@ -20,7 +20,6 @@ message(paste("output:", snakemake@output$counts))
 bam_file <- Rsamtools::BamFile(snakemake@input$sample_bam, yieldSize = 2e6)
 feature_regions <- readRDS(snakemake@input$features)
 
-
 message("counting")
 starttime <- Sys.time()
 se <- GenomicAlignments::summarizeOverlaps(
@@ -31,7 +30,7 @@ se <- GenomicAlignments::summarizeOverlaps(
     , ignore.strand = F  # FALSE if done strand specifically
     , fragments = F
     , count.mapped.reads = T
-    , inter.feature = T   	# TRUE, reads mapping to multiple features are dropped
+    , inter.feature = F   	# TRUE, reads mapping to multiple features are dropped
 )
 saveRDS(se, snakemake@output$counts)
 message("done")

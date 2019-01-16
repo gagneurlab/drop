@@ -55,7 +55,8 @@ add_mitocarta_col <- function(DT, gene_name_col = "gene_name"){
 ##############
 
 # Read Hans gene disease list
-add_hans_class <- function(DT, gene_name_col = "gene_name"){
+add_hans_class <- function(DT, gene_name_col = "gene_name", return_all_info = TRUE){
+    DT <- copy(DT)
     dir_gene_info <- '/s/project/mitoMultiOmics/raw_data/gene_info/'
     prokisch_mayr_dt <- fread(file.path(dir_gene_info, 'mitochondrial_disorder_genes_prokisch_mayr_cleaned.tsv'))
     
@@ -63,9 +64,9 @@ add_hans_class <- function(DT, gene_name_col = "gene_name"){
     
     # Some of the genes have aliases, v1: must be the way they appear in Hans table
     alias_dt_hans = data.table(v1 = c("NAXE", "C19ORF70", "ATP5F1A", "ATP5F1E", "COQ8A", "COQ8B", "ATP5F1D", "PET100", 
-                                  "MRM2", "NDUFAF8", "RTN4IP1", "UQCC3", "TWNK", "FDX1L", "COA7"),
+                                  "MRM2", "NDUFAF8", "RTN4IP1", "UQCC3", "TWNK", "FDX1L", "COA7", "USMG5"),
                                v2 = c("APOA1BP", "QIL1", "ATP5A1", "ATP5E", "ADCK3", "ADCK4", "ATP5D", "C19ORF79", 
-                                  "FTSJ2", "C17ORF89", "NIMP", "C11ORF83", "C10ORF2", "FDX2",  "SELRC1"))
+                                  "FTSJ2", "C17ORF89", "NIMP", "C11ORF83", "C10ORF2", "FDX2",  "SELRC1", "ATP5MD"))
     
     al = prokisch_mayr_dt[HGNC_GENE_NAME %in% alias_dt_hans$v1]
     al = merge(al, alias_dt_hans, by.x = "HGNC_GENE_NAME", by.y = "v1")
@@ -81,8 +82,16 @@ add_hans_class <- function(DT, gene_name_col = "gene_name"){
     # write.table(pt[HANS_CLASS == "MITO", sort(unique(HGNC_GENE_NAME))], "../mito-ncRNA/Data/mito_disease_genes.tsv", sep = "\n", row.names = F, col.names = F, quote = F)
     
     setnames(DT, gene_name_col, "gene_name")
-    DT <- left_join(DT, pt[,.(HGNC_GENE_NAME, HANS_CLASS, MITOGENE_CATEGORY, ASSOCIATED_DISEASE_PHENOTYPES)], 
-                by = c("gene_name" = "HGNC_GENE_NAME")) %>% as.data.table
+    if(return_all_info == TRUE){
+        DT <- left_join(DT, pt[,.(HGNC_GENE_NAME, HANS_CLASS, MITOGENE_CATEGORY, ASSOCIATED_DISEASE_PHENOTYPES)], 
+                by = c("gene_name" = "HGNC_GENE_NAME")) %>% as.data.table 
+    } else  {
+        DT <- left_join(DT, pt[,.(HGNC_GENE_NAME, HANS_CLASS)], 
+                        by = c("gene_name" = "HGNC_GENE_NAME")) %>% as.data.table 
+        DT[HANS_CLASS == 'MITO', MITO_DISEASE_GENE := TRUE]
+        DT[, HANS_CLASS := NULL]
+    }
+    
     setnames(DT, "gene_name", gene_name_col)
     
     return(DT)

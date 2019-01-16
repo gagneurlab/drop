@@ -35,6 +35,11 @@ rd19 <- rowData(filtv19) %>% as.data.table()
 rd19[, version := 'v19']
 
 filtv29 <- readRDS(snakemake@input$filtered_v29)
+row.names(filtv29) <- rowData(filtv29)$gene_name_unique
+fp <- fpkm(filtv29)
+fp["ACAD11", ]
+fp["MRPL38", ]
+fp["ACAD9", ]
 rd29 <- rowData(filtv29) %>% as.data.table()
 rd29[, version := 'v29']
 rd <- rbind(rd19, rd29)
@@ -111,5 +116,6 @@ rd[version == 'v29' & gene_to_check == T & counted1sample == F, gene_name_unique
 #' Robert's special genes that didn't pass the OUTRIDER filter:
 rd[version == 'v29' & gene_to_check == T & counted1sample == T & passedFilter == F, gene_name_unique] %>% sort
 
-
-
+fp <- fpkm(filtv29)
+quantile(fp["ACAD11", ], prob = .95)
+quantile(fp["MRPL38", ], prob = .95)
