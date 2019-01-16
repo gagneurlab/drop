@@ -6,13 +6,12 @@
 #'   - gtex_gtf: "resources/gencode.v19.genes.patched_contigs.gtf.gz"
 #'   - gencode_gtf: "/s/genomes/human/hg19/gencode29/gencode.v29lift37.annotation.gtf.gz"
 #'  output:
-#'   - gtex_txdb: '`sm config["PROC_RESULTS"] + "/v19/txdb.db"`'
-#'   - gencode_txdb: '`sm config["PROC_RESULTS"] + "/v29/txdb.db"`'
-#'   - gencode_ov_txdb: '`sm config["PROC_RESULTS"] + "/v29_overlap/txdb.db"`'
 #'  type: script
 #'---
 
 saveRDS(snakemake,  "tmp/txdb.snakemake")
+# snakemake <- readRDS("tmp/txdb.snakemake")
+
 suppressPackageStartupMessages({
     library(GenomicFeatures)
 })
@@ -25,7 +24,7 @@ seqlevelsStyle(gtex_txdb) <- "UCSC"
 #seqlevels(gtex_txdb) <- gsub("MT", "M", seqlevels(gtex_txdb))
 message('v19')
 message(seqlevels(gtex_txdb))
-saveDb(gtex_txdb, snakemake@output$gtex_txdb)
+saveDb(gtex_txdb, "/s/project/genetic_diagnosis/processed_results/v19/txdb.db")
 
 # v29
 gencode_txdb = makeTxDbFromGFF(snakemake@input$gencode_gtf, format='gtf')
@@ -33,5 +32,5 @@ gencode_txdb = makeTxDbFromGFF(snakemake@input$gencode_gtf, format='gtf')
 gencode_txdb <- keepStandardChromosomes(gencode_txdb)
 message('v29')
 message(seqlevels(gencode_txdb))
-saveDb(gencode_txdb, snakemake@output$gencode_txdb)
-saveDb(gencode_txdb, snakemake@output$gencode_ov_txdb)
+saveDb(gtex_txdb, "/s/project/genetic_diagnosis/processed_results/v29/txdb.db")
+saveDb(gtex_txdb, "/s/project/genetic_diagnosis/processed_results/v29_overlap/txdb.db")
