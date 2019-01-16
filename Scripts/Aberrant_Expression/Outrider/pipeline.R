@@ -4,7 +4,6 @@
 #' wb:
 #'  input:
 #'   - ods: '`sm config["PROC_RESULTS"] + "/{annotation}/outrider/ods_unfitted.Rds"`'
-#'   - unique_gene_names: "/s/project/genetic_diagnosis/resource/gencode_{annotation}_unique_gene_name.tsv"
 #'  output:
 #'   - ods: '`sm config["PROC_RESULTS"] + "/{annotation}/outrider/ods.Rds"`'
 #'  type: script
@@ -22,13 +21,6 @@ suppressPackageStartupMessages({
 saveRDS(snakemake, "tmp/outrider.snakemake")
 # snakemake <- readRDS("tmp/outrider.snakemake")
 ods <- readRDS(snakemake@input$ods)
-
-# Add genes metainfo
-genes_dt <- fread(snakemake@input$unique_gene_names)
-rowData(ods)$geneID = row.names(ods)
-# left join preserves order
-rowData(ods) = left_join(as.data.table(rowData(ods)), genes_dt[,.(gene_id, gene_name, gene_type, gene_id_unique)], by = c("geneID" = "gene_id_unique"))
-rownames(ods) = rowData(ods)$gene_name
 
 # OUTRIDER pipeline
 ods <- estimateSizeFactors(ods)

@@ -15,6 +15,7 @@
 #TODO: change name of output files for later input! rds vs. Rds
 
 saveRDS(snakemake,  "tmp/count_ranges.snakemake")
+# snakemake <- readRDS("tmp/count_ranges.snakemake")
 suppressPackageStartupMessages({
     library(GenomicFeatures)
     library(GenomicRanges)
