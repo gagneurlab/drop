@@ -3,10 +3,12 @@
 #' author: Michaela Muller
 #' wb:
 #'  input: 
-#'  - counts: '`sm expand(config["PROC_RESULTS"] + "/{{annotation}}/counts/{sampleID}_counts.Rds", sampleID=config["SAMPLE_IDS"])`'
+#'  - counts: '`sm expand(config["PROC_RESULTS"] + "/{{annotation}}/counts/{sampleID}.Rds", sampleID=config["SAMPLE_IDS"])`'
 #'  - gene_annot_dt: "/s/project/genetic_diagnosis/resource/gencode_{annotation}_unique_gene_name.tsv"
+#'  - sample_anno: '`sm config["SAMPLE_ANNOTATION"]`'
 #'  output:
-#'  - merged_counts: '`sm config["PROC_RESULTS"] + "/{annotation}/counts/total_counts.Rds"`'
+#'  - counts_ss: '`sm config["PROC_RESULTS"] + "/{annotation}/counts/total_counts_ss.Rds"`'
+#'  - counts_ns: '`sm config["PROC_RESULTS"] + "/{annotation}/counts/total_counts_ns.Rds"`'
 #'  threads: 30
 #'  type: script
 #'---
@@ -23,19 +25,34 @@ suppressPackageStartupMessages({
 
 register(MulticoreParam(snakemake@threads))
 
+# Read counts
 single_counts <- bplapply(snakemake@input$counts, readRDS)
+names(single_counts) <- snakemake@config$SAMPLE_IDS
 message(paste("read", length(single_counts), "files"))
 
-total_counts <- do.call(cbind, single_counts)
-colnames(total_counts) <- gsub(".bam", "", colnames(total_counts))
-
-# Add gene annotation data (rowData)
+# Read annotations
 gene_annot_dt <- fread(snakemake@input$gene_annot_dt)
+sample_anno <- fread(snakemake@input$sample_anno)
 
-rd <- data.frame(gene_id_unique = row.names(total_counts))
 
-rd <- left_join(rd, gene_annot_dt[,.(gene_id_unique, gene_name_unique, gene_type, gene_status)],
-                                   by = "gene_id_unique")
-rowData(total_counts) <- rd
+merge_counts <- function(counts, gene_annot_dt) {
+    total_counts <- do.call(cbind, counts)
+    colnames(total_counts) <- gsub(".bam", "", colnames(total_counts))
+    # Add gene annotation data (rowData)
+    rd <- data.frame(gene_id_unique = row.names(total_counts))
+    rd <- left_join(rd, gene_annot_dt[,.(gene_id_unique, gene_name_unique, gene_type, gene_status)],
+                    by = "gene_id_unique")
+    rowData(total_counts) <- rd
+    rownames(ods) <- rd$gene_name_unique
+    total_counts
+}
 
-saveRDS(total_counts, snakemake@output$merged_counts)
+# strand-specific
+stranded <- sample_anno[as.logical(IS_RNA_SEQ_STRANDED), RNA_ID]
+counts_ss <- merge_counts(single_counts[stranded], gene_annot_dt)
+saveRDS(counts_ss, snakemake@output$counts_ss)
+
+# non strand-specific
+non_stranded <- sample_anno[!as.logical(IS_RNA_SEQ_STRANDED), RNA_ID]
+counts_ns <- merge_counts(single_counts[non_stranded], gene_annot_dt)
+saveRDS(counts_ss, snakemake@output$counts_ns)

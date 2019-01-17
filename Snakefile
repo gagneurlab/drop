@@ -8,4 +8,4 @@ rule all:
     output: touch("Output/all.done")
 
 rule count:
-    input: expand(config["PROC_RESULTS"] + "/{annotation}/counts/total_counts.Rds", annotation=config["ANNOTATIONS"])
+    input: expand(config["PROC_RESULTS"] + "/{annotation}/counts/total_counts_{strand}.Rds", annotation=config["ANNOTATIONS"], strand=['ss', 'ns'])

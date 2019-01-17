@@ -3,9 +3,10 @@
 #' author: Michaela Mueller
 #' wb:
 #'  input:
-#'   - ods: '`sm config["PROC_RESULTS"] + "/{annotation}/outrider/ods_unfitted.Rds"`'
+#'  - ods: '`sm config["PROC_RESULTS"] + "/{annotation}/outrider/{strand}/ods_unfitted.Rds"`'
 #'  output:
-#'   - ods: '`sm config["PROC_RESULTS"] + "/{annotation}/outrider/ods.Rds"`'
+#'   - ods: '`sm config["PROC_RESULTS"] + "/{annotation}/outrider/{strand}/ods.Rds"`'
+#'   - plot: '`sm config["PROC_RESULTS"] + "/{annotation}/outrider/{strand}/qqplot.png"`'
 #'  type: script
 #'  threads: 30
 #'---
@@ -39,7 +40,7 @@ ods <- OUTRIDER(ods, BPPARAM = MulticoreParam(snakemake@threads))
 
 
 # do it if you have time and a big memory 
-#plotQQ(ods, global=TRUE)
+plotQQ(ods, global=TRUE)
 
 saveRDS(ods, snakemake@output$ods)
 

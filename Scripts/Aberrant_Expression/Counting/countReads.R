@@ -5,8 +5,9 @@
 #'  input:
 #'   - sample_bam: '`sm config["RAW_DATA"] + "/{sampleID}/RNAout/paired-endout/stdFilenames/{sampleID}.bam"`'
 #'   - features: '`sm config["PROC_RESULTS"] + "/{annotation}/counts/exons_by_gene_op.Rds"`'
+#'   - sample_anno: '`sm config["SAMPLE_ANNOTATION"]`'
 #'  output:
-#'   - counts: '`sm config["PROC_RESULTS"] + "/{annotation}/counts/{sampleID}_counts.Rds"`'
+#'   - counts: '`sm config["PROC_RESULTS"] + "/{annotation}/counts/{sampleID}.Rds"`'
 #'  type: script
 #'---
 
@@ -20,22 +21,24 @@ suppressPackageStartupMessages({
 
 # import count settings from config
 anno <- snakemake@wildcards$annotation
-dt <- data.table(annotation = unlist(snakemake@config["ANNOTATIONS"]),
-                 inter_feature = as.logical(unlist(snakemake@config["INTER_FEATURE"])))
+count_settings <- data.table(annotation = unlist(snakemake@config["ANNOTATIONS"]),
+                             inter_feature = as.logical(unlist(snakemake@config["INTER_FEATURE"])))
+inter_feature <- count_settings[annotation == anno, inter_feature]
 
+# import sample annotation
+sampleID <- snakemake@wildcards$sampleID
+sample_anno <- fread(snakemake@input$sample_anno)
+strand_spec <- sample_anno[RNA_ID == sampleID, as.logical(IS_RNA_SEQ_STRANDED)]
+
+# show info
 message(paste("input:", snakemake@input$features))
 message(paste("output:", snakemake@output$counts))
-message("settings:")
-message(dt)
-message(paste('anno:', anno))
-message(paste('inter.feature:', dt[annotation == anno, inter_feature]))
+message(paste('\tinter.feature:', inter_feature, sep = "\t"))
+message(paste('\tstrand specific:', strand_spec, sep = "\t"))
 
 
 # read files
 bam_file <- Rsamtools::BamFile(snakemake@input$sample_bam, yieldSize = 2e6)
-
-file.exists(bam_file$path)
-
 feature_regions <- readRDS(snakemake@input$features)
 
 # start counting
@@ -46,10 +49,10 @@ se <- GenomicAlignments::summarizeOverlaps(
     , bam_file
     , mode = 'IntersectionStrict'
     , singleEnd = F
-    , ignore.strand = F  # FALSE if done strand specifically
+    , ignore.strand = !strand_spec  # FALSE if done strand specifically
     , fragments = F
     , count.mapped.reads = T
-    , inter.feature = dt[annotation == anno, inter_feature] # TRUE, reads mapping to multiple features are dropped
+    , inter.feature = inter_feature # TRUE, reads mapping to multiple features are dropped
 )
 saveRDS(se, snakemake@output$counts)
 message("done")

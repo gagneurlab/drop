@@ -3,7 +3,8 @@
 #' author: Michaela Mueller, vyepez
 #' wb:
 #'  input:
-#'   - ods: '`sm expand(config["PROC_RESULTS"] + "/{annotation}/outrider/ods.Rds", annotation=config["ANNOTATIONS"])`'
+#'   - ods_ss: '`sm expand(config["PROC_RESULTS"] + "/{annotation}/outrider/ss/ods.Rds", annotation=config["ANNOTATIONS"])`'
+#'   - ods_ns: '`sm expand(config["PROC_RESULTS"] + "/{annotation}/outrider/ns/ods.Rds", annotation=config["ANNOTATIONS"])`'
 #' output: 
 #'   html_document
 #'---
