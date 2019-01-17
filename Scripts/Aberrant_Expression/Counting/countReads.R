@@ -5,7 +5,6 @@
 #'  input:
 #'   - sample_bam: '`sm config["RAW_DATA"] + "/{sampleID}/RNAout/paired-endout/stdFilenames/{sampleID}.bam"`'
 #'   - features: '`sm config["PROC_RESULTS"] + "/{annotation}/counts/exons_by_gene_op.Rds"`'
-#'   - sample_anno: '`sm config["SAMPLE_ANNOTATION"]`'
 #'  output:
 #'   - counts: '`sm config["PROC_RESULTS"] + "/{annotation}/counts/{sampleID}.Rds"`'
 #'  type: script
@@ -27,7 +26,7 @@ inter_feature <- count_settings[annotation == anno, inter_feature]
 
 # import sample annotation
 sampleID <- snakemake@wildcards$sampleID
-sample_anno <- fread(snakemake@input$sample_anno)
+sample_anno <- fread(snakemake@config$SAMPLE_ANNOTATION)
 strand_spec <- sample_anno[RNA_ID == sampleID, as.logical(IS_RNA_SEQ_STRANDED)]
 
 # show info

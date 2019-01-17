@@ -5,7 +5,6 @@
 #'  input:
 #'   - counts: '`sm config["PROC_RESULTS"] + "/{annotation}/counts/total_counts_{strand}.Rds"`'
 #'   - txdb: '`sm config["PROC_RESULTS"] + "/{annotation}/txdb.db"`'
-#'   - sample_anno: '`sm config["SAMPLE_ANNOTATION"]`'
 #'  output:
 #'   - ods: '`sm config["PROC_RESULTS"] + "/{annotation}/outrider/{strand}/ods_unfitted.Rds"`'
 #'   - plot: '`sm config["PROC_RESULTS"] + "/{annotation}/outrider/{strand}/filtered_hist.png"`'
@@ -29,7 +28,7 @@ ods <- OutriderDataSet(counts)
 colData(ods)$sampleID <- colnames(ods)
 
 # Add batches to colData for heatmap
-sample_anno <- fread(snakemake@input$sample_anno)
+sample_anno <- fread(snakemake@config$SAMPLE_ANNOTATION)
 cd <- colData(ods) %>% as.data.table
 colData(ods)$batch <- left_join(cd, sample_anno[,.(RNA_ID, BATCH)], by = c("sampleID" = "RNA_ID"))$BATCH
 

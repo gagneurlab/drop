@@ -5,7 +5,6 @@
 #'  input: 
 #'  - counts: '`sm expand(config["PROC_RESULTS"] + "/{{annotation}}/counts/{sampleID}.Rds", sampleID=config["SAMPLE_IDS"])`'
 #'  - gene_annot_dt: "/s/project/genetic_diagnosis/resource/gencode_{annotation}_unique_gene_name.tsv"
-#'  - sample_anno: '`sm config["SAMPLE_ANNOTATION"]`'
 #'  output:
 #'  - counts_ss: '`sm config["PROC_RESULTS"] + "/{annotation}/counts/total_counts_ss.Rds"`'
 #'  - counts_ns: '`sm config["PROC_RESULTS"] + "/{annotation}/counts/total_counts_ns.Rds"`'
@@ -32,18 +31,19 @@ message(paste("read", length(single_counts), "files"))
 
 # Read annotations
 gene_annot_dt <- fread(snakemake@input$gene_annot_dt)
-sample_anno <- fread(snakemake@input$sample_anno)
+sample_anno <- fread(snakemake@config$SAMPLE_ANNOTATION)
+sample_anno <- sample_anno[RNA_ID %in% snakemake@config$SAMPLE_IDS]
 
 
 merge_counts <- function(counts, gene_annot_dt) {
     total_counts <- do.call(cbind, counts)
     colnames(total_counts) <- gsub(".bam", "", colnames(total_counts))
     # Add gene annotation data (rowData)
-    rd <- data.frame(gene_id_unique = row.names(total_counts))
+    rd <- data.table(gene_id_unique = rownames(total_counts))
     rd <- left_join(rd, gene_annot_dt[,.(gene_id_unique, gene_name_unique, gene_type, gene_status)],
                     by = "gene_id_unique")
     rowData(total_counts) <- rd
-    rownames(ods) <- rd$gene_name_unique
+    rownames(total_counts) <- rd$gene_name_unique
     total_counts
 }
 
