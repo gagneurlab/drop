@@ -3,12 +3,13 @@
 #' author: Michaela Mueller
 #' wb:
 #'  input:
-#'   - counts: '`sm config["PROC_RESULTS"] + "/{annotation}/counts/total_counts.Rds"`'
+#'   - counts: '`sm config["PROC_RESULTS"] + "/{annotation}/counts/total_counts_{strand}.Rds"`'
 #'   - txdb: '`sm config["PROC_RESULTS"] + "/{annotation}/txdb.db"`'
+#'   - sample_anno: '`sm config["SAMPLE_ANNOTATION"]`'
 #'  output:
-#'   - ods: '`sm config["PROC_RESULTS"] + "/{annotation}/outrider/ods_unfitted.Rds"`'
-#'   - plot: '`sm config["PROC_RESULTS"] + "/{annotation}/outrider/filtered_hist.png"`'
-#'   - filtered_counts: '`sm config["PROC_RESULTS"] + "/{annotation}/counts/filtered_counts.Rds"`'
+#'   - ods: '`sm config["PROC_RESULTS"] + "/{annotation}/outrider/{strand}/ods_unfitted.Rds"`'
+#'   - plot: '`sm config["PROC_RESULTS"] + "/{annotation}/outrider/{strand}/filtered_hist.png"`'
+#'   - filtered_counts: '`sm config["PROC_RESULTS"] + "/{annotation}/counts/filtered_counts_{strand}.Rds"`'
 #'  type: script
 #'---
 
@@ -27,12 +28,10 @@ counts <- readRDS(snakemake@input$counts)
 ods <- OutriderDataSet(counts)
 colData(ods)$sampleID <- colnames(ods)
 
-# TODO: Add batches to colData for heatmap
-# colData(ods)$batch <- as.character(NA)
-# for(i in seq_along(batches)){
-#     idxSampleBatch <- colnames(ods) %in% colnames(ss_counts_gene[[i]])
-#     colData(ods)$batch[idxSampleBatch] <- batches[i]
-# }
+# Add batches to colData for heatmap
+sample_anno <- fread(snakemake@input$sample_anno)
+cd <- colData(ods) %>% as.data.table
+colData(ods)$batch <- left_join(cd, sample_anno[,.(RNA_ID, BATCH)], by = c("sampleID" = "RNA_ID"))$BATCH
 
 # filter not expressed genes
 gencode_txdb <- loadDb(snakemake@input$txdb)
@@ -52,7 +51,6 @@ saveRDS(ods, snakemake@output$ods)
 ods <- filterExpression(ods, gtfFile=gencode_txdb, filter=TRUE, fpkmCutoff=snakemake@config$fpkmCutoff)
 # Save the filtered count matrix (as a matrix)
 saveRDS(counts(ods), snakemake@output$filtered_counts)
-
 
 
 
