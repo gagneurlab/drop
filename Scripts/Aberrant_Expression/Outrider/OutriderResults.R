@@ -17,33 +17,37 @@ suppressPackageStartupMessages({
 })
 
 saveRDS(snakemake, "tmp/outrider_analysis.snakemake")
+# snakemake <- readRDS("tmp/outrider_analysis.snakemake")
+
 ods <- sapply(snakemake@input$ods, readRDS)
+names(ods)
+ods <- ods[[3]]
+
+dim(ods)
 
 #' # Quality Control
-barplot(sizeFactors(ods), main = "Size Factors")
+barplot(sort(sizeFactors(ods)), main = "Size Factors", xaxt = 'n')
 
 #+ heatmap, fig.height=8, fig.width=8
 plotCountCorHeatmap(ods)
 
-res_ss <- results(ods_ss)
-res_ss[, IS_RNA_SEQ_STRANDED := T]
+res <- results(ods)
+res[, IS_RNA_SEQ_STRANDED := T]
 
 
-ods_nss <- readRDS("/s/project/genetic_diagnosis/processed_results/ods_batches0_1_th_nss.Rds")
-res_nss <- results(ods_nss)
-res_nss[, IS_RNA_SEQ_STRANDED := F]
+# ods_nss <- readRDS("/s/project/genetic_diagnosis/processed_results/ods_batches0_1_th_nss.Rds")
+# res_nss <- results(ods_nss)
+# res_nss[, IS_RNA_SEQ_STRANDED := F]
 
-res <- rbind(res_ss, res_nss)
+# res <- rbind(res_ss, res_nss)
 
-res[, LAB := "PROKISCH"]
-res[sampleID %in%  sat[, ID_Links], LAB := "HAACK"]
+# res[sampleID %in%  sat[, ID_Links], LAB := "HAACK"]
 
 
-# do some global plotting
-ods <- plotCountCorHeatmap(ods, normalized=FALSE, rowCoFactor="batch")
+# do some global plotting, add Batch to rowCoFactor
+# ods <- plotCountCorHeatmap(ods, normalized=FALSE, rowCoFactor="batch")
 # ods <- ods[,!colData(ods)$clusterNumber %in% c("3", "4")]
-
-ods <- plotCountCorHeatmap(ods, normalized=TRUE, rowCoFactor="batch")
+# ods <- plotCountCorHeatmap(ods, normalized=TRUE, rowCoFactor="batch")
 
 png("/s/project/genetic_diagnosis/processed_results/barplot_aberrant_genes_per_sample.png", width=900, height=700, res=120)
 plotAberrantPerSample(ods)
