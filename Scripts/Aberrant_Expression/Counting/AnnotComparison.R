@@ -29,9 +29,10 @@ source("Scripts/_functions/gene_annotation/add_gene_info_cols.R")
 #' exist in both gtf files, the number of genes with at least 1 count in 1 sample,
 #' the number of genes that passed the OUTRIDER filter.
 #' Also consider protein coding and mito disease genes.
-
+#'
 #' ## Read and combine the rowData from both annotations
 filtv19 <- readRDS(snakemake@input$filtered_v19)
+row.names(filtv19) <- rowData(filtv19)$gene_name_unique
 rd19 <- rowData(filtv19) %>% as.data.table()
 rd19[, version := 'v19']
 
@@ -102,7 +103,7 @@ ggplot(mt[category == 'all'], aes(group, prop, fill = annotation)) + geom_bar(st
     geom_text(aes(label = value),  position = position_dodge(width = .8), vjust = -.5) + 
     theme_bw(base_size = 14) + scale_fill_brewer(palette="BuPu")
 
-#+ fig.width=10, fig.height=10
+#+ fig.width=12, fig.height=10
 ggplot(mt, aes(group, prop, fill = annotation)) + geom_bar(stat = 'identity', position = 'dodge') + 
     geom_text(aes(label = value),  position = position_dodge(width = .8), vjust = -.3) + 
     theme_bw(base_size = 14) + scale_fill_brewer(palette="BuPu") + facet_wrap(~category)
@@ -126,4 +127,13 @@ setdiff(rd[version == 'v29' & MITO_DISEASE_GENE == T & passedFilter == T, gene_n
 
 fp <- fpkm(filtv29)
 quantile(fp["ACAD11", ], prob = .95)
-quantile(fp["MRPL38", ], prob = .95)
+
+
+
+filtv19 <- filtv19[mcols(filtv29)$passedFilter,]
+
+
+
+
+
+

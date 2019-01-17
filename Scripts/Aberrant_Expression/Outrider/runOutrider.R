@@ -42,6 +42,8 @@ ods <- OUTRIDER(ods, BPPARAM = MulticoreParam(snakemake@threads))
 # do it if you have time and a big memory 
 plotQQ(ods, global=TRUE)
 
+row.names(ods) <- rowData(ods)$gene_name_unique
+
 saveRDS(ods, snakemake@output$ods)
 
 
