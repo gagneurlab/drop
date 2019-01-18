@@ -43,7 +43,6 @@ merge_counts <- function(counts, gene_annot_dt) {
     rd <- left_join(rd, gene_annot_dt[,.(gene_id_unique, gene_name_unique, gene_type, gene_status)],
                     by = "gene_id_unique")
     rowData(total_counts) <- rd
-    rownames(total_counts) <- rd$gene_name_unique
     total_counts
 }
 

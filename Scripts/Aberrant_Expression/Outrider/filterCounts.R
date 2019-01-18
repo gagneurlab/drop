@@ -23,7 +23,6 @@ suppressPackageStartupMessages({
 saveRDS(snakemake, "tmp/filter_counts.snakemake")
 # snakemake <- readRDS("tmp/filter_counts.snakemake")
 counts <- readRDS(snakemake@input$counts)
-# counts <- readRDS("/s/project/genetic_diagnosis/processed_results/v29/counts/total_counts.Rds")
 ods <- OutriderDataSet(counts)
 colData(ods)$sampleID <- colnames(ods)
 
