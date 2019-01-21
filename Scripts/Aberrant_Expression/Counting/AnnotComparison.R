@@ -46,7 +46,14 @@ filtv29 <- readRDS(snakemake@input$filtered_v29)
 row.names(filtv29) <- rowData(filtv29)$gene_name_unique
 rd29 <- rowData(filtv29) %>% as.data.table()
 rd29[, version := 'v29']
-rd <- rbind(rd19, rd29, rd29ov)
+
+ods_ss <- readRDS("/s/project/genetic_diagnosis/processed_results/ods_batches2_3_4_5_ss.Rds")
+rd_exon <- rowData(ods_ss) %>% as.data.table()
+rd_exon[, version := 'exon']
+rd_exon[, gene_name_unique := gene_name]
+rd_exon[, gene_name := NULL]
+
+rd <- rbind(rd19, rd29, rd29ov, rd_exon, fill = T)
 
 # Add mito disease genes information
 rd[, gene_name_unique := toupper(gene_name_unique)]
@@ -68,72 +75,81 @@ length(genes_to_check)
 rd[gene_name_unique %in% genes_to_check, gene_to_check := TRUE]
 
 #' ## Create comparison table
-comp_dt <- data.table(annotation = c("v19", "v29", "v29ov"))
+comp_dt <- data.table(annotation = c("v19", "v29", "v29ov", "exon"))
 # How many genes are in the GTF file?
 comp_dt[, total_all := nrow(rd[version == annotation]), by = 1:nrow(comp_dt)]
 comp_dt[, total_pc := nrow(rd[version == annotation & gene_type == 'protein_coding']), by = 1:nrow(comp_dt)]
 comp_dt[, total_mito := nrow(rd[version == annotation & MITO_DISEASE_GENE == TRUE]), by = 1:nrow(comp_dt)]
-comp_dt[, total_sp := nrow(rd[version == annotation & gene_to_check == TRUE]), by = 1:nrow(comp_dt)]
+comp_dt[, total_special := nrow(rd[version == annotation & gene_to_check == TRUE]), by = 1:nrow(comp_dt)]
 
 # How many genes have at least 1 read for all samples?
 comp_dt[, counted_all := sum(rd[version == annotation, counted1sample]), by = 1:nrow(comp_dt)]
 comp_dt[, counted_pc := sum(rd[version == annotation & gene_type == 'protein_coding', counted1sample]), by = 1:nrow(comp_dt)]
 comp_dt[, counted_mito := sum(rd[version == annotation & MITO_DISEASE_GENE == TRUE, counted1sample]), by = 1:nrow(comp_dt)]
-comp_dt[, counted_sp := sum(rd[version == annotation & gene_to_check == TRUE, counted1sample]), by = 1:nrow(comp_dt)]
+comp_dt[, counted_special := sum(rd[version == annotation & gene_to_check == TRUE, counted1sample]), by = 1:nrow(comp_dt)]
+comp_dt[annotation == 'exon', c('total_all', 'total_pc', 'total_mito', 'total_special', 'counted_all', 'counted_pc', 'counted_mito', 'counted_special') := NA]
 
 # How many genes pass the OUTRIDER filter?
 comp_dt[, passedFilter_all := sum(rd[version == annotation, passedFilter]), by = 1:nrow(comp_dt)]
 comp_dt[, passedFilter_pc := sum(rd[version == annotation & gene_type == 'protein_coding', passedFilter]), by = 1:nrow(comp_dt)]
 comp_dt[, passedFilter_mito := sum(rd[version == annotation & MITO_DISEASE_GENE == TRUE, passedFilter]), by = 1:nrow(comp_dt)]
-comp_dt[, passedFilter_sp := sum(rd[version == annotation & gene_to_check == TRUE, passedFilter]), by = 1:nrow(comp_dt)]
+comp_dt[, passedFilter_special := sum(rd[version == annotation & gene_to_check == TRUE, passedFilter]), by = 1:nrow(comp_dt)]
 DT::datatable(comp_dt, style = 'bootstrap')
 
 
 #' ## Tidy up data and plotting
 mt <- melt(comp_dt)
 mt <- separate(mt, col = 'variable', into = c('group', 'category'), sep = "_")
-mt[, prop := value/max(value), by = category]
+mt[, prop := value/max(value, na.rm =T), by = category]
 mt[, group := factor(group, levels = c("total", "counted", "passedFilter"))]
-mt[, annotation := factor(annotation, levels = c("v29", "v29ov", "v19"))]
+mt[, annotation := factor(annotation, levels = c("exon", "v19", "v29", "v29ov"))]
 mt[category == 'mito', category := 'Mito_disease']
 mt[category == 'pc', category := 'protein_coding']
+mt <- na.omit(mt)
+mt <- mt[!(annotation == 'v29ov' & group == 'total')]
 
 library(ggthemes)
 ggplot(mt[category == 'all'], aes(group, prop, fill = annotation)) + geom_bar(stat = 'identity', position = 'dodge') + 
     geom_text(aes(label = value),  position = position_dodge(width = .8), vjust = -.5) + 
-    theme_bw(base_size = 14) + scale_fill_brewer(palette="BuPu")
+    theme_bw(base_size = 14) + scale_fill_brewer(palette = "Set2")
 
-#+ fig.width=12, fig.height=10
+#+ fig.width=13, fig.height=10
 ggplot(mt, aes(group, prop, fill = annotation)) + geom_bar(stat = 'identity', position = 'dodge') + 
     geom_text(aes(label = value),  position = position_dodge(width = .8), vjust = -.3) + 
-    theme_bw(base_size = 14) + scale_fill_brewer(palette="BuPu") + facet_wrap(~category)
+    theme_bw(base_size = 14) + scale_fill_brewer(palette = "Set2") + facet_wrap(~category)
 
 #'
+#' Special genes detected at first
+rd[version == 'exon' & gene_to_check == T, gene_name_unique] %>% sort
+
 #' Mito disease genes with no counts:
 rd[version == 'v29' & MITO_DISEASE_GENE == T & counted1sample == F, gene_name_unique] %>% sort
 
-#' Mito disease genes that didn't pass the OUTRIDER filter:
+#' Mito disease genes with counts that didn't pass the OUTRIDER filter:
 rd[version == 'v29' & MITO_DISEASE_GENE == T & counted1sample == T & passedFilter == F, gene_name_unique] %>% sort
 
-#' Robert's special genes with no counts:
-rd[version == 'v29' & gene_to_check == T & counted1sample == F, gene_name_unique] %>% sort
-
-#' Robert's special genes that didn't pass the OUTRIDER filter:
+#' Robert's special genes appearing on v29ov, but not on v29
 rd[version == 'v29' & gene_to_check == T & counted1sample == T & passedFilter == F, gene_name_unique] %>% sort
 
-#' Mito disease genes appearing on v29, but not on v29ov
-setdiff(rd[version == 'v29' & MITO_DISEASE_GENE == T & passedFilter == T, gene_name_unique], 
-        rd[version == 'v29ov' & MITO_DISEASE_GENE == T & passedFilter == T, gene_name_unique])
+#' Mito disease genes appearing on v29ov, but not on v29
+setdiff(rd[version == 'v29ov' & MITO_DISEASE_GENE == T & passedFilter == T, gene_name_unique], 
+        rd[version == 'v29' & MITO_DISEASE_GENE == T & passedFilter == T, gene_name_unique])
 
 fp <- fpkm(filtv29)
 quantile(fp["ACAD11", ], prob = .95)
 
+#' ## Comparison between exonsBy() <-> exons() functions
+filtv19 <- filtv19[mcols(filtv19)$passedFilter,]
+common_genes <- intersect(row.names(ods_ss), row.names(filtv19))
+filtv19 <- filtv19[common_genes, ]
+ods_ss <- ods_ss[common_genes, ]
+identical(row.names(ods_ss), row.names(filtv19))
 
+#+ fig.width=7, fig.height=7
+library(LSD)
+heatscatter(rowMeans(counts(ods_ss)), rowMeans(counts(filtv19)), log = 'xy', cor = TRUE, 
+            xlab ='exons()', ylab = 'exonsBy()', main = 'Mean counts across samples, v19')
+grid()
+abline(0,1)
 
-filtv19 <- filtv19[mcols(filtv29)$passedFilter,]
-
-
-
-
-
-
+            

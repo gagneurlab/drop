@@ -36,7 +36,7 @@ gencode_txdb <- loadDb(snakemake@input$txdb)
 seqlevelsStyle(gencode_txdb) <- "UCSC"
 gencode_txdb <- keepStandardChromosomes(gencode_txdb)
 
-ods <- filterExpression(ods, gtfFile=gencode_txdb, filter=FALSE)
+ods <- filterExpression(ods, gtfFile=gencode_txdb, filter=FALSE, fpkmCutoff=snakemake@config$fpkmCutoff)
 g <- plotFPKM(ods) + theme_bw(base_size = 14)
 ggsave(snakemake@output$plot, g)
 
@@ -45,9 +45,8 @@ rowData(ods)$counted1sample = rowSums(assay(ods)) > 0
 # Save the ods object before filtering, so as to preserve the original number of genes
 saveRDS(ods, snakemake@output$ods)
 
-# Filter the ods object again and save the counts
-ods <- filterExpression(ods, gtfFile=gencode_txdb, filter=TRUE, fpkmCutoff=snakemake@config$fpkmCutoff)
 # Save the filtered count matrix (as a matrix)
+ods <- ods[mcols(ods)$passedFilter,] 
 saveRDS(counts(ods), snakemake@output$filtered_counts)
 
 

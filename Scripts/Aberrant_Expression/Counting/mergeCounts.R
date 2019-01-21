@@ -54,4 +54,4 @@ saveRDS(counts_ss, snakemake@output$counts_ss)
 # non strand-specific
 non_stranded <- sample_anno[!as.logical(IS_RNA_SEQ_STRANDED), RNA_ID]
 counts_ns <- merge_counts(single_counts[non_stranded], gene_annot_dt)
-saveRDS(counts_ss, snakemake@output$counts_ns)
+saveRDS(counts_ns, snakemake@output$counts_ns)

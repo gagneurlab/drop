@@ -6,7 +6,6 @@
 #'  - ods: '`sm config["PROC_RESULTS"] + "/{annotation}/outrider/{strand}/ods_unfitted.Rds"`'
 #'  output:
 #'   - ods: '`sm config["PROC_RESULTS"] + "/{annotation}/outrider/{strand}/ods.Rds"`'
-#'   - plot: '`sm config["PROC_RESULTS"] + "/{annotation}/outrider/{strand}/qqplot.png"`'
 #'  type: script
 #'  threads: 30
 #'---
@@ -28,10 +27,12 @@ ods <- ods[mcols(ods)$passedFilter,]
     
 ods <- estimateSizeFactors(ods)
 pars <- c(seq(5, min(c(40, ncol(ods), nrow(ods))), 2), 50, 70)
+
 ods <- findEncodingDim(ods, lnorm = T, BPPARAM = MulticoreParam(snakemake@threads), params = pars)
 # TODO: check encoding dimension plot
 
 ods <- OUTRIDER(ods, BPPARAM = MulticoreParam(snakemake@threads))
+message("outrider fitting finished")
 
 # ods <- autoCorrect(ods, q = 60)  # Felix recommended, q = Ngenes / 4
 # ods <- fit(ods)
@@ -40,7 +41,7 @@ ods <- OUTRIDER(ods, BPPARAM = MulticoreParam(snakemake@threads))
 
 
 # do it if you have time and a big memory 
-plotQQ(ods, global=TRUE)
+# plotQQ(ods, global=TRUE)
 
 row.names(ods) <- rowData(ods)$gene_name_unique
 
