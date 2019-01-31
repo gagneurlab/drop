@@ -68,11 +68,12 @@ res_ns[, STRANDED := 'Non Specific']
 
 # Combine them and add genetic information
 res <- rbind(res_ss, res_ns)
+res[, FC := 2^l2fc]
+
 res <- add_all_gene_info(res, gene_name = 'geneID', dis_genes = F)
 
 # Add sample annotation
 sa <- fread(snakemake@config$SAMPLE_ANNOTATION)
-sa[RNA_ID == '104982R', KNOWN_MUTATION := 'TIMMDC1']   # new TIMMDC1 patient
 res[, geneID := toupper(geneID)]
 res <- left_join(res, sa[, .(RNA_ID, FIBROBLAST_ID, EXOME_ID, PEDIGREE, KNOWN_MUTATION,
                              CANDIDATE_GENE, BATCH)],
@@ -108,13 +109,13 @@ DT::datatable(res, caption = "OUTRIDER results", style = 'bootstrap')
 library(ggbeeswarm)
 library(ggthemes)
 
-#' Distributin of l2fc
+#' Distributin of fold changes (FC)
 #+ fig.width=10
-ggplot(res, aes(l2fc)) + geom_histogram(aes(fill = TP)) + facet_wrap(~ STRANDED) + theme_bw() + scale_fill_fivethirtyeight()
+ggplot(res, aes(FC)) + geom_histogram(aes(fill = TP)) + facet_wrap(~ STRANDED) + theme_bw() + scale_fill_fivethirtyeight()
 
-ggplot(res[l2fc < 0 & !sampleID %in% ab_table$sampleID], aes(TP, l2fc)) + geom_boxplot(outlier.shape = NA) + 
+ggplot(res[FC < 1 & !sampleID %in% ab_table$sampleID], aes(TP, FC)) + geom_boxplot(outlier.shape = NA) + 
     geom_beeswarm(aes(col = TP)) + facet_wrap(~ STRANDED) + theme_bw() + scale_color_fivethirtyeight()
-ggplot(res[l2fc < 0 & !sampleID %in% ab_table$sampleID], aes(TP, -log10(padjust))) + geom_boxplot(outlier.shape = NA) + 
+ggplot(res[FC < 1 & !sampleID %in% ab_table$sampleID], aes(TP, -log10(padjust))) + geom_boxplot(outlier.shape = NA) + 
     geom_beeswarm(aes(col = TP)) + facet_wrap(~ STRANDED) + theme_bw() + scale_color_fivethirtyeight()
 
 abt <- res[, .N, by = .(sampleID, tp_sample, STRANDED)]
