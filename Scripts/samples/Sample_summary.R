@@ -32,7 +32,7 @@ sa[!is.na(TRANSDUCED_GENE) | TISSUE != 'FIBROBLAST' | GROWTH_MEDIUM != 'GLU', sa
 
 ggplot(sa, aes(BATCH)) + geom_bar(aes(y = ..count.., fill = sample_type)) + 
     geom_text(aes(label = ..count..), stat = 'count' , vjust = -.5) + 
-    theme_bw() + scale_fill_ptol()
+    theme_bw() + scale_fill_canva(palette="Subdued and proffesional")
 
 ggplot(sa, aes(BATCH)) + geom_bar(aes(y = ..count.., fill = RNA_PERSON)) + 
     theme_bw() + scale_fill_ptol()
