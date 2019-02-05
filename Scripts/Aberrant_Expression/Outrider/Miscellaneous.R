@@ -46,6 +46,11 @@ mt_genes_dt[, sF_counts := raw_counts / size_factors]
 mt_genes_dt[, int_sample := F]
 mt_genes_dt[RNA_ID == sample, int_sample := T]
 
+mt_sub <- mt_genes_dt[gene %in% c("MT-ND1", "MT-ND5", "MT-ND6", "MTERF1", "NRF1")]
+mt_sub[, mt_genes_dt := factor(mt_genes_dt, levels = c("MT-ND1", "MT-ND5", "MT-ND6", "MTERF1", "NRF1"))]
+
+#' sF_counts: counts normalized by sequencing depth using size factors
+
 # beanplots
 expression_beanplot <- function(DT, counts_type = c('raw_counts', 'norm_counts', 'sF_counts'), main = ''){
     ggplot(DT, aes(gene, get(counts_type))) + geom_beeswarm(aes(col = int_sample)) + 
@@ -74,6 +79,9 @@ expression_boxplot(mt_genes_dt[gene %in% mito_genes], counts_type = 'norm_counts
 expression_boxplot(mt_genes_dt[gene %in% other_genes], counts_type = 'raw_counts')
 expression_boxplot(mt_genes_dt[gene %in% other_genes], counts_type = 'sF_counts')
 expression_boxplot(mt_genes_dt[gene %in% other_genes], counts_type = 'norm_counts')
+
+#+ fig.width=6
+expression_boxplot(mt_sub, counts_type = 'sF_counts')
 
 #' Volcano plot of sample
 plotVolcano(ods_ss, sample)
