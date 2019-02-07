@@ -115,14 +115,21 @@ hgnc_mapping[duplicated(hgnc_symbol) | duplicated(hgnc_symbol, fromLast=TRUE)][o
 
 dim(protein_mat)
 dim(hgnc_mapping)
-ods_ss <- readRDS("/s/project/genetic_diagnosis/processed_results/v29_overlap/outrider/ss/ods.Rds")
 
+ods_ss <- readRDS("/s/project/genetic_diagnosis/processed_results/v29_overlap/outrider/ss/ods.Rds")
 dim(ods_ss)
 
 library(gplots)
 venn(list(transcriptome = row.names(ods_ss), 
           proteome = hgnc_mapping$hgnc_symbol   # already takes unique values
 ))
+
+
+write.table(setdiff(hgnc_mapping$hgnc_symbol, row.names(ods_ss)), "/s/public_webshare/project/genetic_diagnosis/proteome/proteins_not_in_transcriptome.txt", 
+            sep = "\n", quote = F, row.names = F, col.names = F)
+
+#' [Download proteins not detected in transcriptome](https://i12g-gagneurweb.informatik.tu-muenchen.de/project/genetic_diagnosis/proteome/proteins_not_in_transcriptome.txt)
+#'
 
 #' ## Heatscatter of genes with same proteins
 library(LSD)

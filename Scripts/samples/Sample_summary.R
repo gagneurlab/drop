@@ -23,7 +23,7 @@ suppressPackageStartupMessages({
 
 sa <- fread(snakemake@input$sample_anno)
 
-#'
+#' ## Read and clean global sample annotation
 sa <- sa[!is.na(BATCH)]
 sa[, solved := !is.na(KNOWN_MUTATION)]
 sa[, sample_type := 'patient']
@@ -37,6 +37,19 @@ ggplot(sa, aes(BATCH)) + geom_bar(aes(y = ..count.., fill = sample_type)) +
 ggplot(sa, aes(BATCH)) + geom_bar(aes(y = ..count.., fill = RNA_PERSON)) + 
     theme_bw() + scale_fill_ptol()
 
+#' Total number of samples coming from patients (strand and non strand specific)
+sa[sample_type == 'patient', .N]
+sa[sample_type == 'patient', table(IS_RNA_SEQ_STRANDED)]   
+
 ggplot(sa[sample_type == 'patient'], aes(BATCH)) + geom_bar(aes(y = ..count.., fill = solved)) + 
     geom_text(aes(label = ..count..), stat = 'count' , vjust = -.5) + 
     theme_bw() + scale_fill_colorblind() + ggtitle('Patients only')
+
+#' ## Download sample annotation with patients only
+#+ echo=F
+write.table(sa[sample_type == 'patient'][order(BATCH)], "/s/public_webshare/project/genetic_diagnosis/results/sample_anno_rna_patients.txt", sep = "\t", quote = F, row.names = F)
+#' [Download rna sample annotation](https://i12g-gagneurweb.informatik.tu-muenchen.de/project/genetic_diagnosis/results/sample_anno_rna_patients.txt)
+#'
+
+#' ## Questions to answer
+#' ### 1. Sample 62336R appears both in Batch 2 and Batch 4, both are repetition from Laura; which should be included?
