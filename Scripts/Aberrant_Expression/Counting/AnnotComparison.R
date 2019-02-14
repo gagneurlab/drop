@@ -58,7 +58,7 @@ rd <- rbind(rd19, rd29, rd29ov, rd_exon, fill = T)
 # Add mito disease genes information
 rd[, gene_name_unique := toupper(gene_name_unique)]
 rd <- add_hans_class(rd, gene_name_col = "gene_name_unique", return_all_info = FALSE)
-
+rd <- add_omim_cols(rd, gene_name_col = "gene_name_unique", return_all_info = FALSE)
 
 # List of special genes that Robert asked to check
 genes_to_check <- c("NDUFAF5", "NDUFAF6",
@@ -81,21 +81,24 @@ comp_dt[, total_all := nrow(rd[version == annotation]), by = 1:nrow(comp_dt)]
 comp_dt[, total_pc := nrow(rd[version == annotation & gene_type == 'protein_coding']), by = 1:nrow(comp_dt)]
 comp_dt[, total_mito := nrow(rd[version == annotation & MITO_DISEASE_GENE == TRUE]), by = 1:nrow(comp_dt)]
 comp_dt[, total_special := nrow(rd[version == annotation & gene_to_check == TRUE]), by = 1:nrow(comp_dt)]
+comp_dt[, total_omim := nrow(rd[version == annotation & OMIM == TRUE]), by = 1:nrow(comp_dt)]
 
 # How many genes have at least 1 read for all samples?
 comp_dt[, counted_all := sum(rd[version == annotation, counted1sample]), by = 1:nrow(comp_dt)]
 comp_dt[, counted_pc := sum(rd[version == annotation & gene_type == 'protein_coding', counted1sample]), by = 1:nrow(comp_dt)]
 comp_dt[, counted_mito := sum(rd[version == annotation & MITO_DISEASE_GENE == TRUE, counted1sample]), by = 1:nrow(comp_dt)]
 comp_dt[, counted_special := sum(rd[version == annotation & gene_to_check == TRUE, counted1sample]), by = 1:nrow(comp_dt)]
-comp_dt[annotation == 'exon', c('total_all', 'total_pc', 'total_mito', 'total_special', 'counted_all', 'counted_pc', 'counted_mito', 'counted_special') := NA]
+comp_dt[, counted_omim := sum(rd[version == annotation & OMIM == TRUE, counted1sample]), by = 1:nrow(comp_dt)]
+comp_dt[annotation == 'exon', c('total_all', 'total_pc', 'total_mito', 'total_special', 'total_omim', 'counted_all', 'counted_pc', 'counted_mito', 'counted_special', 'counted_omim') := NA]
 
 # How many genes pass the OUTRIDER filter?
 comp_dt[, passedFilter_all := sum(rd[version == annotation, passedFilter]), by = 1:nrow(comp_dt)]
 comp_dt[, passedFilter_pc := sum(rd[version == annotation & gene_type == 'protein_coding', passedFilter]), by = 1:nrow(comp_dt)]
 comp_dt[, passedFilter_mito := sum(rd[version == annotation & MITO_DISEASE_GENE == TRUE, passedFilter]), by = 1:nrow(comp_dt)]
 comp_dt[, passedFilter_special := sum(rd[version == annotation & gene_to_check == TRUE, passedFilter]), by = 1:nrow(comp_dt)]
-DT::datatable(comp_dt, style = 'bootstrap')
+comp_dt[, passedFilter_omim := sum(rd[version == annotation & OMIM == TRUE, passedFilter]), by = 1:nrow(comp_dt)]
 
+DT::datatable(comp_dt, style = 'bootstrap')
 
 #' ## Tidy up data and plotting
 mt <- melt(comp_dt)
@@ -113,10 +116,10 @@ ggplot(mt[category == 'all'], aes(group, prop, fill = annotation)) + geom_bar(st
     geom_text(aes(label = value),  position = position_dodge(width = .8), vjust = -.5) + 
     theme_bw(base_size = 14) + scale_fill_brewer(palette = "Set2")
 
-#+ fig.width=13, fig.height=10
+#+ fig.width=13, fig.height=12
 ggplot(mt, aes(group, prop, fill = annotation)) + geom_bar(stat = 'identity', position = 'dodge') + 
-    geom_text(aes(label = value),  position = position_dodge(width = .8), vjust = -.3) + 
-    theme_bw(base_size = 14) + scale_fill_brewer(palette = "Set2") + facet_wrap(~category)
+    geom_text(aes(label = value),  position = position_dodge(width = .8), vjust = -.1) + 
+    theme_bw(base_size = 14) + scale_fill_brewer(palette = "Set2") + facet_wrap(~category, ncol = 2)
 
 #'
 #' Special genes detected at first
