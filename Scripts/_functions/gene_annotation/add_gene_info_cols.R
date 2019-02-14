@@ -134,7 +134,7 @@ add_disease_gene_info <- function(DT, gene_name_col = "gene_name"){
 ### Rahman's disease genes columns
 ##############
 add_rahman_disease_col <- function(DT, gene_name_col = "gene_name"){
-    rahman_table <- fread("../exomes1000/Data/MitoDiseaseGenes(Rahman).csv")
+    rahman_table <- fread("../exomes1000/Data/genes_info/MitoDiseaseGenes(Rahman).csv")
     rahman_table[, Gene := toupper(Gene)]
     
     # v1 is the way it is in Rahman's table
@@ -158,15 +158,13 @@ add_rahman_disease_col <- function(DT, gene_name_col = "gene_name"){
 }
 
 
-
-
 ##############
 ### Add OMIM columns
 ##############
 # Adds 3 columns with OMIM number per gene, PINH: mode of inheritance, and PMIM: mim number of the phenotype
 # Mind the script on "../mitomultiomics/src/r/functions/variant_handling/omim_parser.R"
 
-add_omim_cols <- function(DT, gene_name_col = "gene_name"){
+add_omim_cols <- function(DT, gene_name_col = "gene_name", return_all_info = TRUE){
     omim_dt = readRDS("/s/project/mitoMultiOmics/db_data/omim-gene-pheno-cache.RDS")
     # omim_dt <- readRDS("../mitomultiomics/resource/omim_dt.Rds")
     omim_dt <- omim_dt[SYMBOL != "", .(SYMBOL, GMIM, PINH, PMIM)]
@@ -177,6 +175,12 @@ add_omim_cols <- function(DT, gene_name_col = "gene_name"){
     DT <- left_join(DT, omim_dt, by = c("gene_name" = "SYMBOL")) %>% as.data.table
     setnames(DT, "gene_name", gene_name_col)
     
+    # return_all_info: TRUE - returns all the 3 columns
+    # FALSE: returns a T/F OMIM col
+    if(isFALSE(return_all_info)){
+        DT[, OMIM := PMIM != ""]
+        DT[, c("PINH", "PMIM") := NULL]
+    } 
     return(DT)
 }
 

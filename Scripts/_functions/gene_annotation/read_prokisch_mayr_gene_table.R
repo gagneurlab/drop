@@ -1,7 +1,7 @@
 # Create a link to the latest mito_disorder_prokisch_mayr table
 # 1. Save Hans's Excel file into /s/project/mitoMultiOmics/raw_data/gene_info
 # 2. Save the first page as tsv or csv
-# 3. Create a link ln -s '/s/project/mitoMultiOmics/raw_data/gene_info/201809_mito_disorder_genes_prokisch_mayr.csv' '/s/project/mitoMultiOmics/raw_data/gene_info/latest_mito_disorder_genes_prokish_mayr.tsv'
+# 3. Create a link: ln -s '/s/project/mitoMultiOmics/raw_data/gene_info/201902_mito_disorder_genes_prokisch_mayr.csv' '/s/project/mitoMultiOmics/raw_data/gene_info/latest_mito_disorder_genes_prokish_mayr.tsv'
 # 4. Run this script, hopefully there won't be any errors
 
 require(data.table)

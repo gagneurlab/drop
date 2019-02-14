@@ -5,6 +5,7 @@
 #'  input: 
 #'   - protein_sa: '/s/project/mitoMultiOmics/raw_data/proteome/20180927_robert_proteomics/raw_data/P014_10_template_for_row_wise_normalization_BBM_overview.xlsx'
 #'   - protein_mat: '/s/project/mitoMultiOmics/raw_data/proteome/20180927_robert_proteomics/TMT_1_14_row_col_norm_all_wo_dup_wo_contr.xlsx'
+#'   - hans_table: "/s/project/mitoMultiOmics/raw_data/gene_info/mitochondrial_disorder_genes_prokisch_mayr_cleaned.tsv"
 #' output: 
 #'   html_document:
 #'    code_folding: show
@@ -23,6 +24,9 @@ suppressPackageStartupMessages({
     library(ggthemes)
     library(dplyr)
 })
+
+source("Scripts/_functions/gene_annotation/add_gene_info_cols.R")
+hans_table <- fread(snakemake@input$hans_table)
 
 #' ## Read and clean both tables
 #' ### Read sample annotation
@@ -106,6 +110,15 @@ hgnc_mapping <- data.table(getBM(attributes = c("hgnc_symbol", "uniprotswissprot
 ))
 
 hgnc_mapping <- hgnc_mapping[hgnc_symbol != ""]
+hgnc_mapping[, hgnc_symbol := toupper(hgnc_symbol)]
+
+prot_all_samples <- rownames(protein_mat)[apply(protein_mat, 1, function(x) all(x > 0))]
+hgnc_mapping[, detected_all_samples := uniprotswissprot %in% prot_all_samples]
+hgnc_mapping <- add_hans_class(hgnc_mapping, gene_name_col = 'hgnc_symbol', return_all_info = F)
+#' Mito disease genes detected in at least 1 sample
+hgnc_mapping[MITO_DISEASE_GENE == T, .N]
+#' Mito disease genes detected in all samples
+hgnc_mapping[MITO_DISEASE_GENE == T & detected_all_samples == T, .N]
 
 #' ### check multiple mappings
 # uniprot id wise
