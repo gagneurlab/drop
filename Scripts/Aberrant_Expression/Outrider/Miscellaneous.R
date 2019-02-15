@@ -85,3 +85,8 @@ expression_boxplot(mt_sub, counts_type = 'sF_counts')
 
 #' Volcano plot of sample
 plotVolcano(ods_ss, sample)
+
+#'
+x = counts(ods_ss)
+library(LSD)
+heatscatter(x["SMIM26", ], x["SURF1", ], log = 'xy', cor = T, xlab = 'SMIM26', ylab = 'SURF1'); grid(); abline(0,1)
