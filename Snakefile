@@ -9,7 +9,7 @@ htmlOutputPath = config["htmlOutputPath"]  if (config["htmlOutputPath"] != None)
 
 
 rule all:
-    input: rules.Index.output, htmlOutputPath + "/readme.html"
+    input: rules.Index.output, htmlOutputPath + "/readme.html", "Output/mae.done"
     output: touch("Output/all.done")
 
 rule count:
@@ -39,4 +39,5 @@ def mae_files(wildcards):
     
 rule mae:
     input: mae_files
+    output: touch("Output/mae.done")
 
