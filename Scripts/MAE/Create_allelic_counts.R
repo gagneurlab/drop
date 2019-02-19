@@ -3,11 +3,11 @@
 #' author: mumichae
 #' wb:
 #'  input:
-#'   - vcf: '`sm config["RAW_DATA"] + "/{vcf}/exomicout/paired-endout/stdFilenames/{vcf}.bam"`'
+#'   - vcf: '`sm config["RAW_DATA"] + "/{vcf}/exomicout/paired-endout/stdFilenames/{vcf}.vcf.gz"`'
 #'   - rna: '`sm config["RAW_DATA"] + "/{rna}/RNAout/paired-endout/stdFilenames/{rna}.bam"`'
 #'  output:
 #'   - mae: '`sm config["PROC_DATA"] + "/mae/{vcf}-{rna}.Rds"`'
-#'  threads: 5
+#'  threads: 1
 #'  type: script
 #'---
 
@@ -20,6 +20,6 @@ vcfs <- snakemake@input$vcf
 rnas <- snakemake@input$rna
 
 BPPARAM = MulticoreParam(snakemake@threads, snakemake@threads, progressbar=TRUE)
-gr <- countMAEReads(vcfs[1], rnas[1], BPPARAM=BPPARAM)
+gr <- countMAEReads(vcfs, rnas, BPPARAM=BPPARAM)
 
 saveRDS(gr, snakemake@output$mae)
