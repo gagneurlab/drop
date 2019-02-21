@@ -24,13 +24,6 @@ suppressPackageStartupMessages({
 sa <- fread(snakemake@input$sample_anno)
 
 #'
-# sa <- sa[!is.na(BATCH)]
-sa[, sample_type := 'patient']
-sa[DISEASE == 'HEALTHY' | FIBROBLAST_ID == 'NHDF', sample_type := 'control']
-sa[!is.na(TRANSDUCED_GENE) | TISSUE != 'FIBROBLAST' | GROWTH_MEDIUM != 'GLU', sample_type := 'other']
-
-sa <- sa[TISSUE == 'FIBROBLAST' & GROWTH_MEDIUM == 'GLU']
-
 mae_sa <- sa[,.(RNA_ID, EXOME_ID, FIBROBLAST_ID, BATCH, RNA_PERSON, TISSUE, COMMENT)]
 dim(mae_sa)
 mae_sa <- mae_sa[! grep("NHDF", FIBROBLAST_ID)]
@@ -52,7 +45,7 @@ mae_sa[, both_files_exist := RNA_exists & vcf_exists]
 mae_sa[!is.na(RNA_ID) & RNA_exists == FALSE]
 
 #' From the following samples we have an exome_ID, but no vcf file
-DT::datatable(mae_sa[!is.na(EXOME_ID) & vcf_exists == FALSE], style = 'bootstrap')
+DT::datatable(mae_sa[!is.na(EXOME_ID) & vcf_exists == FALSE])
 
 ms <- mae_sa[both_files_exist == TRUE]
 

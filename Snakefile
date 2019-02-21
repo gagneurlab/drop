@@ -1,5 +1,4 @@
 configfile: "wbuild.yaml"
-include: ".wBuild/wBuild.snakefile"
 
 import pandas as pd
 import os
@@ -7,15 +6,7 @@ import numpy as np
 
 htmlOutputPath = config["htmlOutputPath"]  if (config["htmlOutputPath"] != None) else "Output/html"
 
-
-rule all:
-    input: rules.Index.output, htmlOutputPath + "/readme.html", "Output/mae.done"
-    output: touch("Output/all.done")
-
-rule count:
-    input: expand(config["PROC_RESULTS"] + "/{annotation}/counts/total_counts_{strand}.Rds", annotation=config["ANNOTATIONS"], strand=['ss', 'ns'])
-
-def mae_files(wildcards):
+def mae_files():
     anno = pd.read_table(config["SAMPLE_ANNOTATION"])
 
     # subset and clean
@@ -33,11 +24,28 @@ def mae_files(wildcards):
     anno_mae['rna_exists'] = [os.path.exists(x) for x in anno_mae["rna_file"]]
     anno_mae = anno_mae[anno_mae['vcf_exists'] & anno_mae['rna_exists']]
     
-    out_files = config["PROC_DATA"] + '/mae/' + anno_mae["EXOME_ID"] + '-' + anno_mae["RNA_ID"] + '.Rds'
+    vcf = anno_mae["EXOME_ID"] 
+    rna = anno_mae["RNA_ID"]
     
-    return out_files.tolist()
+    return vcf.tolist(), rna.tolist()
     
+vcf, rna = mae_files()
+
+config["vcfs"] = vcf
+config["rnas"] = rna
+mae_ids = list(map('-'.join, zip(vcf, rna)))
+config["mae_ids"] = mae_ids
+
+include: ".wBuild/wBuild.snakefile"  # Has to be here in order to update the config with the new variables
+
+rule all:
+    input: rules.Index.output, htmlOutputPath + "/readme.html", "Output/mae.done"
+    output: touch("Output/all.done")
+
+rule count:
+    input: expand(config["PROC_RESULTS"] + "/{annotation}/counts/total_counts_{strand}.Rds", annotation=config["ANNOTATIONS"], strand=['ss', 'ns'])
+
 rule mae:
-    input: mae_files
+    input: expand(config["PROC_DATA"] + "/mae/{sampleId}.Rds", sampleId=mae_ids)
     output: touch("Output/mae.done")
 

@@ -4,6 +4,7 @@
 #' wb:
 #'  input:
 #'   - out_mae: 'Output/mae.done'
+#'   - mae_res: '`sm config["PROC_RESULTS"] + "/mae/MAE_results.Rds"`'
 #'  output:
 #'  threads: 40
 #' output: 
@@ -59,6 +60,12 @@ m_dt[, sample := as.character(sample)]
 m_dt[, sample := head(unlist(strsplit(sample, split = "\\.")), 1), by = 1:nrow(m_dt)]
 m_dt[, type := factor(type, levels = c("all", "het", "enough_counts"))]
 
+# Add results info
+res_all <- readRDS(snakemake@input$mae_res)
+mr <- res_all[,.(value = .N), by = sample]
+mr <- data.table(type = 'monoallelic', mr)
+
+m_dt <- rbind(m_dt, mr)
 saveRDS(m_dt, "Output/mae_freqs.Rds")
 
 #' ## Plot
@@ -67,3 +74,11 @@ g <- ggplot(m_dt, aes(type, value)) + geom_boxplot() + theme_bw() +
 ggplotly(g)
 
 m_dt[value > 1e5]
+
+
+# Zoom in
+g <- ggplot(m_dt[value < 1e5], aes(type, value)) + geom_boxplot() + theme_bw() + 
+    labs(y = "SNVs per patient", x = "Filter cascade") + scale_y_log10()
+g
+ggplotly(g)
+
