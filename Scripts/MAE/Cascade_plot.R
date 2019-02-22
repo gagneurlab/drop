@@ -3,7 +3,6 @@
 #' author: vyepez, mumichae
 #' wb:
 #'  input:
-#'   - out_mae: 'Output/mae.done'
 #'   - mae_res: '`sm config["PROC_RESULTS"] + "/mae/MAE_results.Rds"`'
 #'  output:
 #'  threads: 40

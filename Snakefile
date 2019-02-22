@@ -39,13 +39,13 @@ config["mae_ids"] = mae_ids
 include: ".wBuild/wBuild.snakefile"  # Has to be here in order to update the config with the new variables
 
 rule all:
-    input: rules.Index.output, htmlOutputPath + "/readme.html", "Output/mae.done"
+    input: rules.Index.output, htmlOutputPath + "/readme.html"
     output: touch("Output/all.done")
 
 rule count:
     input: expand(config["PROC_RESULTS"] + "/{annotation}/counts/total_counts_{strand}.Rds", annotation=config["ANNOTATIONS"], strand=['ss', 'ns'])
 
-# rule mae:
-#    input: expand(config["PROC_DATA"] + "/mae/{sampleId}.Rds", sampleId=mae_ids)
-#    output: touch("Output/mae.done")
+rule mae:
+    input: config["PROC_RESULTS"] + "/mae/MAE_results.Rds"
+    output: touch("Output/mae.done")
 
