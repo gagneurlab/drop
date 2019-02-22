@@ -363,7 +363,51 @@ parse_patient_id <- function(file_name){
     return(sample_id)
 }
 
-run_annotation_and_save_it <- function(sample, vcf_files, outDir, num_forks,
+#' 
+#' annotate vcf and save to file
+#' 
+run_vep_annotation <- function(vcf_file, vepVcfFile, num_forks, vep_version=DEFAULT_VEP_VERSION){
+    
+    #vepVcfFile <- paste0(outDir, '/', sample, '-', file_idx, '-annotation_vep.vcf.gz')
+    
+    print_log("Annotating file ", vcf_file, " to ", vepVcfFile, print_stack=FALSE)
+    
+    vep_param <- get_vep_params(vep_version, num_forks=num_forks, vcfFile=vepVcfFile)
+    ensemblVEP(vcf_file, vep_param)  # The vep_param already contains the output file
+}
+
+#' 
+#' combine vcf and vep tables
+#' 
+combine_vcf_vep <- function(sample, vepVcfFile, minQUAL=20, num_forks) {
+    vcf_obj <- readVcf(vepVcfFile, "hg19")
+    # discard any mutations with less minQUAL
+    vcf_obj <- vcf_obj[rowRanges(vcf_obj)$QUAL >= minQUAL]
+    vep_obj <- parseCSQToGRanges(vcf_obj, VCFRowID = rownames(vcf_obj))
+    
+    # create data.tables for sample
+    print_log("create vcf data table ...", print_stack = FALSE)
+    vcf_data_table <- get_vcf_data_table(sample, vcf_obj)
+    print_log("create vep data table ...", print_stack = FALSE)
+    vep_data_table <- get_vep_annotation_data_table(vep_obj) #, num_forks)
+    
+    # combine both data.tables
+    setkey(vcf_data_table, var_id)
+    setkey(vep_data_table, var_id)
+    annotated_data_table <- vcf_data_table[vep_data_table]
+    
+    # filter by severity and consensus
+    setkey(annotated_data_table, var_id, noccds, sever, norefseq)
+    uniq_annotated_data_table <- annotated_data_table[!duplicated(annotated_data_table[,var_id])]
+    
+    if(dim(vcf_obj)[1] != nrow(uniq_annotated_data_table)){
+        print_log("lost some variations during mapping for sample '", sample, "'!!!", print_stack = FALSE)
+    }
+    return(uniq_annotated_data_table)
+    
+}
+
+run_annotation_and_save_it <- function(sample, vcf_file, outDir, num_forks,
                                        overrideAll=FALSE, overrideRdata=FALSE, 
                                        minQUAL=20, 
                                        vep_version=DEFAULT_VEP_VERSION,

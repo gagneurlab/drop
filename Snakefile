@@ -47,5 +47,7 @@ rule count:
 
 rule mae:
     input: config["PROC_RESULTS"] + "/mae/MAE_results.Rds"
-    output: touch("Output/mae.done")
+    
+rule variant_annotation:
+    input: expand(config["RAW_DATA"] + "/{vcf}/exomicout/paired-endout/processedData/vep_anno_{vcf}.vcf.gz", vcf=config["vcfs"])
 
