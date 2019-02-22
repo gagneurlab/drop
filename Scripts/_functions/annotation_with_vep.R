@@ -132,7 +132,7 @@ get_vep_params <- function(version=max(unlist(currentVEP())), num_forks=4,
 }
 
 #'
-#' calculates the mtype from the given data
+#' calculates the mtype (snp, ins, del, strucVar) from the given data
 #' 
 get_mtype_annotation <- function(data){
     
@@ -170,7 +170,7 @@ get_vcf_data_table <- function(sample_id, vcf_obj){
     dc_chr   <- gsub("^chr", "", seqnames(vcf_obj))
     
     if(!any(width(ref(vcf_obj)) != 0)){
-        stop("What happend here! Why do I have this here? For indels?")
+        stop("What happened here! Why do I have this here? For indels?")
         dc_ref <- end(ranges(vcf_obj))
         dc_alt <- NA
     } else {
@@ -252,7 +252,7 @@ get_vcf_data_table <- function(sample_id, vcf_obj){
 
 simplify_so_terms <- function(so_terms){
     
-    # simplify so terms and add a sever index to it
+    # simplify SO terms and add a severity index to it
     FUN <- function(x){
         if(is.na(x)){
             return(c(NA, NA))
@@ -364,7 +364,8 @@ parse_patient_id <- function(file_name){
 }
 
 run_annotation_and_save_it <- function(sample, vcf_files, outDir, num_forks,
-                                       overrideAll=FALSE, overrideRdata=FALSE, minQUAL=20, 
+                                       overrideAll=FALSE, overrideRdata=FALSE, 
+                                       minQUAL=20, 
                                        vep_version=DEFAULT_VEP_VERSION,
                                        rdsFile=paste0(outDir, '/', sample, '_annotated_data_table.rds')){
     
@@ -373,17 +374,7 @@ run_annotation_and_save_it <- function(sample, vcf_files, outDir, num_forks,
         return()
     }
     
-    # check if file exists
-    if(file.exists(rdsFile)){
-        if(! (overrideAll || overrideRdata)){
-            print_log("Sample '", sample,"' is skipt, because files exist.",
-                      ". Use override to force it!", print_stack=FALSE)
-            return()
-        }
-        print_log("Sample '", sample, "' will be overriden!", print_stack=FALSE)
-    }
-    
-    print_log("Working on patiend ", sample, " ... ", print_stack = FALSE)
+    print_log("Working on patient ", sample, " ... ", print_stack = FALSE)
     
     # if more files exist combine the output and save it to one file
     combined_annotated_data_table <- NULL
@@ -391,9 +382,9 @@ run_annotation_and_save_it <- function(sample, vcf_files, outDir, num_forks,
     for(file in vcf_files){
         file_idx <- which(file == vcf_files)
         
-        # skipt this file if it has no variants
+        # skip this file if it has no variants
         if(nrow(readVcf(file, genome = 'hg19')) < 1){
-            message("File '", file, "' has no variants! It will be skipt!")
+            message("File '", file, "' has no variants! It will be skipped!")
             next
         }
         
@@ -409,7 +400,7 @@ run_annotation_and_save_it <- function(sample, vcf_files, outDir, num_forks,
             print_log("Read vcf & annotate it with VEP ... ", print_stack=FALSE)
             vep_param <- get_vep_params(vep_version, num_forks=num_forks, 
                                         vcfFile=vepVcfFile)
-            ensemblVEP(file, vep_param)
+            ensemblVEP(file, vep_param)  # The vep_param already contains the output file
             
         } else {
             print_log("using existing annotation file ...", print_stack = FALSE)
@@ -425,7 +416,7 @@ run_annotation_and_save_it <- function(sample, vcf_files, outDir, num_forks,
             print_log("create vcf data table ...", print_stack = FALSE)
             vcf_data_table <- get_vcf_data_table(sample, vcf_obj)
             print_log("create vep data table ...", print_stack = FALSE)
-            vep_data_table <- get_vep_annotation_data_table(vep_obj, num_forks)
+            vep_data_table <- get_vep_annotation_data_table(vep_obj) #, num_forks)
             
             # combine both data.tables
             setkey(vcf_data_table, var_id)

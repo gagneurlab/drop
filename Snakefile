@@ -45,7 +45,7 @@ rule all:
 rule count:
     input: expand(config["PROC_RESULTS"] + "/{annotation}/counts/total_counts_{strand}.Rds", annotation=config["ANNOTATIONS"], strand=['ss', 'ns'])
 
-rule mae:
-    input: expand(config["PROC_DATA"] + "/mae/{sampleId}.Rds", sampleId=mae_ids)
-    output: touch("Output/mae.done")
+# rule mae:
+#    input: expand(config["PROC_DATA"] + "/mae/{sampleId}.Rds", sampleId=mae_ids)
+#    output: touch("Output/mae.done")
 

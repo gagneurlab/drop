@@ -26,7 +26,7 @@ suppressPackageStartupMessages({
 
 res_all <- lapply(snakemake@input$mae_res, function(m){
     rt <- readRDS(m)
-    rt <- rt[padj < .05 & alt_freq >= .8]
+    rt <- rt[padj < .05 & alt_freq > .8]
     return(rt)
 }) %>% rbindlist()
 
