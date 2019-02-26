@@ -20,6 +20,14 @@ filter_sets <- c(
 	"filter_uniq"
 )
 
+VCF_CUTOFFS = list(
+    qual = 90,
+    mq   = 30,
+    gq   = 90,
+    dp   = 10,
+    dp4  = 10
+)
+
 #'
 #' returns the nth column of the dp4 column of the vcf file
 #'
@@ -100,9 +108,9 @@ filter_exome <- function(data, splice_distance = 5){
 }
 
 #'
-#' filter for the protein affecting mutations (altering the protein structure)
+#' filter for the protein effecting mutations (altering the protein structure)
 #'
-filter_prot_affect <- function(data){
+filter_prot_effect <- function(data){
     if(dim(data)[1] == 0){
         return(data)
     }
@@ -132,34 +140,17 @@ filter_prot_affect <- function(data){
 #'
 #' by default use only ExAC database for filtering
 #'
-filter_rare <- function(data, max_maf=0.001, exacOnly = TRUE) {
+filter_rare <- function(data, col_maf = 'max_maf', max_maf=0.001) {
     if(dim(data)[1] == 0){
         return(data)
     }
 
 	# convert factor to double if needed
-	if(sapply(data, class)['exacmaf'] == "factor"){
-		data[,exacmaf:=as.double(as.character(exacmaf))]
+	if(sapply(data, class)[[col_maf]] != "numeric"){
+		data[,c(col_maf):= list(as.double(as.character(get(col_maf))))]
 	}
-	if(sapply(data, class)['tgmaf'] == "factor"){
-		data[,tgmaf:=as.double(as.character(tgmaf))]
-	}
-
-	if(exacOnly){
-		return(
-				subset(data, is.na(exacmaf) | exacmaf < max_maf)
-		)
-	}
-
-
-	return(
-			subset(data,
-	#				(hmaf <= max_maf  | is.na(hmaf)) &
-							 (exacmaf <= max_maf | is.na(exacmaf))
-							& (nhmaf <= max_maf | is.na(nhmaf))
-							& (tgmaf <= max_maf | is.na(tgmaf))
-			)
-	)
+	
+    return(data[get(col_maf) <= max_maf | is.na(get(col_maf))])
 }
 
 #'
@@ -170,8 +161,8 @@ filter_rare <- function(data, max_maf=0.001, exacOnly = TRUE) {
 #' this function should use all data points (not filtered data)
 #' since some variants could be filtered out because of low coverage or other QC steps
 #'
-filter_uniq <- function(data, data_raw = data){
-	sub_all  <- copy(filter_data(data_raw, vcf_cutoffs_list = VCF_CUTOFFS)[,list(chr,pos,ref,alt)])
+filter_uniq <- function(data, data_raw = data) {
+	sub_all  <- copy(filter_vcf_quality(data_raw, vcf_cutoffs_list = VCF_CUTOFFS)[,list(chr,pos,ref,alt)])
 	setkey(sub_all,chr,pos,ref,alt)
 	duplicated_vars <- unique(sub_all[duplicated(sub_all)])
 
@@ -190,7 +181,7 @@ filter_uniq <- function(data, data_raw = data){
 #' 		1) the mutation is homozygous (there is no reference allele)
 #' 		2) there are at least two heterozygous mutations in the same gene
 #'
-#' what about the female X chromosome? does a single heterozygous mutation there is compound?
+#' Is a single heterozygous mutation a compound on X chromosome?
 #' Because of inactivation of the second chromosome.
 #'
 filter_compound_heterozygous <- function(data){
@@ -256,7 +247,7 @@ get_qc_rare_protein_biallelic <- function(vdata){
         filter_potential_biallelic(
             filter_prot_affect(
                 filter_rare(
-                    filter_data(
+                    filter_vcf_quality(
                         vdata,
                         vcf_cutoffs_list = VCF_CUTOFFS
                     ) [!is.na(hgncid)],
