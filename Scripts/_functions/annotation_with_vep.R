@@ -97,7 +97,7 @@ get_vep_params <- function(version=max(unlist(currentVEP())), num_forks=4,
     flags(vep_param)$offline     <- FALSE
     flags(vep_param)$dir         <- vep_cache_dir
     flags(vep_param)$dir_cache   <- vep_cache_dir
-    flags(vep_param)$dir_plugins <- vep_cache_dir
+    flags(vep_param)$dir_plugins <- file.path(vep_cache_dir, "Plugins")
     
     # vep advanced options
     flags(vep_param)$buffer_size <- 10000
@@ -121,6 +121,9 @@ get_vep_params <- function(version=max(unlist(currentVEP())), num_forks=4,
     flags(vep_param)$pubmed      <- TRUE
     flags(vep_param)$canonical   <- TRUE
     flags(vep_param)$biotype     <- TRUE
+    
+    # add CADD
+    flags(vep_param)$plugin <- "CADD,/s/genomes/human/hg19/CADD/v1.3/whole_genome_SNVs.tsv.gz,/s/genomes/human/hg19/CADD/v1.3/InDels.tsv.gz --plugin MMSplice"
     
     #flags(vep_param)$terms       <- "ENSEMBL"
     
@@ -726,3 +729,7 @@ addSysEnv <- function(value, var="PATH", sep=":"){
     }
 }
 
+debug_test_VEP_command <- function(){
+    params <- get_vep_params(version=94)
+    ensemblVEP("/s/project/mitoMultiOmics/raw_data/helmholtz/33254/exomicout/paired-endout/stdFilenames/33254.vcf.gz", param=params, verbose=TRUE)    
+}
