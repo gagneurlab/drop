@@ -257,7 +257,14 @@ simplify_so_terms <- function(so_terms){
         if(is.na(x)){
             return(c(NA, NA))
         }
-        matrix_so <- t(matrix(unlist(SO_HASH[strsplit(x, "&")[[1]]]),nrow=2))
+        # retrieve simplified term from SO_HASH
+        so_hash_entry <- unlist(SO_HASH[strsplit(x, "&")[[1]]])
+        if (is.null(so_hash_entry)) {
+            message(paste("term", x, "not found"))
+            return(c(x,x)) # keep unsimplified term
+        }
+        
+        matrix_so <- t(matrix(so_hash_entry,nrow=2))
         if(dim(matrix_so)[1] == 1){	
             return(as.vector(t(matrix_so)))
         } else {
@@ -315,8 +322,8 @@ get_vep_annotation_data_table <- function(vep_obj){
         
         # genename annotation
         hgncid   = as.factor(dc_hgncid),
-        sift1    = as.double(gsub(".*\\(|\\)", "", vep_obj$SIFT)),
-        pph1     = as.double(gsub(".*\\(|\\)", "", vep_obj$PolyPhen)),
+        # sift1    = as.double(gsub(".*\\(|\\)", "", vep_obj$SIFT)),
+        # pph1     = as.double(gsub(".*\\(|\\)", "", vep_obj$PolyPhen)),
         uniprot  = as.factor( dc_uniprot),
         ucsc     = NA,
         ccds     = as.factor( vep_obj$CCDS),
@@ -370,25 +377,21 @@ run_vep_annotation <- function(vcf_file, vepVcfFile, num_forks, vep_version=DEFA
     
     #vepVcfFile <- paste0(outDir, '/', sample, '-', file_idx, '-annotation_vep.vcf.gz')
     
-    print_log("Annotating file ", vcf_file, " to ", vepVcfFile, print_stack=FALSE)
+    message("Annotating file ", vcf_file, " to ", vepVcfFile, print_stack=FALSE)
     
     vep_param <- get_vep_params(vep_version, num_forks=num_forks, vcfFile=vepVcfFile)
     ensemblVEP(vcf_file, vep_param)  # The vep_param already contains the output file
 }
 
-#' 
+#' TODO: sample redundant
 #' combine vcf and vep tables
 #' 
-combine_vcf_vep <- function(sample, vepVcfFile, minQUAL=20, num_forks) {
-    vcf_obj <- readVcf(vepVcfFile, "hg19")
-    # discard any mutations with less minQUAL
-    vcf_obj <- vcf_obj[rowRanges(vcf_obj)$QUAL >= minQUAL]
-    vep_obj <- parseCSQToGRanges(vcf_obj, VCFRowID = rownames(vcf_obj))
+combine_vcf_vep <- function(sample, vcf_obj, vep_obj, minQUAL=20, num_forks) {
     
     # create data.tables for sample
-    print_log("create vcf data table ...", print_stack = FALSE)
+    message("create vcf data table ...")
     vcf_data_table <- get_vcf_data_table(sample, vcf_obj)
-    print_log("create vep data table ...", print_stack = FALSE)
+    message("create vep data table ...")
     vep_data_table <- get_vep_annotation_data_table(vep_obj) #, num_forks)
     
     # combine both data.tables
@@ -401,7 +404,7 @@ combine_vcf_vep <- function(sample, vepVcfFile, minQUAL=20, num_forks) {
     uniq_annotated_data_table <- annotated_data_table[!duplicated(annotated_data_table[,var_id])]
     
     if(dim(vcf_obj)[1] != nrow(uniq_annotated_data_table)){
-        print_log("lost some variations during mapping for sample '", sample, "'!!!", print_stack = FALSE)
+        message("lost some variations during mapping for sample '", sample, "'!!!")
     }
     return(uniq_annotated_data_table)
     
@@ -414,11 +417,11 @@ run_annotation_and_save_it <- function(sample, vcf_file, outDir, num_forks,
                                        rdsFile=paste0(outDir, '/', sample, '_annotated_data_table.rds')){
     
     if(grepl("^can't identify sample id", sample)){
-        print_log("\n", sample, print_stack = FALSE)
+        message("\n", sample)
         return()
     }
     
-    print_log("Working on patient ", sample, " ... ", print_stack = FALSE)
+    message("Working on patient ", sample, " ... ")
     
     # if more files exist combine the output and save it to one file
     combined_annotated_data_table <- NULL
@@ -432,7 +435,7 @@ run_annotation_and_save_it <- function(sample, vcf_file, outDir, num_forks,
             next
         }
         
-        print_log("Run for file ", file, " with index ", file_idx, ' ... ',
+        message("Run for file ", file, " with index ", file_idx, ' ... ',
                   print_stack=FALSE)
         
         # files which will  be created
@@ -441,13 +444,13 @@ run_annotation_and_save_it <- function(sample, vcf_file, outDir, num_forks,
         
         if( overrideAll || ! file.exists(vepVcfFile) ){
             # annotate file
-            print_log("Read vcf & annotate it with VEP ... ", print_stack=FALSE)
+            message("Read vcf & annotate it with VEP ... ", print_stack=FALSE)
             vep_param <- get_vep_params(vep_version, num_forks=num_forks, 
                                         vcfFile=vepVcfFile)
             ensemblVEP(file, vep_param)  # The vep_param already contains the output file
             
         } else {
-            print_log("using existing annotation file ...", print_stack = FALSE)
+            message("using existing annotation file ...")
         }
         
         if( overrideAll || overrideRdata || ! file.exists(rdsFile) ) {
@@ -457,9 +460,9 @@ run_annotation_and_save_it <- function(sample, vcf_file, outDir, num_forks,
             vep_obj <- parseCSQToGRanges(vcf_obj, VCFRowID = rownames(vcf_obj))
             
             # create data.tables for sample
-            print_log("create vcf data table ...", print_stack = FALSE)
+            message("create vcf data table ...")
             vcf_data_table <- get_vcf_data_table(sample, vcf_obj)
-            print_log("create vep data table ...", print_stack = FALSE)
+            message("create vep data table ...")
             vep_data_table <- get_vep_annotation_data_table(vep_obj) #, num_forks)
             
             # combine both data.tables
@@ -472,7 +475,7 @@ run_annotation_and_save_it <- function(sample, vcf_file, outDir, num_forks,
             uniq_annotated_data_table <- annotated_data_table[!duplicated(annotated_data_table[,var_id])]
             
             if(dim(vcf_obj)[1] != nrow(uniq_annotated_data_table)){
-                print_log("lost some variations during mapping for sample '", sample, "'!!!", print_stack = FALSE)
+                message("lost some variations during mapping for sample '", sample, "'!!!")
             }
             
             # combine multiple files into one data.table
@@ -485,7 +488,7 @@ run_annotation_and_save_it <- function(sample, vcf_file, outDir, num_forks,
     }
     
     # save object
-    print_log('save r-object for patient ', sample, " ... ", print_stack = FALSE)
+    message('save r-object for patient ', sample, " ... ")
     saveRDS(combined_annotated_data_table, rdsFile)
     return(rdsFile)
 }
@@ -524,14 +527,14 @@ run_vep_annotation_for_cnv_calls <- function(cnv_calls, output_dir, num_forks = 
         } else {
             grep_cmd <- "grep"
         }
-        print_log("Removed deletions with length -1 from cnv lumpy calls from file '", cnv_calls, "'.\n",
+        message("Removed deletions with length -1 from cnv lumpy calls from file '", cnv_calls, "'.\n",
                   paste(system(paste(grep_cmd, " '^chr.*SVTYPE=DEL;.*SVLEN=-1;'", cnv_calls), intern = TRUE), collapse = "\n"),
                   print_stack = FALSE
         )
         system(paste(grep_cmd, "-v '^chr.*SVTYPE=DEL;.*SVLEN=-1;'", cnv_calls, " > ", vep_struc_var_in_file))
         
         # read the bed like file
-        print_log("read bedlike cnv file '", base_name_file, "' ...", print_stack = FALSE)
+        message("read bedlike cnv file '", base_name_file, "' ...")
         bed_like_obj <- read_vcflike_cnv_file(vep_struc_var_in_file, TRUE)
         cnv_calls1 <- cnv_calls
         
@@ -543,7 +546,7 @@ run_vep_annotation_for_cnv_calls <- function(cnv_calls, output_dir, num_forks = 
         rds_cnv_file <- paste0(output_dir, "/annotation_", base_name_file, ".rds") 
         
         # read the bed like file
-        print_log("read bedlike cnv file ", base_name_file, print_stack = FALSE)
+        message("read bedlike cnv file ", base_name_file)
         bed_like_obj <- read_bedlike_cnv_file(cnv_calls, TRUE)
         
         # write vep input file
@@ -552,13 +555,13 @@ run_vep_annotation_for_cnv_calls <- function(cnv_calls, output_dir, num_forks = 
     }
     
     # run vep
-    print_log("run vep from ensemble with file ", vep_struc_var_in_file)
+    message("run vep from ensemble with file ", vep_struc_var_in_file)
     vep_param <- get_vep_params(80, num_forks, local = FALSE)
     ensemblVEP(vep_struc_var_in_file, vep_param)
     system(paste("cat ",	flags(vep_param)$output_file, " | gzip > ", vep_vcf_out_file, sep=""), wait = TRUE)
     
     # read vcf file 
-    print_log("read vcf file from vep output file ", vep_vcf_out_file, print_stack = FALSE)
+    message("read vcf file from vep output file ", vep_vcf_out_file)
     vcf_obj <- readVcf(vep_vcf_out_file, "hg19")
     
     # add geno type informations
@@ -576,7 +579,7 @@ run_vep_annotation_for_cnv_calls <- function(cnv_calls, output_dir, num_forks = 
     vep_data_table <- get_vep_annotation_data_table(vep_obj, num_forks)
     
     # combine both data.tables
-    print_log("combine vep with vcf file informations ...", print_stack = FALSE)
+    message("combine vep with vcf file informations ...")
     setkey(vcf_data_table, var_id)
     setkey(vep_data_table, var_id)
     annotated_data_table <- vcf_data_table[vep_data_table]
@@ -589,7 +592,7 @@ run_vep_annotation_for_cnv_calls <- function(cnv_calls, output_dir, num_forks = 
     uniq_annotated_data_table <- annotated_data_table[!duplicated(annotated_data_table[,list(var_id,hgncid)])]
     
     # save rds object
-    print_log('save r-object for cnv file "', cnv_calls1 ,'" to "', rds_cnv_file, '" ... ', print_stack = FALSE)
+    message('save r-object for cnv file "', cnv_calls1 ,'" to "', rds_cnv_file, '" ... ')
     saveRDS(uniq_annotated_data_table, rds_cnv_file)
     
     # remove tmp files

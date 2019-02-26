@@ -3,10 +3,12 @@
 #' author: mumichae
 #' wb:
 #'  input:
-#'   - vcf: '`sm config["RAW_DATA"] + "/{vcf}/exomicout/paired-endout/stdFilenames/{vcf}.vcf.gz"`'
+#'   - vcf: "{rawdata}/stdFilenames/{vcf}.vcf.gz"
 #'  output:
-#'   - vcf: '`sm config["RAW_DATA"] + "/{vcf}/exomicout/paired-endout/processedData/vep_anno_{vcf}.vcf.gz"`'
+#'   - vcf: "{rawdata}/processedData/vep_anno_{vcf}.vcf.gz"
+#'   - vcf_html: "{rawdata}/processedData/vep_anno_{vcf}.vcf.gz_summary.html"
 #'  type: script
+#'  threads: 10
 #'---
 
 saveRDS(snakemake, 'tmp/variant_annotation.Rds')
@@ -18,7 +20,7 @@ suppressPackageStartupMessages({
 
 source("Scripts/_functions/annotation_with_vep.R")
 
-vep_param <- get_vep_params(version=90, num_forks=10, vcfFile=snakemake@output$vcf)
+vep_param <- get_vep_params(version=90, num_forks=snakemake@threads, vcfFile=snakemake@output$vcf)
 resCall <- ensemblVEP(snakemake@input$vcf, vep_param)  # The vep_param already contains the output file
 message(resCall)
 
