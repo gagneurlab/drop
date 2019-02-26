@@ -123,7 +123,7 @@ get_vep_params <- function(version=max(unlist(currentVEP())), num_forks=4,
     flags(vep_param)$biotype     <- TRUE
     
     # add CADD
-    flags(vep_param)$plugin <- "CADD,/s/genomes/human/hg19/CADD/v1.3/whole_genome_SNVs.tsv.gz,/s/genomes/human/hg19/CADD/v1.3/InDels.tsv.gz --plugin MMSplice"
+    flags(vep_param)$plugin <- "CADD,/s/genomes/human/hg19/CADD/v1.3/whole_genome_SNVs.tsv.gz,/s/genomes/human/hg19/CADD/v1.3/InDels.tsv.gz" # --plugin MMSplice"
     
     #flags(vep_param)$terms       <- "ENSEMBL"
     
@@ -285,12 +285,13 @@ simplify_so_terms <- function(so_terms){
 get_frequencies_from_vep <- function(vep_obj){
     
     # ExAC/gnomad project
+    af         <- as.double(vep_obj$AF)
     gnomad_maf <- as.double(vep_obj$gnomAD_AF)
     nfe_maf    <- as.double(vep_obj$gnomAD_NFE_AF)
     aa_maf     <- as.double(vep_obj$gnomAD_AFR_AF)
     max_maf    <- as.double(vep_obj$MAX_AF)
     
-    return(data.table(gnomad_maf, nfe_maf, aa_maf, max_maf))
+    return(data.table(af, gnomad_maf, nfe_maf, aa_maf, max_maf))
 } 
 
 get_vep_annotation_data_table <- function(vep_obj){
@@ -325,8 +326,8 @@ get_vep_annotation_data_table <- function(vep_obj){
         
         # genename annotation
         hgncid   = as.factor(dc_hgncid),
-        # sift1    = as.double(gsub(".*\\(|\\)", "", vep_obj$SIFT)),
-        # pph1     = as.double(gsub(".*\\(|\\)", "", vep_obj$PolyPhen)),
+        sift1    = as.double(gsub(".*\\(|\\)", "", vep_obj$SIFT)),
+        pph1     = as.double(gsub(".*\\(|\\)", "", vep_obj$PolyPhen)),
         uniprot  = as.factor( dc_uniprot),
         ucsc     = NA,
         ccds     = as.factor( vep_obj$CCDS),
@@ -342,7 +343,7 @@ get_vep_annotation_data_table <- function(vep_obj){
         sdistl   = as.integer(vep_obj$DISTANCE),
         sdistr   = as.integer(vep_obj$DISTANCE),
         mstype   = as.factor( dc_mstype),
-        af       = as.double( maf_table[,gnomad_maf]),
+        af       = as.double( maf_table[,af]),
         gnomad_maf = as.double(maf_table[,gnomad_maf]),
         nfe_maf    = as.double(maf_table[,nfe_maf]),
         aa_maf     = as.double(maf_table[,aa_maf]),

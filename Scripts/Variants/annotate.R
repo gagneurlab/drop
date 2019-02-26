@@ -1,5 +1,5 @@
 #'---
-#' title: Run MAE for a sample
+#' title: Annotate VCF file
 #' author: mumichae
 #' wb:
 #'  input:
@@ -20,7 +20,7 @@ suppressPackageStartupMessages({
 
 source("Scripts/_functions/annotation_with_vep.R")
 
-vep_param <- get_vep_params(version=90, num_forks=snakemake@threads, vcfFile=snakemake@output$vcf)
+vep_param <- get_vep_params(version=94, num_forks=snakemake@threads, vcfFile=snakemake@output$vcf)
 resCall <- ensemblVEP(snakemake@input$vcf, vep_param)  # The vep_param already contains the output file
 message(resCall)
 
