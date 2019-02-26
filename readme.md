@@ -29,3 +29,7 @@ wbuild init
 git checkout readme.md wbuild.yaml
 ```
 
+# Literature
+* Kremer, Bader genetic diagnosis [paper](https://www.nature.com/articles/ncomms15824)
+* [OUTRIDER](https://www.cell.com/ajhg/pdf/S0002-9297(18)30401-4.pdf)
+* Excellent review on [variant prioritization](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC5935497/)
