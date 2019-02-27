@@ -47,6 +47,6 @@ ab_dt <- merge(dt_ab, mae_res_sample)
 ggplot(ab_dt, aes(outrider_aberrant, mae_events)) + geom_point() + theme_bw()
 
 sa <- fread("../sample_annotation/Data/sample_annotation.tsv")
-sa[RNA_ID %in% ab_dt[mae_events > 500, RNA_ID]]
+DT::datatable(sa[RNA_ID %in% ab_dt[mae_events > 500, RNA_ID]])
 
 

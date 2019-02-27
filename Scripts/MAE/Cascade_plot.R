@@ -61,10 +61,17 @@ m_dt[, type := factor(type, levels = c("all", "het", "enough_counts"))]
 
 # Add results info
 res_all <- readRDS(snakemake@input$mae_res)
-mr <- res_all[,.(value = .N), by = sample]
+
+# Add monoallelic
+mr <- res_all[, .(value = .N), by = sample]
 mr <- data.table(type = 'monoallelic', mr)
 
-m_dt <- rbind(m_dt, mr)
+# Add rare
+mr2 <- res_all[max_maf < 1e-3 | is.na(max_maf), .(value = .N), by = sample]
+mr2 <- data.table(type = 'rare', mr2)
+
+
+m_dt <- rbind(m_dt, mr, mr2)
 saveRDS(m_dt, "Output/mae_freqs.Rds")
 
 #' ## Plot
@@ -72,12 +79,8 @@ g <- ggplot(m_dt, aes(type, value)) + geom_boxplot() + theme_bw() +
     labs(y = "SNVs per patient", x = "Filter cascade")
 ggplotly(g)
 
-m_dt[value > 1e5]
+g + scale_y_log10()
+m_dt[, median(value), by = type]
 
-
-# Zoom in
-g <- ggplot(m_dt[value < 1e5], aes(type, value)) + geom_boxplot() + theme_bw() + 
-    labs(y = "SNVs per patient", x = "Filter cascade") + scale_y_log10()
-g
-ggplotly(g)
+m_dt[value > 9e4]
 
