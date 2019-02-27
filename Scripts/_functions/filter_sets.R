@@ -39,12 +39,12 @@ get_vcf_dp <- function(vcf, col){
 	return(res)
 }
 
-#' filter_data
+#' filter_vcf_quality
 #'
 #' filter for the base line criteria
 #' on data.table or vcf object
 #'
-filter_vcf_quality <- function(data, vcf_cutoffs_list= list(qual = 90, mq = 30, gq = 90, dp = 10, dp4 = 10)){
+filter_vcf_quality <- function(data, vcf_cutoffs_list=list(qual = 90, mq = 30, gq = 90, dp = 10, dp4 = 10)){
     if(dim(data)[1] == 0){
         return(data)
     }

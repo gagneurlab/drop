@@ -16,15 +16,16 @@ saveRDS(snakemake, 'tmp/variant_annotation_total.Rds')
 suppressPackageStartupMessages({
     library(data.table)
     library(ggplot2)
+    library(cowplot)
     })
 source("Scripts/_functions/filter_sets.R")
 
 summary_list <- lapply(snakemake@input$vcf_dts, function(f) {
     dt <- readRDS(f)
+    dt <- filter_vcf_quality(dt)
     data.table(
         id = dt$sample[[1]],
-        all_vars = nrow(dt),
-        vcf_quality = nrow(filter_vcf_quality(dt)),
+        vcf_quality = nrow(dt),
         exome = nrow(filter_exome(dt)),
         prot_effect = nrow(filter_prot_effect(dt)),
         rare = nrow(filter_rare(dt)),
@@ -42,6 +43,7 @@ summary_list <- lapply(snakemake@input$vcf_dts, function(f) {
 
 summary_dt <- melt(rbindlist(summary_list), variable.name = 'filter', value.name = 'variant_count')
 
-ggplot(summary_dt, aes(filter, variant_count)) +
-    geom_boxplot() + coord_flip()
+ggplot(summary_dt, aes(reorder(filter, -variant_count), variant_count)) +
+    geom_boxplot() + coord_flip() +
+    labs(x = 'Number of variants', y = "Filters")
 
