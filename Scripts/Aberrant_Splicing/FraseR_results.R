@@ -13,7 +13,7 @@ suppressMessages({
 source("../genetic_diagnosis/Scripts/_functions/gene_annotation/add_gene_info_cols.R")
 
 fdsFile <- "/s/project/fraser/analysis/datasets/savedObjects/prokisch_batch5/fds-object.RDS"
-fdsFile <- snakemake@input['fds']
+fdsFile <- snakemake@input$fds
 
 fdsPath <- dirname(dirname(dirname(fdsFile)))
 fdsName <- basename(dirname(fdsFile))
@@ -60,6 +60,8 @@ filtdt <- resultsdt[abs(p.adj) <= 0.1 &
 #'
 numEventsBySample <- filtdt[type != "psiSite", .N,by=c("sampleID", "gene_name")][
         , .N, by="sampleID"][, .(rank=rank(N), N, sampleID)][order(rank)]
+
+library(ggpubr)
 ggplot(numEventsBySample, aes(x=1:length(N), y=N)) +
     geom_histogram(stat="identity") +
     scale_y_log10() +
