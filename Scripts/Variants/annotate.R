@@ -7,6 +7,7 @@
 #'  output:
 #'   - vcf: "{rawdata}/processedData/vep_anno_{vcf}.vcf.gz"
 #'   - vcf_html: "{rawdata}/processedData/vep_anno_{vcf}.vcf.gz_summary.html"
+#'   - done: "{rawdata}/processedData/vep_anno_{vcf}.done"
 #'  type: script
 #'  threads: 10
 #'---
@@ -22,7 +23,7 @@ source("Scripts/_functions/annotation_with_vep.R")
 
 vep_param <- get_vep_params(version=94, num_forks=snakemake@threads, vcfFile=snakemake@output$vcf)
 resCall <- ensemblVEP(snakemake@input$vcf, vep_param)  # The vep_param already contains the output file
-message(resCall)
+write(resCall, snakemake@output$done)
 
 # input_vcfs <- snakemake@input$vcf
 # annot_vcfs <- snakemake@output$vcf
