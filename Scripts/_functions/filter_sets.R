@@ -2,12 +2,12 @@
 # Author: mertes, baderda
 #
 # functions to create subsets for:
-#	1. baseline filtering
+#	1. baseline filtering (quality)
 #	2. exome filtering
 #	3. protein affecting filtering
 #	4. rare filtering
 #	5. unique filtering
-#	6. homozygouse filtering
+#	6. homozygous filtering
 #
 ###############################################################################
 
@@ -116,8 +116,7 @@ filter_prot_effect <- function(data){
     }
 
 	prot_affecting_ms_types <- c('ablation','del','frame-shift','incomplete','init','ins',
-			'missense','splice','stop','stop_retain','unstart','unstop'
-	)
+			'missense','splice','stop','stop_retain','unstart','unstop')
 
 	if(is.data.table(data)){
     	return(
@@ -140,7 +139,7 @@ filter_prot_effect <- function(data){
 #'
 #' by default use only ExAC database for filtering
 #'
-filter_rare <- function(data, col_maf = 'max_maf', max_maf=0.001) {
+filter_rare <- function(data, col_maf = 'max_maf', maf_cutoff=0.001) {
     if(dim(data)[1] == 0){
         return(data)
     }
@@ -150,7 +149,7 @@ filter_rare <- function(data, col_maf = 'max_maf', max_maf=0.001) {
 		data[,c(col_maf):= list(as.double(as.character(get(col_maf))))]
 	}
 	
-    return(data[get(col_maf) <= max_maf | is.na(get(col_maf))])
+    return(data[get(col_maf) <= maf_cutoff | is.na(get(col_maf))])
 }
 
 #'
@@ -166,7 +165,6 @@ filter_uniq <- function(data, data_raw = data) {
 	setkey(sub_all,chr,pos,ref,alt)
 	duplicated_vars <- unique(sub_all[duplicated(sub_all)])
 
-
 	setkey(duplicated_vars,chr,pos,ref,alt)
 	setkey(data,chr,pos,ref,alt)
 
@@ -181,7 +179,7 @@ filter_uniq <- function(data, data_raw = data) {
 #' 		1) the mutation is homozygous (there is no reference allele)
 #' 		2) there are at least two heterozygous mutations in the same gene
 #'
-#' Is a single heterozygous mutation a compound on X chromosome?
+#' X chromosome: Is a single heterozygous mutation a compound?
 #' Because of inactivation of the second chromosome.
 #'
 filter_compound_heterozygous <- function(data){

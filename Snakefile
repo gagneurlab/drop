@@ -53,3 +53,15 @@ rule variant_annotation:
     input: expand(config["RAW_DATA"] + "/{vcf}/exomicout/paired-endout/processedData/vep_anno_{vcf}.vcf.gz", vcf=config["vcfs"])
     output: "Output/variant_annotation.done"
 
+rule vep_anno_success:
+    input: status = config["RAW_DATA"] + "/{vcf}/exomicout/paired-endout/processedData/vep_anno_{vcf}.done"
+    output: out = "~/Downloads/{vcf}.done"
+    shell:
+        'status=`cat {input.status}`'
+        'echo status'
+        'if [$status -neq 0]; then "{wildcards.vcf}: $status" >> "~/Downloads/success.txt"; fi'
+        'touch {output.out}'
+
+rule all_success:
+    input: expand("~/Downloads/{vcf}.done", vcf=config["vcfs"])
+
