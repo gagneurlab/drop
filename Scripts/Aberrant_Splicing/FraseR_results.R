@@ -46,6 +46,14 @@ resultsdt <- as.data.table(results)
 setnames(resultsdt, "hgnc_symbol", "gene_name")
 resultsdt <- add_all_gene_info(resultsdt)
 
+sa <- fread(snakemake@config$SAMPLE_ANNOTATION)
+resultsdt[, gene_name := toupper(gene_name)]
+resultsdt <- left_join(resultsdt, sa[, .(RNA_ID, FIBROBLAST_ID, EXOME_ID, PEDIGREE, KNOWN_MUTATION,
+                             CANDIDATE_GENE, BATCH, COMMENT)],
+                 by = c("sampleID" = "RNA_ID")) %>% as.data.table
+
+
+
 #'
 #' ### Number of Events (genes) by sample
 #'
@@ -130,14 +138,15 @@ DT::datatable(group_res_by_genes(filtdt, c("psi3", "psi5")))
 DT::datatable(group_res_by_genes(filtdt, c("psi3", "psi5", "psiSite")))
 
 
-#
 #' # Full results table for download
 write.table(filtdt, "/s/public_webshare/project/genetic_diagnosis/results/FraseR_full_results.tsv", row.names=FALSE, sep="\t")
 write.table(group_res_by_genes(filtdt, c("psi3", "psi5")), "/s/public_webshare/project/genetic_diagnosis/results/FraseR_psi3_5_by_gene_results.tsv", row.names=FALSE, sep="\t")
 write.table(group_res_by_genes(filtdt, c("psi3", "psi5", "psiSite")), "/s/public_webshare/project/genetic_diagnosis/results/FraseR_psi3_5_site_by_gene_results.tsv", row.names=FALSE, sep="\t")
 
 #' [Download FraseR full results table](https://i12g-gagneurweb.informatik.tu-muenchen.de/project/genetic_diagnosis/results/FraseR_full_results.tsv)
+#' 
 #' [Download FraseR grouped by genes results table (psi3 and psi5 only)](https://i12g-gagneurweb.informatik.tu-muenchen.de/project/genetic_diagnosis/results/FraseR_psi3_5_by_gene_results.tsv)
+#' 
 #' [Download FraseR grouped by genes results table](https://i12g-gagneurweb.informatik.tu-muenchen.de/project/genetic_diagnosis/results/FraseR_psi3_5_site_by_gene_results.tsv)
 
 
