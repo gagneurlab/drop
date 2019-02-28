@@ -92,7 +92,7 @@ filter_vcf_quality <- function(data, vcf_cutoffs_list=list(qual = 90, mq = 30, g
 #' filter for the exon close bases
 #' this could be modified eventually, ignore missing values
 #'
-filter_exome <- function(data, splice_distance = 5){
+filter_exonic <- function(data, splice_distance = 5){
     if(dim(data)[1] == 0){
         return(data)
     }

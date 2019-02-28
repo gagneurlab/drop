@@ -23,34 +23,50 @@ suppressPackageStartupMessages({
 source("Scripts/_functions/filter_sets.R")
 
 register(MulticoreParam(snakemake@threads))
-summary_list <- bplapply(snakemake@input$vcf_dts, function(f) {
+all_vcfs_list <- bplapply(snakemake@input$vcf_dts, function(f) {
     dt <- readRDS(f)
     dt <- filter_vcf_quality(dt)
+    dt[, id := 1:.N]
     data.table(
-        id = dt$sample[[1]],
-        quality = nrow(dt),
-        exome = nrow(filter_exome(dt)),
-        prot_effect = nrow(filter_prot_effect(dt)),
-        rare = nrow(filter_rare(dt)),
-        compound_heterzygous = nrow(filter_only_compound_heterzygous(dt)),
-        homozygous = nrow(filter_homozygous(dt)),
-        potential_biallelic = nrow(filter_potential_biallelic(dt)),
-        
-        all_filters = nrow(
+        sample = dt$sample,
+        quality = T,
+        exonic = dt$id %in% filter_exonic(dt)$id,
+        prot_effect = dt$id %in% filter_prot_effect(dt)$id,
+        rare = dt$id %in% filter_rare(dt)$id,
+        compound_heterzygous = dt$id %in% filter_only_compound_heterzygous(dt)$id,
+        homozygous = dt$id %in% filter_homozygous(dt)$id,
+        potential_biallelic = dt$id %in% filter_potential_biallelic(dt)$id,
+        all_filters = dt$id %in% 
             filter_vcf_quality(
-            filter_exome(
+            filter_exonic(
             filter_prot_effect(
             filter_rare(
             filter_only_compound_heterzygous(
             filter_homozygous(
-            filter_potential_biallelic(dt))))))))
+            filter_potential_biallelic(dt)))))))$id,
+        MAX_AF = dt$max_maf #MAX_AF # need to recompute the data.tables to update MAF, currently "max_maf"
     )
 })
 
-summary_dt <- melt(rbindlist(summary_list), id.vars = 'id',  variable.name = 'filter', value.name = 'variant_count')
+filters <- c('quality', 'exonic', 'prot_effect', 'rare', 'compound_heterzygous', 'homozygous', 'potential_biallelic')
+total_dt <- melt(rbindlist(all_vcfs_list), measure.vars = filters, variable.name = 'filter', value.name = 'filtered')
 
-ggplot(summary_dt, aes(reorder(filter, variant_count), variant_count)) +
+#' ## Revisit Filters
+filter_dt <- total_dt[filtered == T, .(variant_count = .N), by = c('filter', 'sample')]
+ggplot(filter_dt,
+       aes(reorder(filter, variant_count), variant_count)) +
     geom_boxplot() +
-    labs(x = "Filters", y = 'Number of variants') +
+    labs(x = "Filters", y = 'Number of variants per sample') +
     coord_flip()
 
+#' ## MAF Distributions
+ggplot(total_dt[filtered == T], aes(reorder(filter, MAX_AF), MAX_AF)) +
+    geom_boxplot()
+
+ggplot(total_dt[filtered == T], aes(MAX_AF)) +
+    geom_histogram() +
+    facet_wrap(~filter)
+
+ggplot(total_dt[filtered == T], aes(MAX_AF, col = filter)) +
+    geom_density() +
+    scale_y_log10()
