@@ -202,21 +202,6 @@ get_vcf_data_table <- function(sample_id, vcf_obj){
     )
     dc_pl <- pl_dt[,paste("[",pl1,"|",pl2,"|",pl3,"]", sep="")]
     
-    # get the smallest maf for each variant
-    if(nrow(as.data.frame(info(vcf_obj)[["ExAC_AF"]])) == 0){
-        dc_exac_af <- NA
-    } else {
-        # TODO: use max value since we can't map it to the right allele
-        # and since if there can be a change it is likely that also the other variant is frequent
-        exac_maf <- unique(data.table(data.frame(info(vcf_obj)[["ExAC_AF"]]), key="group")
-                           [,list(group=group,value=as.double(as.character(value)))]
-                           [,list(value=value,small=(max(value) == value)),by=group]
-                           [small==TRUE])
-        
-        # create full ExAC AF vector
-        dc_exac_af <- exac_maf[data.table(group=1:length(info(vcf_obj)[["ExAC_AF"]]), key="group"),,allow.cartesian=TRUE][,value]
-    }
-    
     stable <- data.table(
         # sample information
         sample  = as.factor(sample_id),
@@ -240,9 +225,8 @@ get_vcf_data_table <- function(sample_id, vcf_obj){
         dp44    = as.integer(get_vector_or_na(dc_dp44)),
         mq      = as.integer(get_vector_or_na(info(vcf_obj)$MQ)),
         sp      = as.integer(get_vector_or_na(geno(vcf_obj)$SP)),
-        pl      = as.factor( get_vector_or_na(dc_pl, 2)),
-        mtype   = as.factor( dc_mtype),
-        exacmaf = as.numeric(get_vector_or_na(as.double(dc_exac_af)))
+        pl      = as.factor(get_vector_or_na(dc_pl, 2)),
+        mtype   = as.factor(dc_mtype)
     )
     
     if(length(vcf_obj) != nrow(stable)){
@@ -253,7 +237,7 @@ get_vcf_data_table <- function(sample_id, vcf_obj){
 }
 
 
-simplify_so_terms <- function(so_terms){
+simplify_so_terms <- function(so_terms, sample){
     
     # simplify SO terms and add a severity index to it
     FUN <- function(x){
@@ -263,7 +247,9 @@ simplify_so_terms <- function(so_terms){
         # retrieve simplified term from SO_HASH
         so_hash_entry <- unlist(SO_HASH[strsplit(x, "&")[[1]]])
         if (is.null(so_hash_entry)) {
-            message(paste("term", x, "not found"))
+            msg <- paste0("sample ", sample, ": term ", x, " not found when simplifying SO terms")
+            message(msg)
+            write(msg, '~/Downloads/vep2dt.errors')
             return(c(x,x)) # keep unsimplified term
         }
         
@@ -282,19 +268,33 @@ simplify_so_terms <- function(so_terms){
     ))
 }
 
-get_frequencies_from_vep <- function(vep_obj){
+#'
+#' all annotated frequencies by default
+#' 
+get_frequencies_from_vep <- function(vep_obj, db = c('ExAC', 'gnomAD')){
     
-    # ExAC/gnomad project
-    af         <- as.double(vep_obj$AF)
-    gnomad_maf <- as.double(vep_obj$gnomAD_AF)
-    nfe_maf    <- as.double(vep_obj$gnomAD_NFE_AF)
-    aa_maf     <- as.double(vep_obj$gnomAD_AFR_AF)
-    max_maf    <- as.double(vep_obj$MAX_AF)
+    #' description of MAF on page 16 https://m.ensembl.org/info/docs/tools/vep/online/VEP_web_documentation.pdf
+    #' AF: 1000 Genomes
+    #' gnomad_AF: gnomAD
+    #' ExAC_AF: ExAC
     
-    return(data.table(af, gnomad_maf, nfe_maf, aa_maf, max_maf))
-} 
+    maf_cols <- grep('AF', colnames(mcols(vep_obj)), value = T)
+    maf_cols <- grep('MAX_AF_POPS', maf_cols, value = T, invert = T)
+    for (d in c('ExAC', 'gnomAD')) {
+        if (!d %in% db)
+            maf_cols <- grep(d, maf_cols, value = T, invert = T)
+    }
+    maf_dt <- as.data.table(mcols(vep_obj)[, maf_cols])
+    maf_dt[, lapply(.SD, as.double)]
+    
+    # AF         <- as.double(vep_obj$AF)
+    # gnomAD_AF <- as.double(vep_obj$gnomAD_AF)
+    # gnomAD_NFE_AF    <- as.double(vep_obj$gnomAD_NFE_AF)
+    # gnomAD_AFR_AF     <- as.double(vep_obj$gnomAD_AFR_AF)
+    # MAX_AF    <- as.double(vep_obj$MAX_AF)
+}
 
-get_vep_annotation_data_table <- function(vep_obj){
+get_vep_annotation_data_table <- function(vep_obj, sample = 'sample'){
     
     # genename annotation
     dc_hgncid  <- ifelse(as.character(vep_obj$SYMBOL_SOURCE) == "HGNC", as.character(vep_obj$SYMBOL), NA)
@@ -307,12 +307,12 @@ get_vep_annotation_data_table <- function(vep_obj){
     dc_tunum   <- gsub("(-[0-9]+)*/[0-9]*$", "", vep_obj$EXON)
     
     # consequences and severness 
-    dc_consequences_list <- simplify_so_terms(vep_obj$Consequence)
+    dc_consequences_list <- simplify_so_terms(vep_obj$Consequence, sample)
     dc_mstype  <- dc_consequences_list[["dc_mstype"]]
     dc_sever   <- dc_consequences_list[["dc_sever"]]
     
     # mafs
-    maf_table <- get_frequencies_from_vep(vep_obj)
+    maf_table <- get_frequencies_from_vep(vep_obj, db = "gnomAD")
     
     # mutation references like pubmed paper or SNPdb aka rsid
     dc_rsid    <- gsub("^(rs\\d+)([^\\d].*)?$", "\\1", as.character(vep_obj$Existing_variation))
@@ -343,17 +343,18 @@ get_vep_annotation_data_table <- function(vep_obj){
         sdistl   = as.integer(vep_obj$DISTANCE),
         sdistr   = as.integer(vep_obj$DISTANCE),
         mstype   = as.factor( dc_mstype),
-        af       = as.double( maf_table[,af]),
-        gnomad_maf = as.double(maf_table[,gnomad_maf]),
-        nfe_maf    = as.double(maf_table[,nfe_maf]),
-        aa_maf     = as.double(maf_table[,aa_maf]),
-        max_maf    = as.double(maf_table[,max_maf]),
+        # af       = as.double( maf_table[,af]),
+        # gnomad_maf = as.double(maf_table[,gnomad_maf]),
+        # nfe_maf    = as.double(maf_table[,nfe_maf]),
+        # aa_maf     = as.double(maf_table[,aa_maf]),
+        # max_maf    = as.double(maf_table[,max_maf]),
         rsid     = as.factor( dc_rsid),
         rspm     = NA,
         rsg5     = NA,
         pubmed   = as.factor( vep_obj$PUBMED),
         sever    = as.integer(dc_sever)
     )
+    vep_table <- cbind(vep_table, maf_table)
     
     return(vep_table)
 }
