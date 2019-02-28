@@ -6,14 +6,31 @@ import numpy as np
 
 htmlOutputPath = config["htmlOutputPath"]  if (config["htmlOutputPath"] != None) else "Output/html"
 
-def mae_files():
-    anno = pd.read_table(config["SAMPLE_ANNOTATION"])
+def all_vcf(sa_file = config["SAMPLE_ANNOTATION"]):
 
+    anno = pd.read_table(sa_file)
+    
+    # subset and clean
+    anno = anno[anno["LAB"] == "PROKISCH"]
+    anno = anno[pd.notnull(anno.EXOME_ID)]
+    anno_vcf = anno[["EXOME_ID"]].copy()
+
+    anno_vcf['file'] = [config["RAW_DATA"] + "/" + x + "/exomicout/paired-endout/stdFilenames/" + x + ".vcf.gz" for x in anno_vcf["EXOME_ID"]]
+    anno_vcf['vcf_exists'] = [os.path.exists(x) for x in anno_vcf["file"]]
+    anno_vcf = anno_vcf[anno_vcf['vcf_exists']]
+    
+    return anno_vcf["EXOME_ID"].tolist()
+    
+    
+def mae_files(sa_file = config["SAMPLE_ANNOTATION"]):
+    
+    anno = pd.read_table(sa_file)
+    
     # subset and clean
     anno_mae = anno[anno["LAB"] == "PROKISCH"]
     anno_mae = anno_mae[pd.notnull(anno_mae.EXOME_ID)]
     anno_mae = anno_mae[pd.notnull(anno_mae.RNA_ID)]
-    anno_mae = anno_mae[["EXOME_ID", "RNA_ID"]]
+    anno_mae = anno_mae[["EXOME_ID", "RNA_ID"]].copy()
 
     # create file names
     anno_mae['rna_file'] = [config["RAW_DATA"] + "/" + x + "/RNAout/paired-endout/stdFilenames/" + x + ".bam" for x in anno_mae["RNA_ID"]]
@@ -28,11 +45,11 @@ def mae_files():
     rna = anno_mae["RNA_ID"]
     
     return vcf.tolist(), rna.tolist()
-    
-vcf, rna = mae_files()
 
+vcf, rna = mae_files()
 config["vcfs"] = vcf
 config["rnas"] = rna
+
 mae_ids = list(map('-'.join, zip(vcf, rna)))
 config["mae_ids"] = mae_ids
 
@@ -50,7 +67,7 @@ rule mae:
     output: "Output/mae.done"
 
 rule variant_annotation:
-    input: expand(config["RAW_DATA"] + "/{vcf}/exomicout/paired-endout/processedData/vep_anno_{vcf}.vcf.gz", vcf=config["vcfs"])
+    input: expand(config["RAW_DATA"] + "/{vcf}/exomicout/paired-endout/processedData/vep_anno_{vcf}.vcf.gz", vcf=all_vcf())
     output: "Output/variant_annotation.done"
 
 rule vep_anno_success:
