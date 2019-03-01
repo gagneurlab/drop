@@ -249,7 +249,7 @@ simplify_so_terms <- function(so_terms, sample){
         if (is.null(so_hash_entry)) {
             msg <- paste0("sample ", sample, ": term ", x, " not found when simplifying SO terms")
             message(msg)
-            write(msg, '~/Downloads/vep2dt.errors')
+            write(msg, '~/Downloads/vep2dt.errors', append = T)
             return(c(x,x)) # keep unsimplified term
         }
         
@@ -274,9 +274,11 @@ simplify_so_terms <- function(so_terms, sample){
 get_frequencies_from_vep <- function(vep_obj, db = c('ExAC', 'gnomAD')){
     
     #' description of MAF on page 16 https://m.ensembl.org/info/docs/tools/vep/online/VEP_web_documentation.pdf
-    #' AF: 1000 Genomes
-    #' gnomad_AF: gnomAD
-    #' ExAC_AF: ExAC
+    #' *AF: 1000 Genomes or ESP
+    #' gnomad_*_AF: gnomAD
+    #' ExAC_*_AF: ExAC
+    #' MAX_AF: Maximum observed allele frequency in 1000 Genomes, ESP and gnomAD
+    #' MAX_AF_POPS: Populations in which maximum allele frequency was observed
     
     maf_cols <- grep('AF', colnames(mcols(vep_obj)), value = T)
     maf_cols <- grep('MAX_AF_POPS', maf_cols, value = T, invert = T)
@@ -397,7 +399,7 @@ combine_vcf_vep <- function(sample, vcf_obj, vep_obj, minQUAL=20, num_forks) {
     message("create vcf data table ...")
     vcf_data_table <- get_vcf_data_table(sample, vcf_obj)
     message("create vep data table ...")
-    vep_data_table <- get_vep_annotation_data_table(vep_obj) #, num_forks)
+    vep_data_table <- get_vep_annotation_data_table(vep_obj, sample)
     
     # combine both data.tables
     setkey(vcf_data_table, var_id)

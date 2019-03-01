@@ -20,7 +20,7 @@ suppressPackageStartupMessages({
 
 source("Scripts/_functions/annotation_with_vep.R")
 
-vep_param <- get_vep_params(version=94, num_forks=snakemake@threads, vcfFile=snakemake@output$vcf)
+vep_param <- get_vep_params(version=snakemake@config$VEP_VERSION, num_forks=snakemake@threads, vcfFile=snakemake@output$vcf)
 resCall <- ensemblVEP(snakemake@input$vcf, vep_param)  # The vep_param already contains the output files
 
 if(resCall != 0){

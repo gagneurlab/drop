@@ -38,6 +38,7 @@ SAMPLE_IDS: [
 ]
 SAMPLE_ANNOTATION: "../sample_annotation/Data/sample_annotation.tsv" # TODO: "/s/project/mitoMultiOmics/raw_data/sample_info/SAMPLE_ANNOTATION.tsv"
 ANNOTATIONS: ["v29_overlap"] # "v19","v29"
+VEP_VERSION: 94
 
 # Count settings
 # inter.feature setting values (T: reads mapping to multiple features are dropped)

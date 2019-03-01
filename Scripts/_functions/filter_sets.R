@@ -139,7 +139,7 @@ filter_prot_effect <- function(data){
 #'
 #' by default use only ExAC database for filtering
 #'
-filter_rare <- function(data, col_maf = 'max_maf', maf_cutoff=0.001) {
+filter_rare <- function(data, col_maf = 'MAX_AF', maf_cutoff=0.001) {
     if(dim(data)[1] == 0){
         return(data)
     }
