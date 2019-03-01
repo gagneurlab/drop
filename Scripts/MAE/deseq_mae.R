@@ -13,8 +13,6 @@
 saveRDS(snakemake, 'tmp/res_mae.Rds')
 # snakemake <- readRDS(snakemake, 'tmp/res_mae.Rds')
 
-# #'   - vcf_uniqs: '`sm config["RAW_DATA"] + "{vcf}/exomicout/paired-endout/processedData/vep_anno_{vcf}_uniq_dt.Rds"`'
-
 suppressPackageStartupMessages({
     devtools::load_all("../mae/")
     library(dplyr)
@@ -37,7 +35,7 @@ vt[, chr := paste0("chr", chr)]
 vt[, aux := paste(chr, pos, ref, alt, sep = "-")]
 
 # Merge results
-rt <- left_join(rmae, vt[,.(hgncid, mstype, noccds, gnomad_maf, max_maf, af, nfe_maf, aa_maf, rsid, pubmed, aux)], by = "aux") %>% as.data.table
+rt <- left_join(rmae, vt[,.(hgncid, mstype, noccds, sift1, pph1, gnomAD_AF, MAX_AF, AF, gnomAD_NFE_AF, gnomAD_AFR_AF, gnomAD_EAS_AF, rsid, pubmed, aux)], by = "aux") %>% as.data.table
 rt[, aux := NULL]
 
 # Save results

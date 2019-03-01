@@ -67,7 +67,7 @@ mr <- res_all[, .(value = .N), by = sample]
 mr <- data.table(type = 'monoallelic', mr)
 
 # Add rare
-mr2 <- res_all[max_maf < 1e-3 | is.na(max_maf), .(value = .N), by = sample]
+mr2 <- res_all[MAX_AF < 1e-3 | is.na(MAX_AF), .(value = .N), by = sample]
 mr2 <- data.table(type = 'rare', mr2)
 
 

@@ -50,7 +50,7 @@ res <- left_join(res, sa[, .(RNA_ID, FIBROBLAST_ID, EXOME_ID, PEDIGREE, KNOWN_MU
 
 saveRDS(res, snakemake@output$res_signif_all)
 
-res_rare <- res[gnomad_maf < .001 | is.na(gnomad_maf)]
+res_rare <- res[MAX_AF < .001 | is.na(MAX_AF)]
 saveRDS(res_rare, snakemake@output$res_signif_rare)
 
 #' ### Download results tables
