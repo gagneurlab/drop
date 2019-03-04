@@ -87,7 +87,8 @@ add_hans_class <- function(DT, gene_name_col = "gene_name", return_all_info = TR
                 by = c("gene_name" = "HGNC_GENE_NAME")) %>% as.data.table 
     } else  {
         DT <- left_join(DT, pt[,.(HGNC_GENE_NAME, HANS_CLASS)], 
-                        by = c("gene_name" = "HGNC_GENE_NAME")) %>% as.data.table 
+                        by = c("gene_name" = "HGNC_GENE_NAME")) %>% as.data.table
+        DT[, MITO_DISEASE_GENE := FALSE]
         DT[HANS_CLASS == 'MITO', MITO_DISEASE_GENE := TRUE]
         DT[, HANS_CLASS := NULL]
     }

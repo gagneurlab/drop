@@ -223,7 +223,7 @@ filter_only_compound_heterzygous <- function(vdata){
 }
 
 #'
-#' get the homozyouges mutations
+#' get the homozygous mutations
 #'
 #' means all genomic positions where there is no reference allele
 #'
