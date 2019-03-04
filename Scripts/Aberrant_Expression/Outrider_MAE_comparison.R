@@ -50,3 +50,8 @@ sa <- fread("../sample_annotation/Data/sample_annotation.tsv")
 DT::datatable(sa[RNA_ID %in% ab_dt[mae_events > 500, RNA_ID]])
 
 
+#' ## Venn Diagrams
+gplots::venn(list(MAE = unique(mae_res$RNA_ID), 
+                  OUTRIDER = unique(dt_ab$RNA_ID))
+)
+
