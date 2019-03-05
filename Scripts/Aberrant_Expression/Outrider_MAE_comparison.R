@@ -24,7 +24,7 @@ suppressPackageStartupMessages({
     library(OUTRIDER)
 })
 
-#'
+#' ## Read ods objects and results tables
 ods_ss <- readRDS(snakemake@input$ods_ss)
 dt1 <- data.table(aberrant(ods_ss) %>% colSums())
 dt1[, RNA_ID := colnames(ods_ss)]
@@ -46,6 +46,7 @@ mae_samples[duplicated(mae_samples$EXOME_ID)]
 ab_dt <- merge(dt_ab, mae_res_sample)
 ggplot(ab_dt, aes(outrider_aberrant, mae_events)) + geom_point() + theme_bw()
 
+#' ## Mismatches
 sa <- fread("../sample_annotation/Data/sample_annotation.tsv")
 DT::datatable(sa[RNA_ID %in% ab_dt[mae_events > 500, RNA_ID]])
 
