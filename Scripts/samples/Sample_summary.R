@@ -57,7 +57,7 @@ ggplot(sa[sample_type == 'patient'], aes(IS_RNA_SEQ_STRANDED)) + geom_bar(aes(y 
 
 #' ## Download sample annotation with patients only
 #' ### Add Sarah's diagnose
-exo_db <- fread("../exomes1000/processed_data/exomes_clean.tsv")
+exo_db <- fread("/s/project/mitoMultiOmics/exomes1000/processed_data/exomes_clean.tsv")
 exo_db = exo_db[WES_in_db == 'Y']
 sa2 <- left_join(sa, exo_db[, .(RNA_ID, gene_name)]) %>% as.data.table
 sa2[gene_name == '.', gene_name := NA]

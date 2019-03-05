@@ -135,7 +135,7 @@ add_disease_gene_info <- function(DT, gene_name_col = "gene_name"){
 ### Rahman's disease genes columns
 ##############
 add_rahman_disease_col <- function(DT, gene_name_col = "gene_name"){
-    rahman_table <- fread("../exomes1000/Data/genes_info/MitoDiseaseGenes(Rahman).csv")
+    rahman_table <- fread("/s/project/mitoMultiOmics/exomes1000/raw_data/genes_info/MitoDiseaseGenes(Rahman).csv")
     rahman_table[, Gene := toupper(Gene)]
     
     # v1 is the way it is in Rahman's table
