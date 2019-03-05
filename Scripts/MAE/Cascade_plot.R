@@ -83,14 +83,17 @@ stat_box_data <- function(y, upper_limit = max(m_dt$value)) {
 }
 g <- ggplot(m_dt, aes(type, value, col = type)) +
     geom_boxplot() +
-    scale_color_manual(values = c('black', 'grey50', 'grey80', 'dodgerblue', 'orangered')) +
-    theme_bw() + 
-    labs(y = "SNVs per patient", x = "Filter cascade")
+    scale_color_manual(values = c('black', 'grey50', 'grey70', 'dodgerblue', 'orangered')) +
+    theme_bw(base_size = 14) + 
+    labs(y = "SNVs per patient", x = "Filter cascade") +
+    theme(legend.position = 'bottom')
 
+#+ cascades, fig.height=8, fig.width=10
 ggplotly(g + scale_y_log10())
 g + grids() +
     stat_summary(fun.data = stat_box_data, geom = "text", vjust = -0.5) +
     coord_trans(y = 'log10')
+
 m_dt[, median(value), by = type]
 m_dt[value > 9e4]
 

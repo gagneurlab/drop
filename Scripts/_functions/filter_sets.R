@@ -15,7 +15,7 @@
 filter_sets <- c(
 	"filter_data",
 	"filter_exome",
-	"filter_prot_affect",
+	"filter_prot_effect",
 	"filter_rare",
 	"filter_uniq"
 )
@@ -214,7 +214,8 @@ filter_compound_heterozygous <- function(data){
 }
 
 
-filter_only_compound_heterzygous <- function(vdata){
+filter_only_compound_heterozygous <- function(vdata){
+    vdata <- vdata[grepl("^0|0$", gt)]
     compound_vars <- (
             duplicated(vdata[,list(sample,hgncid)]) |
             duplicated(vdata[,list(sample,hgncid)], fromLast=TRUE)
@@ -228,13 +229,13 @@ filter_only_compound_heterzygous <- function(vdata){
 #' means all genomic positions where there is no reference allele
 #'
 filter_homozygous <- function(data){
-	return(data[!grepl("^0|0$", gt)])
+	return(data[!grepl("^0|0$", gt)]) # no 0 at start or end
 }
 
 
 filter_potential_biallelic <- function(vdata){
     unique(rbind(
-        filter_only_compound_heterzygous(vdata),
+        filter_only_compound_heterozygous(vdata),
         filter_homozygous(vdata)
     ))
 }
@@ -243,7 +244,7 @@ filter_potential_biallelic <- function(vdata){
 get_qc_rare_protein_biallelic <- function(vdata){
     unique(minimize_factors_of_datatable(
         filter_potential_biallelic(
-            filter_prot_affect(
+            filter_prot_effect(
                 filter_rare(
                     filter_vcf_quality(
                         vdata,

@@ -35,12 +35,13 @@ all_vcfs_list <- bplapply(snakemake@input$vcf_dts, function(f) {
         exonic = dt$var_id %in% filter_exonic(dt)$var_id,
         prot_effect = dt$var_id %in% filter_prot_effect(dt)$var_id,
         rare = dt$var_id %in% filter_rare(dt)$var_id,
-        compound_heterzygous = dt$var_id %in% filter_only_compound_heterzygous(dt)$var_id,
+        compound_heterozygous = dt$var_id %in% filter_only_compound_heterozygous(dt)$var_id,
         homozygous = dt$var_id %in% filter_homozygous(dt)$var_id,
         potential_biallelic = dt$var_id %in% filter_potential_biallelic(dt)$var_id
     )
-    summary_dt[, all_filters := exonic & prot_effect & rare & compound_heterzygous 
-               & homozygous & potential_biallelic]
+    summary_dt[, homozygous_filtered := exonic & prot_effect & rare & homozygous]
+    summary_dt[, compound_heterozygous_filtered := exonic & prot_effect & rare & compound_heterozygous]
+    summary_dt[, potential_biallelic_filtered := exonic & prot_effect & rare & potential_biallelic]
     summary_dt <- cbind(dt[, .(var_id, chr, pos, ref, alt, MAX_AF, gnomAD_AF, hgncid, sift1, pph1)], summary_dt)
     
     # add mito
@@ -49,32 +50,37 @@ all_vcfs_list <- bplapply(snakemake@input$vcf_dts, function(f) {
     summary_dt[, mito := F]
     summary_dt[MITO_DISEASE_GENE == T, rare_mito := T]
     summary_dt[, rare_mito := F]
-    summary_dt[rare == T & MITO_DISEASE_GENE == T, rare_mito := T]
+    summary_dt[exonic == T & prot_effect == T & rare == T & MITO_DISEASE_GENE == T, rare_mito := T]
     
     summary_dt
 })
 
-filters <- c('quality', 'exonic', 'prot_effect', 'rare', 'compound_heterzygous', 'homozygous', 'potential_biallelic', 'all_filters', 'rare_mito')
+filters <- c('quality', 'exonic', 'prot_effect', 'rare', 'compound_heterozygous', 'homozygous', 'potential_biallelic',
+             'potential_biallelic_filtered', 'rare_mito', 'homozygous_filtered', 'compound_heterozygous_filtered')
+single_filters <- c('quality', 'exonic', 'prot_effect', 'rare', 'compound_heterozygous', 'homozygous', 'potential_biallelic')
 total_dt <- melt(rbindlist(all_vcfs_list), measure.vars = filters, variable.name = 'filter', value.name = 'filtered')
 total_dt <- total_dt[filtered == T, -'filtered']
+total_dt[, single_filter := F]
+total_dt[filter %in% single_filters, single_filter := T]
 setkey(total_dt, chr, pos, ref, alt)
 
 #' ## Revisit Filters
-filtered_dt <- total_dt[, .(variant_count = .N), by = c('filter', 'sample')]
+filtered_dt <- total_dt[, .(variant_count = .N), by = c('filter', 'sample', 'single_filter')]
 stat_box_data <- function(y, upper_limit = max(filtered_dt$variant_count)) {
     data.frame(y = upper_limit, label = round(median(y), 1))
 }
-#+ filtered, fig.height=8, fig.width=8
-ggplot(filtered_dt,
-       aes(reorder(filter, -variant_count), variant_count)) +
+#+ filtered, fig.height=8, fig.width=10
+ggplot(filtered_dt, aes(reorder(filter, -variant_count), variant_count, col = single_filter)) +
     geom_boxplot() +
     stat_summary(fun.data = stat_box_data, geom = "text", vjust = -0.5) +
     coord_trans(y="log10") +
-    labs(x = "Filters", y = 'Number of variants per sample') +
+    labs(x = "Filters", y = 'Number of variants per sample', title = 'Filtering over all annotated variants') +
     grids() +
-    theme(axis.text.x = element_text(angle=20, vjust = 0.5)) +
+    theme(axis.text.x = element_text(angle=45, vjust = 0.5),
+          legend.position = 'bottom') +
     scale_x_discrete(breaks=levels(filtered_dt[,filter]),
-                     labels=gsub("_" , "\n" , levels(filtered_dt[,filter])))
+                     labels=gsub("_" , "\n" , levels(filtered_dt[,filter]))) +
+    scale_color_brewer(palette = 'Set1')
 
 
 #' ### Get Outliers
@@ -93,18 +99,19 @@ total_dt <- total_dt[!duplicated(total_dt, by = c('chr', 'pos', 'ref', 'alt', 'f
 total_dt[, MAX_AF_na := MAX_AF]
 total_dt[is.na(MAX_AF), MAX_AF_na := -0.1]
 
-af_dt <- total_dt[filter != 'rare' & filter != 'all_filters' & filter != 'rare_mito']
-hist(af_dt$MAX_AF_na)
+af_dt <- total_dt[filter != 'rare' & filter %in% single_filters]
+hist(af_dt[filter == 'quality', MAX_AF_na])
 
 ggplot(af_dt, aes(MAX_AF_na, fill = filter)) +
-    geom_histogram() +
+    geom_histogram(bins = 30) +
     facet_wrap(~filter) +
-    theme(legend.position = 'top') +
+    labs(x = 'maximum allele frequency') +
+    theme(legend.position = 'none') +
     scale_fill_brewer(palette = "Set2")
 
 
 #' ## Mito Genes
-rare_variants <- unique(total_dt[filter == 'rare', .(var_id, MITO_DISEASE_GENE, MITOCARTA)])
+rare_variants <- unique(total_dt[filter == 'potential_biallelic', .(var_id, MITO_DISEASE_GENE, MITOCARTA)])
 rare_variants <- melt(rare_variants, id.vars = 'var_id', variable.name = 'mito_class', value.name = 'mito')
 
 ggplot(rare_variants[, .N, by = c('mito_class', 'mito')], aes(mito, N, fill = mito)) +
@@ -113,5 +120,6 @@ ggplot(rare_variants[, .N, by = c('mito_class', 'mito')], aes(mito, N, fill = mi
     geom_text(aes(label=N), vjust=-0.3) +
     scale_fill_brewer(palette = "Set1") +
     scale_y_log10() +
+    labs(y = 'Number of unique rare variants') +
     theme(legend.position = 'none')
 
