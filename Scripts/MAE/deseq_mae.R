@@ -11,7 +11,7 @@
 #'---
 
 saveRDS(snakemake, 'tmp/res_mae.Rds')
-# snakemake <- readRDS(snakemake, 'tmp/res_mae.Rds')
+# snakemake <- readRDS('tmp/res_mae.Rds')
 
 suppressPackageStartupMessages({
     devtools::load_all("../mae/")
