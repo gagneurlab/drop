@@ -5,6 +5,7 @@
 #'  input:
 #'   - ods_ss: '`sm expand(config["PROC_RESULTS"] + "/{annotation}/outrider/ss/ods.Rds", annotation=config["ANNOTATIONS"])`'
 #'   - ods_ns: '`sm expand(config["PROC_RESULTS"] + "/{annotation}/outrider/ns/ods.Rds", annotation=config["ANNOTATIONS"])`'
+#'   - ods_res: '`sm expand(config["PROC_RESULTS"] + "/{annotation}/outrider/OUTRIDER_results.tsv", annotation=config["ANNOTATIONS"])`'
 #'   - mae_res: '`sm config["PROC_RESULTS"] + "/mae/MAE_results.Rds"`'
 #'  output:
 #' output: 
@@ -25,6 +26,7 @@ suppressPackageStartupMessages({
 })
 
 #'
+# Get the number of significant outliers per sample
 ods_ss <- readRDS(snakemake@input$ods_ss)
 dt1 <- data.table(aberrant(ods_ss) %>% colSums())
 dt1[, RNA_ID := colnames(ods_ss)]
@@ -51,7 +53,14 @@ DT::datatable(sa[RNA_ID %in% ab_dt[mae_events > 500, RNA_ID]])
 
 
 #' ## Venn Diagrams
-gplots::venn(list(MAE = unique(mae_res$RNA_ID), 
-                  OUTRIDER = unique(dt_ab$RNA_ID))
+ods_res <- fread(snakemake@input$ods_res)
+ods_res[, gene_result := paste(sampleID, geneID, sep = '-')]
+mae_res <- mae_res[!is.na(gene_name) & (MAX_AF <= 0.001 | is.na(MAX_AF))]
+mae_res[, gene_result := paste(RNA_ID, gene_name, sep = '-')]
+mae_res[, N_gr := .N, by = gene_result]
+mae_res[, samples_in_common := RNA_ID %in% c(colnames(ods_ns), colnames(ods_ss))]
+gplots::venn(list(MAE = unique(mae_res[samples_in_common == T, gene_result]), 
+                  OUTRIDER = unique(ods_res$gene_result))
 )
+intersect(unique(mae_res[samples_in_common == T, gene_result]), unique(ods_res$gene_result))
 
