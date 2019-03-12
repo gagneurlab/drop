@@ -3,7 +3,7 @@
 #' author: mumichae
 #' wb:
 #'  input:
-#'   - vcf: "{rawdata}/stdFilenames/{vcf}.vcf.gz"
+#'   - vcf: '`sm standardFileNames("{rawdata}/stdFilenames/{vcf}.vcf.gz")`'
 #'  output:
 #'   - vcf: "{rawdata}/processedData/vep_anno_{vcf}.vcf.gz"
 #'   - vcf_html: "{rawdata}/processedData/vep_anno_{vcf}.vcf.gz_summary.html"

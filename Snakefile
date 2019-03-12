@@ -1,5 +1,13 @@
 configfile: "wbuild.yaml"
 
+subworkflow standardFileNames:
+    workdir:
+        "../sample_annotation"
+    snakefile:
+        "../sample_annotation/Snakefile"
+    configfile:
+        "../sample_annotation/wbuild.yaml"
+
 import pandas as pd
 import os
 import numpy as np

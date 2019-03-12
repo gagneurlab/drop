@@ -3,8 +3,8 @@
 #' author: mumichae
 #' wb:
 #'  input:
-#'   - vcf: '`sm config["RAW_DATA"] + "/{vcf}/exomicout/paired-endout/stdFilenames/{vcf}.vcf.gz"`'
-#'   - rna: '`sm config["RAW_DATA"] + "/{rna}/RNAout/paired-endout/stdFilenames/{rna}.bam"`'
+#'   - vcf: '`sm standardFileNames("Data/helmholtz/{vcf}/exomicout/paired-endout/stdFilenames/{vcf}.vcf.gz")`'
+#'   - rna: '`sm standardFileNames("Data/helmholtz/{rna}/RNAout/paired-endout/stdFilenames/{rna}.bam")`'
 #'  output:
 #'   - mae: '`sm config["PROC_DATA"] + "/mae/{vcf}-{rna}.Rds"`'
 #'  threads: 1
