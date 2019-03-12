@@ -50,6 +50,6 @@ VEP_VERSION: 94
 
 # Count settings
 # inter.feature setting values (T: reads mapping to multiple features are dropped)
-INTER_FEATURE: [0] # positions correspond to postitions in ANNOTATIONS, 0 : F, 1 : T
+INTER_FEATURE: [0] # positions correspond to positions in ANNOTATIONS, 0 : F, 1 : T
 
 fpkmCutoff: 1

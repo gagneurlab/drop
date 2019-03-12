@@ -3,7 +3,7 @@
 #' author: Michaela Muller
 #' wb:
 #'  input: 
-#'  - counts: '`sm expand(config["PROC_RESULTS"] + "/{{annotation}}/counts/{sampleID}.Rds", sampleID=config["SAMPLE_IDS"])`'
+#'  - counts: '`sm expand(config["PROC_RESULTS"] + "/{{annotation}}/counts/samples/{sampleID}.Rds", sampleID=config["SAMPLE_IDS"])`'
 #'  - gene_annot_dt: "/s/project/genetic_diagnosis/resource/gencode_{annotation}_unique_gene_name.tsv"
 #'  output:
 #'  - counts_ss: '`sm config["PROC_RESULTS"] + "/{annotation}/counts/total_counts_ss.Rds"`'
