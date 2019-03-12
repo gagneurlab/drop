@@ -40,7 +40,6 @@ setnames(dt_ab, "V1", "outrider_aberrant")
 
 mae_res <- readRDS(snakemake@input$mae_res)
 
-mae_res <- separate(mae_res, "sample", into = c("EXOME_ID", "RNA_ID"), sep = "-")
 mae_res_sample <- mae_res[, .(mae_events = .N), by = RNA_ID]
 mae_samples <- unique(mae_res[,.(EXOME_ID, RNA_ID)])
 mae_samples[duplicated(mae_samples$EXOME_ID)]
