@@ -1,5 +1,13 @@
 configfile: "wbuild.yaml"
 
+subworkflow standardFileNames:
+    workdir:
+        "../sample_annotation"
+    snakefile:
+        "../sample_annotation/Snakefile"
+    configfile:
+        "../sample_annotation/wbuild.yaml"
+
 import pandas as pd
 import os
 import numpy as np
@@ -51,8 +59,11 @@ def mae_files(sa_file = config["SAMPLE_ANNOTATION"]):
     anno_mae = anno_mae[["EXOME_ID", "RNA_ID"]].copy()
 
     # create file names
-    anno_mae['rna_file'] = [config["RAW_DATA"] + "/" + x + "/RNAout/paired-endout/stdFilenames/" + x + ".bam" for x in anno_mae["RNA_ID"]]
-    anno_mae['vcf_file'] = [config["RAW_DATA"] + "/" + x + "/exomicout/paired-endout/stdFilenames/" + x + ".vcf.gz" for x in anno_mae["EXOME_ID"]]
+    # anno_mae['rna_file'] = [config["RAW_DATA"] + "/" + x + "/RNAout/paired-endout/stdFilenames/" + x + ".bam" for x in anno_mae["RNA_ID"]]
+    # anno_mae['vcf_file'] = [config["RAW_DATA"] + "/" + x + "/exomicout/paired-endout/stdFilenames/" + x + ".vcf.gz" for x in anno_mae["EXOME_ID"]]
+    
+    anno_mae['rna_file'] = [config["RAW_DATA"] + "/" + x + "/RNAout" for x in anno_mae["RNA_ID"]]
+    anno_mae['vcf_file'] = [config["RAW_DATA"] + "/" + x + "/exomicout" for x in anno_mae["EXOME_ID"]]
 
     # check for missing files
     anno_mae['vcf_exists'] = [os.path.exists(x) for x in anno_mae["vcf_file"]]
