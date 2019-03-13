@@ -34,4 +34,5 @@ _cache
 *_files
 *.cache
 tmp/
+resources/missing_exomes.txt
 
