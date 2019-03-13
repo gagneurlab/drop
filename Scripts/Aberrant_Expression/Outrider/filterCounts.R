@@ -3,12 +3,12 @@
 #' author: Michaela Mueller
 #' wb:
 #'  input:
-#'   - counts: '`sm config["PROC_RESULTS"] + "/{annotation}/counts/total_counts_{strand}.Rds"`'
+#'   - counts: '`sm config["PROC_RESULTS"] + "/{annotation}/counts/{dataset}/total_counts.Rds"`'
 #'   - txdb: '`sm config["PROC_RESULTS"] + "/{annotation}/txdb.db"`'
 #'  output:
-#'   - ods: '`sm config["PROC_RESULTS"] + "/{annotation}/outrider/{strand}/ods_unfitted.Rds"`'
-#'   - plot: '`sm config["PROC_RESULTS"] + "/{annotation}/outrider/{strand}/filtered_hist.png"`'
-#'   - filtered_counts: '`sm config["PROC_RESULTS"] + "/{annotation}/counts/filtered_counts_{strand}.Rds"`'
+#'   - ods: '`sm config["PROC_RESULTS"] + "/{annotation}/outrider/{dataset}/ods_unfitted.Rds"`'
+#'   - plot: '`sm config["PROC_RESULTS"] + "/{annotation}/outrider/{dataset}/filtered_hist.png"`'
+#'   - filtered_counts: '`sm config["PROC_RESULTS"] + "/{annotation}/counts/{dataset}/filtered_counts.Rds"`'
 #'  type: script
 #'---
 

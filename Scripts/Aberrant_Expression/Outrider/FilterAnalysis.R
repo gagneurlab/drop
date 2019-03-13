@@ -3,8 +3,8 @@
 #' author: vyepez
 #' wb:
 #'  input:
-#'   - ods_ss: '`sm config["PROC_RESULTS"] + "/v29_overlap/outrider/ss/ods_unfitted.Rds"`'
-#'   - ods_ns: '`sm config["PROC_RESULTS"] + "/v29_overlap/outrider/ns/ods_unfitted.Rds"`'
+#'   - ods_ss: '`sm config["PROC_RESULTS"] + "/v29_overlap/outrider/fib_ss/ods_unfitted.Rds"`'
+#'   - ods_ns: '`sm config["PROC_RESULTS"] + "/v29_overlap/outrider/fib_ns/ods_unfitted.Rds"`'
 #'  output:
 #' output:
 #'   html_document:

@@ -3,15 +3,17 @@
 #' author: Michaela Muller
 #' wb:
 #'  input: 
-#'  - counts_ss: '`sm expand(config["PROC_RESULTS"] + "/{{annotation}}/counts/{sampleID}.Rds", sampleID=config["outrider"]["fib_ss"])`'
-#'  - counts_ns: '`sm expand(config["PROC_RESULTS"] + "/{{annotation}}/counts/{sampleID}.Rds", sampleID=config["outrider"]["fib_ns"])`'
-#'  - gene_annot_dt: "/s/project/genetic_diagnosis/resource/gencode_{annotation}_unique_gene_name.tsv"
+#'    - counts: '`sm lambda wildcards: expand(config["PROC_RESULTS"] + "/{{annotation}}/counts/{sampleID}.Rds", sampleID=config["outrider"][wildcards.dataset])`'
+#'    - gene_annot_dt: "/s/project/genetic_diagnosis/resource/gencode_{annotation}_unique_gene_name.tsv"
 #'  output:
-#'  - counts_ss: '`sm config["PROC_RESULTS"] + "/{annotation}/counts/total_counts_ss.Rds"`'
-#'  - counts_ns: '`sm config["PROC_RESULTS"] + "/{annotation}/counts/total_counts_ns.Rds"`'
+#'    - counts: '`sm config["PROC_RESULTS"] + "/{annotation}/counts/{dataset}/total_counts.Rds"`'
 #'  threads: 30
 #'  type: script
 #'---
+###'  - counts_ss: '`sm expand(config["PROC_RESULTS"] + "/{{annotation}}/counts/{sampleID}.Rds", sampleID=config["outrider"]["fib_ss"])`'
+###'  - counts_ns: '`sm expand(config["PROC_RESULTS"] + "/{{annotation}}/counts/{sampleID}.Rds", sampleID=config["outrider"]["fib_ns"])`'
+###'  - counts_ss: '`sm config["PROC_RESULTS"] + "/{annotation}/counts/total_counts_ss.Rds"`'
+###'  - counts_ns: '`sm config["PROC_RESULTS"] + "/{annotation}/counts/total_counts_ns.Rds"`'
 
 saveRDS(snakemake, "tmp/count_all.snakemake")
 # snakemake <- readRDS("tmp/count_all.snakemake")
@@ -26,11 +28,9 @@ suppressPackageStartupMessages({
 register(MulticoreParam(snakemake@threads))
 
 # Read counts
-counts_ss <- bplapply(snakemake@input$counts_ss, readRDS)
-counts_ns <- bplapply(snakemake@input$counts_ns, readRDS)
-names(counts_ss) <- snakemake@config$outrider$fib_ss
-names(counts_ns) <- snakemake@config$outrider$fib_ns
-message(paste("read", length(counts_ss), 'strand-specific and', length(counts_ns), 'strand non-strand specific files'))
+counts <- bplapply(snakemake@input$counts, readRDS)
+names(counts) <- snakemake@config$outrider[[snakemake@wildcards$dataset]]
+message(paste("read", length(counts), 'files'))
 
 # Read annotations
 gene_annot_dt <- fread(snakemake@input$gene_annot_dt)
@@ -46,10 +46,5 @@ merge_counts <- function(counts, gene_annot_dt) {
     total_counts
 }
 
-# strand-specific
-counts_ss <- merge_counts(counts_ss, gene_annot_dt)
-saveRDS(counts_ss, snakemake@output$counts_ss)
-
-# non strand-specific
-counts_ns <- merge_counts(counts_ss, gene_annot_dt)
-saveRDS(counts_ns, snakemake@output$counts_ns)
+total_counts <- merge_counts(counts, gene_annot_dt)
+saveRDS(total_counts, snakemake@output$counts)

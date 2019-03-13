@@ -1,3 +1,7 @@
+import pandas as pd
+import os
+import numpy as np
+
 configfile: "wbuild.yaml"
 
 subworkflow standardFileNames:
@@ -7,12 +11,6 @@ subworkflow standardFileNames:
         "../sample_annotation/Snakefile"
     configfile:
         "../sample_annotation/wbuild.yaml"
-
-import pandas as pd
-import os
-import numpy as np
-
-htmlOutputPath = config["htmlOutputPath"]  if (config["htmlOutputPath"] != None) else "Output/html"
 
 
 def outrider_files(sa_file = config["SAMPLE_ANNOTATION"]):
@@ -31,6 +29,10 @@ def outrider_files(sa_file = config["SAMPLE_ANNOTATION"]):
 
     # subset by OUTRIDER_GROUP
     return {og : anno_outrider.loc[anno_outrider.OUTRIDER_GROUP == og, 'RNA_ID'].tolist() for og in set(pd.unique(anno_outrider.OUTRIDER_GROUP))}
+    
+
+def get_files_by_group(group):
+    return expand(config["PROC_RESULTS"] + "/{{annotation}}/counts/{sampleID}.Rds", sampleID=config["outrider"][group])
 
 
 def all_vcf(sa_file = config["SAMPLE_ANNOTATION"]):
@@ -83,8 +85,9 @@ config["rnas"] = rna
 config["mae_ids"] = list(map('-'.join, zip(vcf, rna)))
 config["outrider"] = outrider_files()
 
-
 include: ".wBuild/wBuild.snakefile"  # Has to be here in order to update the config with the new variables
+htmlOutputPath = config["htmlOutputPath"]  if (config["htmlOutputPath"] != None) else "Output/html"
+
 
 rule all:
     input: rules.Index.output, htmlOutputPath + "/readme.html"
@@ -119,4 +122,3 @@ rule variant_annotation_all:
 
 rule test_outrider_files:
     input: counts = expand(config["PROC_RESULTS"] + "/v29_overlap/counts/{sampleID}.Rds", sampleID=config["outrider"])
-

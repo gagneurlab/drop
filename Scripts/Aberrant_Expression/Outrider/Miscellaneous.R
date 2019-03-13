@@ -3,8 +3,8 @@
 #' author: vyepez
 #' wb:
 #'  input:
-#'   - ods_ss: '`sm expand(config["PROC_RESULTS"] + "/{annotation}/outrider/ss/ods.Rds", annotation=config["ANNOTATIONS"])`'
-#'   - ods_ns: '`sm expand(config["PROC_RESULTS"] + "/{annotation}/outrider/ns/ods.Rds", annotation=config["ANNOTATIONS"])`'
+#'   - ods_ss: '`sm expand(config["PROC_RESULTS"] + "/{annotation}/outrider/fib_ss/ods.Rds", annotation=config["ANNOTATIONS"])`'
+#'   - ods_ns: '`sm expand(config["PROC_RESULTS"] + "/{annotation}/outrider/fib_ns/ods.Rds", annotation=config["ANNOTATIONS"])`'
 #'  output:
 #' output:
 #'   html_document:

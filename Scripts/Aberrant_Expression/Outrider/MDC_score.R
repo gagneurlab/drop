@@ -3,8 +3,8 @@
 #' author: vyepez
 #' wb:
 #'  input:
-#'   - ods_ss: '`sm config["PROC_RESULTS"] + "/v29_overlap/outrider/ss/ods.Rds"`'
-#'   - ods_ns: '`sm config["PROC_RESULTS"] + "/v29_overlap/outrider/ns/ods.Rds"`'
+#'   - ods_ss: '`sm config["PROC_RESULTS"] + "/v29_overlap/outrider/fib_ss/ods.Rds"`'
+#'   - ods_ns: '`sm config["PROC_RESULTS"] + "/v29_overlap/outrider/fib_ns/ods.Rds"`'
 #'   - exomes_table: "../exomes1000/processed_data/exomes_clean.tsv"
 #'  output:
 #' output:
