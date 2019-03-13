@@ -18,7 +18,7 @@ SANITYCHECKDIR: "/s/project/mitoMultiOmics/sanitychecks"
 
 # Samples from:
 # sample_anno <- fread("/s/project/mitoMultiOmics/raw_data/sample_info/SAMPLE_ANNOTATION.tsv")
-# sample_anno[BATCH %in% paste("Batch", 0:5, sep = "_") & TISSUE == 'FIBROBLAST' & GROWTH_MEDIUM == 'GLU' & is.na(TRANSDUCED_GENE), RNA_ID] -> sort(samples)
+# sample_anno[BATCH %in% paste("Batch", 0:6, sep = "_") & TISSUE == 'FIBROBLAST' & GROWTH_MEDIUM == 'GLU' & is.na(TRANSDUCED_GENE), RNA_ID] %>% sort
 SAMPLE_IDS: [
     100634R, 101401R, 101676R, 102384R, 102385R, 102386R, 102387R, 102388R, 102389R, 102390R, 102391R, 102392R,
     102393R, 102630R, 102631R, 102632R, 102860R, 102864R, 102874R, 102875R, 102876R, 102949R, 102950R, 102951R, 
