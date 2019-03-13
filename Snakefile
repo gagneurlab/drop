@@ -86,21 +86,21 @@ rule mae:
     input: config["PROC_RESULTS"] + "/mae/MAE_results.Rds"
     output: touch("Output/mae.done")
 
-rule variant_annotation: 
-    input: vcf = '{rawdata}/stdFilenames/{vcf}.vcf.gz'
-    output: vcf = '{rawdata}/processedData/vep_anno_{vcf}.vcf.gz', vcf_html = '{rawdata}/processedData/vep_anno_{vcf}.vcf.gz_summary.html'
-    threads: 10
-    shell:
-        "echo '{input.vcf}\n{output.vcf}\n{output.vcf_html}\n';"
-        "vep -i {input.vcf} -o {output.vcf} --stats_file {output.vcf_html} --port 3337 --assembly GRCh37 "
-        "--vcf TRUE --compress_output bgzip --minimal TRUE --allele_number TRUE --force_overwrite TRUE "
-        "--fork {threads} --db_version 94 --merged TRUE --user anonymous --host ensembldb.ensembl.org "
-        "--cache TRUE --dir /opt/modules/i12g/ensembl-vep/94/cachedir --dir_cache /opt/modules/i12g/ensembl-vep/94/cachedir "
-        "--dir_plugins /opt/modules/i12g/ensembl-vep/94/cachedir/Plugins --buffer_size 10000 --sift s --polyphen s "
-        "--total_length TRUE --numbers TRUE --symbol TRUE --hgvs TRUE --ccds TRUE --uniprot TRUE --xref_refseq TRUE "
-        "--af TRUE --max_af TRUE --af_gnomad TRUE --pubmed TRUE --canonical TRUE --biotype TRUE " #--af_exac TRUE
-        "--plugin CADD,/s/genomes/human/hg19/CADD/v1.3/whole_genome_SNVs.tsv.gz,/s/genomes/human/hg19/CADD/v1.3/InDels.tsv.gz "
-        "--chr chr1,chr2,chr3,chr4,chr5,chr6,chr7,chr8,chr9,chr10,chr11,chr12,chr13,chr14,chr15,chr16,chr17,chr18,chr19,chr20,chr21,chr22,chrX,chrY,chrM"
+#rule variant_annotation: 
+#    input: vcf = '{rawdata}/stdFilenames/{vcf}.vcf.gz'
+#    output: vcf = '{rawdata}/processedData/vep_anno_{vcf}.vcf.gz', vcf_html = '{rawdata}/processedData/vep_anno_{vcf}.vcf.gz_summary.html'
+#    threads: 10
+#    shell:
+#        "echo '{input.vcf}\n{output.vcf}\n{output.vcf_html}\n';"
+#        "vep -i {input.vcf} -o {output.vcf} --stats_file {output.vcf_html} --port 3337 --assembly GRCh37 "
+#        "--vcf TRUE --compress_output bgzip --minimal TRUE --allele_number TRUE --force_overwrite TRUE "
+#        "--fork {threads} --db_version 94 --merged TRUE --user anonymous --host ensembldb.ensembl.org "
+#        "--cache TRUE --dir /opt/modules/i12g/ensembl-vep/94/cachedir --dir_cache /opt/modules/i12g/ensembl-vep/94/cachedir "
+#        "--dir_plugins /opt/modules/i12g/ensembl-vep/94/cachedir/Plugins --buffer_size 10000 --sift s --polyphen s "
+#        "--total_length TRUE --numbers TRUE --symbol TRUE --hgvs TRUE --ccds TRUE --uniprot TRUE --xref_refseq TRUE "
+#        "--af TRUE --max_af TRUE --af_gnomad TRUE --pubmed TRUE --canonical TRUE --biotype TRUE " #--af_exac TRUE
+#        "--plugin CADD,/s/genomes/human/hg19/CADD/v1.3/whole_genome_SNVs.tsv.gz,/s/genomes/human/hg19/CADD/v1.3/InDels.tsv.gz "
+#        "--chr chr1,chr2,chr3,chr4,chr5,chr6,chr7,chr8,chr9,chr10,chr11,chr12,chr13,chr14,chr15,chr16,chr17,chr18,chr19,chr20,chr21,chr22,chrX,chrY,chrM"
         
 rule variant_annotation_all:
     input: expand(config["RAW_DATA"] + "/{vcf}/exomicout/paired-endout/processedData/vep_anno_{vcf}_uniq_dt.Rds", vcf=all_vcf())
