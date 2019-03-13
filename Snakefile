@@ -97,7 +97,7 @@ rule mae:
     input: config["PROC_RESULTS"] + "/mae/MAE_results.Rds"
     output: touch("Output/mae.done")
 
-# rule variant_annotation: 
+#rule variant_annotation: 
 #    input: vcf = '{rawdata}/stdFilenames/{vcf}.vcf.gz'
 #    output: vcf = '{rawdata}/processedData/vep_anno_{vcf}.vcf.gz', vcf_html = '{rawdata}/processedData/vep_anno_{vcf}.vcf.gz_summary.html'
 #    threads: 10
@@ -107,7 +107,7 @@ rule mae:
 #        "--vcf TRUE --compress_output bgzip --minimal TRUE --allele_number TRUE --force_overwrite TRUE "
 #        "--fork {threads} --db_version 94 --merged TRUE --user anonymous --host ensembldb.ensembl.org "
 #        "--cache TRUE --dir /opt/modules/i12g/ensembl-vep/94/cachedir --dir_cache /opt/modules/i12g/ensembl-vep/94/cachedir "
-#       "--dir_plugins /opt/modules/i12g/ensembl-vep/94/cachedir/Plugins --buffer_size 10000 --sift s --polyphen s "
+#        "--dir_plugins /opt/modules/i12g/ensembl-vep/94/cachedir/Plugins --buffer_size 10000 --sift s --polyphen s "
 #        "--total_length TRUE --numbers TRUE --symbol TRUE --hgvs TRUE --ccds TRUE --uniprot TRUE --xref_refseq TRUE "
 #        "--af TRUE --max_af TRUE --af_gnomad TRUE --pubmed TRUE --canonical TRUE --biotype TRUE " #--af_exac TRUE
 #        "--plugin CADD,/s/genomes/human/hg19/CADD/v1.3/whole_genome_SNVs.tsv.gz,/s/genomes/human/hg19/CADD/v1.3/InDels.tsv.gz "

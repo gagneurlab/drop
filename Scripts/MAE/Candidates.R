@@ -80,3 +80,12 @@ sa <- fread(snakemake@config$SAMPLE_ANNOTATION)
 total_res_MUC1404 <- readRDS("/s/project/genetic_diagnosis/processed_results/mae/samples/65990-MUC1404_res.Rds")
 plot_volcano(total_res_MUC1404, interactive = T, patient_id = '#80256')
 plot_volcano(get_total_mae_result(sa, rna_id = '103170R'), interactive = T)
+
+#' ## P-Value Distribution
+dt <- get_total_mae_result(sa, rna_id = '103170R')
+dt <- dt[as_gt != '0/0']
+hist(dt$pvalue)
+qqplot(-log10(ppoints(nrow(dt))), -log10(sort(dt$pvalue)))
+abline(0,1)
+grid()
+hist(dt$alt_freq)

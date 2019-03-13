@@ -20,6 +20,7 @@ suppressPackageStartupMessages({
     library(data.table)
     library(magrittr)
     library(ggplot2)
+    library(cowplot)
     library(tidyr)
 })
 
@@ -211,7 +212,7 @@ write.table(res_rare, "/s/public_webshare/project/genetic_diagnosis/results/MAE_
 DT::datatable(res_rare, caption = "MAE results", style = 'bootstrap')
 
 
-#' ## Plot
+#' ## Plots
 hist(res$alt_freq, breaks = 20)
 hist(res_rare$alt_freq, breaks = 20)
 
