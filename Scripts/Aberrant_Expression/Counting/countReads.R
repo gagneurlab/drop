@@ -6,7 +6,7 @@
 #'   - sample_bam: '`sm standardFileNames("Data/helmholtz/{sampleID}/RNAout/paired-endout/stdFilenames/{sampleID}.bam")`'
 #'   - features: '`sm config["PROC_RESULTS"] + "/{annotation}/counts/exons_by_gene_op.Rds"`'
 #'  output:
-#'   - counts: '`sm config["PROC_RESULTS"] + "/{annotation}/counts/{sampleID}.Rds"`'
+#'   - counts: '`sm config["PROC_RESULTS"] + "/{annotation}/counts/{sampleID,[^/]+}.Rds"`'
 #'  type: script
 #'---
 

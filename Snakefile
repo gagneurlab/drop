@@ -94,7 +94,10 @@ rule all:
     output: touch("Output/all.done")
 
 rule count:
-    input: expand(config["PROC_RESULTS"] + "/{annotation}/counts/total_counts_{strand}.Rds", annotation=config["ANNOTATIONS"], strand=['ss', 'ns'])
+    input: expand(config["PROC_RESULTS"] + "/{annotation}/counts/{dataset}/total_counts.Rds", annotation=config["ANNOTATIONS"], dataset=[*config['outrider']])
+    
+rule outrider:
+    input: expand(config["PROC_RESULTS"] + "/{annotation}/outrider/{dataset}/ods.Rds", annotation=config["ANNOTATIONS"], dataset=[*config['outrider']])
 
 rule mae:
     input: config["PROC_RESULTS"] + "/mae/MAE_results.Rds"
