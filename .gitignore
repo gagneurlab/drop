@@ -1,7 +1,6 @@
 # dirs
 # data heavy folders structure
 data/
-Data/
 Output/
 .snakemake/
 .wBuild*
