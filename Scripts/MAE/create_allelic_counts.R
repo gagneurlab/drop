@@ -25,8 +25,10 @@ rnas <- snakemake@input$rna
 
 BPPARAM = MulticoreParam(snakemake@threads, snakemake@threads, progressbar=TRUE)
 gr <- countMAEReads(vcfs, rnas, filter_function = filter_vcf_quality, BPPARAM=BPPARAM)  # already filters for quality
+
+# TODO: add vcf and rna as input. It can be that the vcf file doesn't have the id imbedded.
 mcols(gr)$EXOME_ID <- snakemake@wildcards$vcf
 mcols(gr)$RNA_ID <- snakemake@wildcards$rna
-mcols(gr)$sample <- paste(mcols(vcf_ranges)$EXOME_ID, mcols(vcf_ranges)$RNA_ID, sep = "-")
+mcols(gr)$sample <- paste(mcols(gr)$EXOME_ID, mcols(gr)$RNA_ID, sep = "-")
 
 saveRDS(gr, snakemake@output$mae)

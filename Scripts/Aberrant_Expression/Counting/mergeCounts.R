@@ -7,8 +7,8 @@
 #'  - counts_ns: '`sm expand(config["PROC_RESULTS"] + "/{{annotation}}/counts/{sampleID}.Rds", sampleID=config["outrider"]["fib_ns"])`'
 #'  - gene_annot_dt: "/s/project/genetic_diagnosis/resource/gencode_{annotation}_unique_gene_name.tsv"
 #'  output:
-#'  - counts_ss: '`sm config["PROC_RESULTS"] + "/{annotation}/counts/total_counts_ss.Rds"`'
-#'  - counts_ns: '`sm config["PROC_RESULTS"] + "/{annotation}/counts/total_counts_ns.Rds"`'
+#'  - counts_ss: '`sm config["PROC_RESULTS"] + "/{annotation}/total_counts_ss.Rds"`'
+#'  - counts_ns: '`sm config["PROC_RESULTS"] + "/{annotation}/total_counts_ns.Rds"`'
 #'  threads: 30
 #'  type: script
 #'---

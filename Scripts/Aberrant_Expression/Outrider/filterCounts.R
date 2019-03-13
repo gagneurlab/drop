@@ -3,7 +3,7 @@
 #' author: Michaela Mueller
 #' wb:
 #'  input:
-#'   - counts: '`sm config["PROC_RESULTS"] + "/{annotation}/counts/total_counts_{strand}.Rds"`'
+#'   - counts: '`sm config["PROC_RESULTS"] + "/{annotation}/total_counts_{strand}.Rds"`'
 #'   - txdb: '`sm config["PROC_RESULTS"] + "/{annotation}/txdb.db"`'
 #'  output:
 #'   - ods: '`sm config["PROC_RESULTS"] + "/{annotation}/outrider/{strand}/ods_unfitted.Rds"`'
