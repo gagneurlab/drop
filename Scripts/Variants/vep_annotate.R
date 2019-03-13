@@ -13,16 +13,15 @@
 
 saveRDS(snakemake, 'tmp/variant_annotation.Rds')
 # snakemake <-  readRDS('tmp/variant_annotation.Rds')
-
 suppressPackageStartupMessages({
-    devtools::load_all("../mae/")
-})
-
+    library(VariantAnnotation)
+    })
 source("Scripts/_functions/annotation_with_vep.R")
 
 vep_param <- get_vep_params(version=snakemake@config$VEP_VERSION, num_forks=snakemake@threads, vcfFile=snakemake@output$vcf)
 resCall <- ensemblVEP(snakemake@input$vcf, vep_param)  # The vep_param already contains the output files
 
+# resCall 1 if something went wrong
 if(resCall != 0){
     stop(resCall)
 }
