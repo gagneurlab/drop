@@ -4,6 +4,7 @@
 #' wb:
 #'  input:
 #'   - vcf: '`sm standardFileNames("{rawdata}/stdFilenames/{vcf}.vcf.gz")`'
+#'   - vep_annot_script: 'Scripts/_functions/annotation_with_vep.R'
 #'  output:
 #'   - vcf: "{rawdata}/processedData/vep_anno_{vcf}.vcf.gz"
 #'   - vcf_html: "{rawdata}/processedData/vep_anno_{vcf}.vcf.gz_summary.html"
@@ -16,7 +17,7 @@ saveRDS(snakemake, 'tmp/variant_annotation.Rds')
 suppressPackageStartupMessages({
     library(VariantAnnotation)
     })
-source("Scripts/_functions/annotation_with_vep.R")
+source(snakemake@input$vep_annot_script)
 
 vep_param <- get_vep_params(version=snakemake@config$VEP_VERSION, num_forks=snakemake@threads, vcfFile=snakemake@output$vcf)
 resCall <- ensemblVEP(snakemake@input$vcf, vep_param)  # The vep_param already contains the output files

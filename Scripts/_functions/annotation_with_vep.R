@@ -121,6 +121,7 @@ get_vep_params <- function(version=max(unlist(currentVEP())), num_forks=4,
     flags(vep_param)$pubmed      <- TRUE
     flags(vep_param)$canonical   <- TRUE
     flags(vep_param)$biotype     <- TRUE
+    flags(vep_param)$failed      <- TRUE
     
     # add CADD
     flags(vep_param)$plugin <- "CADD,/s/genomes/human/hg19/CADD/v1.3/whole_genome_SNVs.tsv.gz,/s/genomes/human/hg19/CADD/v1.3/InDels.tsv.gz" # --plugin MMSplice"
