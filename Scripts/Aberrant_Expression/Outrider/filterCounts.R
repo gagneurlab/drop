@@ -29,7 +29,7 @@ colData(ods)$sampleID <- colnames(ods)
 # Add batches to colData for heatmap
 sample_anno <- fread(snakemake@config$SAMPLE_ANNOTATION)
 cd <- colData(ods) %>% as.data.table
-colData(ods)$batch <- left_join(cd, sample_anno[,.(RNA_ID, BATCH)], by = c("sampleID" = "RNA_ID"))$BATCH
+colData(ods)$batch <- left_join(cd, unique(sample_anno[,.(RNA_ID, BATCH)]), by = c("sampleID" = "RNA_ID"))$BATCH
 
 # filter not expressed genes
 gencode_txdb <- loadDb(snakemake@input$txdb)

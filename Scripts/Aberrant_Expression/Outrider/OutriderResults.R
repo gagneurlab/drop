@@ -101,7 +101,7 @@ DT::datatable(left_join(ab_table,
 write.table(res, snakemake@output[['results']], quote = F, row.names = F, sep = "\t")
 write.table(res, "/s/public_webshare/project/genetic_diagnosis/results/OUTRIDER_results.tsv", sep = "\t", quote = F, row.names = F)
 
-#' [Download OTURIDER results table](https://i12g-gagneurweb.informatik.tu-muenchen.de/project/genetic_diagnosis/results/OUTRIDER_results.tsv)
+#' [Download OUTRIDER results table](https://i12g-gagneurweb.informatik.tu-muenchen.de/project/genetic_diagnosis/results/OUTRIDER_results.tsv)
 DT::datatable(res, caption = "OUTRIDER results", style = 'bootstrap')
 
 

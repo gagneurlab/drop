@@ -26,7 +26,7 @@ ods <- readRDS(snakemake@input$ods)
 ods <- ods[mcols(ods)$passedFilter,] 
     
 ods <- estimateSizeFactors(ods)
-pars <- c(seq(5, min(c(40, ncol(ods), nrow(ods))), 2), 50, 70)
+pars <- c(seq(2, min(c(40, ncol(ods), nrow(ods))), 2), 50, 60, 70)
 
 ods <- findEncodingDim(ods, lnorm = T, BPPARAM = MulticoreParam(snakemake@threads), params = pars)
 # TODO: check encoding dimension plot

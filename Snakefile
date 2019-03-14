@@ -19,7 +19,7 @@ def outrider_files(sa_file = config["SAMPLE_ANNOTATION"]):
     
     # subset and clean
     anno_outrider = anno[(anno.LAB == "PROKISCH") & pd.notnull(anno.RNA_ID) & pd.notnull(anno.OUTRIDER_GROUP)]
-    anno_outrider = anno_outrider[["RNA_ID", "OUTRIDER_GROUP"]].copy()
+    anno_outrider = anno_outrider[["RNA_ID", "OUTRIDER_GROUP"]].drop_duplicates().copy()
 
     # create filenames and ignore missing files
     anno_outrider['file'] = [config["RAW_DATA"] + "/" + x + "/RNAout/paired-endout/stdFilenames/" + x + ".bam"
@@ -79,10 +79,10 @@ def mae_files(sa_file = config["SAMPLE_ANNOTATION"]):
 
 
 # set config variables
-vcf, rna = mae_files()
-config["vcfs"] = vcf
-config["rnas"] = rna
-config["mae_ids"] = list(map('-'.join, zip(vcf, rna)))
+vcfs, rnas = mae_files()
+config["vcfs"] = vcfs
+config["rnas"] = rnas
+config["mae_ids"] = list(map('-'.join, zip(vcfs, rnas)))
 config["outrider"] = outrider_files()
 
 include: ".wBuild/wBuild.snakefile"  # Has to be here in order to update the config with the new variables
@@ -98,10 +98,9 @@ rule count:
     
 rule outrider:
     input: expand(config["PROC_RESULTS"] + "/{annotation}/outrider/{dataset}/ods.Rds", annotation=config["ANNOTATIONS"], dataset=[*config['outrider']])
-
-rule mae:
-    input: config["PROC_RESULTS"] + "/mae/MAE_results.Rds"
-    output: touch("Output/mae.done")
+        
+rule outrider_summary:
+    input: expand("Output/html/AberrantExpression/Outrider/{annotation}/OutriderSummary_{dataset}.html", annotation=config["ANNOTATIONS"], dataset=[*config['outrider']])
 
 #rule variant_annotation: 
 #    input: vcf = '{rawdata}/stdFilenames/{vcf}.vcf.gz'
@@ -120,8 +119,9 @@ rule mae:
 #        "--chr chr1,chr2,chr3,chr4,chr5,chr6,chr7,chr8,chr9,chr10,chr11,chr12,chr13,chr14,chr15,chr16,chr17,chr18,chr19,chr20,chr21,chr22,chrX,chrY,chrM"
         
 rule variant_annotation_all:
-    input: expand(config["RAW_DATA"] + "/{vcf}/exomicout/paired-endout/processedData/vep_anno_{vcf}_uniq_dt.Rds", vcf=all_vcf())
+    input: expand(config["RAW_DATA"] + "/{vcf}/exomicout/paired-endout/processedData/vep_anno_{vcf}_uniq_dt.Rds", vcf=vcfs) # all_vcf())
     output: touch("Output/variant_annotation.done")
 
-rule test_outrider_files:
-    input: counts = expand(config["PROC_RESULTS"] + "/v29_overlap/counts/{sampleID}.Rds", sampleID=config["outrider"])
+rule mae:
+    input: config["PROC_RESULTS"] + "/mae/MAE_results.Rds"
+    output: touch("Output/mae.done")
