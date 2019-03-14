@@ -46,11 +46,11 @@ message("outrider fitting finished")
 row.names(ods) <- rowData(ods)$gene_name_unique
 
 op <- snakemake@output$ods
+
+# Save the new ods with a date stamp
 op_date <- paste0(strsplit(op, "\\.")[[1]][1], "-", format(Sys.time(), "%Y%m%d") , ".Rds")
 saveRDS(ods, op_date)
 
-file.link(op, op_date)
-# saveRDS(ods, snakemake@output$ods)
-
-
-
+# Create a link to the previous file
+file.remove(op)
+file.symlink(op_date, op)
