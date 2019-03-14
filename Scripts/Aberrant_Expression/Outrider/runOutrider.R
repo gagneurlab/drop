@@ -52,5 +52,5 @@ op_date <- paste0(strsplit(op, "\\.")[[1]][1], "-", format(Sys.time(), "%Y%m%d")
 saveRDS(ods, op_date)
 
 # Create a link to the previous file
-file.remove(op)
+if(file.exists(op)) file.remove(op)
 file.symlink(op_date, op)
