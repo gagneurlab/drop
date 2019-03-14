@@ -176,11 +176,12 @@ add_omim_cols <- function(DT, gene_name_col = "gene_name", return_all_info = TRU
     DT <- left_join(DT, omim_dt, by = c("gene_name" = "SYMBOL")) %>% as.data.table
     setnames(DT, "gene_name", gene_name_col)
     
-    # return_all_info: TRUE - returns all the 3 columns
-    # FALSE: returns a T/F OMIM col
-    if(identical(return_all_info, F)){
-        DT[, OMIM := PMIM != ""]
-        DT[, c("PINH", "PMIM") := NULL]
+    # return_all_info: 
+    ## TRUE: returns all the 3 columns
+    ## FALSE: returns a T/F OMIM col
+    if(isFALSE(return_all_info)){
+        DT[, OMIM_gene := !is.na(OMIM)]
+        DT[, c("OMIM", "PINH", "PMIM") := NULL]
     } 
     return(DT)
 }
