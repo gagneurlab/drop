@@ -3,7 +3,7 @@
 #' author: Michaela Mueller
 #' wb:
 #'  input:
-#'  - ods: '`sm config["PROC_RESULTS"] + "/{annotation}/outrider/{dataset}/ods_unfitted.Rds"`'
+#'   - ods: '`sm config["PROC_RESULTS"] + "/{annotation}/outrider/{dataset}/ods_unfitted.Rds"`'
 #'  output:
 #'   - ods: '`sm config["PROC_RESULTS"] + "/{annotation}/outrider/{dataset}/ods.Rds"`'
 #'  type: script
