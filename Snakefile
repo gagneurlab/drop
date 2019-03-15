@@ -28,8 +28,10 @@ def outrider_files(sa_file = config["SAMPLE_ANNOTATION"]):
     anno_outrider = anno_outrider[anno_outrider['file_exists']]
 
     # subset by OUTRIDER_GROUP
-    return {og : anno_outrider.loc[anno_outrider.OUTRIDER_GROUP == og, 'RNA_ID'].tolist() for og in set(pd.unique(anno_outrider.OUTRIDER_GROUP))}
-    
+    outrider_groups = []
+    for s in set(anno_outrider.OUTRIDER_GROUP):
+        outrider_groups.extend(s.split(','))
+    return {og : anno_outrider.loc[anno_outrider.OUTRIDER_GROUP == og, 'RNA_ID'].tolist() for og in set(outrider_groups)}    
 
 def get_files_by_group(group):
     return expand(config["PROC_RESULTS"] + "/{{annotation}}/counts/{sampleID}.Rds", sampleID=config["outrider"][group])
