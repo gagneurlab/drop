@@ -10,5 +10,6 @@ saveRDS(snakemake, "tmp/outrider_overview.snakemake")
 # snakemake <- readRDS("tmp/outrider_overview.snakemake")
 
 summarie_titles <- paste(snakemake@config$ANNOTATIONS, names(snakemake@config$outrider))
-summaries <- paste('[', summarie_titles ,'](', gsub(snakemake@config$htmlOutputPath, ".", snakemake@input$summaries), ')', sep = '', collapse = '\n')
+summaries <- paste('[', summarie_titles ,'](', gsub(snakemake@config$htmlOutputPath, ".", snakemake@input$summaries), ')', sep = '')
+cat(summaries, sep = '\n')
 #' Summaries: `r summaries`
