@@ -4,6 +4,7 @@
 #' wb:
 #'  input:
 #'   - vcf: "{rawdata}/processedData/vep_anno_{vcf}.vcf.gz"
+#'   - functions: "Scripts/_functions/annotation_with_vep.R"
 #'  output:
 #'   - vcf_dt: "{rawdata}/processedData/vep_anno_{vcf}_uniq_dt.Rds"
 #'  type: script
@@ -11,7 +12,7 @@
 
 saveRDS(snakemake, 'tmp/variant_annotation_dt.Rds')
 # snakemake <-  readRDS('tmp/variant_annotation_dt.Rds')
-source("Scripts/_functions/annotation_with_vep.R")
+source(snakemake@input$functions)
 
 vcf_obj <- readVcf(snakemake@input$vcf, "hg19")
 vcf_obj <- vcf_obj[rowRanges(vcf_obj)$QUAL >= 20]

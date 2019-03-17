@@ -121,7 +121,7 @@ get_vep_params <- function(version=max(unlist(currentVEP())), num_forks=4,
     flags(vep_param)$pubmed      <- TRUE
     flags(vep_param)$canonical   <- TRUE
     flags(vep_param)$biotype     <- TRUE
-    flags(vep_param)$failed      <- TRUE
+    flags(vep_param)$failed      <- 1
     
     # add CADD
     flags(vep_param)$plugin <- "CADD,/s/genomes/human/hg19/CADD/v1.3/whole_genome_SNVs.tsv.gz,/s/genomes/human/hg19/CADD/v1.3/InDels.tsv.gz" # --plugin MMSplice"
@@ -265,7 +265,7 @@ simplify_so_terms <- function(so_terms, sample){
     results <- t(matrix(sapply(levels(so_terms), FUN),nrow=2))
     return(list(
         dc_mstype=as.factor(results[as.numeric(so_terms),1]),
-        dc_sever=as.integer(results[as.numeric(so_terms),2])
+        dc_severe=as.integer(results[as.numeric(so_terms),2])
     ))
 }
 
@@ -288,13 +288,15 @@ get_frequencies_from_vep <- function(vep_obj, db = c('ExAC', 'gnomAD')){
             maf_cols <- grep(d, maf_cols, value = T, invert = T)
     }
     maf_dt <- as.data.table(mcols(vep_obj)[, maf_cols])
-    maf_dt[, lapply(.SD, as.double)]
+    maf_dt <- maf_dt[, lapply(.SD, as.double)]
     
     # AF         <- as.double(vep_obj$AF)
     # gnomAD_AF <- as.double(vep_obj$gnomAD_AF)
     # gnomAD_NFE_AF    <- as.double(vep_obj$gnomAD_NFE_AF)
     # gnomAD_AFR_AF     <- as.double(vep_obj$gnomAD_AFR_AF)
     # MAX_AF    <- as.double(vep_obj$MAX_AF)
+    
+    maf_dt
 }
 
 get_vep_annotation_data_table <- function(vep_obj, sample = 'sample'){
@@ -309,10 +311,10 @@ get_vep_annotation_data_table <- function(vep_obj, sample = 'sample'){
     dc_enstid[grepl("^(ENSR|MA|PB|(NC|NM|NR|XM|XR)_)", dc_enstid, perl = TRUE)] <- NA 
     dc_tunum   <- gsub("(-[0-9]+)*/[0-9]*$", "", vep_obj$EXON)
     
-    # consequences and severness 
+    # consequences and severeness 
     dc_consequences_list <- simplify_so_terms(vep_obj$Consequence, sample)
     dc_mstype  <- dc_consequences_list[["dc_mstype"]]
-    dc_sever   <- dc_consequences_list[["dc_sever"]]
+    dc_severe   <- dc_consequences_list[["dc_severe"]]
     
     # mafs
     maf_table <- get_frequencies_from_vep(vep_obj, db = "gnomAD")
@@ -355,7 +357,10 @@ get_vep_annotation_data_table <- function(vep_obj, sample = 'sample'){
         rspm     = NA,
         rsg5     = NA,
         pubmed   = as.factor( vep_obj$PUBMED),
-        sever    = as.integer(dc_sever)
+        severe   = as.integer(dc_severe),
+        
+        CADD_phred = vep_obj$CADD_PHRED,
+        CADD_raw = vep_obj$CADD_RAW
     )
     vep_table <- cbind(vep_table, maf_table)
     
@@ -408,7 +413,7 @@ combine_vcf_vep <- function(sample, vcf_obj, vep_obj, minQUAL=20, num_forks) {
     annotated_data_table <- vcf_data_table[vep_data_table]
     
     # filter by severity and consensus
-    setkey(annotated_data_table, var_id, noccds, sever, norefseq)
+    setkey(annotated_data_table, var_id, noccds, severe, norefseq)
     uniq_annotated_data_table <- annotated_data_table[!duplicated(annotated_data_table[,var_id])]
     
     if(dim(vcf_obj)[1] != nrow(uniq_annotated_data_table)){
@@ -478,8 +483,8 @@ run_annotation_and_save_it <- function(sample, vcf_file, outDir, num_forks,
             setkey(vep_data_table, var_id)
             annotated_data_table <- vcf_data_table[vep_data_table]
             
-            # take only most sever annotation
-            setkey(annotated_data_table, var_id, noccds, sever, norefseq)
+            # take only most severe annotation
+            setkey(annotated_data_table, var_id, noccds, severe, norefseq)
             uniq_annotated_data_table <- annotated_data_table[!duplicated(annotated_data_table[,var_id])]
             
             if(dim(vcf_obj)[1] != nrow(uniq_annotated_data_table)){
@@ -595,8 +600,8 @@ run_vep_annotation_for_cnv_calls <- function(cnv_calls, output_dir, num_forks = 
     # put hgncid into alt column
     annotated_data_table[,alt:=hgncid]
     
-    # take only most sever annotation
-    setkey(annotated_data_table, var_id, alt, noccds, sever, norefseq)
+    # take only most severe annotation
+    setkey(annotated_data_table, var_id, alt, noccds, severe, norefseq)
     uniq_annotated_data_table <- annotated_data_table[!duplicated(annotated_data_table[,list(var_id,hgncid)])]
     
     # save rds object
