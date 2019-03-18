@@ -5,7 +5,7 @@
 #'  input: 
 #'   - filtered_v19: '/s/project/genetic_diagnosis/processed_results/v19/outrider/ods_unfitted.Rds'
 #'   - filtered_v29: '/s/project/genetic_diagnosis/processed_results/v29/outrider/ods_unfitted.Rds'
-#'   - filtered_v29_ov: '/s/project/genetic_diagnosis/processed_results/v29_overlap/outrider/ods_unfitted.Rds'
+#'   - filtered_v29_ov: '/s/project/genetic_diagnosis/processed_results/v29_overlap/outrider/fib_ss/ods_unfitted.Rds'
 #' output: 
 #'   html_document:
 #'    code_folding: show
@@ -47,13 +47,7 @@ row.names(filtv29) <- rowData(filtv29)$gene_name_unique
 rd29 <- rowData(filtv29) %>% as.data.table()
 rd29[, version := 'v29']
 
-ods_ss <- readRDS("/s/project/genetic_diagnosis/processed_results/ods_batches2_3_4_5_ss.Rds")
-rd_exon <- rowData(ods_ss) %>% as.data.table()
-rd_exon[, version := 'exon']
-rd_exon[, gene_name_unique := gene_name]
-rd_exon[, gene_name := NULL]
-
-rd <- rbind(rd19, rd29, rd29ov, rd_exon, fill = T)
+rd <- rbind(rd19, rd29, rd29ov, fill = T)
 
 # Add mito disease genes information
 rd[, gene_name_unique := toupper(gene_name_unique)]
@@ -75,20 +69,20 @@ length(genes_to_check)
 rd[gene_name_unique %in% genes_to_check, gene_to_check := TRUE]
 
 #' ## Create comparison table
-comp_dt <- data.table(annotation = c("v19", "v29", "v29ov", "exon"))
+comp_dt <- data.table(annotation = c("v19", "v29", "v29ov"))
 # How many genes are in the GTF file?
 comp_dt[, total_all := nrow(rd[version == annotation]), by = 1:nrow(comp_dt)]
 comp_dt[, total_pc := nrow(rd[version == annotation & gene_type == 'protein_coding']), by = 1:nrow(comp_dt)]
 comp_dt[, total_mito := nrow(rd[version == annotation & MITO_DISEASE_GENE == TRUE]), by = 1:nrow(comp_dt)]
 comp_dt[, total_special := nrow(rd[version == annotation & gene_to_check == TRUE]), by = 1:nrow(comp_dt)]
-comp_dt[, total_omim := nrow(rd[version == annotation & OMIM == TRUE]), by = 1:nrow(comp_dt)]
+comp_dt[, total_omim := nrow(rd[version == annotation & OMIM_gene == TRUE]), by = 1:nrow(comp_dt)]
 
 # How many genes have at least 1 read for all samples?
 comp_dt[, counted_all := sum(rd[version == annotation, counted1sample]), by = 1:nrow(comp_dt)]
 comp_dt[, counted_pc := sum(rd[version == annotation & gene_type == 'protein_coding', counted1sample]), by = 1:nrow(comp_dt)]
 comp_dt[, counted_mito := sum(rd[version == annotation & MITO_DISEASE_GENE == TRUE, counted1sample]), by = 1:nrow(comp_dt)]
 comp_dt[, counted_special := sum(rd[version == annotation & gene_to_check == TRUE, counted1sample]), by = 1:nrow(comp_dt)]
-comp_dt[, counted_omim := sum(rd[version == annotation & OMIM == TRUE, counted1sample]), by = 1:nrow(comp_dt)]
+comp_dt[, counted_omim := sum(rd[version == annotation & OMIM_gene == TRUE, counted1sample]), by = 1:nrow(comp_dt)]
 comp_dt[annotation == 'exon', c('total_all', 'total_pc', 'total_mito', 'total_special', 'total_omim', 'counted_all', 'counted_pc', 'counted_mito', 'counted_special', 'counted_omim') := NA]
 
 # How many genes pass the OUTRIDER filter?
@@ -96,7 +90,7 @@ comp_dt[, passedFilter_all := sum(rd[version == annotation, passedFilter]), by =
 comp_dt[, passedFilter_pc := sum(rd[version == annotation & gene_type == 'protein_coding', passedFilter]), by = 1:nrow(comp_dt)]
 comp_dt[, passedFilter_mito := sum(rd[version == annotation & MITO_DISEASE_GENE == TRUE, passedFilter]), by = 1:nrow(comp_dt)]
 comp_dt[, passedFilter_special := sum(rd[version == annotation & gene_to_check == TRUE, passedFilter]), by = 1:nrow(comp_dt)]
-comp_dt[, passedFilter_omim := sum(rd[version == annotation & OMIM == TRUE, passedFilter]), by = 1:nrow(comp_dt)]
+comp_dt[, passedFilter_omim := sum(rd[version == annotation & OMIM_gene == TRUE, passedFilter]), by = 1:nrow(comp_dt)]
 
 DT::datatable(comp_dt, style = 'bootstrap')
 
@@ -123,13 +117,22 @@ ggplot(mt, aes(group, prop, fill = annotation)) + geom_bar(stat = 'identity', po
 
 #'
 #' Special genes detected at first
-rd[version == 'exon' & gene_to_check == T, gene_name_unique] %>% sort
+rd[version == 'v19' & gene_to_check == T, gene_name_unique] %>% sort
 
 #' Mito disease genes with no counts:
 rd[version == 'v29' & MITO_DISEASE_GENE == T & counted1sample == F, gene_name_unique] %>% sort
 
 #' Mito disease genes with counts that didn't pass the OUTRIDER filter:
 rd[version == 'v29' & MITO_DISEASE_GENE == T & counted1sample == T & passedFilter == F, gene_name_unique] %>% sort
+
+#' Number of nuclear mito disease genes that passed the OUTRIDER filter:
+rd[version == 'v29' & MITO_DISEASE_GENE == T & gene_type == 'protein_coding' & passedFilter ==T, .N]
+(rd[version == 'v29' & MITO_DISEASE_GENE == T & gene_type == 'protein_coding' & passedFilter ==T, .N] / rd[version == 'v29' & MITO_DISEASE_GENE == T & gene_type == 'protein_coding', .N]) %>% round(3)
+
+#' Number of mtDNA mito disease genes that passed the OUTRIDER filter:
+rd[version == 'v29' & MITO_DISEASE_GENE == T & gene_type != 'protein_coding' & passedFilter ==T, .N]
+(rd[version == 'v29' & MITO_DISEASE_GENE == T & gene_type != 'protein_coding' & passedFilter ==T, .N] / rd[version == 'v29' & MITO_DISEASE_GENE == T & gene_type != 'protein_coding', .N]) %>% round(3)
+rd[version == 'v29' & MITO_DISEASE_GENE == T & gene_type != 'protein_coding' & passedFilter ==T, gene_name_unique]
 
 #' Robert's special genes appearing on v29ov, but not on v29
 rd[version == 'v29' & gene_to_check == T & counted1sample == T & passedFilter == F, gene_name_unique] %>% sort
@@ -141,18 +144,5 @@ setdiff(rd[version == 'v29ov' & MITO_DISEASE_GENE == T & passedFilter == T, gene
 fp <- fpkm(filtv29)
 quantile(fp["ACAD11", ], prob = .95)
 
-#' ## Comparison between exonsBy() <-> exons() functions
-filtv19 <- filtv19[mcols(filtv19)$passedFilter,]
-common_genes <- intersect(row.names(ods_ss), row.names(filtv19))
-filtv19 <- filtv19[common_genes, ]
-ods_ss <- ods_ss[common_genes, ]
-identical(row.names(ods_ss), row.names(filtv19))
-
-#+ fig.width=7, fig.height=7
-library(LSD)
-heatscatter(rowMeans(counts(ods_ss)), rowMeans(counts(filtv19)), log = 'xy', cor = TRUE, 
-            xlab ='exons()', ylab = 'exonsBy()', main = 'Mean counts across samples, v19')
-grid()
-abline(0,1)
 
             
