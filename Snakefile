@@ -32,7 +32,7 @@ def outrider_files(sa_file = config["SAMPLE_ANNOTATION"]):
     for s in set(anno_outrider.OUTRIDER_GROUP):
         outrider_groups.extend(s.split(','))
     outrider_ids = {og : anno_outrider.loc[anno_outrider.OUTRIDER_GROUP.str.contains('(^|,)' + og), 'RNA_ID'].tolist() for og in set(outrider_groups)}
-    return {og: _list for og, _list in outrider_ids.items() if len(_list) > 40}    
+    return outrider_ids, {og: _list for og, _list in outrider_ids.items() if len(_list) > 40}    
 
 def get_files_by_group(group):
     return expand(config["PROC_RESULTS"] + "/{{annotation}}/counts/{sampleID}.Rds", sampleID=config["outrider"][group])
@@ -86,7 +86,9 @@ vcfs, rnas = mae_files()
 config["vcfs"] = vcfs
 config["rnas"] = rnas
 config["mae_ids"] = list(map('-'.join, zip(vcfs, rnas)))
-config["outrider"] = outrider_files()
+outrider_all_ids, outrider_filtered = outrider_files()
+config["outrider"] = outrider_all_ids
+config["outrider_filtered"] = outrider_filtered
 
 include: ".wBuild/wBuild.snakefile"  # Has to be here in order to update the config with the new variables
 htmlOutputPath = config["htmlOutputPath"]  if (config["htmlOutputPath"] != None) else "Output/html"
@@ -100,10 +102,10 @@ rule count:
     input: expand(config["PROC_RESULTS"] + "/{annotation}/counts/{dataset}/total_counts.Rds", annotation=config["ANNOTATIONS"], dataset=[*config['outrider']])
 
 rule outrider:
-    input: expand(config["PROC_RESULTS"] + "/{annotation}/outrider/{dataset}/ods.Rds", annotation=config["ANNOTATIONS"], dataset=[*config['outrider']])
+    input: expand(config["PROC_RESULTS"] + "/{annotation}/outrider/{dataset}/ods.Rds", annotation=config["ANNOTATIONS"], dataset=[*config['outrider_filtered']])
         
 rule outrider_summary:
-    input: expand("Output/html/AberrantExpression/Outrider/{annotation}/OutriderSummary_{dataset}.html", annotation=config["ANNOTATIONS"], dataset=[*config['outrider']])
+    input: expand("Output/html/AberrantExpression/Outrider/{annotation}/OutriderSummary_{dataset}.html", annotation=config["ANNOTATIONS"], dataset=[*config['outrider_filtered']])
 
 #rule variant_annotation: 
 #    input: vcf = '{rawdata}/stdFilenames/{vcf}.vcf.gz'
