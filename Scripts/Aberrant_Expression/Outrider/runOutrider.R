@@ -16,6 +16,7 @@ suppressPackageStartupMessages({
     library(ggplot2)
     library(data.table)
     library(dplyr)
+    library(magrittr)
 })
 
 saveRDS(snakemake, "tmp/outrider.snakemake")
@@ -26,10 +27,13 @@ ods <- readRDS(snakemake@input$ods)
 ods <- ods[mcols(ods)$passedFilter,] 
     
 ods <- estimateSizeFactors(ods)
-pars <- c(seq(2, min(c(40, ncol(ods), nrow(ods))), 2), 50, 60, 70)
 
-ods <- findEncodingDim(ods, lnorm = T, BPPARAM = MulticoreParam(snakemake@threads), params = pars)
-# TODO: check encoding dimension plot
+a = 5 
+b = min(ncol(ods), nrow(ods)) / 3   # N/3
+Nsteps = min(20, ncol(ods)/3, nrow(ods)/3)   # Do either 20 steps or N
+pars_q <- round(exp(seq(log(a),log(b),length.out = Nsteps))) %>% unique # Do unique in case 2 were repeated
+
+ods <- findEncodingDim(ods, lnorm = T, BPPARAM = MulticoreParam(snakemake@threads), params = pars_q)
 
 ods <- OUTRIDER(ods, BPPARAM = MulticoreParam(snakemake@threads))
 message("outrider fitting finished")

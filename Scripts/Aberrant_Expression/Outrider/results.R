@@ -34,7 +34,7 @@ res <- add_all_gene_info(res, gene_name = 'geneID', dis_genes = F)
 sa <- fread(snakemake@config$SAMPLE_ANNOTATION)
 res[, geneID := toupper(geneID)]
 res <- left_join(res, sa[, .(RNA_ID, FIBROBLAST_ID, EXOME_ID, PEDIGREE, KNOWN_MUTATION,
-                             CANDIDATE_GENE, BATCH)],
+                             CANDIDATE_GENE, BATCH, COMMENT, PROTEOME_ID, DISEASE, RNA_PERSON)],
                  by = c("sampleID" = "RNA_ID")) %>% as.data.table
 
 res[, tp_sample := as.character(any(geneID == KNOWN_MUTATION)), by = sampleID]
