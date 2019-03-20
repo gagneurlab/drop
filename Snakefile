@@ -22,8 +22,7 @@ def outrider_files(sa_file = config["SAMPLE_ANNOTATION"]):
     anno_outrider = anno_outrider[["RNA_ID", "OUTRIDER_GROUP"]].drop_duplicates().copy()
 
     # create filenames and ignore missing files
-    anno_outrider['file'] = [config["RAW_DATA"] + "/" + x + "/RNAout/paired-endout/stdFilenames/" + x + ".bam"
-                             for x in anno_outrider["RNA_ID"]]
+    anno_outrider['file'] = [config["RAW_DATA"] + "/" + x + "/RNAout/" for x in anno_outrider["RNA_ID"]]
     anno_outrider['file_exists'] = [os.path.exists(x) for x in anno_outrider["file"]]
     anno_outrider = anno_outrider[anno_outrider['file_exists']]
 
@@ -46,7 +45,7 @@ def all_vcf(sa_file = config["SAMPLE_ANNOTATION"]):
     anno_vcf = anno[(anno.LAB == "PROKISCH") & pd.notnull(anno.EXOME_ID)]
     anno_vcf = anno_vcf[["EXOME_ID"]].copy()
 
-    anno_vcf['file'] = [config["RAW_DATA"] + "/" + x + "/exomicout/paired-endout/stdFilenames/" + x + ".vcf.gz" for x in anno_vcf["EXOME_ID"]]
+    anno_vcf['file'] = [config["RAW_DATA"] + "/" + x + "/exomicout/" for x in anno_vcf["EXOME_ID"]]
     anno_vcf['vcf_exists'] = [os.path.exists(x) for x in anno_vcf["file"]]
     anno_vcf = anno_vcf[anno_vcf['vcf_exists']]
     
@@ -124,7 +123,7 @@ rule outrider_summary:
 #        "--chr chr1,chr2,chr3,chr4,chr5,chr6,chr7,chr8,chr9,chr10,chr11,chr12,chr13,chr14,chr15,chr16,chr17,chr18,chr19,chr20,chr21,chr22,chrX,chrY,chrM"
         
 rule variant_annotation_all:
-    input: expand(config["RAW_DATA"] + "/{vcf}/exomicout/paired-endout/processedData/vep_anno_{vcf}_uniq_dt.Rds", vcf=vcfs) #all_vcf())
+    input: expand(config["RAW_DATA"] + "/{vcf}/exomicout/paired-endout/processedData/vep_anno_{vcf}_uniq_dt.Rds", vcf=all_vcf())
     output: touch("Output/variant_annotation.done")
 
 rule mae:
