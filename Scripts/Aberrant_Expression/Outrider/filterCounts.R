@@ -24,12 +24,6 @@ saveRDS(snakemake, "tmp/filter_counts.snakemake")
 # snakemake <- readRDS("tmp/filter_counts.snakemake")
 counts <- readRDS(snakemake@input$counts)
 ods <- OutriderDataSet(counts)
-colData(ods)$sampleID <- colnames(ods)
-
-# Add batches to colData for heatmap
-sample_anno <- fread(snakemake@config$SAMPLE_ANNOTATION)
-cd <- colData(ods) %>% as.data.table
-colData(ods)$batch <- left_join(cd, unique(sample_anno[,.(RNA_ID, BATCH)]), by = c("sampleID" = "RNA_ID"))$BATCH
 
 # filter not expressed genes
 gencode_txdb <- loadDb(snakemake@input$txdb)
@@ -46,7 +40,7 @@ rowData(ods)$counted1sample = rowSums(assay(ods)) > 0
 saveRDS(ods, snakemake@output$ods)
 
 # Save the filtered count matrix (as a matrix)
-ods <- ods[mcols(ods)$passedFilter,] 
+ods <- ods[mcols(ods)$passedFilter,]
 saveRDS(counts(ods), snakemake@output$filtered_counts)
 
 
