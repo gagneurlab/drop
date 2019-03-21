@@ -1,6 +1,6 @@
 #'---
 #' title: OUTRIDER Summary
-#' author: mumichae
+#' author: mumichae, vyepez
 #' wb:
 #'  input:
 #'   - ods: '`sm config["PROC_RESULTS"] + "/{annotation}/outrider/{dataset}/ods.Rds"`'
@@ -36,7 +36,7 @@ dim(ods)
 
 #' ## Visualize
 #' ### Parameters
-barplot(sort(sizeFactors(ods)), main = paste('Aberrant Samples (', snakemake@wildcards$dataset, ')'), xaxt = 'n', xlab = 'rank', ylab = 'Size Factors')
+barplot(sort(sizeFactors(ods)), main = paste('Size Factors (', snakemake@wildcards$dataset, ')'), xaxt = 'n', xlab = 'rank', ylab = 'Size Factors')
 plotEncDimSearch(ods)
 
 #' ### Aberrant samples
