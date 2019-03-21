@@ -45,8 +45,8 @@ plotAberrantPerSample(ods, main = snakemake@wildcards$dataset)
 
 #' ### Batch correction
 #+ heatmap, fig.height=8, fig.width=8
-plotCountCorHeatmap(ods, normalized=FALSE, rowCoFactor = "batch", main = paste('Raw Counts (', snakemake@wildcards$dataset, ')'))
-plotCountCorHeatmap(ods, normalized=TRUE, rowCoFactor = "batch", main = paste('Normalized Counts (', snakemake@wildcards$dataset, ')'))
+plotCountCorHeatmap(ods, normalized=FALSE, rowCoFactor = "BATCH", main = paste('Raw Counts (', snakemake@wildcards$dataset, ')'))
+plotCountCorHeatmap(ods, normalized=TRUE, rowCoFactor = "BATCH", main = paste('Normalized Counts (', snakemake@wildcards$dataset, ')'))
 
 #' ## Results
 res <- fread(snakemake@input$results)
