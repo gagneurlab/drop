@@ -46,7 +46,6 @@ for(fib in names(proteome_limma_res_list)){
 }
 head(proteome_tidy_dt)
 
-
 #' # Complex 1 genes
 #+
 extsuppl_prefix= '/s/project/mitoMultiOmics/paper_nature_genetics/paper_supplement_data/ext_suppl_'

@@ -180,7 +180,7 @@ add_omim_cols <- function(DT, gene_name_col = "gene_name", return_all_info = TRU
     ## TRUE: returns all the 3 columns
     ## FALSE: returns a T/F OMIM col
     if(isFALSE(return_all_info)){
-        DT[, OMIM_gene := !is.na(OMIM)]
+        DT[, OMIM_gene := !is.na(PMIM) & PMIM != ""]
         DT[, c("OMIM", "PINH", "PMIM") := NULL]
     } 
     return(DT)
@@ -246,11 +246,19 @@ add_ensembl_id <- function(DT, gene_name_col = "gene_name", gene_id_col = "gene_
     return(DT)
 }
 
+add_gene_type <- function(DT, gene_name_col = "gene_name"){
+    gt <- fread("/s/project/genetic_diagnosis/resource/gencode_v29_unique_gene_name.tsv")
+    setnames(DT, gene_name_col, "gene_name")
+    DT <- left_join(DT, gt[,.(gene_name, gene_type)], by = "gene_name") %>% as.data.table
+    setnames(DT, "gene_name", gene_name_col)
+    return(DT)
+}
+
 ##############
 ### Add all columns
 ##############
 add_all_gene_info <- function(DT, gene_name_col = "gene_name", mitocarta = T, hans = T, dis_genes = T, omim = T, rcc = F,
-                              nDNA_mtDNA = F, gene_id = F, gene_id_col = "gene_id", NA_as_dot = F){
+                              nDNA_mtDNA = F, gene_id = F, gene_id_col = "gene_id", gene_type = T, NA_as_dot = F){
     dt <- copy(DT)
     if(mitocarta == T) dt <- add_mitocarta_col(dt, gene_name_col)
     if(hans == T) dt <- add_hans_class(dt, gene_name_col)
@@ -259,6 +267,7 @@ add_all_gene_info <- function(DT, gene_name_col = "gene_name", mitocarta = T, ha
     if(omim == T) dt <- add_omim_cols(dt, gene_name_col)
     if(nDNA_mtDNA == T) dt <- add_nuclear_mito_DNA(dt, gene_name_col)
     if(gene_id == T) dt <- add_ensembl_id(dt, gene_name_col, gene_id_col)
+    if(gene_type == T) dt <- add_gene_type(dt, gene_name_col)
     if(NA_as_dot == T) dt[is.na(dt)] = "."
     return(dt)
 }

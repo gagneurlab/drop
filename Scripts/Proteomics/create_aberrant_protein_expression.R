@@ -94,3 +94,14 @@ unique(prot_aberexp[, .N, by=c('FIBROBLAST_ID', 'MS_METHOD')][,.(N, MS_METHOD)])
 file_aber_prot_exp
 write_tsv(prot_aberexp, file = file_aber_prot_exp)
 
+
+#' ## Visualize
+res_prot <- fread("/s/project/genetic_diagnosis/processed_results/proteome_aberrant_expression.tsv")
+dim(res_prot)
+#' number of samples
+res_prot[, uniqueN(FIBROBLAST_ID)]
+res_prot[, FC := round(2^PROT_LOG2FC, 3)]
+res_prot[, c("NA_FREQ_BY_GENE_NAME", "NA_FREQ_BY_PROTEOME_ID", "PROT_LOGODDS", "SD_NORM_LOG2_LFQ") := NULL]
+# res_prot[FIBROBLAST_ID == 62335 & GENE_NAME == 'NFU1']
+DT::datatable(res_prot[PROT_PADJ < .1], filter = 'top')
+
