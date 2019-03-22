@@ -35,7 +35,9 @@ vt[, chr := paste0("chr", chr)]
 vt[, aux := paste(chr, pos, ref, alt, sep = "-")]
 
 # Merge results
-rt <- left_join(rmae, vt[,.(hgncid, mstype, noccds, sift1, pph1, gnomAD_AF, MAX_AF, AF, gnomAD_NFE_AF, gnomAD_AFR_AF, gnomAD_EAS_AF, rsid, pubmed, aux)], by = "aux") %>% as.data.table
+rt <- left_join(rmae, vt[,.(hgncid, mstype, noccds, sift1, pph1, CADD_phred, CADD_raw, exonic,
+                            MAX_AF, gnomAD_AF, AF, gnomAD_NFE_AF, gnomAD_AFR_AF, gnomAD_EAS_AF, gnomAD_AMR_AF, gnomAD_ASJ_AF, gnomAD_EAS_AF,
+                            rsid, pubmed, aux)], by = "aux") %>% as.data.table
 rt[, aux := NULL]
 
 # Save results
