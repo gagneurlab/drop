@@ -28,13 +28,13 @@ source("Scripts/_functions/gene_annotation/add_gene_info_cols.R")
 
 #' ## Results
 ods <- readRDS(snakemake@input$ods_all)
-ods <- readRDS("/s/project/genetic_diagnosis/processed_results/v29_overlap/outrider/all/ods-20190319.Rds")
+ods <- readRDS("/s/project/genetic_diagnosis/processed_results/v29_overlap/outrider/all/ods.Rds")
 res <- fread(snakemake@input$res_all)
 res <- fread("/s/project/genetic_diagnosis/processed_results/v29_overlap/outrider/all/OUTRIDER_results.tsv")
 sa <- fread("../sample_annotation/Data/sample_annotation.tsv")
 
 #' Annotated transduced samples
-DT::datatable(unique(sa[!is.na(TRANSDUCED_GENE),.(FIBROBLAST_ID, TRANSDUCED_GENE)]))
+unique(sa[!is.na(TRANSDUCED_GENE),.(FIBROBLAST_ID, RNA_ID, TRANSDUCED_GENE)])
 
 res <- left_join(res, sa[,.(RNA_ID, TRANSDUCED_GENE)], by = c("sampleID" = "RNA_ID")) %>% as.data.table()
 res <- res[!is.na(TRANSDUCED_GENE)]
@@ -66,3 +66,5 @@ plotExpressionRank(ods, "C1QBP")
 
 plotExpressionRank(ods, "TXN2")
 plotExpressionRank(ods, "FLAD1")
+
+# TODO: Volcano plots of transduced samples

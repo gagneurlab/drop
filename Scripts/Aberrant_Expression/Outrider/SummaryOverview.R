@@ -3,12 +3,14 @@
 #' author: mumichae
 #' wb:
 #'  input:
-#'  - summaries: '`sm expand("Output/html/AberrantExpression/Outrider/{annotation}/OutriderSummary_{dataset}.html", annotation=config["ANNOTATIONS"] , dataset=[*config["outrider_filtered"]])`'
+#'  - summaries: '`sm expand("Output/html/AberrantExpression/Outrider/{annotation}/OutriderSummary_{dataset}.html", annotation=config["ANNOTATIONS"] , dataset=[*config["outrider"]])`'
 #' output:
 #'   html_document:
 #'    code_folding: hide
 #'    code_download: TRUE
 #'---
+
+#  - summaries: '`sm expand("Output/html/AberrantExpression/Outrider/{annotation}/OutriderSummary_{dataset}.html", annotation=config["ANNOTATIONS"] , dataset=[*config["outrider_filtered"]])`'
 
 saveRDS(snakemake, "tmp/outrider_overview.snakemake")
 # snakemake <- readRDS("tmp/outrider_overview.snakemake")
