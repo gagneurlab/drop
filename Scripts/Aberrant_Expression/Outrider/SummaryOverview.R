@@ -3,7 +3,7 @@
 #' author: mumichae
 #' wb:
 #'  input:
-#  - summaries: '`sm expand("Output/html/AberrantExpression/Outrider/{annotation}/OutriderSummary_{dataset}.html", annotation=config["ANNOTATIONS"] , dataset=[*config["outrider_filtered"]])`'
+#'  - summaries: '`sm expand("Output/html/AberrantExpression/Outrider/{annotation}/OutriderSummary_{dataset}.html", annotation=config["ANNOTATIONS"] , dataset=[*config["outrider_filtered"]])`'
 #' output:
 #'   html_document:
 #'    code_folding: hide
