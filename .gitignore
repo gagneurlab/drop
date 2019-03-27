@@ -19,6 +19,7 @@ auto
 # IDE project files
 *.project
 readme.html
+*.Rproj
 .Rproj.user
 .Rhistory
 
