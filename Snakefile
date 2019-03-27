@@ -30,7 +30,7 @@ def outrider_files(sa_file = config["SAMPLE_ANNOTATION"]):
     outrider_groups = []
     for s in set(anno_outrider.OUTRIDER_GROUP):
         outrider_groups.extend(s.split(','))
-    outrider_ids = {og : anno_outrider.loc[anno_outrider.OUTRIDER_GROUP.str.contains('(^|,)' + og), 'RNA_ID'].tolist() for og in set(outrider_groups)}
+    outrider_ids = {og : anno_outrider.loc[anno_outrider.OUTRIDER_GROUP.str.contains('(^|,)' + og + '(,|$)'), 'RNA_ID'].tolist() for og in set(outrider_groups)}
     return outrider_ids, {og: _list for og, _list in outrider_ids.items() if len(_list) > 40}    
 
 def get_files_by_group(group):
@@ -123,7 +123,7 @@ rule outrider_summary:
 #        "--chr chr1,chr2,chr3,chr4,chr5,chr6,chr7,chr8,chr9,chr10,chr11,chr12,chr13,chr14,chr15,chr16,chr17,chr18,chr19,chr20,chr21,chr22,chrX,chrY,chrM"
         
 rule variant_annotation_all:
-    input: expand(config["RAW_DATA"] + "/{vcf}/exomicout/paired-endout/processedData/vep_anno_{vcf}_uniq_dt.Rds", vcf=all_vcf())
+    input: standardFileNames(expand(config["RAW_DATA"] + "/{vcf}/exomicout/paired-endout/processedData/vep_anno_{vcf}_uniq_dt.Rds", vcf=all_vcf())) # 
     output: touch("Output/variant_annotation.done")
 
 rule mae:
