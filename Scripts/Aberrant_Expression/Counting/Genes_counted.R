@@ -4,7 +4,7 @@
 #' wb:
 #'  input: 
 #'   - fib_ss: '/s/project/genetic_diagnosis/processed_results/v29_overlap/outrider/fib_ss/ods_unfitted.Rds'
-#'   - blood: '/s/project/genetic_diagnosis/processed_results/v29_overlap/outrider/fib_ss/ods_unfitted.Rds'
+#'   - blood: '/s/project/genetic_diagnosis/processed_results/v29_overlap/outrider/blood/ods_unfitted.Rds'
 #'   - add_gene_info_script: 'Scripts/_functions/gene_annotation/add_gene_info_cols.R'
 #' output: 
 #'   html_document:

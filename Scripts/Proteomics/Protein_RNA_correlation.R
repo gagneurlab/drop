@@ -57,7 +57,7 @@ dim(pm_ns)
 pm_ss <- protein_gene_mat[, intersect(colnames(protein_gene_mat), prots_ss)]
 dim(pm_ss)
 
-ods_ns <- readRDS("/s/project/genetic_diagnosis/processed_results/v29_overlap/outrider/ns/ods.Rds")
+ods_ns <- readRDS("/s/project/genetic_diagnosis/processed_results/v29_overlap/outrider/fib_ns/ods.Rds")
 ods_ns <- ods_ns[, intersect(colnames(ods_ns), names(prots_ns))]
 counts_ns <- counts(ods_ns, normalized = F)
 counts_ns <- t(t(counts_ns) / sizeFactors(ods_ns))
@@ -65,7 +65,7 @@ counts_ns[counts_ns < 30] <- NA
 counts_ns <- log(counts_ns + 1) - rowMeans2(log(counts_ns + 1), na.rm = T)
 colnames(counts_ns) <- prots_ns[colnames(counts_ns)]
 
-ods_ss <- readRDS("/s/project/genetic_diagnosis/processed_results/v29_overlap/outrider/ss/ods.Rds")
+ods_ss <- readRDS("/s/project/genetic_diagnosis/processed_results/v29_overlap/outrider/fib_ss/ods.Rds")
 ods_ss <- ods_ss[, intersect(colnames(ods_ss), names(prots_ss))]
 counts_ss <- counts(ods_ss, normalized = F)
 counts_ss <- t(t(counts_ss) / sizeFactors(ods_ss))

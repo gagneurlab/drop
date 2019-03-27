@@ -135,7 +135,7 @@ protein_gene_mat <- protein_gene_mat[!duplicated(rownames(protein_gene_mat)),]
 write.table(protein_gene_mat, "/s/project/mitoMultiOmics/raw_data/proteome/protein_mat_gene_names.txt", 
             sep = ",", quote = F, row.names = T, col.names = T)
 
-ods_ss <- readRDS("/s/project/genetic_diagnosis/processed_results/v29_overlap/outrider/ss/ods.Rds")
+ods_ss <- readRDS("/s/project/genetic_diagnosis/processed_results/v29_overlap/outrider/fib_ss/ods.Rds")
 dim(ods_ss)
 
 library(gplots)

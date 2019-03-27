@@ -4,6 +4,8 @@
 #' wb:
 #'  input:
 #'   - vcf_dts: '`sm expand(config["RAW_DATA"] + "/{vcf}/exomicout/paired-endout/processedData/vep_anno_{vcf}_uniq_dt.Rds", vcf=set(config["vcfs"]))`'
+#'  output:
+#'   - variant_dt:  '`sm config["PROC_RESULTS"] + "/process_vcf/variant_dt.Rds"`'
 #'  threads: 20
 #' output: 
 #'   html_document:
@@ -42,23 +44,33 @@ all_vcfs_list <- bplapply(snakemake@input$vcf_dts, function(f) {
     summary_dt[, homozygous_filtered := exonic & prot_effect & rare & homozygous]
     summary_dt[, compound_heterozygous_filtered := exonic & prot_effect & rare & compound_heterozygous]
     summary_dt[, potential_biallelic_filtered := exonic & prot_effect & rare & potential_biallelic]
-    summary_dt <- cbind(dt[, .(var_id, chr, pos, ref, alt, MAX_AF, gnomAD_AF, hgncid, sift1, pph1)], summary_dt)
+    summary_dt <- cbind(dt[, .(var_id, chr, pos, ref, alt, mstype, mtype, MAX_AF, gnomAD_AF, hgncid, sift1, pph1, CADD_raw, CADD_phred)], summary_dt)
     
     # add mito
     summary_dt <- add_hans_class(summary_dt, gene_name_col = 'hgncid', return_all_info = F)
     summary_dt <- add_mitocarta_col(summary_dt, gene_name_col = 'hgncid')
-    summary_dt[, mito := F]
-    summary_dt[MITO_DISEASE_GENE == T, rare_mito := T]
+    
+    # summary_dt[, mito := F]
+    # summary_dt[MITO_DISEASE_GENE == T, mito := T]
     summary_dt[, rare_mito := F]
     summary_dt[exonic == T & prot_effect == T & rare == T & MITO_DISEASE_GENE == T, rare_mito := T]
     
     summary_dt
 })
 
+all_vcfs_dt <- rbindlist(all_vcfs_list)
+saveRDS(all_vcfs_dt, snakemake@output$variant_dt)
+sapply(c("missense", "synonymous", "splice", "unstop", "frame-shift", "unstart", "stop", "stop_retain", "coding"), function(var_type){
+  sub_vt <- all_vcfs_dt[mstype == var_type]
+  sub_vt[, c("var_id", "quality") := NULL]
+  saveRDS(sub_vt, paste0('/s/project/genetic_diagnosis/processed_results/process_vcf/', var_type, '_variant_dt.Rds'))
+})
+
+
 filters <- c('quality', 'exonic', 'prot_effect', 'rare', 'compound_heterozygous', 'homozygous', 'potential_biallelic',
              'potential_biallelic_filtered', 'rare_mito', 'homozygous_filtered', 'compound_heterozygous_filtered')
 single_filters <- c('quality', 'exonic', 'prot_effect', 'rare', 'compound_heterozygous', 'homozygous', 'potential_biallelic')
-total_dt <- melt(rbindlist(all_vcfs_list), measure.vars = filters, variable.name = 'filter', value.name = 'filtered')
+total_dt <- melt(all_vcfs_dt, measure.vars = filters, variable.name = 'filter', value.name = 'filtered')
 total_dt <- total_dt[filtered == T, -'filtered']
 total_dt[, single_filter := F]
 total_dt[filter %in% single_filters, single_filter := T]
@@ -85,7 +97,6 @@ ggplot(filtered_dt, aes(reorder(filter, -variant_count), variant_count, col = si
 
 #' ### Get Outliers
 max_per_filter <- filtered_dt[, max(variant_count), by = filter]$V1
-filtered_dt[variant_count %in% max_per_filter]
 
 #' Top 5 outliers
 filtered_dt[, median := median(variant_count), by = filter]
