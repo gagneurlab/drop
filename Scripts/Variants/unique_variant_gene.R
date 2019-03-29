@@ -31,7 +31,7 @@ message('continue')
 
 register(MulticoreParam(snakemake@threads))
 
-bplapply(c("missense", "synonymous", "splice", "unstop", "frame-shift", "unstart", "stop", "stop_retain", "coding"), 
+bplapply(c("missense", "synonymous", "splice", "unstop", "frame-shift", "unstart", "stop", "stop_retain"), 
          function(var_type){
            print(var_type)
            sub_vt <- readRDS(paste0('/s/project/genetic_diagnosis/processed_results/process_vcf/', var_type, '_variant_dt.Rds'))

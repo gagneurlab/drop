@@ -60,7 +60,7 @@ all_vcfs_list <- bplapply(snakemake@input$vcf_dts, function(f) {
 
 all_vcfs_dt <- rbindlist(all_vcfs_list)
 saveRDS(all_vcfs_dt, snakemake@output$variant_dt)
-sapply(c("missense", "synonymous", "splice", "unstop", "frame-shift", "unstart", "stop", "stop_retain", "coding"), function(var_type){
+sapply(c("missense", "synonymous", "splice", "unstop", "frame-shift", "unstart", "stop", "stop_retain"), function(var_type){
   sub_vt <- all_vcfs_dt[mstype == var_type]
   sub_vt[, c("var_id", "quality") := NULL]
   saveRDS(sub_vt, paste0('/s/project/genetic_diagnosis/processed_results/process_vcf/', var_type, '_variant_dt.Rds'))
