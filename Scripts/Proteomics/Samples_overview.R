@@ -3,9 +3,11 @@
 #' author: vyepez
 #' wb:
 #'  input: 
-#'   - protein_sa: '/s/project/mitoMultiOmics/raw_data/proteome/20180927_robert_proteomics/raw_data/P014_10_template_for_row_wise_normalization_BBM_overview.xlsx'
-#'   - protein_mat: '/s/project/mitoMultiOmics/raw_data/proteome/20180927_robert_proteomics/TMT_1_14_row_col_norm_all_wo_dup_wo_contr.xlsx'
+#'   - protein_sa: '/s/project/mitoMultiOmics/raw_data/proteome/20190227_robert_proteomics/raw_data/P014_12_template_for_row_wise_normalization_BBM_overview.xlsx'
+#'   - protein_mat: '/s/project/mitoMultiOmics/raw_data/proteome/20190227_robert_proteomics/TMT_1_20_row_col_norm_all_wo_dupl_wo_contr.xlsx'
 #'   - hans_table: "/s/project/mitoMultiOmics/raw_data/gene_info/mitochondrial_disorder_genes_prokisch_mayr_cleaned.tsv"
+#'  output:
+#'   - protein_unique_mat: '/s/project/mitoMultiOmics/raw_data/proteome/protein_mat_gene_names.txt'
 #' output: 
 #'   html_document:
 #'    code_folding: show
@@ -34,6 +36,7 @@ sa_prot <- read_xlsx(snakemake@input$protein_sa) %>% as.data.table
 setnames(sa_prot, "ID sample", "PROTEOME_ID")
 sa_prot[, Use := TRUE]
 sa_prot[grep("errorenous sample|control sample|technical replicates", Comment), Use := FALSE]
+sa_prot[grep("^PS", PROTEOME_ID), Use := FALSE]
 
 #' The proteomes are classified in different Runs, each of around 8 samples + 2 controls. 3 Runs form a Batch. Batch 4 included replicates only, therefore we won't include it.
 
@@ -85,7 +88,10 @@ colnames(op) <- unique(sa_prot[Use == T, Batch])
 
 library(UpSetR)
 upset_dt <- data.table(Protein_ID = row.names(op), op * 1)
-upset(upset_dt, mainbar.y.label = "Proteins detected in all samples of each batch")
+#' See at most 20 combinations
+#+ fig.width=12, fig.height = 8
+upset(upset_dt, nsets = uniqueN(sa_prot[Use == T, Batch]), mainbar.y.label = "Proteins detected in all samples of each batch",
+      nintersects = 20, order.by = "degree", decreasing = T)
 
 #' 
 samples_take <- sa_prot[s_run == 1, PROTEOME_ID]
@@ -132,7 +138,7 @@ dim(hgnc_mapping)
 protein_gene_mat <- protein_mat[hgnc_mapping$uniprotswissprot,]
 rownames(protein_gene_mat) <- hgnc_mapping$hgnc_symbol
 protein_gene_mat <- protein_gene_mat[!duplicated(rownames(protein_gene_mat)),]
-write.table(protein_gene_mat, "/s/project/mitoMultiOmics/raw_data/proteome/protein_mat_gene_names.txt", 
+write.table(protein_gene_mat, snakemake@output$protein_unique_mat, 
             sep = ",", quote = F, row.names = T, col.names = T)
 
 ods_ss <- readRDS("/s/project/genetic_diagnosis/processed_results/v29_overlap/outrider/fib_ss/ods.Rds")

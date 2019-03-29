@@ -20,23 +20,21 @@ suppressPackageStartupMessages({
     library(ggthemes)
     library(dplyr)
     library(matrixStats)
+  library(OUTRIDER)
 })
 
-
+# Read sample annotation and subset to samples that we have either RNA or Proteome
 sa <- fread("../sample_annotation/Data/sample_annotation.tsv")
 sa <- sa[! (is.na(RNA_ID) & is.na(PROTEOME_ID))]
-sa[, IS_RNA_SEQ_STRANDED := NULL]
-sa[BATCH %in% c("Batch_0", "Batch_1"), IS_RNA_SEQ_STRANDED := F]
-sa[BATCH %in% c("Batch_2", "Batch_3", "Batch_4", "Batch_5", "Batch_6"), IS_RNA_SEQ_STRANDED := T]
 
-#'
+#' ## Data Exploration
 #' Proteomes that we have no transcriptome
 DT::datatable(sa[!is.na(PROTEOME_ID) & is.na(RNA_ID), .(FIBROBLAST_ID, EXOME_ID, RNA_ID, PROTEOME_ID, PEDIGREE, KNOWN_MUTATION, DISEASE, BATCH)])
 
 #' 61998 and 62343 were mismatches
 
+# Read protein matrix, subset, log-transform and center
 protein_gene_mat <- read.csv(snakemake@input$protein_gene_mat) %>% as.matrix
-# protein_gene_mat <- read.csv('/s/project/mitoMultiOmics/raw_data/proteome/protein_mat_gene_names.txt') %>% as.matrix
 protein_gene_mat[protein_gene_mat < 1e5] <- NA
 protein_gene_mat <- log(protein_gene_mat + 1)
 protein_gene_mat <- protein_gene_mat - rowMeans2(protein_gene_mat, na.rm = T)
