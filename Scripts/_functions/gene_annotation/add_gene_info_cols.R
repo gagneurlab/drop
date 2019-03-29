@@ -249,7 +249,7 @@ add_ensembl_id <- function(DT, gene_name_col = "gene_name", gene_id_col = "gene_
 add_gene_type <- function(DT, gene_name_col = "gene_name"){
     gt <- fread("/s/project/genetic_diagnosis/resource/gencode_v29_unique_gene_name.tsv")
     setnames(DT, gene_name_col, "gene_name")
-    DT <- left_join(DT, gt[,.(gene_name, gene_type)], by = "gene_name") %>% as.data.table
+    DT <- left_join(DT, gt[,.(gene_name_unique, gene_type)], by = c("gene_name" = "gene_name_unique")) %>% as.data.table
     setnames(DT, "gene_name", gene_name_col)
     return(DT)
 }

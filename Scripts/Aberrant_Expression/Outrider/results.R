@@ -34,7 +34,7 @@ res <- add_gene_type(res, gene_name_col = 'geneID')
 saveRDS(res[,.(geneID, sampleID, pValue, padjust, zScore, l2fc, rawcounts, normcounts, meanCorrected, theta, aberrant, AberrantBySample, AberrantByGene, padj_rank, FC, gene_type)], snakemake@output$results_all)
 
 # Subset to significant results
-res <- res[padjust <= .5]
+res <- res[padjust <= .05]
 res <- add_all_gene_info(res, gene_name_col = 'geneID', dis_genes = F, gene_type = F)  # gene_type already added before
 
 # Add sample annotation

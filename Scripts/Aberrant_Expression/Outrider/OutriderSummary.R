@@ -43,10 +43,14 @@ plotEncDimSearch(ods)
 plotAberrantPerSample(ods, main = snakemake@wildcards$dataset)
 
 
+devtools::load_all("../OUTRIDER/")
+
 #' ### Batch correction
 #+ heatmap, fig.height=8, fig.width=8
-plotCountCorHeatmap(ods, normalized=FALSE, rowCoFactor = "BATCH", main = paste('Raw Counts (', snakemake@wildcards$dataset, ')'))
-plotCountCorHeatmap(ods, normalized=TRUE, rowCoFactor = "BATCH", main = paste('Normalized Counts (', snakemake@wildcards$dataset, ')'))
+plotCountCorHeatmap(ods, normalized = FALSE, rowGroups = NA, colGroups = c("GENDER", "BATCH", "TISSUE", "GROWTH_MEDIUM"), 
+                    main = paste('Raw Counts (', snakemake@wildcards$dataset, ')'))
+plotCountCorHeatmap(ods, normalized = TRUE, rowCoFactor = NA, colGroups = c("GENDER", "BATCH", "TISSUE", "GROWTH_MEDIUM"),
+                    main = paste('Normalized Counts (', snakemake@wildcards$dataset, ')'))
 
 #' ## Results
 res <- fread(snakemake@input$results)
