@@ -27,7 +27,7 @@ suppressPackageStartupMessages({
 source("Scripts/_functions/gene_annotation/add_gene_info_cols.R")
 
 #' ## Read all mae files
-res <- lapply(snakemake@input$mae_res[51:250], function(m){
+res <- lapply(snakemake@input$mae_res, function(m){
     rt <- readRDS(m)
     rt <- rt[padj < .05 & alt_freq > .8]
     return(rt)
@@ -148,7 +148,7 @@ saveRDS(res_rare, snakemake@output$res_signif_rare)
 write.table(res_rare, "/s/public_webshare/project/genetic_diagnosis/results/MAE_results_rare.tsv", sep = "\t", quote = F, row.names = F)
 
 #' [Download MAE rare results table](https://i12g-gagneurweb.informatik.tu-muenchen.de/project/genetic_diagnosis/results/MAE_results_rare.tsv)
-DT::datatable(res_rare, caption = "MAE results", style = 'bootstrap')
+DT::datatable(res_rare, caption = "MAE results", style = 'bootstrap', filter = 'top')
 
 
 #' ## Plots

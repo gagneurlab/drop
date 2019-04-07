@@ -28,7 +28,7 @@ sa <- fread("../sample_annotation/Data/sample_annotation.tsv")
 sa <- sa[! (is.na(RNA_ID) & is.na(PROTEOME_ID))]
 
 #' ## Data Exploration
-#' Proteomes that we have no transcriptome
+#' Proteomes that we have no transcriptome (including old proteomes)
 DT::datatable(sa[!is.na(PROTEOME_ID) & is.na(RNA_ID), .(FIBROBLAST_ID, EXOME_ID, RNA_ID, PROTEOME_ID, PEDIGREE, KNOWN_MUTATION, DISEASE, BATCH)])
 
 #' 61998 and 62343 were mismatches
@@ -36,86 +36,57 @@ DT::datatable(sa[!is.na(PROTEOME_ID) & is.na(RNA_ID), .(FIBROBLAST_ID, EXOME_ID,
 # Read protein matrix, subset, log-transform and center
 protein_gene_mat <- read.csv(snakemake@input$protein_gene_mat) %>% as.matrix
 protein_gene_mat[protein_gene_mat < 1e5] <- NA
-protein_gene_mat <- log(protein_gene_mat + 1)
-protein_gene_mat <- protein_gene_mat - rowMeans2(protein_gene_mat, na.rm = T)
-row.names(protein_gene_mat) <- toupper(row.names(protein_gene_mat))
 
 #' Proteomes that we have no annotation of
 setdiff(colnames(protein_gene_mat), sa[,PROTEOME_ID])
 
-prots_ns <- sa[!is.na(PROTEOME_ID) & IS_RNA_SEQ_STRANDED == F, PROTEOME_ID]
-names(prots_ns) <- sa[!is.na(PROTEOME_ID) & IS_RNA_SEQ_STRANDED == F, RNA_ID]
+rna_prot_dt <- sa[PROTEOME_ID %in% colnames(protein_gene_mat) & TISSUE == 'FIBROBLAST', .(PROTEOME_ID, RNA_ID)]
+sa[PROTEOME_ID %in% rna_prot_dt[duplicated(rna_prot_dt$PROTEOME_ID), PROTEOME_ID]]
+# Remove one of the replicates
+rna_prot_dt = rna_prot_dt[RNA_ID != '110459R']
+rna_prot_dt = rna_prot_dt[PROTEOME_ID != 'P62336']  # TODO: check this sample!
+rna_prot_dt
 
-prots_ss <- sa[!is.na(PROTEOME_ID) & IS_RNA_SEQ_STRANDED == T, PROTEOME_ID]
-names(prots_ss) <- sa[!is.na(PROTEOME_ID) & IS_RNA_SEQ_STRANDED == T, RNA_ID]
+protein_gene_mat <- protein_gene_mat[, rna_prot_dt$PROTEOME_ID]
+dim(protein_gene_mat)
+protein_gene_mat <- log(protein_gene_mat + 1)
+protein_gene_mat <- protein_gene_mat - rowMeans2(protein_gene_mat, na.rm = T)
+row.names(protein_gene_mat) <- toupper(row.names(protein_gene_mat))
 
 
-pm_ns <- protein_gene_mat[, intersect(colnames(protein_gene_mat), prots_ns)]
-dim(pm_ns)
-pm_ss <- protein_gene_mat[, intersect(colnames(protein_gene_mat), prots_ss)]
-dim(pm_ss)
+ods <- readRDS("/s/project/genetic_diagnosis/processed_results/v29_overlap/outrider/fib_all/ods.Rds")
+ods <- ods[, rna_prot_dt$RNA_ID]
+counts <- counts(ods, normalized = F)
+counts <- t(t(counts) / sizeFactors(ods))
+counts[counts < 50] <- NA
+counts <- log(counts + 1) - rowMeans2(log(counts + 1), na.rm = T)
 
-ods_ns <- readRDS("/s/project/genetic_diagnosis/processed_results/v29_overlap/outrider/fib_ns/ods.Rds")
-ods_ns <- ods_ns[, intersect(colnames(ods_ns), names(prots_ns))]
-counts_ns <- counts(ods_ns, normalized = F)
-counts_ns <- t(t(counts_ns) / sizeFactors(ods_ns))
-counts_ns[counts_ns < 30] <- NA
-counts_ns <- log(counts_ns + 1) - rowMeans2(log(counts_ns + 1), na.rm = T)
-colnames(counts_ns) <- prots_ns[colnames(counts_ns)]
-
-ods_ss <- readRDS("/s/project/genetic_diagnosis/processed_results/v29_overlap/outrider/fib_ss/ods.Rds")
-ods_ss <- ods_ss[, intersect(colnames(ods_ss), names(prots_ss))]
-counts_ss <- counts(ods_ss, normalized = F)
-counts_ss <- t(t(counts_ss) / sizeFactors(ods_ss))
-counts_ss[counts_ss < 50] <- NA
-counts_ss <- log(counts_ss + 1) - rowMeans2(log(counts_ss + 1), na.rm = T)
-colnames(counts_ss) <- prots_ss[colnames(counts_ss)]
-
-disp <- dispersions(ods_ss)
-names(disp) <- rownames(ods_ss)
+disp <- dispersions(ods)
+names(disp) <- rownames(ods)
 top_disp_genes <- names(head(sort(disp, decreasing = T), 1000))
 
-common_genes_ns <- intersect(row.names(counts_ns), row.names(pm_ns)) 
-common_genes_ss <- intersect(row.names(counts_ss), row.names(pm_ss)) %>% intersect(top_disp_genes)
+common_genes <- intersect(row.names(counts), row.names(protein_gene_mat)) %>% intersect(top_disp_genes)
 
-pm_ns <- pm_ns[common_genes_ns, ]
-counts_ns <- counts_ns[common_genes_ns, ]
-
-pm_ss <- pm_ss[common_genes_ss, ]
-counts_ss <- counts_ss[common_genes_ss, ]
+pm <- protein_gene_mat[common_genes, ]
+counts <- counts[common_genes, ]
 
 
-common_ids_ns <- intersect(colnames(counts_ns), colnames(pm_ns))
-common_ids_ss <- intersect(colnames(counts_ss), colnames(pm_ss))
-
-pm_ns <- pm_ns[, common_ids_ns]
-counts_ns <- counts_ns[, common_ids_ns]
-
-pm_ss <- pm_ss[, common_ids_ss]
-counts_ss <- counts_ss[, common_ids_ss]
-
-#' Correlation of non strand specific samples
-sapply(1:ncol(pm_ns), function(j){
-    cor.test(pm_ns[,j], counts_ns[,j], method = 'spearman')$estimate
-    })
-
-
-# register(MulticoreParam(workers = 20))
-x = sapply(1:ncol(counts_ss), function(i){
-    sapply(1:ncol(pm_ss),
-    function(j) cor.test(pm_ss[,j], counts_ss[,i], method = 'spearman')$estimate)
+#' Correlation 
+x = sapply(1:ncol(counts), function(i){
+    sapply(1:ncol(pm),
+    function(j) cor.test(pm[,j], counts[,i], method = 'spearman')$estimate)
     }
  )
 hist(x, main = 'Correlation of all RNA - Protein Permutations'); abline(v = 0, col = 'red', lty = 'dashed')
-colnames(x) <- colnames(pm_ss)
-rownames(x) <- colnames(pm_ss)
+colnames(x) <- rna_prot_dt$RNA_ID
+rownames(x) <- rna_prot_dt$PROTEOME_ID
 apply(x, 1, which.max)
 
 #' Number of times where the highest correlation was not on the annotated RNA
 sum(apply(x, 1, which.max) != 1:nrow(x))
 
-y <- sapply(1:ncol(pm_ss), function(j) cor.test(pm_ss[,j], counts_ss[,j], method = 'spearman')$estimate)
-names(y) <- colnames(pm_ss)
+y <- sapply(1:ncol(pm), function(j) cor.test(pm[,j], counts[,j], method = 'spearman')$estimate)
+names(y) <- colnames(pm)
 
 #' ## Expectation Maximation to see the classes' separation
 library(mclust)
@@ -133,7 +104,7 @@ sigmas <- sqrt(mod4$parameters$variance$sigmasq)
 fr <- function(x) {
     1/sqrt(2*pi*sigmas[1]^2) * exp(-(x-mus[1])^2/(2*sigmas[1]^2)) + 1/sqrt(2*pi*sigmas[2]^2) * exp(-(x-mus[2])^2/(2*sigmas[2]^2))
 }
-op <- optim(.3, fr, method = 'Brent', lower = -1, upper = 1)
+op <- optim(.3, fr, method = 'Brent', lower = -.5, upper = .8)
 
 plot(mod4, what = "density", data = y, breaks = 15, xlab = "Correlation of RNA - Protein annotated samples")
 abline(v = op$par, col = 'red', lty = 'dashed')
@@ -141,20 +112,26 @@ abline(v = op$par, col = 'red', lty = 'dashed')
 
 #' Example of a mismatch
 library(LSD)
-heatscatter(counts_ss[, "P103231"], pm_ss[, "P103231"], cor = T, main = 'annotation mismatch'); grid()
-heatscatter(counts_ss[, "P103231"], pm_ss[, "P103230"], cor = T, main = 'actual match'); grid()
+#+ fig.width=8, fig.height=8
+# heatscatter(counts[, "P104438"], pm[, "P104438"], cor = T, main = 'annotation mismatch'); grid()
+# heatscatter(counts[, "P104438"], pm[, "P103200"], cor = T, main = 'actual match'); grid()
 
 
 #' ## Find possible matches
 dt <- as.data.table(melt(x))
 setnames(dt, old = c("Var1", "Var2"), c("Proteome_ID", "RNA_ID"))
 dt[, max_corr := value == max(value), by = Proteome_ID]
-dt[, right_annot := Proteome_ID == RNA_ID]
-dt[, match := max_corr == right_annot]
-DT::datatable(dt[match == F, ],  options = list(pageLength = 20))
+dt[, aux := paste(Proteome_ID, RNA_ID, sep = "-")]
+rna_prot_dt[, aux := paste(PROTEOME_ID, RNA_ID, sep = "-")]
+dt[, right_annot := aux %in% rna_prot_dt$aux]
+dt[, aux := NULL]
+DT::datatable(dt[Proteome_ID %in% names(mod$classification[mod$classification == 1]), ][max_corr == T | right_annot == T],  options = list(pageLength = 20))
 
 
-#' ### Plot all correlations of proteomes 
+#' ## CurrFind possible matches
+
+
+#' ## Plot all correlations of proteomes 
 library(plotly)
 dt[, Proteome_ID := as.character(Proteome_ID)]
 plotlist = list()
@@ -165,4 +142,4 @@ for(s in unique(dt$Proteome_ID)){
     plotlist[[s]] = ggplotly(g)
 }
 
-htmltools::tagList(setNames(plotlist, NULL))
+htmltools::tagList(plotlist)

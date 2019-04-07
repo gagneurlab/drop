@@ -1,18 +1,19 @@
 #'---
-#' title: FraseR results up to batch 5
+#' title: FraseR results up to batch 6
 #' author: Christian Mertes
 #' wb:
 #'  input:
-#'   - fds: "/s/project/fraser/analysis/datasets/savedObjects/prokisch_batch5/fds-object.RDS"
+#'   - fds: "/s/project/fraser/snakemake_pipeline/Data/paperPipeline/datasets/savedObjects/ProkischFull/pvaluesBetaBinomial_psiSite.h5"
+#'   - info_script: "../genetic_diagnosis/Scripts/_functions/gene_annotation/add_gene_info_cols.R"
 #'---
 suppressMessages({
     library(ggplot2)
     devtools::load_all("../FraseR")
     # devtools::load_all("../fraser")
 })
-source("../genetic_diagnosis/Scripts/_functions/gene_annotation/add_gene_info_cols.R")
+source(snakemake@input$info_script)
 
-fdsFile <- "/s/project/fraser/analysis/datasets/savedObjects/prokisch_batch5/fds-object.RDS"
+fdsFile <- "/s/project/fraser/snakemake_pipeline/Data/paperPipeline/datasets/savedObjects/ProkischFull/pvaluesBetaBinomial_psiSite.h5"
 fdsFile <- snakemake@input$fds
 
 fdsPath <- dirname(dirname(dirname(fdsFile)))
@@ -22,14 +23,14 @@ fdsName <- basename(dirname(fdsFile))
 #'
 #' # FraseR results
 #'
-#' This contains the prokisch dataset up to batch 5
+#' This contains the prokisch dataset up to batch 6
 #'
 fds <- loadFraseRDataSet(fdsPath, fdsName)
 
 #'
 #' ## Sample annotation
 #'
-DT::datatable(as.data.table(colData(fds)))
+DT::datatable(as.data.table(colData(fds)), filter = 'top')
 
 #'
 #' ## Results by sample and gene
@@ -128,14 +129,14 @@ group_res_by_genes <- function(dt, type=c("psi5", "psi3", "psiSite")){
 #'
 #' Final results without intron retention (grouped by gene names)
 #'
-DT::datatable(group_res_by_genes(filtdt, c("psi3", "psi5")))
+DT::datatable(group_res_by_genes(filtdt, c("psi3", "psi5")), filter = 'top')
 
 
 
 #'
 #' Final results with intron retention (grouped by gene names)
 #'
-DT::datatable(group_res_by_genes(filtdt, c("psi3", "psi5", "psiSite")))
+DT::datatable(group_res_by_genes(filtdt, c("psi3", "psi5", "psiSite")), filter = 'top')
 
 
 #' # Full results table for download
