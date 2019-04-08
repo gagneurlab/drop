@@ -34,41 +34,49 @@ all_vcfs_list <- bplapply(snakemake@input$vcf_dts, function(f) {
     summary_dt <- data.table(
         sample = dt$sample,
         quality = T,
-        exonic = dt$var_id %in% filter_exonic(dt)$var_id,
-        prot_effect = dt$var_id %in% filter_prot_effect(dt)$var_id,
-        rare = dt$var_id %in% filter_rare(dt)$var_id,
+        exonic = dt$var_id %in% filter_exonic(dt)$var_id,    # exonic and + 5bp into the intron
+        prot_effect = dt$var_id %in% filter_prot_effect(dt)$var_id,   # structural coding variant OR (ablation, indel, frame-shift, init, missense, splice, (un)stop, stop_retain, unstart)
+        rare = dt$var_id %in% filter_rare(dt)$var_id,   # MAX_AF <= .001 or NA
         compound_heterozygous = dt$var_id %in% filter_only_compound_heterozygous(dt)$var_id,
         homozygous = dt$var_id %in% filter_homozygous(dt)$var_id,
-        potential_biallelic = dt$var_id %in% filter_potential_biallelic(dt)$var_id
+        potential_biallelic = dt$var_id %in% filter_potential_biallelic(dt)$var_id   # both compound-heterozygous and homozygous
     )
     summary_dt[, homozygous_filtered := exonic & prot_effect & rare & homozygous]
     summary_dt[, compound_heterozygous_filtered := exonic & prot_effect & rare & compound_heterozygous]
     summary_dt[, potential_biallelic_filtered := exonic & prot_effect & rare & potential_biallelic]
-    summary_dt <- cbind(dt[, .(var_id, chr, pos, ref, alt, mstype, mtype, MAX_AF, gnomAD_AF, hgncid, sift1, pph1, CADD_raw, CADD_phred)], summary_dt)
+    summary_dt <- cbind(dt[, .(var_id, chr, pos, ref, alt, gt, mstype, mtype, MAX_AF, gnomAD_AF, hgncid, sift1, pph1, CADD_raw, CADD_phred)], summary_dt)
     
-    # add mito
+    # add mito information
     summary_dt <- add_hans_class(summary_dt, gene_name_col = 'hgncid', return_all_info = F)
     summary_dt <- add_mitocarta_col(summary_dt, gene_name_col = 'hgncid')
     
-    # summary_dt[, mito := F]
-    # summary_dt[MITO_DISEASE_GENE == T, mito := T]
     summary_dt[, rare_mito := F]
-    summary_dt[exonic == T & prot_effect == T & rare == T & MITO_DISEASE_GENE == T, rare_mito := T]
+    summary_dt[exonic == T & prot_effect == T & rare == T & MITO_DISEASE_GENE == T, rare_mito_dis := T]
     
     summary_dt
 })
 
 all_vcfs_dt <- rbindlist(all_vcfs_list)
+all_vcfs_dt[, aux := paste(chr, pos, ref, alt, sep = "-")]
+all_vcfs_dt[, var_id := .GRP, by = aux]
+all_vcfs_dt[, var_total := .N, by = aux]
+Nsamples <- uniqueN(all_vcfs_dt$sample)
+all_vcfs_dt[, var_freq := round(var_total/Nsamples, 5)]
+
 saveRDS(all_vcfs_dt, snakemake@output$variant_dt)
+saveRDS(all_vcfs_dt[potential_biallelic_filtered == T & prot_effect == T & var_freq < .05][MAX_AF < .01 | is.na(MAX_AF)],  # TODO: make this snakemake-able
+        "/s/project/genetic_diagnosis/processed_results/variants_wes_candidates.RDS")
+
+#+results=F, echo=F
 sapply(c("missense", "synonymous", "splice", "unstop", "frame-shift", "unstart", "stop", "stop_retain"), function(var_type){
   sub_vt <- all_vcfs_dt[mstype == var_type]
   sub_vt[, c("var_id", "quality") := NULL]
   saveRDS(sub_vt, paste0('/s/project/genetic_diagnosis/processed_results/process_vcf/', var_type, '_variant_dt.Rds'))
 })
 
-
+#'
 filters <- c('quality', 'exonic', 'prot_effect', 'rare', 'compound_heterozygous', 'homozygous', 'potential_biallelic',
-             'potential_biallelic_filtered', 'rare_mito', 'homozygous_filtered', 'compound_heterozygous_filtered')
+             'potential_biallelic_filtered', 'rare_mito_dis', 'homozygous_filtered', 'compound_heterozygous_filtered')
 single_filters <- c('quality', 'exonic', 'prot_effect', 'rare', 'compound_heterozygous', 'homozygous', 'potential_biallelic')
 total_dt <- melt(all_vcfs_dt, measure.vars = filters, variable.name = 'filter', value.name = 'filtered')
 total_dt <- total_dt[filtered == T, -'filtered']

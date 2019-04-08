@@ -13,8 +13,8 @@ suppressPackageStartupMessages({
 
 SO_HASH <- list(
     "transcript_ablation" 					= c("ablation", 		1),
-    "splice_donor_variant"					= c("splice", 			2),
-    "splice_acceptor_variant"	 			= c("splice", 			3),
+    "splice_donor_variant"					= c("splice_donor", 			2),
+    "splice_acceptor_variant"	 			= c("splice_acceptor", 			3),
     "stop_gained" 							= c("stop", 			4),
     "frameshift_variant" 					= c("frame-shift", 		5),
     "stop_lost" 							= c("unstop", 			6),
@@ -31,7 +31,7 @@ SO_HASH <- list(
     "start_retained_variant" 				= c("start_retain", 	15),
     "synonymous_variant" 					= c("synonymous",		16),
     "coding_sequence_variant"	 			= c("coding", 			17),
-    "mature_miRNA_variant" 					= c("mature_mRNA", 		18),
+    "mature_miRNA_variant" 					= c("mature_miRNA", 		18),
     "5_prime_UTR_variant" 					= c("5utr", 			19),
     "3_prime_UTR_variant" 					= c("3utr", 			20),
     "non_coding_transcript_exon_variant"	= c("ncrna-exon", 		21),
