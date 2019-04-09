@@ -28,6 +28,10 @@ col_solved = "mediumseagreen"
 
 sa <- fread(snakemake@input$sample_anno)
 
+uniqueN(sa[!is.na(RNA_ID) & !is.na(EXOME_ID) & TISSUE == 'FIBROBLAST' & GROWTH_MEDIUM == 'GLU' & DISEASE != 'HEALTHY' & is.na(TRANSDUCED_GENE) & FIBROBLAST_ID != 'NHDF', PATIENT_ID])
+sa[!is.na(RNA_ID) & !is.na(EXOME_ID) & TISSUE == 'FIBROBLAST' & GROWTH_MEDIUM == 'GLU' & DISEASE != 'HEALTHY' & is.na(TRANSDUCED_GENE) & FIBROBLAST_ID != 'NHDF', 
+   .(PATIENT_ID, FIBROBLAST_ID, EXOME_ID, RNA_ID, KNOWN_MUTATION, BATCH, DISEASE, COMMENT)]
+
 #' ## Read and clean global sample annotation
 sa <- sa[!is.na(BATCH)]
 sa[, solved := !is.na(KNOWN_MUTATION)]

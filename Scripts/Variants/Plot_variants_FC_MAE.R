@@ -26,9 +26,45 @@ suppressPackageStartupMessages({
   library(ggbeeswarm)
 })
 
+#' ## (Rare) variants associated with outliers
+pt <- readRDS(snakemake@input$variants_outrider) 
+
+# Add outlier class
+pt[, outlier_class := 'non-outlier']
+pt[aberrant == T & FC > 1, outlier_class := 'overexpression']
+pt[aberrant == T & FC < 1, outlier_class := 'underexpression']
+
+# Plot all variants
+pd <- pt[, .N, by = .(outlier_class, var_type)]
+pd[, prop := N/sum(N), by = outlier_class]
+totals <- pd[, sum(N), by = outlier_class]
+pd[, var_type := factor(var_type, levels = c("no rare variant", "non_coding", "synonymous", "coding", "frameshift", "splice", "stop"))]
+
+#+ fig.width=10, fig.height=3
+ggplot(pd, aes(outlier_class, prop)) + geom_bar(stat= 'identity', aes(fill = var_type)) + scale_fill_ptol() +
+  coord_flip() +
+  scale_y_continuous(labels=scales::percent) +
+  geom_text(aes(outlier_class, 1.05, label = V1, fill = NULL), data = totals) +
+  labs(y = "", title = "All variants")
+
+# Plot rare variants only
+pt[, rare_var_type := var_type]
+pt[MAX_AF > .01, rare_var_type := "no rare variant"]
+pr <- pt[, .N, by = .(outlier_class, rare_var_type)]
+pr[, prop := N/sum(N), by = outlier_class]
+setorder(pr, outlier_class)
+totals <- pr[, sum(N), by = outlier_class]
+pr[, rare_var_type := factor(rare_var_type, levels = c("no rare variant", "non_coding", "synonymous", "coding", "frameshift", "splice", "stop"))]
+
+#+ fig.width=10, fig.height=3
+ggplot(pr, aes(outlier_class, prop)) + geom_bar(stat= 'identity', aes(fill = rare_var_type)) + scale_fill_ptol() +
+  coord_flip() +
+  scale_y_continuous(labels=scales::percent) +
+  geom_text(aes(outlier_class, 1.05, label = V1, fill = NULL), data = totals) +
+  labs(y = "", title = "Rare variants only")
+
 
 #' ## Gene Expression FC vs variant class
-pt <- readRDS(snakemake@input$variants_outrider) 
 
 # Violin plot
 #+ fig.width=8
