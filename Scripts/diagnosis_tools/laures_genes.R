@@ -1,45 +1,31 @@
 #'---
-#' title: Compare expression of disease genes
+#' title: Laure's disease genes
 #' author: vyepez
 #' wb:
-#'  input: 
-#'   - filtered_v29_ov: '/s/project/genetic_diagnosis/processed_results/v29_overlap/outrider/fib/ods_unfitted.Rds'
-#'   - hans_table: "/s/project/mitoMultiOmics/raw_data/gene_info/mitochondrial_disorder_genes_prokisch_mayr_cleaned.tsv"
-#'   - script_gene_info: "Scripts/_functions/gene_annotation/add_gene_info_cols.R"
+#'  input:
+#'   - v19_dt: "/s/project/genetic_diagnosis/resource/gencode_v19_unique_gene_name.tsv"
+#'   - v29_dt: "/s/project/genetic_diagnosis/resource/gencode_v29_unique_gene_name.tsv"
+#'  output:
 #'   - fresard_genes: "/s/project/genetic_diagnosis/resource/fresard_genes.Rds"
-#' output: 
-#'   html_document:
-#'    code_folding: show
-#'    code_download: TRUE
+#'  type: script
 #'---
 
 #+ echo=F
-saveRDS(snakemake, "tmp/disgene_comp.snakemake")
-# snakemake <- readRDS("tmp/disgene_comp.snakemake")
+saveRDS(snakemake, "tmp/fresard_genes.snakemake")
+# snakemake <- readRDS("tmp/fresard_genes.snakemake")
+
 suppressPackageStartupMessages({
-    # library(SummarizedExperiment)
-    library(data.table)
-    library(tidyr)
-    library(ggplot2)
-    library(magrittr)
-    library(OUTRIDER)
+  library(data.table)
+  library(tidyr)
+  library(magrittr)
+  library(dplyr)
 })
-source(snakemake@input$script_gene_info)
-
-#' Read tables
-ov29 <- readRDS(snakemake@input$filtered_v29_ov)
-rd <- rowData(ov29) %>% as.data.table()
-rm(ov29)
-rd[, gene_id :=  dplyr::first(strsplit(gene_id_unique, split = "\\.")[[1]]), by = 1:nrow(rd)]
-
-hans_table <- fread(snakemake@input$hans_table)
-mito_genes <- hans_table[DISEASE =='MITO', HGNC_GENE_NAME]
 
 DIR_ext_genes <- "/s/project/mitoMultiOmics/raw_data/gene_info/external"
 
+# Hematology Genes
 hema_genes_dt <- fread(file.path(DIR_ext_genes, "Hematology_genelist_ens.txt"), col.names = 'gene_id')
 
-#+echo=F
 ####### Clean hema genes #####
 hema_genes_dt <- hema_genes_dt[gene_id != "ENSG00000268226"]   # corresponds to ENSG00000130826, DKC1 which is already in the list
 hema_genes_dt <- hema_genes_dt[gene_id != "ENSG00000267841"]   # corresponds to ENSG00000102145, GATA1 which is already in the list
@@ -48,9 +34,15 @@ hema_genes_dt <- hema_genes_dt[gene_id != "ENSG00000272852"]   # corresponds to 
 hema_genes_dt <- hema_genes_dt[gene_id != "ENSG00000267912"]   # corresponds to ENSG00000015285, WAS which is already in the list
 #######
 
-neuro_genes_dt <- fread(file.path(DIR_ext_genes, "Neurology_genelist.txt"), col.names = 'gene_id')
+hema_genes_dt[, DISEASE := 'Hematology']
 
+# Neurology genes
+neuro_genes_dt <- fread(file.path(DIR_ext_genes, "Neurology_genelist.txt"), col.names = 'gene_id')
+neuro_genes_dt[, DISEASE := 'Neurology']
+
+# Ophtalmology genes
 ophtal_genes_dt <- fread(file.path(DIR_ext_genes, "Ophtalmology_genelist_ens.txt"), col.names = 'gene_id')
+
 ##### Clean ophtal genes #######
 ophtal_genes_dt <- ophtal_genes_dt[gene_id != "ENSG00000268757"]   # corresponds to ENSG00000101986, ABCD1 which is already in the list
 ophtal_genes_dt[gene_id == "ENSG00000166748", gene_id := "ENSG00000273540"]  # corresponds to AGBL1
@@ -81,33 +73,33 @@ ophtal_genes_dt <- ophtal_genes_dt[gene_id != "ENSG00000268249"]   # corresponds
 ophtal_genes_dt <- unique(ophtal_genes_dt)
 ######
 
-rd[, gene_name_unique := toupper(gene_name_unique)]
-rd <- add_hans_class(rd, "gene_name_unique", return_all_info = F)
-rd[, hema_genes := gene_id %in% hema_genes_dt$gene_id]
-rd[, neuro_genes := gene_id %in% neuro_genes_dt$gene_id]
-rd[, ophtal_genes := gene_id %in% ophtal_genes_dt$gene_id]
+ophtal_genes_dt[, DISEASE := 'Ophtalmology']
 
-#' Make comparison table
-comp_dt <- data.table(category = c("all", "in_annot", "counted", "passedFilter"))
-comp_dt[, mito := c(length(mito_genes), rd[MITO_DISEASE_GENE == T, .N], rd[MITO_DISEASE_GENE == T & counted1sample == T, .N], rd[MITO_DISEASE_GENE == T & passedFilter == T, .N])]
-comp_dt[, hema := c(nrow(hema_genes_dt), rd[hema_genes == T, .N], rd[hema_genes == T & counted1sample == T, .N], rd[hema_genes == T & passedFilter == T, .N])]
-comp_dt[, neuro := c(nrow(neuro_genes_dt), rd[neuro_genes == T, .N], rd[neuro_genes == T & counted1sample == T, .N], rd[neuro_genes == T & passedFilter == T, .N])]
-comp_dt[, ophtal := c(nrow(ophtal_genes_dt), rd[ophtal_genes == T, .N], rd[ophtal_genes == T & counted1sample == T, .N], rd[ophtal_genes == T & passedFilter == T, .N])]
+fresard_genes_dt <- rbind(hema_genes_dt, neuro_genes_dt, ophtal_genes_dt)
 
 
-mt <- melt(comp_dt, variable.name = 'Disease')
-mt[, prop := value / max(value), by = Disease]
-mt[, category := factor(category, levels = c("all", "in_annot", "counted", "passedFilter"))]
+# Add gene names from v19 and v29
+v19_dt <- fread(snakemake@input$v19_dt)
+v29_dt <- fread(snakemake@input$v29_dt)
+# v19_dt <- fread("/s/project/genetic_diagnosis/resource/gencode_v19_unique_gene_name.tsv")
+# v29_dt <- fread("/s/project/genetic_diagnosis/resource/gencode_v29_unique_gene_name.tsv")
+v19_dt[, gene_id2 := dplyr::first(unlist(strsplit(gene_id, "\\."))), by = 1:nrow(v19_dt)]
 
-#' Plot and see intersections
-#+ fig.height=9
-ggplot(mt, aes(category, prop)) + geom_bar(stat = 'identity', position = 'dodge') + 
-    geom_text(aes(label = value),  position = position_dodge(width = .8), vjust = -.1) + 
-    theme_bw(base_size = 14) + scale_fill_brewer(palette = "Set2") + facet_wrap(~Disease, ncol = 2)
+dim(fresard_genes_dt)
+fresard_genes_dt <- left_join(fresard_genes_dt, v19_dt[, .(gene_id2, gene_name)], 
+                              by = c("gene_id" = "gene_id2")) %>% as.data.table()
+dim(fresard_genes_dt)
 
-#' Hema genes not in annot
-setdiff(hema_genes_dt$gene_id, rd$gene_id)
+setnames(fresard_genes_dt, "gene_name", "gene_v19")
 
-#' Ophtal genes not in annot
-setdiff(ophtal_genes_dt$gene_id, rd$gene_id)
+fresard_genes_dt <- left_join(fresard_genes_dt, v29_dt[, .(gene_id, gene_name)], by = "gene_id") %>% as.data.table()
+dim(fresard_genes_dt)
+setnames(fresard_genes_dt, "gene_name", "gene_v29")
 
+fresard_genes_dt[, N := .N, by = DISEASE]
+fresard_genes_dt[, ORIGIN := 'Laure Fresard']
+
+fresard_genes_dt[gene_v19 != gene_v29]
+fresard_genes_dt[is.na(gene_v19)]
+
+saveRDS(fresard_genes_dt, snakemake@output$fresard_genes)
