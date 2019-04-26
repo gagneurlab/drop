@@ -7,7 +7,7 @@
 #'   - v19_dt: "/s/project/genetic_diagnosis/resource/gencode_v19_unique_gene_name.tsv"
 #'   - v29_dt: "/s/project/genetic_diagnosis/resource/gencode_v29_unique_gene_name.tsv"
 #'  output:
-#'   - omim_genes: "/s/project/genetic_diagnosis/resource/omim_genes.Rds"
+#'   - omim_genes: "/s/project/genetic_diagnosis/resource/omim_genes.tsv"
 #'  type: script
 #'---
 
@@ -83,4 +83,4 @@ omim_dt[, ORIGIN := 'OMIM']
 omim_dt[gene_v19 != gene_v29]
 omim_dt[is.na(gene_v19)]
 
-saveRDS(omim_dt, snakemake@output$omim_genes)
+fwrite(omim_dt, snakemake@output$omim_genes)

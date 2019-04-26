@@ -7,7 +7,7 @@
 #'   - v19_dt: "/s/project/genetic_diagnosis/resource/gencode_v19_unique_gene_name.tsv"
 #'   - v29_dt: "/s/project/genetic_diagnosis/resource/gencode_v29_unique_gene_name.tsv"
 #'  output:
-#'   - mito_genes: "/s/project/genetic_diagnosis/resource/mito_disease_genes.Rds"
+#'   - mito_genes: "/s/project/genetic_diagnosis/resource/mito_disease_genes.tsv"
 #'  type: script
 #'---
 
@@ -78,4 +78,4 @@ mito_genes_dt[, ORIGIN := 'Hans Mayr']
 mito_genes_dt[gene_v19 != gene_v29]
 mito_genes_dt[is.na(gene_v19)]
 
-saveRDS(mito_genes_dt, snakemake@output$mito_genes)
+fwrite(mito_genes_dt, snakemake@output$mito_genes)

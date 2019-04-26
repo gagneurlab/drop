@@ -6,7 +6,7 @@
 #'   - v19_dt: "/s/project/genetic_diagnosis/resource/gencode_v19_unique_gene_name.tsv"
 #'   - v29_dt: "/s/project/genetic_diagnosis/resource/gencode_v29_unique_gene_name.tsv"
 #'  output:
-#'   - fresard_genes: "/s/project/genetic_diagnosis/resource/fresard_genes.Rds"
+#'   - fresard_genes: "/s/project/genetic_diagnosis/resource/fresard_genes.tsv"
 #'  type: script
 #'---
 
@@ -102,4 +102,4 @@ fresard_genes_dt[, ORIGIN := 'Laure Fresard']
 fresard_genes_dt[gene_v19 != gene_v29]
 fresard_genes_dt[is.na(gene_v19)]
 
-saveRDS(fresard_genes_dt, snakemake@output$fresard_genes)
+fwrite(fresard_genes_dt, snakemake@output$fresard_genes)

@@ -6,7 +6,7 @@
 #'   - filtered_v29_ov: '/s/project/genetic_diagnosis/processed_results/v29_overlap/outrider/fib/ods_unfitted.Rds'
 #'   - hans_table: "/s/project/mitoMultiOmics/raw_data/gene_info/mitochondrial_disorder_genes_prokisch_mayr_cleaned.tsv"
 #'   - script_gene_info: "Scripts/_functions/gene_annotation/add_gene_info_cols.R"
-#'   - fresard_genes: "/s/project/genetic_diagnosis/resource/fresard_genes.Rds"
+#'   - fresard_genes: "/s/project/genetic_diagnosis/resource/fresard_genes.tsv"
 #' output: 
 #'   html_document:
 #'    code_folding: show
