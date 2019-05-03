@@ -19,7 +19,10 @@ suppressPackageStartupMessages({
   library(dplyr)
 })
 
-# Directory with gtex tissues
+# Read GTEx tissues
+gtex_tissues <- fread("/s/project/genetic_diagnosis/resource/gtex_tissues.txt")
+
+# Directory with ods objects of gtex tissues
 gtex_dir <- "/s/project/scared/paper/revision/run0910-final/data/fitOutrider/NLas_TCNo"
 gtex_files <- list.files(gtex_dir)
 
@@ -29,8 +32,9 @@ gtex_files <- gtex_files[! gtex_files %in% c("Kremer_ODS.RDS", "SimulationNBinom
 # Read ods and obtain expressed genes
 DT <- lapply(gtex_files, function(gf){
   gtex_ods <- readRDS(file.path(gtex_dir, gf))
-  dt <- data.table(TISSUE = gsub("_ODS.RDS", "", gf), gene = mcols(gtex_ods)$gene_symbol)
+  dt <- data.table(Tissue_specific = gsub("_ODS.RDS", "", gf), gene = mcols(gtex_ods)$gene_symbol)
 }) %>% rbindlist()
 
-fwrite(DT, snakemake@output$expressed_gtex)
+DT <- left_join(DT, gtex_tissues, by = 'Tissue_specific') %>% as.data.table()
 
+fwrite(DT, snakemake@output$expressed_gtex)
