@@ -45,7 +45,7 @@ results$pvalue <- abs(results$pvalue)
 
 resultsdt <- as.data.table(results)
 setnames(resultsdt, "hgnc_symbol", "gene_name")
-resultsdt <- add_all_gene_info(resultsdt)
+resultsdt <- add_all_gene_info(resultsdt, dis_genes = F)
 
 sa <- fread(snakemake@config$SAMPLE_ANNOTATION)
 resultsdt[, gene_name := toupper(gene_name)]
