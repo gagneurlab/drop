@@ -24,10 +24,8 @@ suppressPackageStartupMessages({
 })
 
 # Function to obtain number of junctions of each gene
-obtain_junctions <- function(txdb){
-  txdb <- keepStandardChromosomes(txdb)
-  it <- intronicParts(txdb, linked.to.single.gene.only = FALSE)
-  it_dt <- as.data.table(it)
+obtain_junctions <- function(introns_gr){
+  it_dt <- as.data.table(introns_gr)
   it_dt[, gene_id := as.character(gene_id)]
   junctions_dt <- it_dt[, .(N_junctions = .N), by = gene_id]
   return(junctions_dt)
@@ -44,6 +42,9 @@ seqlevelsStyle(gtex_txdb) <- "UCSC"
 message(seqlevels(gtex_txdb))
 saveDb(gtex_txdb, "/s/project/genetic_diagnosis/processed_results/v19/txdb.db")
 
+introns_gtex <- intronicParts(gtex_txdb, linked.to.single.gene.only = FALSE)
+saveRDS(introns_gtex, "/s/project/genetic_diagnosis/processed_results/v19/introns.Rds")
+
 ## Make dt with gene names
 gtex_dt <- rtracklayer::import(snakemake@input$gtex_gtf) %>% as.data.table
 gtex_dt <- gtex_dt[type == "transcript", .(seqnames, start, end, width, strand, gene_id, gene_name, gene_type, gene_status)]
@@ -57,7 +58,7 @@ gtex_dt[, N := NULL]
 gtex_dt[, gene_id_unique := gene_id]
 
 # Add number of junctions
-gtex_junctions <- obtain_junctions(gtex_txdb)
+gtex_junctions <- obtain_junctions(introns_gtex)
 gtex_dt <- left_join(gtex_dt, gtex_junctions, by = 'gene_id') %>% as.data.table()
 gtex_dt[is.na(N_junctions), N_junctions := 0]
 
@@ -73,6 +74,9 @@ gencode_txdb <- keepStandardChromosomes(gencode_txdb)
 message('v29')
 message(seqlevels(gencode_txdb))
 saveDb(gencode_txdb, "/s/project/genetic_diagnosis/processed_results/v29/txdb.db")
+
+introns_gencode <- intronicParts(gencode_txdb, linked.to.single.gene.only = FALSE)
+saveRDS(introns_gencode, "/s/project/genetic_diagnosis/processed_results/v29/introns.Rds")
 
 ## Make dt with gene names
 gtf_dt <- rtracklayer::import(snakemake@input$gencode_gtf) %>% as.data.table
@@ -92,7 +96,7 @@ gtf_dt[N > 1, gene_name_unique := paste(gene_name, N, sep = '_')]
 gtf_dt[, N := NULL]
 
 # Add number of junctions
-gencode_junctions <- obtain_junctions(gencode_txdb)
+gencode_junctions <- obtain_junctions(introns_gencode)
 gtf_dt <- left_join(gtf_dt, gencode_junctions, by = c('gene_id_unique' = 'gene_id')) %>% as.data.table()
 gtf_dt[is.na(N_junctions), N_junctions := 0]
 
