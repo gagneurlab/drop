@@ -26,8 +26,19 @@ suppressPackageStartupMessages({
 # Function to obtain number of junctions of each gene
 obtain_junctions <- function(introns_gr){
   it_dt <- as.data.table(introns_gr)
-  it_dt[, gene_id := as.character(gene_id)]
-  junctions_dt <- it_dt[, .(N_junctions = .N), by = gene_id]
+  max_rep_genes <- max(sapply(it_dt$gene_id, length))
+  is <- separate(it_dt, gene_id, into = paste0("g", 1:max_rep_genes), sep = ",")
+  jc <- melt(is, measure.vars = paste0("g", 1:max_rep_genes), value.name = 'gene_id')
+  jc <- jc[!is.na(gene_id)]
+  jc[, gene_id := gsub('c(', '', gene_id, fixed = T)]
+  jc[, gene_id := gsub('\"', '', gene_id, fixed = T)]
+  jc[, gene_id := gsub(' ', '', gene_id, fixed = T)]
+  jc[, gene_id := gsub(')', '', gene_id, fixed = T)]
+  jc[, gene_id := gsub('\n', '', gene_id, fixed = T)]
+
+  jc[, variable := NULL]
+  
+  junctions_dt <- jc[, .(N_junctions = .N), by = gene_id]
   return(junctions_dt)
 }
 
@@ -40,7 +51,7 @@ gtex_txdb = makeTxDbFromGFF(snakemake@input$gtex_gtf, format='gtf')
 # rename chromosomes from 1 to chr1, ...
 seqlevelsStyle(gtex_txdb) <- "UCSC"
 message(seqlevels(gtex_txdb))
-saveDb(gtex_txdb, "/s/project/genetic_diagnosis/processed_results/v19/txdb.db")
+# saveDb(gtex_txdb, "/s/project/genetic_diagnosis/processed_results/v19/txdb.db")
 
 introns_gtex <- intronicParts(gtex_txdb, linked.to.single.gene.only = FALSE)
 saveRDS(introns_gtex, "/s/project/genetic_diagnosis/processed_results/v19/introns.Rds")
@@ -64,7 +75,6 @@ gtex_dt[is.na(N_junctions), N_junctions := 0]
 
 fwrite(gtex_dt, snakemake@output$gtex_dt)
 
-
 #### v29
 
 ## Make txdb object
@@ -73,7 +83,7 @@ gencode_txdb = makeTxDbFromGFF(snakemake@input$gencode_gtf, format='gtf')
 gencode_txdb <- keepStandardChromosomes(gencode_txdb)
 message('v29')
 message(seqlevels(gencode_txdb))
-saveDb(gencode_txdb, "/s/project/genetic_diagnosis/processed_results/v29/txdb.db")
+# saveDb(gencode_txdb, "/s/project/genetic_diagnosis/processed_results/v29/txdb.db")
 
 introns_gencode <- intronicParts(gencode_txdb, linked.to.single.gene.only = FALSE)
 saveRDS(introns_gencode, "/s/project/genetic_diagnosis/processed_results/v29/introns.Rds")

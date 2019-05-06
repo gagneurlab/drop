@@ -28,9 +28,18 @@ col_solved = "mediumseagreen"
 
 sa <- fread(snakemake@input$sample_anno)
 
-uniqueN(sa[!is.na(RNA_ID) & !is.na(EXOME_ID) & TISSUE == 'FIBROBLAST' & GROWTH_MEDIUM == 'GLU' & DISEASE != 'HEALTHY' & is.na(TRANSDUCED_GENE) & FIBROBLAST_ID != 'NHDF', PATIENT_ID])
-sa[!is.na(RNA_ID) & !is.na(EXOME_ID) & TISSUE == 'FIBROBLAST' & GROWTH_MEDIUM == 'GLU' & DISEASE != 'HEALTHY' & is.na(TRANSDUCED_GENE) & FIBROBLAST_ID != 'NHDF', 
-   .(PATIENT_ID, FIBROBLAST_ID, EXOME_ID, RNA_ID, KNOWN_MUTATION, BATCH, DISEASE, COMMENT)]
+#' Number of patient fibroblasts in glucose with both RNA and WES
+sa_pat <- sa[!is.na(RNA_ID) & !is.na(EXOME_ID) & TISSUE == 'FIBROBLAST' & GROWTH_MEDIUM == 'GLU' & DISEASE != 'HEALTHY' & is.na(TRANSDUCED_GENE) & FIBROBLAST_ID != 'NHDF'] 
+uniqueN(sa_pat[, PATIENT_ID])
+
+DT::datatable(sa_pat[, .(PATIENT_ID, FIBROBLAST_ID, EXOME_ID, RNA_ID, KNOWN_MUTATION, BATCH, DISEASE, COMMENT)])
+
+#' ## Samples without patient it
+DT::datatable(sa_pat[is.na(PATIENT_ID)])
+
+#' ## Duplicated samples
+dup_patients <- sa_pat[duplicated(PATIENT_ID), unique(PATIENT_ID)] 
+DT::datatable(sa_pat[!is.na(PATIENT_ID)][PATIENT_ID %in% dup_patients])
 
 #' ## Read and clean global sample annotation
 sa <- sa[!is.na(BATCH)]
