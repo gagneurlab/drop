@@ -4,7 +4,7 @@
 #' wb:
 #'  input:
 #'   - fds: "/s/project/fraser/snakemake_pipeline/Data/paperPipeline/datasets/savedObjects/ProkischFull/pvaluesBetaBinomial_psiSite.h5"
-#'   - info_script: "../genetic_diagnosis/Scripts/_functions/gene_annotation/add_gene_info_cols.R"
+#'   - info_script: "../../genetic_diagnosis/Scripts/_functions/gene_annotation/add_gene_info_cols.R"
 #'---
 suppressMessages({
     library(ggplot2)
