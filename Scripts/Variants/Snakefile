@@ -4,13 +4,13 @@ import numpy as np
 
 configfile: "wbuild.yaml"
 
-subworkflow standardFileNames:
-    workdir:
-        "../sample_annotation"
-    snakefile:
-        "../sample_annotation/Snakefile"
-    configfile:
-        "../sample_annotation/wbuild.yaml"
+#subworkflow standardFileNames:
+#    workdir:
+#        "../sample_annotation"
+#    snakefile:
+#        "../sample_annotation/Snakefile"
+#    configfile:
+#        "../sample_annotation/wbuild.yaml"
 
 
 def outrider_files(sa_file = config["SAMPLE_ANNOTATION"]):
@@ -32,6 +32,8 @@ def outrider_files(sa_file = config["SAMPLE_ANNOTATION"]):
         outrider_groups.extend(s.split(','))
     outrider_ids = {og : anno_outrider.loc[anno_outrider.OUTRIDER_GROUP.str.contains('(^|,)' + og + '(,|$)'), 'RNA_ID'].tolist() for og in set(outrider_groups)}
     return outrider_ids, {og: _list for og, _list in outrider_ids.items() if len(_list) > 40}    
+    
+    
 
 def get_files_by_group(group):
     return expand(config["PROC_RESULTS"] + "/{{annotation}}/counts/{sampleID}.Rds", sampleID=config["outrider"][group])
@@ -81,13 +83,18 @@ def mae_files(sa_file = config["SAMPLE_ANNOTATION"]):
 
 
 # set config variables
+
+# MAE files
 vcfs, rnas = mae_files()
 config["vcfs"] = vcfs
 config["rnas"] = rnas
 config["mae_ids"] = list(map('-'.join, zip(vcfs, rnas)))
-outrider_all_ids, outrider_filtered = outrider_files()
-config["outrider"] = outrider_all_ids
-config["outrider_filtered"] = outrider_filtered
+
+
+# Outrider Files
+#outrider_all_ids, outrider_filtered = outrider_files()
+#config["outrider"] = outrider_all_ids
+#config["outrider_filtered"] = outrider_filtered
 
 include: ".wBuild/wBuild.snakefile"  # Has to be here in order to update the config with the new variables
 #htmlOutputPath = config["htmlOutputPath"]  if (config["htmlOutputPath"] != None) else "Output/html"
