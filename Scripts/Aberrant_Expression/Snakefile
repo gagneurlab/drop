@@ -88,9 +88,9 @@ config["rnas"] = rnas
 config["mae_ids"] = list(map('-'.join, zip(vcfs, rnas)))
 
 #outrider
-#outrider_all_ids, outrider_filtered = outrider_files()
-#config["outrider"] = outrider_all_ids
-#config["outrider_filtered"] = outrider_filtered
+outrider_all_ids, outrider_filtered = outrider_files()
+config["outrider"] = outrider_all_ids
+config["outrider_filtered"] = outrider_filtered
 
 include: ".wBuild/wBuild.snakefile"  # Has to be here in order to update the config with the new variables
 #htmlOutputPath = config["htmlOutputPath"]  if (config["htmlOutputPath"] != None) else "Output/html"
