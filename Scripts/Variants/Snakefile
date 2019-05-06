@@ -85,10 +85,10 @@ def mae_files(sa_file = config["SAMPLE_ANNOTATION"]):
 # set config variables
 
 # MAE files
-vcfs, rnas = mae_files()
-config["vcfs"] = vcfs
-config["rnas"] = rnas
-config["mae_ids"] = list(map('-'.join, zip(vcfs, rnas)))
+#vcfs, rnas = mae_files()
+#config["vcfs"] = vcfs
+#config["rnas"] = rnas
+#config["mae_ids"] = list(map('-'.join, zip(vcfs, rnas)))
 
 
 # Outrider Files
