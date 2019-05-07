@@ -26,8 +26,8 @@ suppressPackageStartupMessages({
     })
 
 #print(getwd())
-source("../../_functions/filter_sets.R", chdir = TRUE))
-source('../../_functions/gene_annotation/add_gene_info_cols.R', chdir = TRUE))
+source("../../_functions/filter_sets.R", chdir = TRUE)
+source('../../_functions/gene_annotation/add_gene_info_cols.R', chdir = TRUE)
 
 register(MulticoreParam(snakemake@threads))
 all_vcfs_list <- bplapply(snakemake@input$vcf_dts, function(f) {
