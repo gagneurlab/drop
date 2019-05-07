@@ -3,7 +3,7 @@
 #' author: vyepez
 #' wb:
 #'  input:
-#'   - sample_anno: '/s/project/mitoMultiOmics/raw_data/sample_info/SAMPLE_ANNOTATION.tsv'
+#'   - sample_anno: '/s/project/mitoMultiOmics/raw_data/sample_info/SAMPLE_ANNOTATION_PROKISCH.tsv'
 #'  output:
 #' output:
 #'   html_document:
