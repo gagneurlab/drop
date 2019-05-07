@@ -24,7 +24,7 @@ suppressPackageStartupMessages({
 })
 
 # Read sample annotation and subset to samples that we have either RNA or Proteome
-sa <- fread("../sample_annotation/Data/sample_annotation.tsv")
+sa <- fread("/s/project/mitoMultiOmics/raw_data/sample_info/SAMPLE_ANNOTATION_PROKISCH.tsv") #fread("../sample_annotation/Data/sample_annotation.tsv")
 sa <- sa[! (is.na(RNA_ID) & is.na(PROTEOME_ID))]
 
 #' ## Data Exploration
