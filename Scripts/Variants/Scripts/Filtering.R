@@ -24,6 +24,8 @@ suppressPackageStartupMessages({
     library(cowplot)
     library(BiocParallel)
     })
+
+print(getwd())
 source("../../_functions/filter_sets.R",  chdir=T)
 source('../../_functions/gene_annotation/add_gene_info_cols.R', chdir=T)
 
