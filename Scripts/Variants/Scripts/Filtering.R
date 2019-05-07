@@ -24,8 +24,8 @@ suppressPackageStartupMessages({
     library(cowplot)
     library(BiocParallel)
     })
-source("../../_functions/filter_sets.R")
-source('../../_functions/gene_annotation/add_gene_info_cols.R')
+source("../../_functions/filter_sets.R",  chdir=T)
+source('../../_functions/gene_annotation/add_gene_info_cols.R', chdir=T)
 
 register(MulticoreParam(snakemake@threads))
 all_vcfs_list <- bplapply(snakemake@input$vcf_dts, function(f) {
