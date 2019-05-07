@@ -8,7 +8,7 @@
 #'---
 suppressMessages({
     library(ggplot2)
-    devtools::load_all("../FraseR")
+    devtools::load_all("../../../FraseR")
     # devtools::load_all("../fraser")
 })
 source(snakemake@input$info_script)
