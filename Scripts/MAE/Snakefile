@@ -4,6 +4,16 @@ import numpy as np
 
 configfile: "wbuild.yaml"
 
+subworkflow standardFileNames:
+    workdir:
+        "../../../sample_annotation"
+    snakefile:
+        "../../../sample_annotation/Snakefile"
+    configfile:
+        "../../../sample_annotation/wbuild.yaml"
+
+
+
 def outrider_files(sa_file = config["SAMPLE_ANNOTATION"]):
 
     anno = pd.read_csv(sa_file, sep='\t')
