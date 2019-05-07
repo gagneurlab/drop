@@ -13,7 +13,6 @@
 #'    code_download: TRUE
 #'---
 
-install.packages('knitr')
 saveRDS(snakemake, 'tmp/variant_annotation_total.Rds')
 # snakemake <-  readRDS('tmp/variant_annotation_total.Rds')
 
