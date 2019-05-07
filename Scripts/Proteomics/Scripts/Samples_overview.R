@@ -51,7 +51,7 @@ sa_prot[, Subgroup := substr(gsub("mix", "", Run), 2, 2)]
 sum(sa_prot$Use)
 
 #' Which samples we don't have in our complete sample annotation
-sa <- fread("../sample_annotation/Data/sample_annotation.tsv")
+sa <- fread("/s/project/mitoMultiOmics/raw_data/sample_info/SAMPLE_ANNOTATION_PROKISCH.tsv") #fread("../sample_annotation/Data/sample_annotation.tsv")
 setdiff(sa_prot[Use == T, PROTEOME_ID], sa$PROTEOME_ID)
 
 #' ### Read protein intensities matrix
