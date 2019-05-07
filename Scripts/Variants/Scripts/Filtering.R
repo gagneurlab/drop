@@ -59,7 +59,8 @@ all_vcfs_list <- bplapply(snakemake@input$vcf_dts, function(f) {
 })
 
 all_vcfs_dt <- rbindlist(all_vcfs_list)
-all_vcfs_dt[, aux := paste(chr, pos, ref, alt, sep = "-")]
+#all_vcfs_dt[, aux := paste(chr, pos, ref, alt, sep = "-")]
+all_vcfs_dt[, aux := paste(pos, ref, alt, sep = "-")]
 all_vcfs_dt[, var_id := .GRP, by = aux]
 all_vcfs_dt[, var_total := .N, by = aux]
 Nsamples <- uniqueN(all_vcfs_dt$sample)
