@@ -44,7 +44,7 @@ SAMPLE_IDS: [
     MUC2214, MUC2215, MUC2216, MUC2217, MUC2218, MUC2219, MUC2220, MUC2221, MUC2222, MUC2223, MUC2224, MUC2225,
     MUC2226, MUC2227, MUC2228, MUC2229, MUC2230, MUC2231, MUC2232, MUC3194, MUC3196, MUC3198, MUC3200, MUC3202
 ]
-SAMPLE_ANNOTATION: "../../sample_annotation.tsv" # "../sample_annotation/Data/sample_annotation.tsv" # TODO: "/s/project/mitoMultiOmics/raw_data/sample_info/SAMPLE_ANNOTATION.tsv"
+SAMPLE_ANNOTATION: "/s/project/mitoMultiOmics/raw_data/sample_info/SAMPLE_ANNOTATION_PROKISCH.tsv" #"../../sample_annotation.tsv" # "../sample_annotation/Data/sample_annotation.tsv" # TODO: "/s/project/mitoMultiOmics/raw_data/sample_info/SAMPLE_ANNOTATION.tsv"
 ANNOTATIONS: ["v29_overlap"] # "v19","v29"
 VEP_VERSION: 94
 
