@@ -5,7 +5,6 @@
 #'  input: 
 #'   - filtered_v29_ov: '/s/project/genetic_diagnosis/processed_results/v29_overlap/outrider/fib/ods_unfitted.Rds'
 #'   - hans_table: "/s/project/mitoMultiOmics/raw_data/gene_info/mitochondrial_disorder_genes_prokisch_mayr_cleaned.tsv"
-#'   - script_gene_info: "Scripts/_functions/gene_annotation/add_gene_info_cols.R"
 #'   - fresard_genes: "/s/project/genetic_diagnosis/resource/fresard_genes.tsv"
 #' output: 
 #'   html_document:
@@ -23,8 +22,10 @@ suppressPackageStartupMessages({
     library(ggplot2)
     library(magrittr)
     library(OUTRIDER)
+    devtools::load_all("../genetic-diagnosis-tools")
 })
-source(snakemake@input$script_gene_info)
+# Removed #'   - script_gene_info: "Scripts/_functions/gene_annotation/add_gene_info_cols.R"
+#source(snakemake@input$script_gene_info)
 
 #' Read tables
 ov29 <- readRDS(snakemake@input$filtered_v29_ov)
