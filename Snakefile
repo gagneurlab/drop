@@ -81,11 +81,11 @@ rule all:
         proteomics( "../proteomics-pipeline/Output/html/index.html"),
         proteomics("../proteomics-pipeline/Output/html/readme.html")
     output: 
-        touch("Output/all.done")
-        touch("../variant-annotation-pipeline/Output/all.done")
-        touch("../aberrant-expression-pipeline/Output/all.done")
-        touch("../aberrant-splicing-pipeline/Output/all.done")
-        touch("../mae-pipeline/Output/all.done")
+        touch("Output/all.done"),
+        touch("../variant-annotation-pipeline/Output/all.done"),
+        touch("../aberrant-expression-pipeline/Output/all.done"),
+        touch("../aberrant-splicing-pipeline/Output/all.done"),
+        touch("../mae-pipeline/Output/all.done"),
         touch("../proteomics-pipeline/Output/all.done")
 
 
