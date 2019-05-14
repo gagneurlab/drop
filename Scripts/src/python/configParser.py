@@ -1,7 +1,7 @@
 import pandas as pd
 import os
 
-class ConfigParser:
+class MyConfigParser:
     
     def __init__(self, config):
         self.config = config
