@@ -37,7 +37,7 @@ class MyConfigParser:
         # Get outrider Groups
         sa_file = self.config["SAMPLE_ANNOTATION"]
         df_anno = pd.read_csv(sa_file, sep='\t')
-        df_anno = df_anno[df_anno["RNA_ID"].isin(ids)]
+        df_outrider = df_anno[df_anno["RNA_ID"].isin(ids)]
         df_outrider = df_outrider[["RNA_ID", "OUTRIDER_GROUP"]].drop_duplicates().copy()
 
         
