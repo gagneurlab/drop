@@ -14,7 +14,6 @@ class MyConfigParser:
         #  [ID | FILE | ASSAY ] , ASSAY can be for example RNA_Seq
         mapping_file = self.config["SAMPLE_FILE_MAPPING"]
         df_mapping = pd.read_csv(mapping_file, sep='\t')
-        print(df_mapping.head(5))
         
         if not list(df_mapping.columns.values)==["ID", "FILE", "ASSAY"]:
             return []
@@ -22,6 +21,7 @@ class MyConfigParser:
         # Clean and filter for experiment type e.g. EXOME_ID or RNA_seq
         df_mapping = df_mapping.dropna()
         df_mapping = df_mapping[df_mapping["ASSAY"]==experiment]
+         print(df_mapping.head(5))
         # Check if file exists 
         df_mapping["existent"] = [os.path.exists(x) for x in df_mapping["FILE"]]
         df_mapping = df_mapping[df_mapping["existent"]]
