@@ -1,27 +1,29 @@
 ---
-webDir: /s/public_webshare/project/genetic_diagnosis
-projectTitle: Genetic diagnosis of Mendelian disorders
+webDir: /s/public_webshare/project/genetic_diagnosis/mll
+projectTitle: MLL Project #Genetic diagnosis of Mendelian disorders
 htmlOutputPath: Output/html
 
-rawdir_proteome: /s/project/mitoMultiOmics/raw_data/proteome
-PROC_DATA: /s/project/genetic_diagnosis/processed_data
-PROC_RESULTS: /s/project/genetic_diagnosis/processed_results
-RAW_DATA: "Data/helmholtz"
+PROJECT_NAME: mll
 
-# TODO: is based on the sample_annotation workflow
-#   and needs to be addressed on how to pass on the 
-#   needed variables
-#
-RAWDATADIR: "Data/helmholtz"
-VEPDATADIR: "/s/project/metaIBD/vepAnnoObj/sampleObj"
-SANITYCHECKDIR: "/s/project/mitoMultiOmics/sanitychecks"
+# INPUT PATHS
+SAMPLE_FILE_MAPPING: /s/project/mll/rawdata/sample_file_mapping.tsv
+SAMPLE_ANNOTATION: /s/project/mll/rawdata/sample_annotation.tsv  #"/s/project/mitoMultiOmics/raw_data/sample_info/SAMPLE_ANNOTATION_PROKISCH.tsv"
+GENE_ANNOTATION: TODO
 
-SAMPLE_ANNOTATION: "/s/project/mitoMultiOmics/raw_data/sample_info/SAMPLE_ANNOTATION_PROKISCH.tsv"
+# OUTPUT PATHS
+PROC_DATA: /s/project/genetic_diagnosis/mll/processed_data
+PROC_RESULTS: /s/project/genetic_diagnosis/mll/processed_results
+
 ANNOTATIONS: ["v29_overlap"] # "v19","v29"
 VEP_VERSION: 94
-
-# Count settings
-# inter.feature setting values (T: reads mapping to multiple features are dropped)
-INTER_FEATURE: [0] # positions correspond to positions in ANNOTATIONS, 0 : F, 1 : T
-
+INTER_FEATURE: [0] # Count settings: inter.feature setting values (T: reads mapping to multiple features are dropped), positions correspond to positions in ANNOTATIONS, 0 : F, 1 : T
 fpkmCutoff: 1
+
+# -------- OUTDATED ----------
+#rawdir_proteome: /s/project/mitoMultiOmics/raw_data/proteome
+#RAW_DATA: "Data/helmholtz"
+
+# From sample_annotation workflow
+# RAWDATADIR: "Data/helmholtz"
+# VEPDATADIR: "/s/project/metaIBD/vepAnnoObj/sampleObj"
+# SANITYCHECKDIR: "/s/project/mitoMultiOmics/sanitychecks"
