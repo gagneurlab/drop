@@ -71,8 +71,21 @@ rule all:
         rules.Index.output, # rule.Index.output is  "Output/html/index.html"
         htmlOutputPath + "/readme.html",
         variants( "../variant-annotation-pipeline/Output/html/index.html"),
-        variants("../variant-annotation-pipeline/Output/html/readme.html")
-    output: touch("Output/all.done")
-
+        variants("../variant-annotation-pipeline/Output/html/readme.html"),
+        aberrantExp( "../aberrant-expression-pipeline/Output/html/index.html"),
+        aberrantExp("../aberrant-expression-pipeline/Output/html/readme.html"),
+        aberrantSplicing( "../aberrant-splicing-pipeline/Output/html/index.html"),
+        aberrantSplicing("../aberrant-splicing-pipeline/Output/html/readme.html"),
+        mae( "../mae-pipeline/Output/html/index.html"),
+        mae("../mae-pipeline/Output/html/readme.html"),
+        proteomics( "../proteomics-pipeline/Output/html/index.html"),
+        proteomics("../proteomics-pipeline/Output/html/readme.html")
+    output: 
+        touch("Output/all.done")
+        touch("../variant-annotation-pipeline/Output/all.done")
+        touch("../aberrant-expression-pipeline/Output/all.done")
+        touch("../aberrant-splicing-pipeline/Output/all.done")
+        touch("../mae-pipeline/Output/all.done")
+        touch("../proteomics-pipeline/Output/all.done")
 
 
