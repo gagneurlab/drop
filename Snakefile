@@ -87,5 +87,41 @@ rule all:
         touch("../aberrant-splicing-pipeline/Output/all.done"),
         touch("../mae-pipeline/Output/all.done"),
         touch("../proteomics-pipeline/Output/all.done")
+        
 
+rule variants:
+    input:
+        variants( "../variant-annotation-pipeline/Output/html/index.html"),
+        variants("../variant-annotation-pipeline/Output/html/readme.html")
+    output:
+        touch("../variant-annotation-pipeline/Output/all.done")
+     
+        
+rule aberrant_expression:
+    input:
+        aberrantExp("../aberrant-expression-pipeline/Output/html/index.html"),
+        aberrantExp("../aberrant-expression-pipeline/Output/html/readme.html")
+    output:
+        touch("../aberrant-expression-pipeline/Output/all.done")
+        
+rule aberrant_splicing:
+    input:
+        aberrantSplicing( "../aberrant-splicing-pipeline/Output/html/index.html"),
+        aberrantSplicing("../aberrant-splicing-pipeline/Output/html/readme.html")
+    output:
+        touch("../aberrant-splicing-pipeline/Output/all.done")
 
+rule mae:
+    input: 
+        mae( "../mae-pipeline/Output/html/index.html"),
+        mae("../mae-pipeline/Output/html/readme.html")
+    output:
+        touch("../mae-pipeline/Output/all.done")
+        
+rule proteomics:
+    input:
+        proteomics( "../proteomics-pipeline/Output/html/index.html"),
+        proteomics("../proteomics-pipeline/Output/html/readme.html")
+    output:
+        touch("../proteomics-pipeline/Output/all.done")
+        
