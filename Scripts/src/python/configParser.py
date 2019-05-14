@@ -14,6 +14,7 @@ class MyConfigParser:
         #  [ID | FILE | ASSAY ] , ASSAY can be for example RNA_Seq
         mapping_file = self.config["SAMPLE_FILE_MAPPING"]
         df_mapping = pd.read_csv(mapping_file, sep='\t')
+        print(df_mapping.head(5))
         
         if not list(df_mapping.columns.values)==["ID", "FILE", "ASSAY"]:
             return []
