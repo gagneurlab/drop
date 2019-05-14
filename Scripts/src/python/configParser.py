@@ -20,7 +20,7 @@ class MyConfigParser:
         
         # Clean and filter for experiment type e.g. EXOME_ID or RNA_seq
         df_mapping = df_mapping.dropna()
-        df_mapping = df[df["ASSAY"]==experiment]
+        df_mapping = df_mapping[df_mapping["ASSAY"]==experiment]
         # Check if file exists 
         df_mapping["existent"] = [os.path.exists(x) for x in df_mapping["FILE"]]
         df_mapping = df_mapping[df_mapping["existent"]]
