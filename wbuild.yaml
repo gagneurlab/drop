@@ -24,6 +24,6 @@ fpkmCutoff: 1
 #RAW_DATA: "Data/helmholtz"
 
 # From sample_annotation workflow
-# RAWDATADIR: "Data/helmholtz"
-# VEPDATADIR: "/s/project/metaIBD/vepAnnoObj/sampleObj"
-# SANITYCHECKDIR: "/s/project/mitoMultiOmics/sanitychecks"
+RAWDATADIR: "Data/helmholtz"
+VEPDATADIR: "/s/project/metaIBD/vepAnnoObj/sampleObj"
+SANITYCHECKDIR: "/s/project/mitoMultiOmics/sanitychecks"
