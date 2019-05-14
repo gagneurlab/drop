@@ -63,11 +63,15 @@ subworkflow proteomics:
 
 
 include: ".wBuild/wBuild.snakefile"  # Has to be here in order to update the config with the new variables
-htmlOutputPath = config["htmlOutputPath"]  if (config["htmlOutputPath"] != None) else "Output/html"
+htmlOutputPath = "Output/html" # config["htmlOutputPath"]  if (config["htmlOutputPath"] != None) else "Output/html"
 
 
 rule all:
-    input: rules.Index.output, htmlOutputPath + "/readme.html"
+    input: 
+        rules.Index.output, # rule.Index.output is  "Output/html/index.html"
+        htmlOutputPath + "/readme.html",
+        variants( "../variant-annotation-pipeline/Output/html/index.html"),
+        variants("../variant-annotation-pipeline/Output/html/readme.html")
     output: touch("Output/all.done")
 
 
