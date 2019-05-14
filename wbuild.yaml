@@ -3,20 +3,23 @@ webDir: /s/public_webshare/project/genetic_diagnosis
 projectTitle: Genetic diagnosis of Mendelian disorders
 htmlOutputPath: Output/html
 
-rawdir_proteome: /s/project/mitoMultiOmics/raw_data/proteome
+
+# TODO: this is a type of experiment, should be in the mapping table, remove raw data paths
+# rawdata_dir: /s/project/mitoMultiOmics/raw_data/proteome
+# RAW_DATA: "Data/helmholtz"
+
+# output directories
 PROC_DATA: /s/project/genetic_diagnosis/processed_data
 PROC_RESULTS: /s/project/genetic_diagnosis/processed_results
-RAW_DATA: "Data/helmholtz"
 
 # TODO: is based on the sample_annotation workflow
 #   and needs to be addressed on how to pass on the 
 #   needed variables
-#
-RAWDATADIR: "Data/helmholtz"
-VEPDATADIR: "/s/project/metaIBD/vepAnnoObj/sampleObj"
-SANITYCHECKDIR: "/s/project/mitoMultiOmics/sanitychecks"
+# RAWDATADIR: "Data/helmholtz"
+# VEPDATADIR: "/s/project/metaIBD/vepAnnoObj/sampleObj"
+# SANITYCHECKDIR: "/s/project/mitoMultiOmics/sanitychecks"
 
-SAMPLE_ANNOTATION: "/s/project/mitoMultiOmics/raw_data/sample_info/SAMPLE_ANNOTATION_PROKISCH.tsv"
+SAMPLE_ANNOTATION: /s/project/mitoMultiOmics/raw_data/sample_info/SAMPLE_ANNOTATION_PROKISCH.tsv
 ANNOTATIONS: ["v29_overlap"] # "v19","v29"
 VEP_VERSION: 94
 

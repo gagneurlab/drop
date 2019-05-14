@@ -4,14 +4,6 @@ import numpy as np
 
 configfile: "wbuild.yaml"
 
-# sample annotation
-subworkflow standardFileNames:
-    workdir:
-        "../sample_annotation"
-    snakefile:
-        "../sample_annotation/Snakefile"
-    configfile:
-        "../sample_annotation/wbuild.yaml"
 
 # 1 aberrant Expression
 subworkflow aberrantExp:
