@@ -82,6 +82,14 @@ class ConfigHelper:
     def getCountFileByOutriderGroup(self, group):
         return expand(self.getProcResultsDir() + "/{{annotation}}/counts/{sampleID}.Rds", sampleID=self.outrider_all[group])
     
+    def getGeneAnnotationFile(self, annotation):
+        #/s/genomes/human/hg19/gencode29/gencode.v29lift37.annotation.gtf.gz
+        i = self.config["GENE_ANNOTATION_NAMES"].index(annotation)
+        return self.config["GENE_ANNOTATION"][i]
+        
+    def getCountRanges(self, annotation):
+        return None
+    
     """
     TODO: do this
     """
