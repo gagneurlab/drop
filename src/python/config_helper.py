@@ -9,7 +9,7 @@ class ConfigHelper:
         # sample-file mappping: reading and cleaning 
         #  SAMPLE_FILE_MAPPING has to have the following structure:
         #  [ID | FILE | ASSAY ] , ASSAY can be for example RNA_Seq
-        df_mapping = pd.read_csv(self.config["wb"], sep='\t')
+        df_mapping = pd.read_csv(self.config["SAMPLE_FILE_MAPPING"], sep='\t')
         if not list(df_mapping.columns.values)==["ID", "FILE", "ASSAY"]:
             print("File does not correspond to required format with columns [ID | FILE | ASSAY]")
         df_mapping = df_mapping.dropna()
@@ -22,7 +22,6 @@ class ConfigHelper:
         #  SAMPLE_ANNOTATION must have assay names as specified in sample-file mappping for ID columns
         sa_file = self.config["SAMPLE_ANNOTATION"]
         self.sample_annotation = pd.read_csv(sa_file, sep='\t')
-        print(self.sample_annotation.head(5))
         
         # OUTRIDER ids
         self.outrider_all, self.outrider_filtered = self.createOutriderIds(min_ids=config["min_outrider_ids"])
@@ -78,7 +77,7 @@ class ConfigHelper:
         return self.outrider_all, self.outrider_filtered
     
     """
-    Wrapper for getting count file for OUTRIDER group
+    Wrapper for getting all count files for the specified OUTRIDER group
     """
     def getCountFileByOutriderGroup(self, group):
         return expand(self.getProcResultsDir() + "/{{annotation}}/counts/{sampleID}.Rds", sampleID=self.outrider_all[group])

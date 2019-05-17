@@ -9,7 +9,8 @@ PROJECT_NAME: mll
 SAMPLE_FILE_MAPPING: /s/project/mll/rawdata/sample_file_mapping.tsv
 SAMPLE_ANNOTATION: /s/project/mll/rawdata/sample_annotation.tsv  #"/s/project/mitoMultiOmics/raw_data/sample_info/SAMPLE_ANNOTATION_PROKISCH.tsv"
 GENE_ANNOTATION: [/s/genomes/human/hg19/gencode29/gencode.v29lift37.annotation.gtf.gz]
-ANNOTATIONS: [v29]
+GENE_ANNOTATION_NAMES: [v29]
+COUNT_RANGES: [.Rds]
 
 # OUTPUT PATHS
 PROC_DATA: /s/project/genetic_diagnosis/processed_data
