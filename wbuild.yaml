@@ -8,22 +8,30 @@ PROJECT_NAME: mll
 # INPUT PATHS
 SAMPLE_FILE_MAPPING: /s/project/mll/rawdata/sample_file_mapping.tsv
 SAMPLE_ANNOTATION: /s/project/mll/rawdata/sample_annotation.tsv  #"/s/project/mitoMultiOmics/raw_data/sample_info/SAMPLE_ANNOTATION_PROKISCH.tsv"
-GENE_ANNOTATION: TODO
+GENE_ANNOTATION: [/s/genomes/human/hg19/gencode29/gencode.v29lift37.annotation.gtf.gz]
+ANNOTATIONS: [v29]
 
 # OUTPUT PATHS
-PROC_DATA: /s/project/genetic_diagnosis/mll/processed_data
-PROC_RESULTS: /s/project/genetic_diagnosis/mll/processed_results
+PROC_DATA: /s/project/genetic_diagnosis/processed_data
+PROC_RESULTS: /s/project/genetic_diagnosis/processed_results
 
-ANNOTATIONS: ["v29_overlap"] # "v19","v29"
 VEP_VERSION: 94
 INTER_FEATURE: [0] # Count settings: inter.feature setting values (T: reads mapping to multiple features are dropped), positions correspond to positions in ANNOTATIONS, 0 : F, 1 : T
 fpkmCutoff: 1
+
+# Sample file mapping: assays
+rna_assay: RNA_seq
+dna_assay: ""
+
+# Sample annotation
+outrider_group: "OUTRIDER_GROUP"
+min_outrider_ids: 40
 
 # -------- OUTDATED ----------
 #rawdir_proteome: /s/project/mitoMultiOmics/raw_data/proteome
 #RAW_DATA: "Data/helmholtz"
 
 # From sample_annotation workflow
-RAWDATADIR: "Data/helmholtz"
-VEPDATADIR: "/s/project/metaIBD/vepAnnoObj/sampleObj"
-SANITYCHECKDIR: "/s/project/mitoMultiOmics/sanitychecks"
+#RAWDATADIR: "Data/helmholtz"
+#VEPDATADIR: "/s/project/metaIBD/vepAnnoObj/sampleObj"
+#SANITYCHECKDIR: "/s/project/mitoMultiOmics/sanitychecks"
