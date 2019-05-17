@@ -8,9 +8,10 @@ PROJECT_NAME: mll
 # INPUT PATHS
 SAMPLE_FILE_MAPPING: /s/project/mll/rawdata/sample_file_mapping.tsv
 SAMPLE_ANNOTATION: /s/project/mll/rawdata/sample_annotation.tsv  #"/s/project/mitoMultiOmics/raw_data/sample_info/SAMPLE_ANNOTATION_PROKISCH.tsv"
-GENE_ANNOTATION: [/s/genomes/human/hg19/gencode29/gencode.v29lift37.annotation.gtf.gz]
-GENE_ANNOTATION_NAMES: [v29]
-COUNT_RANGES: [.Rds]
+
+GENE_ANNOTATION: [/s/genomes/human/hg19/gencode29/gencode.v29lift37.annotation.gtf.gz] # used in aberrant_expression/Outrider/FilterCounts.R
+GENE_ANNOTATION_NAMES: [v29] # before: ANNOTATIONS
+COUNT_RANGES: [.Rds] # used in aberrant_expression/Counting/countReads.R
 
 # OUTPUT PATHS
 PROC_DATA: /s/project/genetic_diagnosis/processed_data
