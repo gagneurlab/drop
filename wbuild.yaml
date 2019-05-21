@@ -28,10 +28,10 @@ fpkmCutoff: 1
 
 # Sample file mapping: assays
 rna_assay: RNA_seq
-dna_assay: ""
+dna_assay: TO DO
 
 # Sample annotation
-outrider_group: "OUTRIDER_GROUP"
+outrider_group: OUTRIDER_GROUP
 min_outrider_ids: 40
 
 # -------- OUTDATED ----------
