@@ -48,7 +48,7 @@ class ConfigHelper:
     """
     Returns vcf and rna files for MAE pipeline
     """
-    def getMaeFiles(self):
+    def getMaeIDs(self):
         # rna and exome are the names of the experiments specified in the mapping file
         
         rna_assay = self.config["rna_assay"]
@@ -64,7 +64,6 @@ class ConfigHelper:
         if len(rnas) != len(vcfs):
             print("Unequal number of rna and dna files")
 
-                
         # TO DO: Check if BOTH rna and dna files exist
         #for i in range(len(rnas)):
         #    for i in range(len(vcfs)):
