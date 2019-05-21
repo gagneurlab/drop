@@ -61,7 +61,7 @@ class ConfigHelper:
         rnas = self.getSampleIDs(rna_assay)
         vcfs = self.getSampleIDs(dna_assay)
 
-        if len(rnas) != len(dnas):
+        if len(rnas) != len(vcfs):
             print("Unequal number of rna and dna files")
 
                 
