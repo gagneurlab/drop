@@ -82,6 +82,15 @@ class ConfigHelper:
             
         return vcfs, rnas  
         
+    
+    """
+    Function for getting the file path given the sampleId and assay (e.g. RNA_seq)
+    """
+    def getFilePath(sampleId, assay):
+      #deprecated for stdFileNames from subworkflow sample_annotation
+      return self.sample_file_mapping[(self.sample_file_mapping["ASSAY"] == assay) & (self.sample_file_mapping["ID"] == sampleId)][["FILE"]] 
+      
+    
     """
     Create a full and filtered list of RNA assay IDs subsetted by specified OUTRIDER groups
     """
