@@ -43,7 +43,7 @@ class ConfigHelper:
     """
     def getSampleIDs(self, experiment):
         # deprecated for all_vcf
-        return list(self.sample_file_mapping[self.sample_file_mapping["ASSAY"] == experiment][["ID"]]) 
+        return list(self.sample_file_mapping[self.sample_file_mapping["ASSAY"] == experiment]["ID"]) 
     
     """
     Returns vcf and rna files for MAE pipeline
@@ -83,8 +83,9 @@ class ConfigHelper:
         return vcfs, rnas  
         
     
-    """
-    Function for getting the file path given the sampleId and assay (e.g. RNA_seq)
+    """Function for getting the file path given the sampleId and assay
+    @param sampleId: ID of sample
+    @param assay: either "rna_assay", "dna_assay", as specified in the config
     """
     def getFilePath(sampleId, assay):
       #deprecated for stdFileNames from subworkflow sample_annotation
@@ -122,8 +123,10 @@ class ConfigHelper:
     def getOutriderIds(self):
         return self.outrider_all, self.outrider_filtered
     
-    """
-    Wrapper for getting all count files for the specified OUTRIDER group
+    """ Wrapper for getting all count files for the specified OUTRIDER group
+    
+    @param annotation: wildcard specifying the gene annotation version from config["GENE_ANNOTATION_NAMES"]
+    @param group: group label of sample, under outrider column in sample annotation
     """
     def getCountFileByOutriderGroup(self, group):
         return expand(self.getProcResultsDir() + "/{{annotation}}/counts/{sampleID}.Rds", sampleID=self.outrider_all[group])
