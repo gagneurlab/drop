@@ -89,11 +89,9 @@ class ConfigHelper:
     @param assay: either "rna_assay", "dna_assay", as specified in the config
     """
     def getFilePath(self, sampleId, assay_name):
-      assay = self.config[assay_name]
-      #deprecated for stdFileNames from subworkflow sample_annotation
-      print("sampleID", sampleId)
-      print("assay", assay)
-      return self.sample_file_mapping[(self.sample_file_mapping["ASSAY"] == assay) & (self.sample_file_mapping["ID"] == sampleId)]["FILE"] 
+        assay = self.config[assay_name]
+        #deprecated for stdFileNames from subworkflow sample_annotation
+        return self.sample_file_mapping[(self.sample_file_mapping["ASSAY"] == assay) & (self.sample_file_mapping["ID"] == sampleId)]["FILE"] 
       
     
     """
