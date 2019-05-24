@@ -26,6 +26,7 @@ class ConfigHelper:
         # OUTRIDER ids
         self.outrider_all, self.outrider_filtered = self.createOutriderIds(min_ids=config["min_outrider_ids"])
     
+        #print(self.sample_file_mapping.head(5))
     """ 
     Get directory path for processed results
     """
@@ -42,8 +43,9 @@ class ConfigHelper:
     Get sample ID by experiment
     """
     def getSampleIDs(self, experiment):
-        # deprecated for all_vcf
-        return list(self.sample_file_mapping[self.sample_file_mapping["ASSAY"] == experiment][["ID"]]) 
+        ret = list(self.sample_file_mapping[self.sample_file_mapping["ASSAY"] == experiment]["ID"])
+        print("ret",ret[:2])
+        return ret 
     
     """
     Returns vcf and rna files for MAE pipeline
@@ -86,9 +88,12 @@ class ConfigHelper:
     """
     Function for getting the file path given the sampleId and assay (e.g. RNA_seq)
     """
-    def getFilePath(sampleId, assay):
+    def getFilePath(self, sampleId, assay_name):
+      assay = self.config[assay_name]
       #deprecated for stdFileNames from subworkflow sample_annotation
-      return self.sample_file_mapping[(self.sample_file_mapping["ASSAY"] == assay) & (self.sample_file_mapping["ID"] == sampleId)][["FILE"]] 
+      print("sampleID", sampleId)
+      print("assay", assay)
+      return self.sample_file_mapping[(self.sample_file_mapping["ASSAY"] == assay) & (self.sample_file_mapping["ID"] == sampleId)]["FILE"] 
       
     
     """
@@ -97,24 +102,30 @@ class ConfigHelper:
     def createOutriderIds(self, min_ids=40):
         # deprecated for outrider_files
         
-        outrider_group = self.config["outrider_group"]
+        outrider_group_col = self.config["outrider_group"]
         rna_assay = self.config["rna_assay"]
         ids = self.getSampleIDs(self.config["rna_assay"])
         
         # Get unique outrider Groups
         df_outrider = self.sample_annotation[self.sample_annotation[rna_assay].isin(ids)]
-        df_outrider = df_outrider[[rna_assay, outrider_group]].drop_duplicates().copy()
+        df_outrider = df_outrider[[rna_assay, outrider_group_col]].drop_duplicates().copy()
+        #print("df_outrider", df_outrider.head(5))
         
         # assumes that OUTRIDER groups are comma-separated
         # get unique group names
         outrider_groups = []
-        for s in set(df_outrider[[outrider_groups]]):
-            outrider_groups.extend(s.split(',').strip())
+        for s in set(df_outrider[outrider_group_col]):
+            outrider_groups.extend(s.split(','))
+        #print("outrider_groups", outrider_groups)
             
         # collect IDs per group
-        outrider_ids = {og : df_outrider.loc[df_outrider[outrider_group].str.contains('(^|,)' + og + '(,|$)'), rna_assay].tolist() for og in set(outrider_groups)}
+        outrider_ids = {og : df_outrider.loc[df_outrider[outrider_group_col].str.contains('(^|,)' + og + '(,|$)'), rna_assay].tolist() for og in set(outrider_groups)}
+        outrider_filtered = {og: _list for og, _list in outrider_ids.items() if len(_list) > min_ids}
         
-        return outrider_ids, {og: _list for og, _list in outrider_ids.items() if len(_list) > min_ids}
+        #print("outrider ids", outrider_ids)
+        #print()
+        #print("outrider filtered", outrider_filtered)
+        return outrider_ids, outrider_filtered
     
     """
     Get lists of IDs per OUTRIDER group as (all ids, filtered ids)
@@ -126,7 +137,14 @@ class ConfigHelper:
     Wrapper for getting all count files for the specified OUTRIDER group
     """
     def getCountFileByOutriderGroup(self, group):
-        return expand(self.getProcResultsDir() + "/{{annotation}}/counts/{sampleID}.Rds", sampleID=self.outrider_all[group])
+        res = []
+        for sampleid in self.outrider_all[group]:
+            res.append(self.getProcResultsDir() + "/{annotation}/counts/" + str(sampleid) + ".Rds")
+            
+        #print(res)
+        return res
+        # DOES NOT work because expand is defined in Snakemake and not in Python
+        #return expand(self.getProcResultsDir() + "/{{annotation}}/counts/{sampleID}.Rds", sampleID=self.outrider_all[group])
     
     def getGeneAnnotationFile(self, annotation):
         i = self.config["GENE_ANNOTATION_NAMES"].index(annotation)
