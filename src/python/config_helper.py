@@ -136,15 +136,14 @@ class ConfigHelper:
     @param annotation: wildcard specifying the gene annotation version from config["GENE_ANNOTATION_NAMES"]
     @param group: group label of sample, under outrider column in sample annotation
     """
-    def getCountFileByOutriderGroup(self, group):
+    def getCountFileByOutriderGroup(self, annotation, group):
         res = []
         for sampleid in self.outrider_all[group]:
-            res.append(self.getProcResultsDir() + "/{annotation}/counts/" + str(sampleid) + ".Rds")
-            
-        #print(res)
+            res.append(f"{self.getProcDataDir()}/{annotation}/counts/{str(sampleid)}.Rds")
         return res
-        # DOES NOT work because expand is defined in Snakemake and not in Python
+    
         #return expand(self.getProcResultsDir() + "/{{annotation}}/counts/{sampleID}.Rds", sampleID=self.outrider_all[group])
+        # DOES NOT work because expand is defined in Snakemake and not in Python
     
     def getGeneAnnotationFile(self, annotation):
         i = self.config["GENE_ANNOTATION_NAMES"].index(annotation)

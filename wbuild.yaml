@@ -6,7 +6,7 @@ htmlOutputPath: Output/html
 PROJECT_NAME: mll
 
 # INPUT PATHS
-SAMPLE_FILE_MAPPING: /s/project/mll/rawdata/sample_info/sample_file_mapping_test.tsv
+SAMPLE_FILE_MAPPING: /s/project/mll/rawdata/sample_info/sample_file_mapping.tsv
 SAMPLE_ANNOTATION: /s/project/mll/rawdata/sample_info/sample_annotation.tsv  #"/s/project/mitoMultiOmics/raw_data/sample_info/SAMPLE_ANNOTATION_PROKISCH.tsv"
 
 ### GENE ANNOTATION_NAMES must have the same order of annotation files as in GENE_ANNOTATION, COUNT_RANGES AND GENE_INFO
