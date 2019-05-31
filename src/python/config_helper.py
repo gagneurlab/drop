@@ -51,38 +51,22 @@ class ConfigHelper:
     """
     def getMaeIDs(self):
         # rna and exome are the names of the experiments specified in the mapping file
-        
         rna_assay = self.config["rna_assay"]
         dna_assay = self.config["dna_assay"]
-        
         # return nothing, if there aren't any exomes
         if dna_assay not in self.sample_annotation.columns:
-            return []
+            print(dna_assay, "not in columns: ", self.sample_annotation.columns)
+            return [],[]
        
         rnas = self.getSampleIDs(rna_assay)
         vcfs = self.getSampleIDs(dna_assay)
 
         if len(rnas) != len(vcfs):
             print("Unequal number of rna and dna files")
-
-        # TO DO: Check if BOTH rna and dna files exist
-        #for i in range(len(rnas)):
-        #    for i in range(len(vcfs)):
-        #        
-        #        vcf_exists = os.path.exists(self.sample_file_mapping[(self.sample_file_mapping["ID"]==vcfs[i] & (self.sample_file_mapping["ASSAY"]==dna_assay)]["FILE"])
-        #        rna_exists = os.path.exists(self.sample_file_mapping[(self.sample_file_mapping["ID"]==rnas[i] & (self.sample_file_mapping["ASSAY"]==rna_assay)]["FILE"])
-        #        
-        #        if not vcf_exists:
-        #            print("Missing vcf File for sampleID", vcfs[i])
-        #        if not rna_exists:
-        #            print("Missing rna File for sampleID", rnas[i])
-        #            
-        #        if not (vcf_exists and rna_exists):
-        #            rnas.pop(i)
-        #            vcfs.pop(i)
-            
-        return vcfs, rnas  
         
+        print("hello from here")
+        return vcfs, rnas 
+
     
     """Function for getting the file path given the sampleId and assay
     @param sampleId: ID of sample
@@ -187,4 +171,22 @@ class ConfigHelper:
 #        
 #        return vcf.tolist(), rna.tolist()
 
+
+# TO DO: Check if BOTH rna and dna files exist
+#for i in range(len(rnas)):
+#    for i in range(len(vcfs)):
+#        
+#        vcf_exists = os.path.exists(self.sample_file_mapping[(self.sample_file_mapping["ID"]==vcfs[i] & (self.sample_file_mapping["ASSAY"]==dna_assay)]["FILE"])
+#        rna_exists = os.path.exists(self.sample_file_mapping[(self.sample_file_mapping["ID"]==rnas[i] & (self.sample_file_mapping["ASSAY"]==rna_assay)]["FILE"])
+#        
+#        if not vcf_exists:
+#            print("Missing vcf File for sampleID", vcfs[i])
+#        if not rna_exists:
+#            print("Missing rna File for sampleID", rnas[i])
+#            
+#        if not (vcf_exists and rna_exists):
+#            rnas.pop(i)
+#            vcfs.pop(i)
+    
+ 
         
