@@ -46,6 +46,11 @@ class ConfigHelper:
         # deprecated for all_vcf
         return list(self.sample_file_mapping[self.sample_file_mapping["ASSAY"] == experiment]["ID"]) 
     
+    
+    def checkFileExists(self, sampleId, assay):
+        x = self.sample_file_mapping[(self.sample_file_mapping["ASSAY"]==assay) & ((self.sample_file_mapping["ID"]==sampleId))]["FILE"]
+        return os.path.exists(x)
+        
     """
     Returns vcf and rna files for MAE pipeline
     """
@@ -54,19 +59,22 @@ class ConfigHelper:
         rna_assay = self.config["rna_assay"]
         dna_assay = self.config["dna_assay"]
         # return nothing, if there aren't any exomes
-        if dna_assay not in self.sample_annotation.columns:
-            print(dna_assay, "not in columns: ", self.sample_annotation.columns)
-            return [],[]
-       
-        rnas = self.getSampleIDs(rna_assay)
-        vcfs = self.getSampleIDs(dna_assay)
+        
+        self.sample_annotation = self.sample_annotation[pd.notnull(self.sample_annotation[rna_assay])]
+        self.sample_annotation = self.sample_annotation[pd.notnull(self.sample_annotation[dna_assay])]
+        sample_annotation = self.sample_annotation
+        
+        
+        sample_annotation['vcf_exists'] = [self.checkFileExists(x, dna_assay) for x in list(self.sample_annotation[dna_assay])]
+        sample_annotation['rna_exists'] = [self.checkFileExists(x, rna_assay) for x in list(self.sample_annotation[rna_assay])]
+        sample_annotation = sample_annotation[sample_annotation['vcf_exists'] & sample_annotation['rna_exists']]
 
-        if len(rnas) != len(vcfs):
-            print("Unequal number of rna and dna files")
-        
-        
+        vcfs = list(sample_annotation[dna_assay]) 
+        rnas = list(sample_annotation[rna_assay])
         return vcfs, rnas 
 
+      
+        
     
     """Function for getting the file path given the sampleId and assay
     @param sampleId: ID of sample
