@@ -64,7 +64,7 @@ class ConfigHelper:
         if len(rnas) != len(vcfs):
             print("Unequal number of rna and dna files")
         
-        print("hello from here")
+        
         return vcfs, rnas 
 
     
