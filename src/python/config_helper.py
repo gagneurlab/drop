@@ -75,7 +75,10 @@ class ConfigHelper:
     def getFilePath(self, sampleId, assay_name):
         assay = self.config[assay_name]
         #deprecated for stdFileNames from subworkflow sample_annotation
-        return self.sample_file_mapping[(self.sample_file_mapping["ASSAY"] == assay) & (self.sample_file_mapping["ID"] == sampleId)]["FILE"] 
+        self.sample_file_mapping["ID"] = self.sample_file_mapping["ID"].astype(str)
+        path = (self.sample_file_mapping[(self.sample_file_mapping["ASSAY"] == assay) & (self.sample_file_mapping["ID"] == sampleId)]["FILE"]).iloc[0]
+        #print("files", path, "assay", assay, "sampleId", sampleId)
+        return path
       
     
     """
