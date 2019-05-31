@@ -35,6 +35,11 @@ strand_column: COUNT_AS_STRANDED
 inter_feature_column: COUNT_OVERLAP
 min_outrider_ids: 40
 
+
+#### for variants
+RAW_DATA: "Data/helmholtz"
+
+
 # -------- OUTDATED ----------
 #rawdir_proteome: /s/project/mitoMultiOmics/raw_data/proteome
 #RAW_DATA: "Data/helmholtz"
