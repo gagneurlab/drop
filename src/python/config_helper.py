@@ -27,17 +27,18 @@ class ConfigHelper:
         self.outrider_all, self.outrider_filtered = self.createOutriderIds(min_ids=config["min_outrider_ids"])
     
         #print(self.sample_file_mapping.head(5))
-    """ 
-    Get directory path for processed results
-    """
-    def getProcResultsDir(self):
-        return self.config["PROC_RESULTS"] + "/" + self.config["PROJECT_NAME"]
     
     """ 
     Get directory path for processed data
     """
     def getProcDataDir(self):
-        return self.config["PROC_DATA"] + "/" + self.config["PROJECT_NAME"]
+        return self.config["ROOT"] + "/" + self.config["PROJECT_NAME"] + "/processed_data"
+    
+    """ 
+    Get directory path for processed results
+    """
+    def getProcResultsDir(self):
+        return self.config["ROOT"] + "/" + self.config["PROJECT_NAME"] + "/processed_results"
     
     """
     Get sample ID by experiment

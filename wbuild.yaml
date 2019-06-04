@@ -1,13 +1,16 @@
 ---
-webDir: /s/public_webshare/project/genetic_diagnosis/mll
+webDir: /s/public_webshare/project/mll
 projectTitle: MLL Project #Genetic diagnosis of Mendelian disorders
 htmlOutputPath: Output/html
 
 PROJECT_NAME: mll
 
+# OUTPUT PATHS
+ROOT: /s/project
+
 # INPUT PATHS
-SAMPLE_FILE_MAPPING: /s/project/mll/rawdata/sample_info/sample_file_mapping_test2.tsv
-SAMPLE_ANNOTATION: /s/project/mll/rawdata/sample_info/sample_annotation_test2.tsv #/s/project/mll/rawdata/sample_info/sample_annotation.tsv  #"/s/project/mitoMultiOmics/raw_data/sample_info/SAMPLE_ANNOTATION_PROKISCH.tsv"
+SAMPLE_FILE_MAPPING: /s/project/mll/rawdata/sample_info/sample_file_mapping.tsv
+SAMPLE_ANNOTATION: /s/project/mll/rawdata/sample_info/sample_annotation.tsv  #"/s/project/mitoMultiOmics/raw_data/sample_info/SAMPLE_ANNOTATION_PROKISCH.tsv"
 
 ### GENE ANNOTATION_NAMES must have the same order of annotation files as in GENE_ANNOTATION, COUNT_RANGES AND GENE_INFO
 GENE_ANNOTATION: [/s/genomes/human/hg19/gencode29/gencode.v29lift37.annotation.gtf.gz] # used in aberrant_expression/Outrider/FilterCounts.R
@@ -17,17 +20,13 @@ GENE_INFO: [/s/project/genetic_diagnosis/resource/gencode_v29_unique_gene_name.t
 
 CHROMOSOME_FORMAT: UCSC
 
-# OUTPUT PATHS
-PROC_DATA: /s/project/genetic_diagnosis/processed_data
-PROC_RESULTS: /s/project/genetic_diagnosis/processed_results
-
 VEP_VERSION: 94
 #INTER_FEATURE: [0] # Count settings: inter.feature setting values (T: reads mapping to multiple features are dropped), positions correspond to positions in ANNOTATIONS, 0 : F, 1 : T
 fpkmCutoff: 1
 
 # Sample file mapping: assays
-rna_assay: RNA_seq
-dna_assay: vcf
+rna_assay: RNA_ID
+dna_assay: VCF_ID
 
 # Sample annotation
 outrider_group: OUTRIDER_GROUP
