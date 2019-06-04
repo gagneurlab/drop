@@ -12,11 +12,14 @@ class ConfigHelper:
         df_mapping = pd.read_csv(self.config["SAMPLE_FILE_MAPPING"], sep='\t')
         if not list(df_mapping.columns.values)==["ID", "FILE", "ASSAY"]:
             print("File does not correspond to required format with columns [ID | FILE | ASSAY]")
+        
         df_mapping = df_mapping.dropna()
+        
         # Check if file exists 
         df_mapping["existent"] = [os.path.exists(x) for x in df_mapping["FILE"]]
         df_mapping = df_mapping[df_mapping["existent"]]
         self.sample_file_mapping = df_mapping
+        #print(self.sample_file_mapping.tail())
         
         # sample annotation
         #  SAMPLE_ANNOTATION must have assay names as specified in sample-file mappping for ID columns
@@ -48,8 +51,15 @@ class ConfigHelper:
     
     
     def checkFileExists(self, sampleId, assay):
-        x = self.sample_file_mapping[(self.sample_file_mapping["ASSAY"]==assay) & ((self.sample_file_mapping["ID"]==sampleId))]["FILE"].iloc[0]
-        return os.path.exists(x)
+        #print(sampleId, assay)
+        x = self.sample_file_mapping[(self.sample_file_mapping["ASSAY"]==assay) & ((self.sample_file_mapping["ID"]==sampleId))]["FILE"]#.iloc[0]
+        if len(x)<1:
+          print("ENTRY NOT FOUND in sample_file_mapping for sampleId: {} and assay: {}".format(sampleId, assay))
+          return False
+        exists = os.path.exists(x.iloc[0])
+        if not exists:
+          print("FILE NOT FOUND FOR sampleID: ", sampleId, "and assay", assay)
+        return exists
         
     """
     Returns vcf and rna files for MAE pipeline
@@ -58,19 +68,19 @@ class ConfigHelper:
         # rna and exome are the names of the experiments specified in the mapping file
         rna_assay = self.config["rna_assay"]
         dna_assay = self.config["dna_assay"]
+        #print("rna_assay: <{}>, dna_assay: <{}>".format(rna_assay,dna_assay))
         # return nothing, if there aren't any exomes
         
         self.sample_annotation = self.sample_annotation[pd.notnull(self.sample_annotation[rna_assay])]
         self.sample_annotation = self.sample_annotation[pd.notnull(self.sample_annotation[dna_assay])]
-        sample_annotation = self.sample_annotation
         
-        
-        sample_annotation['vcf_exists'] = [self.checkFileExists(x, dna_assay) for x in list(self.sample_annotation[dna_assay])]
-        sample_annotation['rna_exists'] = [self.checkFileExists(x, rna_assay) for x in list(self.sample_annotation[rna_assay])]
-        sample_annotation = sample_annotation[sample_annotation['vcf_exists'] & sample_annotation['rna_exists']]
+        self.sample_annotation['vcf_exists'] = [self.checkFileExists(x, dna_assay) for x in list(self.sample_annotation[dna_assay])]
+        self.sample_annotation['rna_exists'] = [self.checkFileExists(x, rna_assay) for x in list(self.sample_annotation[rna_assay])]
+        self.sample_annotation = self.sample_annotation[self.sample_annotation['vcf_exists'] & self.sample_annotation['rna_exists']]
 
-        vcfs = list(sample_annotation[dna_assay]) 
-        rnas = list(sample_annotation[rna_assay])
+        vcfs = list(self.sample_annotation[dna_assay]) 
+        rnas = list(self.sample_annotation[rna_assay])
+        print("length of vcfs: {}, and rnas: {}".format(len(vcfs), len(rnas)))
         return vcfs, rnas 
 
       
@@ -81,11 +91,15 @@ class ConfigHelper:
     @param assay: either "rna_assay", "dna_assay", as specified in the config
     """
     def getFilePath(self, sampleId, assay_name):
+        #print("In function getFilePath: --sampleID: {}, assay_name: {}".format(sampleId, assay_name))
         assay = self.config[assay_name]
         #deprecated for stdFileNames from subworkflow sample_annotation
         self.sample_file_mapping["ID"] = self.sample_file_mapping["ID"].astype(str)
+        
+        #print(self.sample_file_mapping)
         path = (self.sample_file_mapping[(self.sample_file_mapping["ASSAY"] == assay) & (self.sample_file_mapping["ID"] == sampleId)]["FILE"]).iloc[0]
-        #print("files", path, "assay", assay, "sampleId", sampleId)
+        
+        #print("file path", path)
         return path
       
     
