@@ -48,7 +48,7 @@ class ConfigHelper:
     
     
     def checkFileExists(self, sampleId, assay):
-        x = self.sample_file_mapping[(self.sample_file_mapping["ASSAY"]==assay) & ((self.sample_file_mapping["ID"]==sampleId))]["FILE"]
+        x = self.sample_file_mapping[(self.sample_file_mapping["ASSAY"]==assay) & ((self.sample_file_mapping["ID"]==sampleId))]["FILE"].iloc[0]
         return os.path.exists(x)
         
     """
