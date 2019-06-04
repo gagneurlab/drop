@@ -37,6 +37,7 @@ min_outrider_ids: 40
 
 #### for variants
 RAW_DATA: "Data/helmholtz"
+gene_assembly: "hg19" ### 
 
 
 # -------- OUTDATED ----------

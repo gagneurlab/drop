@@ -12,11 +12,14 @@ class ConfigHelper:
         df_mapping = pd.read_csv(self.config["SAMPLE_FILE_MAPPING"], sep='\t')
         if not list(df_mapping.columns.values)==["ID", "FILE", "ASSAY"]:
             print("File does not correspond to required format with columns [ID | FILE | ASSAY]")
+        
         df_mapping = df_mapping.dropna()
+        
         # Check if file exists 
         df_mapping["existent"] = [os.path.exists(x) for x in df_mapping["FILE"]]
         df_mapping = df_mapping[df_mapping["existent"]]
         self.sample_file_mapping = df_mapping
+        #print(self.sample_file_mapping.tail())
         
         # sample annotation
         #  SAMPLE_ANNOTATION must have assay names as specified in sample-file mappping for ID columns
@@ -47,6 +50,18 @@ class ConfigHelper:
         # deprecated for all_vcf
         return list(self.sample_file_mapping[self.sample_file_mapping["ASSAY"] == experiment]["ID"]) 
     
+    
+    def checkFileExists(self, sampleId, assay):
+        #print(sampleId, assay)
+        x = self.sample_file_mapping[(self.sample_file_mapping["ASSAY"]==assay) & ((self.sample_file_mapping["ID"]==sampleId))]["FILE"]#.iloc[0]
+        if len(x)<1:
+          print("ENTRY NOT FOUND in sample_file_mapping for sampleId: {} and assay: {}".format(sampleId, assay))
+          return False
+        exists = os.path.exists(x.iloc[0])
+        if not exists:
+          print("FILE NOT FOUND FOR sampleID: ", sampleId, "and assay", assay)
+        return exists
+        
     """
     Returns vcf and rna files for MAE pipeline
     """
@@ -54,29 +69,39 @@ class ConfigHelper:
         # rna and exome are the names of the experiments specified in the mapping file
         rna_assay = self.config["rna_assay"]
         dna_assay = self.config["dna_assay"]
+        #print("rna_assay: <{}>, dna_assay: <{}>".format(rna_assay,dna_assay))
         # return nothing, if there aren't any exomes
-        if dna_assay not in self.sample_annotation.columns:
-            print(dna_assay, "not in columns: ", self.sample_annotation.columns)
-            return [],[]
-       
-        rnas = self.getSampleIDs(rna_assay)
-        vcfs = self.getSampleIDs(dna_assay)
+        
+        self.sample_annotation = self.sample_annotation[pd.notnull(self.sample_annotation[rna_assay])]
+        self.sample_annotation = self.sample_annotation[pd.notnull(self.sample_annotation[dna_assay])]
+        
+        self.sample_annotation['vcf_exists'] = [self.checkFileExists(x, dna_assay) for x in list(self.sample_annotation[dna_assay])]
+        self.sample_annotation['rna_exists'] = [self.checkFileExists(x, rna_assay) for x in list(self.sample_annotation[rna_assay])]
+        self.sample_annotation = self.sample_annotation[self.sample_annotation['vcf_exists'] & self.sample_annotation['rna_exists']]
 
-        if len(rnas) != len(vcfs):
-            print("Unequal number of rna and dna files")
-        
-        
+        vcfs = list(self.sample_annotation[dna_assay]) 
+        rnas = list(self.sample_annotation[rna_assay])
+        print("length of vcfs: {}, and rnas: {}".format(len(vcfs), len(rnas)))
         return vcfs, rnas 
 
+      
+        
     
     """Function for getting the file path given the sampleId and assay
     @param sampleId: ID of sample
     @param assay: either "rna_assay", "dna_assay", as specified in the config
     """
     def getFilePath(self, sampleId, assay_name):
+        #print("In function getFilePath: --sampleID: {}, assay_name: {}".format(sampleId, assay_name))
         assay = self.config[assay_name]
         #deprecated for stdFileNames from subworkflow sample_annotation
-        return self.sample_file_mapping[(self.sample_file_mapping["ASSAY"] == assay) & (self.sample_file_mapping["ID"] == sampleId)]["FILE"] 
+        self.sample_file_mapping["ID"] = self.sample_file_mapping["ID"].astype(str)
+        
+        #print(self.sample_file_mapping)
+        path = (self.sample_file_mapping[(self.sample_file_mapping["ASSAY"] == assay) & (self.sample_file_mapping["ID"] == sampleId)]["FILE"]).iloc[0]
+        
+        #print("file path", path)
+        return path
       
     
     """
