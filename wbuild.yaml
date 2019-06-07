@@ -23,6 +23,7 @@ COUNT_RANGES: [/s/project/genetic_diagnosis/processed_data/mll/v29/counts/exons_
 GENE_INFO: [/s/project/genetic_diagnosis/resource/gencode_v29_unique_gene_name.tsv] # used in aberrant_expression/Counting/mergeCounts.R as /s/project/genetic_diagnosis/resource/gencode_{annotation}_unique_gene_name.tsv
 
 CHROMOSOME_FORMAT: UCSC
+CHROMOSOME_STYLE: "" ### can be "chr"
 
 #### Aberrant Expression
 outrider_group: OUTRIDER_GROUP
