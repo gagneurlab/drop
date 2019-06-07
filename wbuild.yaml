@@ -1,18 +1,22 @@
 ---
 webDir: /s/public_webshare/project/mll
-projectTitle: MLL Project #Genetic diagnosis of Mendelian disorders
+projectTitle: MLL Project
 htmlOutputPath: Output/html
 
 PROJECT_NAME: mll
 
-# OUTPUT PATHS
+# OUTPUT Directory
 ROOT: /s/project
 
-# INPUT PATHS
+# INPUT: Sample annotation
 SAMPLE_FILE_MAPPING: /s/project/mll/rawdata/sample_info/sample_file_mapping.tsv
 SAMPLE_ANNOTATION: /s/project/mll/rawdata/sample_info/sample_annotation.tsv  #"/s/project/mitoMultiOmics/raw_data/sample_info/SAMPLE_ANNOTATION_PROKISCH.tsv"
+# Sample file mapping: assays
+rna_assay: RNA_ID
+dna_assay: VCF_ID
 
-### GENE ANNOTATION_NAMES must have the same order of annotation files as in GENE_ANNOTATION, COUNT_RANGES AND GENE_INFO
+# INPUT: Gene Annotation
+# GENE ANNOTATION_NAMES must have the same order of annotation files as in GENE_ANNOTATION, COUNT_RANGES AND GENE_INFO
 GENE_ANNOTATION: [/s/genomes/human/hg19/gencode29/gencode.v29lift37.annotation.gtf.gz] # used in aberrant_expression/Outrider/FilterCounts.R
 GENE_ANNOTATION_NAMES: [v29] # before: ANNOTATIONS
 COUNT_RANGES: [/s/project/genetic_diagnosis/processed_data/mll/v29/counts/exons_by_gene_op.Rds] # used in aberrant_expression/Counting/countReads.R
@@ -20,30 +24,23 @@ GENE_INFO: [/s/project/genetic_diagnosis/resource/gencode_v29_unique_gene_name.t
 
 CHROMOSOME_FORMAT: UCSC
 
-VEP_VERSION: 94
-#INTER_FEATURE: [0] # Count settings: inter.feature setting values (T: reads mapping to multiple features are dropped), positions correspond to positions in ANNOTATIONS, 0 : F, 1 : T
-fpkmCutoff: 1
-
-# Sample file mapping: assays
-rna_assay: RNA_ID
-dna_assay: VCF_ID
-
-# Sample annotation
+#### Aberrant Expression
 outrider_group: OUTRIDER_GROUP
 strand_column: COUNT_AS_STRANDED
 inter_feature_column: COUNT_OVERLAP
 min_outrider_ids: 40
+fpkmCutoff: 1
 
 
-#### for variants
+#### Variant Annotation
 RAW_DATA: "Data/helmholtz"
-gene_assembly: "hg19" ### 
+gene_assembly: "hg19"
+VEP_VERSION: 94
 
 
-# -------- OUTDATED ----------
-#rawdir_proteome: /s/project/mitoMultiOmics/raw_data/proteome
-#RAW_DATA: "Data/helmholtz"
-# From sample_annotation workflow
-#RAWDATADIR: "Data/helmholtz"
-#VEPDATADIR: "/s/project/metaIBD/vepAnnoObj/sampleObj"
-#SANITYCHECKDIR: "/s/project/mitoMultiOmics/sanitychecks"
+#### Monoallelic Expression
+
+
+
+#### Aberrant Splicing
+
