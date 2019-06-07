@@ -1,16 +1,16 @@
 ---
 webDir: /s/public_webshare/project/mll
-projectTitle: MLL Project
+projectTitle: GTEx Genetic Diagnosis
 htmlOutputPath: Output/html
 
-PROJECT_NAME: mll
+PROJECT_NAME: gtex_genetic_diagnosis
 
 # OUTPUT Directory
 ROOT: /s/project
 
 # INPUT: Sample annotation
-SAMPLE_FILE_MAPPING: /s/project/mll/rawdata/sample_info/sample_file_mapping.tsv
-SAMPLE_ANNOTATION: /s/project/mll/rawdata/sample_info/sample_annotation.tsv  #"/s/project/mitoMultiOmics/raw_data/sample_info/SAMPLE_ANNOTATION_PROKISCH.tsv"
+SAMPLE_FILE_MAPPING: /s/project/gtex_genetic_diagnosis/sample_file_mapping.tsv # TODO
+SAMPLE_ANNOTATION: /s/project/sra-download/dbGaP-11206/GTEx_v7_Annotations_SampleAttributesDS.txt
 # Sample file mapping: assays
 rna_assay: RNA_ID
 dna_assay: VCF_ID
@@ -21,6 +21,7 @@ GENE_ANNOTATION: [/s/genomes/human/hg19/gencode29/gencode.v29lift37.annotation.g
 GENE_ANNOTATION_NAMES: [v29] # before: ANNOTATIONS
 COUNT_RANGES: [/s/project/genetic_diagnosis/processed_data/mll/v29/counts/exons_by_gene_op.Rds] # used in aberrant_expression/Counting/countReads.R
 GENE_INFO: [/s/project/genetic_diagnosis/resource/gencode_v29_unique_gene_name.tsv] # used in aberrant_expression/Counting/mergeCounts.R as /s/project/genetic_diagnosis/resource/gencode_{annotation}_unique_gene_name.tsv
+
 
 CHROMOSOME_FORMAT: UCSC
 
@@ -33,7 +34,6 @@ fpkmCutoff: 1
 
 
 #### Variant Annotation
-RAW_DATA: "Data/helmholtz"
 gene_assembly: "hg19"
 VEP_VERSION: 94
 
