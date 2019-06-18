@@ -19,7 +19,7 @@ dna_assay: WGS
 # GENE ANNOTATION_NAMES must have the same order of annotation files as in GENE_ANNOTATION, COUNT_RANGES AND GENE_INFO
 GENE_ANNOTATION: [/s/genomes/human/hg19/gencode29/gencode.v29lift37.annotation.gtf.gz,
                   /s/project/gtex_genetic_diagnosis/gencode.v19.genes.v7.patched_contigs.gtf] # used in aberrant_expression/Outrider/FilterCounts.R
-GENE_ANNOTATION_NAMES: [v29, v19] # before: ANNOTATIONS
+GENE_ANNOTATION_NAMES: [v29]#, v19] # before: ANNOTATIONS
 COUNT_RANGES: [/s/project/genetic_diagnosis/processed_data/gtex/v29/counts/exons_by_gene.Rds,
                /s/project/genetic_diagnosis/processed_data/gtex/v19/counts/exons_by_gene.Rds] # used in aberrant_expression/Counting/countReads.R
 GENE_INFO: [/s/project/genetic_diagnosis/resource/gencode_v29_unique_gene_name.tsv,
