@@ -1,5 +1,5 @@
 ---
-webDir: /s/public_webshare/project/mll
+webDir: /s/public_webshare/project/gtex_genetic_diagnosis
 projectTitle: GTEx Genetic Diagnosis
 htmlOutputPath: Output/html
 
@@ -9,26 +9,31 @@ PROJECT_NAME: gtex_genetic_diagnosis
 ROOT: /s/project
 
 # INPUT: Sample annotation
-SAMPLE_FILE_MAPPING: /s/project/gtex_genetic_diagnosis/sample_file_mapping.tsv # TODO
-SAMPLE_ANNOTATION: /s/project/sra-download/dbGaP-11206/GTEx_v7_Annotations_SampleAttributesDS.txt
+SAMPLE_FILE_MAPPING: /s/project/gtex_genetic_diagnosis/processed_data/sample_file_mapping.tsv # TODO
+SAMPLE_ANNOTATION: /s/project/gtex_genetic_diagnosis/processed_data/sample_annotation.tsv
 # Sample file mapping: assays
-rna_assay: RNA_ID
-dna_assay: VCF_ID
+rna_assay: RNA-Seq
+dna_assay: WGS
 
 # INPUT: Gene Annotation
 # GENE ANNOTATION_NAMES must have the same order of annotation files as in GENE_ANNOTATION, COUNT_RANGES AND GENE_INFO
-GENE_ANNOTATION: [/s/genomes/human/hg19/gencode29/gencode.v29lift37.annotation.gtf.gz] # used in aberrant_expression/Outrider/FilterCounts.R
-GENE_ANNOTATION_NAMES: [v29] # before: ANNOTATIONS
-COUNT_RANGES: [/s/project/genetic_diagnosis/processed_data/mll/v29/counts/exons_by_gene_op.Rds] # used in aberrant_expression/Counting/countReads.R
-GENE_INFO: [/s/project/genetic_diagnosis/resource/gencode_v29_unique_gene_name.tsv] # used in aberrant_expression/Counting/mergeCounts.R as /s/project/genetic_diagnosis/resource/gencode_{annotation}_unique_gene_name.tsv
-
-
-CHROMOSOME_FORMAT: UCSC
+GENE_ANNOTATION: [/s/genomes/human/hg19/gencode29/gencode.v29lift37.annotation.gtf.gz,
+                  /s/project/gtex_genetic_diagnosis/gencode.v19.genes.v7.patched_contigs.gtf] # used in aberrant_expression/Outrider/FilterCounts.R
+GENE_ANNOTATION_NAMES: [v29, v19] # before: ANNOTATIONS
+COUNT_RANGES: [/s/project/genetic_diagnosis/processed_data/gtex/v29/counts/exons_by_gene.Rds,
+               /s/project/genetic_diagnosis/processed_data/gtex/v19/counts/exons_by_gene.Rds] # used in aberrant_expression/Counting/countReads.R
+GENE_INFO: [/s/project/genetic_diagnosis/resource/gencode_v29_unique_gene_name.tsv,
+            /s/project/genetic_diagnosis/resource/gencode_v19_unique_gene_name.tsv] # used in aberrant_expression/Counting/mergeCounts.R as /s/project/genetic_diagnosis/resource/gencode_{annotation}_unique_gene_name.tsv
 
 #### Aberrant Expression
-outrider_group: OUTRIDER_GROUP
+# must be present in sample-file mapping
+outrider_group: OUTRIDER_GROUP # TODO: change to outrider_group_column
+count_mode_column: COUNT_MODE
+paired_end_column: PAIRED_END
 strand_column: COUNT_AS_STRANDED
 inter_feature_column: COUNT_OVERLAP
+chr_format_column: CHROMOSOME_STYLE
+
 min_outrider_ids: 40
 fpkmCutoff: 1
 
