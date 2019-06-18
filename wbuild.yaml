@@ -3,7 +3,7 @@ webDir: /s/public_webshare/project/mll
 projectTitle: MLL Project
 htmlOutputPath: Output/html
 
-PROJECT_NAME: mll
+PROJECT_NAME: mll ### Change to data set maybe?
 
 # OUTPUT Directory
 ROOT: /s/project
