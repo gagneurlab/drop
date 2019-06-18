@@ -3,7 +3,7 @@ webDir: /s/public_webshare/project/mll
 projectTitle: MLL Project
 htmlOutputPath: Output/html
 
-PROJECT_NAME: mll
+PROJECT_NAME: mll ### Change name PROJECT_NAME to DATASET_NAME maybe? PROJECT_NAME can be confused with projectTitle from above
 
 # OUTPUT Directory
 ROOT: /s/project
