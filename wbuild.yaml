@@ -10,8 +10,8 @@ ROOT: /s/project
 
 # INPUT: Sample annotation
 SAMPLE_FILE_MAPPING: /s/project/mll/rawdata/sample_info/sample_file_mapping.tsv
-SAMPLE_ANNOTATION: /s/project/mll/rawdata/sample_info/sample_annotation.tsv  #"/s/project/mitoMultiOmics/raw_data/sample_info/SAMPLE_ANNOTATION_PROKISCH.tsv"
-# Sample file mapping: assays
+SAMPLE_ANNOTATION: /s/project/mll/rawdata/sample_info/sample_annotation.tsv  
+# For SAMPLE_FILE_MAPPING: assays
 rna_assay: RNA_ID
 dna_assay: VCF_ID
 
