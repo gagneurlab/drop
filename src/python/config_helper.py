@@ -35,13 +35,13 @@ class ConfigHelper:
     Get directory path for processed data
     """
     def getProcDataDir(self):
-        return self.config["ROOT"] + "/" + self.config["PROJECT_NAME"] + "/processed_data"
+        return self.config["ROOT"] + "/" + self.config["DATASET_NAME"] + "/processed_data"
     
     """ 
     Get directory path for processed results
     """
     def getProcResultsDir(self):
-        return self.config["ROOT"] + "/" + self.config["PROJECT_NAME"] + "/processed_results"
+        return self.config["ROOT"] + "/" + self.config["DATASET_NAME"] + "/processed_results"
     
     """
     Get sample ID by experiment
