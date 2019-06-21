@@ -28,6 +28,9 @@ CHROMOSOME_FORMAT: UCSC
 outrider_group: OUTRIDER_GROUP
 strand_column: COUNT_AS_STRANDED
 inter_feature_column: COUNT_OVERLAP
+paired_end_column: PAIRED_END
+count_mode_column: COUNT_MODE
+
 min_outrider_ids: 40
 fpkmCutoff: 1
 
