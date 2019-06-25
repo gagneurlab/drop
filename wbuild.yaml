@@ -26,10 +26,11 @@ CHROMOSOME_FORMAT: UCSC
 
 #### Aberrant Expression
 outrider_group: OUTRIDER_GROUP
-strand_column: COUNT_AS_STRANDED
+strand_column: COUNT_AS_STRANDED # deprecated?
 inter_feature_column: COUNT_OVERLAP
 paired_end_column: PAIRED_END
 count_mode_column: COUNT_MODE
+strand_type: STRAND_TYPE
 
 min_outrider_ids: 40
 fpkmCutoff: 1
