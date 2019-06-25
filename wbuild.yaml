@@ -2,6 +2,7 @@
 webDir: /s/public_webshare/project/mll
 projectTitle: MLL Project
 htmlOutputPath: Output/html
+fileRegex: .*\.R
 
 PROJECT_NAME: mll
 

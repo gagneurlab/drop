@@ -1,9 +1,14 @@
 import pandas as pd
 import os
+import wbuild.utils as wbu
 
 class ConfigHelper:
     
     def __init__(self, config):
+
+        if not config:
+            wconf = wbu.Config()
+            config = wconf.conf_dict
         self.config = config
         
         # sample-file mappping: reading and cleaning 
@@ -27,7 +32,7 @@ class ConfigHelper:
         self.sample_annotation = pd.read_csv(sa_file, sep='\t')
         
         # OUTRIDER ids
-        self.outrider_all, self.outrider_filtered = self.createOutriderIds(min_ids=config["min_outrider_ids"])
+        self.outrider_all, self.outrider_filtered = self.createOutriderIds(min_ids=self.config["min_outrider_ids"])
     
         #print(self.sample_file_mapping.head(5))
     
@@ -127,7 +132,9 @@ class ConfigHelper:
         #print("outrider_groups", outrider_groups)
             
         # collect IDs per group
-        outrider_ids = {og : df_outrider.loc[df_outrider[outrider_group_col].str.contains('(^|,)' + og + '(,|$)'), rna_assay].tolist() for og in set(outrider_groups)}
+        outrider_ids = {og : df_outrider.loc[
+            df_outrider[outrider_group_col].str.contains('(^|,)' + og + '(,|$)'),
+            rna_assay].tolist() for og in set(outrider_groups)}
         outrider_filtered = {og: _list for og, _list in outrider_ids.items() if len(_list) > min_ids}
         
         #print("outrider ids", outrider_ids)
