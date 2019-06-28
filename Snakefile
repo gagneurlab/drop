@@ -117,4 +117,7 @@ rule proteomics:
         proteomics("../proteomics-pipeline/Output/html/readme.html")
     output:
         touch("../proteomics-pipeline/Output/all.done")
-        
+
+rule rulegraph:
+    shell: "snakemake --rulegraph | dot -Tsvg -Grankdir=TB > {config[htmlOutputPath]}/dep.svg"
+

@@ -15,7 +15,7 @@ class ConfigHelper:
         #  SAMPLE_FILE_MAPPING has to have the following structure:
         #  [ID | FILE | ASSAY ] , ASSAY can be for example RNA_Seq
         df_mapping = pd.read_csv(self.config["SAMPLE_FILE_MAPPING"], sep='\t')
-        if not list(df_mapping.columns.values)==["ID", "FILE", "ASSAY"]:
+        if not set(df_mapping.columns.values) == {"ID", "FILE", "ASSAY"}:
             print("File does not correspond to required format with columns [ID | FILE | ASSAY]")
         
         df_mapping = df_mapping.dropna()
@@ -117,7 +117,7 @@ class ConfigHelper:
         
         outrider_group_col = self.config["outrider_group"]
         rna_assay = self.config["rna_assay"]
-        ids = self.getSampleIDs(self.config["rna_assay"])
+        ids = self.getSampleIDs(rna_assay)
         
         # Get unique outrider Groups
         df_outrider = self.sample_annotation[self.sample_annotation[rna_assay].isin(ids)]
@@ -161,13 +161,13 @@ class ConfigHelper:
     
         #return expand(self.getProcResultsDir() + "/{{annotation}}/counts/{sampleID}.Rds", sampleID=self.outrider_all[group])
         # DOES NOT work because expand is defined in Snakemake and not in Python
-    
+
     def getGeneAnnotationFile(self, annotation):
         ## ANNOTATION IS NOW A KEY TO DICTIONARY
         # deprecated --- i = self.config["GENE_ANNOTATION_NAMES"].index(annotation)
         return self.config["GENE_ANNOTATION"][annotation]
-       
-        
+
+ 
 #    def mae_files(sa_file = config["SAMPLE_ANNOTATION"]):
 #        
 #        anno = pd.read_csv(sa_file, sep='\t')
