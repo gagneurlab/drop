@@ -18,9 +18,6 @@ dna_assay: VCF_ID
 
 # INPUT: Gene Annotation
 GENE_ANNOTATION: {"v29": "/s/genomes/human/hg19/gencode29/gencode.v29lift37.annotation.gtf.gz"}
-COUNT_RANGES: {"v29": "/s/project/genetic_diagnosis/processed_data/mll/v29/counts/exons_by_gene_op.Rds"} # used in aberrant_expression/Counting/countReads.R
-GENE_INFO: {"v29": "/s/project/genetic_diagnosis/resource/gencode_v29_unique_gene_name.tsv"} # used in aberrant_expression/Counting/mergeCounts.R 
-
 CHROMOSOME_FORMAT_rna: UCSC
 CHROMOSOME_FORMAT_dna: NCBI
 
@@ -31,6 +28,7 @@ strand_column: COUNT_AS_STRANDED
 inter_feature_column: COUNT_OVERLAP
 paired_end_column: PAIRED_END
 count_mode_column: COUNT_MODE
+strand_type_column: STRAND_TYPE
 
 min_outrider_ids: 40
 fpkmCutoff: 1

@@ -60,11 +60,11 @@ class ConfigHelper:
         #print(sampleId, assay)
         x = self.sample_file_mapping[(self.sample_file_mapping["ASSAY"]==assay) & ((self.sample_file_mapping["ID"]==sampleId))]["FILE"]#.iloc[0]
         if len(x)<1:
-          print("ENTRY NOT FOUND in sample_file_mapping for sampleId: {} and assay: {}".format(sampleId, assay))
-          return False
+            print("ENTRY NOT FOUND in sample_file_mapping for sampleId: {} and assay: {}".format(sampleId, assay))
+            return False
         exists = os.path.exists(x.iloc[0])
         if not exists:
-          print("FILE NOT FOUND FOR sampleID: ", sampleId, "and assay", assay)
+            print("FILE NOT FOUND FOR sampleID: ", sampleId, "and assay", assay)
         return exists
         
     """
@@ -166,14 +166,6 @@ class ConfigHelper:
         ## ANNOTATION IS NOW A KEY TO DICTIONARY
         # deprecated --- i = self.config["GENE_ANNOTATION_NAMES"].index(annotation)
         return self.config["GENE_ANNOTATION"][annotation]
-        
-    def getGeneInfoFile(self, annotation):
-        # deprecated --- i = self.config["GENE_ANNOTATION_NAMES"].index(annotation)
-        return self.config["GENE_INFO"][annotation]
-        
-    def getCountRangesFile(self, annotation):
-        # deprecated --- i = self.config["GENE_ANNOTATION_NAMES"].index(annotation)
-        return self.config["COUNT_RANGES"][annotation]
     
 
         
