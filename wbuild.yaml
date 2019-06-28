@@ -22,8 +22,8 @@ COUNT_RANGES: {"v29": "/s/project/genetic_diagnosis/processed_data/mll/v29/count
 GENE_INFO: {"v29": "/s/project/genetic_diagnosis/resource/gencode_v29_unique_gene_name.tsv"} # used in aberrant_expression/Counting/mergeCounts.R 
 
 CHROMOSOME_FORMAT: UCSC ### Delete this, needed separate formats if formats for vcf and bam do not match
-CHROMOSOME_FORMAT_bam: UCSC
-CHROMOSOME_FORMAT_vcf: NCBI
+CHROMOSOME_FORMAT_rna: UCSC
+CHROMOSOME_FORMAT_dna: NCBI
 
 
 #### Aberrant Expression
