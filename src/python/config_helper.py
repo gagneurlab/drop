@@ -154,19 +154,19 @@ class ConfigHelper:
     
         #return expand(self.getProcResultsDir() + "/{{annotation}}/counts/{sampleID}.Rds", sampleID=self.outrider_all[group])
         # DOES NOT work because expand is defined in Snakemake and not in Python
-    
+
     def getGeneAnnotationFile(self, annotation):
-        i = self.config["GENE_ANNOTATION_NAMES"].index(annotation)
-        return self.config["GENE_ANNOTATION"][i]
+        ## ANNOTATION IS NOW A KEY TO DICTIONARY
+        # deprecated --- i = self.config["GENE_ANNOTATION_NAMES"].index(annotation)
+        return self.config["GENE_ANNOTATION"][annotation]
         
     def getGeneInfoFile(self, annotation):
-        i = self.config["GENE_ANNOTATION_NAMES"].index(annotation)
-        return self.config["GENE_INFO"][i]
+        # deprecated --- i = self.config["GENE_ANNOTATION_NAMES"].index(annotation)
+        return self.config["GENE_INFO"][annotation]
         
     def getCountRangesFile(self, annotation):
-        i = self.config["GENE_ANNOTATION_NAMES"].index(annotation)
-        return self.config["COUNT_RANGES"][i]
-    
+        # deprecated --- i = self.config["GENE_ANNOTATION_NAMES"].index(annotation)
+        return self.config["COUNT_RANGES"][annotation]
 
         
         
