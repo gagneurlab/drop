@@ -2,9 +2,6 @@ import pandas as pd
 import os
 import numpy as np
 
-configfile: "wbuild.yaml"
-
-
 
 # 1 aberrant Expression
 subworkflow aberrantExp:
@@ -12,8 +9,6 @@ subworkflow aberrantExp:
         "../aberrant-expression-pipeline"
     snakefile:
         "../aberrant-expression-pipeline/Snakefile"
-    configfile:
-        "../aberrant-expression-pipeline/wbuild.yaml"
 
 # 2 aberrant Splicing
 subworkflow aberrantSplicing:
@@ -21,8 +16,6 @@ subworkflow aberrantSplicing:
         "../aberrant-splicing-pipeline"
     snakefile:
         "../aberrant-splicing-pipeline/Snakefile"
-    configfile:
-        "../aberrant-splicing-pipeline/wbuild.yaml"
 
 # 3 mae
 subworkflow mae:
@@ -30,8 +23,6 @@ subworkflow mae:
         "../mae-pipeline"
     snakefile:
         "../mae-pipeline/Snakefile"
-    configfile:
-        "../mae-pipeline/wbuild.yaml"
 
 # 4 variants
 subworkflow variants:
@@ -39,8 +30,6 @@ subworkflow variants:
         "../variant-annotation-pipeline"
     snakefile:
         "../variant-annotation-pipeline/Snakefile"
-    configfile:
-        "../variant-annotation-pipeline/wbuild.yaml"
 
 # 5 proteomics
 subworkflow proteomics:
@@ -48,9 +37,6 @@ subworkflow proteomics:
         "../proteomics-pipeline"
     snakefile:
         "../proteomics-pipeline/Snakefile"
-    configfile:
-        "../proteomics-pipeline/wbuild.yaml"
-
 
 
 
