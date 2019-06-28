@@ -1,0 +1,11 @@
+[submodule "aberrant-expression-pipeline"]
+	path = ../aberrant-expression-pipeline
+	url = git@i12g-gagneurweb.informatik.tu-muenchen.de:gagneurlab/aberrant-expression-pipeline.git
+
+[submodule "mae-pipeline"]
+        path = ../mae-pipeline
+        url = git@i12g-gagneurweb.informatik.tu-muenchen.de:gagneurlab/mae-pipeline.git
+
+
+
+
