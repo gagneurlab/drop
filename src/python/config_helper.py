@@ -166,9 +166,7 @@ class ConfigHelper:
         ## ANNOTATION IS NOW A KEY TO DICTIONARY
         # deprecated --- i = self.config["GENE_ANNOTATION_NAMES"].index(annotation)
         return self.config["GENE_ANNOTATION"][annotation]
-    
-
-        
+       
         
 #    def mae_files(sa_file = config["SAMPLE_ANNOTATION"]):
 #        
