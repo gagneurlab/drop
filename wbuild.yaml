@@ -17,9 +17,10 @@ rna_assay: RNA_ID
 dna_assay: VCF_ID
 
 # INPUT: Gene Annotation
-# GENE ANNOTATION_NAMES must have the same order of annotation files as in GENE_ANNOTATION, COUNT_RANGES AND GENE_INFO
-GENE_ANNOTATION: [/s/genomes/human/hg19/gencode29/gencode.v29lift37.annotation.gtf.gz] # used in aberrant_expression/Outrider/FilterCounts.R
-GENE_ANNOTATION_NAMES: [v29] # before: ANNOTATIONS
+GENE_ANNOTATION: {"v29": "/s/genomes/human/hg19/gencode29/gencode.v29lift37.annotation.gtf.gz"}
+#GENE_ANNOTATION: [/s/genomes/human/hg19/gencode29/gencode.v29lift37.annotation.gtf.gz] # used in aberrant_expression/Outrider/FilterCounts.R
+#GENE_ANNOTATION_NAMES: [v29] # before: ANNOTATIONS
+
 COUNT_RANGES: [/s/project/genetic_diagnosis/processed_data/mll/v29/counts/exons_by_gene_op.Rds] # used in aberrant_expression/Counting/countReads.R
 GENE_INFO: [/s/project/genetic_diagnosis/resource/gencode_v29_unique_gene_name.tsv] # used in aberrant_expression/Counting/mergeCounts.R 
 
