@@ -2,6 +2,8 @@ import pandas as pd
 import os
 import wbuild.utils as wbu
 from snakemake.logging import logger
+import warnings
+warnings.filterwarnings("ignore", 'This pattern has match groups')
 
 class ConfigHelper:
     
@@ -62,11 +64,11 @@ class ConfigHelper:
         #print(sampleId, assay)
         x = self.sample_file_mapping[(self.sample_file_mapping["ASSAY"]==assay) & ((self.sample_file_mapping["ID"]==sampleId))]["FILE"]#.iloc[0]
         if len(x)<1:
-          print("ENTRY NOT FOUND in sample_file_mapping for sampleId: {} and assay: {}".format(sampleId, assay))
-          return False
+            print("ENTRY NOT FOUND in sample_file_mapping for sampleId: {} and assay: {}".format(sampleId, assay))
+            return False
         exists = os.path.exists(x.iloc[0])
         if not exists:
-          print("FILE NOT FOUND FOR sampleID: ", sampleId, "and assay", assay)
+            print("FILE NOT FOUND FOR sampleID: ", sampleId, "and assay", assay)
         return exists
         
     """
@@ -165,20 +167,12 @@ class ConfigHelper:
         # DOES NOT work because expand is defined in Snakemake and not in Python
     
     def getGeneAnnotationFile(self, annotation):
-        i = self.config["GENE_ANNOTATION_NAMES"].index(annotation)
-        return self.config["GENE_ANNOTATION"][i]
-        
-    def getGeneInfoFile(self, annotation):
-        i = self.config["GENE_ANNOTATION_NAMES"].index(annotation)
-        return self.config["GENE_INFO"][i]
-        
-    def getCountRangesFile(self, annotation):
-        i = self.config["GENE_ANNOTATION_NAMES"].index(annotation)
-        return self.config["COUNT_RANGES"][i]
-    
+        ## ANNOTATION IS NOW A KEY TO DICTIONARY
+        # deprecated --- i = self.config["GENE_ANNOTATION_NAMES"].index(annotation)
+        return self.config["GENE_ANNOTATION"][annotation]
 
-        
-        
+
+
 #    def mae_files(sa_file = config["SAMPLE_ANNOTATION"]):
 #        
 #        anno = pd.read_csv(sa_file, sep='\t')

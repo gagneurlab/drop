@@ -17,33 +17,31 @@ rna_assay: RNA_ID
 dna_assay: VCF_ID
 
 # INPUT: Gene Annotation
-# GENE ANNOTATION_NAMES must have the same order of annotation files as in GENE_ANNOTATION, COUNT_RANGES AND GENE_INFO
-GENE_ANNOTATION: [/s/genomes/human/hg19/gencode29/gencode.v29lift37.annotation.gtf.gz] # used in aberrant_expression/Outrider/FilterCounts.R
-GENE_ANNOTATION_NAMES: [v29] # before: ANNOTATIONS
-COUNT_RANGES: [/s/project/genetic_diagnosis/processed_data/mll/v29/counts/exons_by_gene_op.Rds] # used in aberrant_expression/Counting/countReads.R
-GENE_INFO: [/s/project/genetic_diagnosis/resource/gencode_v29_unique_gene_name.tsv] # used in aberrant_expression/Counting/mergeCounts.R 
+GENE_ANNOTATION: {"v29": "/s/genomes/human/hg19/gencode29/gencode.v29lift37.annotation.gtf.gz"}
+CHROMOSOME_FORMAT_rna: UCSC
+CHROMOSOME_FORMAT_dna: NCBI
 
-CHROMOSOME_FORMAT: UCSC
 
 #### Aberrant Expression
-outrider_group: OUTRIDER_GROUP
-strand_column: COUNT_AS_STRANDED
-inter_feature_column: COUNT_OVERLAP
+## count settings
+strand_column: STRAND
 paired_end_column: PAIRED_END
 count_mode_column: COUNT_MODE
+inter_feature_column: COUNT_OVERLAP
 
+## OUTRIDER settings
+outrider_group: OUTRIDER_GROUP
 min_outrider_ids: 40
 fpkmCutoff: 1
 
 
-#### Variant Annotation
+#TODO: remove variant annotation
+
+#### Monoallelic Expression
 gene_assembly: "hg19" ### also for MAE
 VEP_VERSION: 94
 CHROMOSOME_NAMES: "1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,X,Y,MT"
 filter_vcf: {"FILTER": ["PASS"]} ## Example: {"FILTER": ["PASS"], "QUAL" : 20} for numeric values it will be tested with >= 
-
-#### Monoallelic Expression
-
 
 
 #### Aberrant Splicing

@@ -1,0 +1,51 @@
+---
+webDir: /s/public_webshare/project/mll
+projectTitle: Prokisch Project
+htmlOutputPath: Output/html
+fileRegex: .*\.R
+
+DATASET_NAME: prokisch
+
+# OUTPUT Directory
+ROOT: /s/project
+
+# INPUT: Sample annotation
+SAMPLE_FILE_MAPPING: /s/project/prokisch/sample_file_mapping.tsv
+SAMPLE_ANNOTATION: /s/project/prokisch/sample_annotation.tsv
+# Sample file mapping: assays
+rna_assay: RNA_ID
+dna_assay: EXOME_ID
+
+# INPUT: Gene Annotation
+# INPUT: Gene Annotation
+GENE_ANNOTATION: {"v29": "/s/genomes/human/hg19/gencode29/gencode.v29lift37.annotation.gtf.gz"}
+COUNT_RANGES: {"v29": "/s/project/genetic_diagnosis/processed_data/mll/v29/counts/exons_by_gene_op.Rds"} # used in aberrant_expression/Counting/countReads.R
+GENE_INFO: {"v29": "/s/project/genetic_diagnosis/resource/gencode_v29_unique_gene_name.tsv"} # used in aberrant_expression/Counting/mergeCounts.R 
+
+CHROMOSOME_FORMAT_rna: NCBI
+CHROMOSOME_FORMAT_dna: NCBI
+
+
+#### Aberrant Expression
+outrider_group: OUTRIDER_GROUP
+strand_column: COUNT_AS_STRANDED
+inter_feature_column: COUNT_OVERLAP
+min_outrider_ids: 40
+fpkmCutoff: 1
+
+
+#### Variant Annotation
+gene_assembly: "hg19" ### also for MAE
+VEP_VERSION: 94
+CHROMOSOME_NAMES: "chr1,chr2,chr3,chr4,chr5,chr6,chr7,chr8,chr9,chr10,chr11,chr12,chr13,chr14,chr15,chr16,chr17,chr18,chr19,chr20,chr21,chr22,X,Y,M"
+filter_vcf: {"QUAL": 20} ## Example: {"FILTER": ["PASS"], "QUAL" : 20} for numeric values it will be tested with >= 
+
+
+
+
+#### Monoallelic Expression
+
+
+
+#### Aberrant Splicing
+
