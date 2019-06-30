@@ -17,8 +17,8 @@ class ConfigHelper:
         #  SAMPLE_FILE_MAPPING has to have the following structure:
         #  [ID | FILE | ASSAY ] , ASSAY can be for example RNA_Seq
         df_mapping = pd.read_csv(self.config["SAMPLE_FILE_MAPPING"], sep='\t')
-        if not list(df_mapping.columns.values)==["ID", "FILE", "ASSAY"]:
-            print("File does not correspond to required format with columns [ID | FILE | ASSAY]")
+        if not set(df_mapping.columns.values)=={"ID", "FILE", "ASSAY"}:
+            print(f"File columns {df_mapping.columns.values}  do not correspond to required format with columns [ID | FILE | ASSAY]")
         
         df_mapping = df_mapping.dropna()
         
