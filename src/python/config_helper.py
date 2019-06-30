@@ -1,6 +1,7 @@
 import pandas as pd
 import os
 import wbuild.utils as wbu
+from snakemake.logging import logger
 import warnings
 warnings.filterwarnings("ignore", 'This pattern has match groups')
 
@@ -31,6 +32,7 @@ class ConfigHelper:
         # sample annotation
         #  SAMPLE_ANNOTATION must have assay names as specified in sample-file mappping for ID columns
         sa_file = self.config["SAMPLE_ANNOTATION"]
+        logger.debug("Loading annotation file: '" + sa_file + "'")
         self.sample_annotation = pd.read_csv(sa_file, sep='\t')
         
         # OUTRIDER ids
