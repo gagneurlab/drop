@@ -31,14 +31,10 @@ strand_column: STRAND
 paired_end_column: PAIRED_END
 count_mode_column: COUNT_MODE
 inter_feature_column: COUNT_OVERLAP
-
-## OUTRIDER settings
+## outrider settings
 outrider_group: OUTRIDER_GROUP
 min_outrider_ids: 40
 fpkmCutoff: 1
-
-
-#TODO: remove variant annotation
 
 #### Monoallelic Expression
 gene_assembly: "hg19" ### also for MAE
@@ -48,4 +44,10 @@ filter_vcf: {"FILTER": ["PASS"]} ## Example: {"FILTER": ["PASS"], "QUAL" : 20} f
 
 
 #### Aberrant Splicing
+DATASETS: [
+    "all",
+    "small",
+    ]
+PROC_DATA: tmp/output_data #### CHANGE THIS to match other modules
+
 
