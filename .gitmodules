@@ -10,3 +10,6 @@
 [submodule "submodules/variant-annotation-pipeline"]
 	path = submodules/variant-annotation-pipeline
 	url = git@i12g-gagneurweb.informatik.tu-muenchen.de:gagneurlab/variant-annotation-pipeline.git
+[submodule "submodules/genetic-diagnosis-tools"]
+	path = submodules/genetic-diagnosis-tools
+	url = git@i12g-gagneurweb.informatik.tu-muenchen.de:gagneurlab/genetic-diagnosis-tools.git
