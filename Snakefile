@@ -6,38 +6,30 @@ import numpy as np
 # 1 aberrant Expression
 subworkflow aberrantExp:
     workdir:
-        "../aberrant-expression-pipeline"
+        "submodules/aberrant-expression-pipeline"
     snakefile:
-        "../aberrant-expression-pipeline/Snakefile"
+        "submodules/aberrant-expression-pipeline/Snakefile"
 
 # 2 aberrant Splicing
 subworkflow aberrantSplicing:
     workdir:
-        "../aberrant-splicing-pipeline"
+        "submodules/aberrant-splicing-pipeline"
     snakefile:
-        "../aberrant-splicing-pipeline/Snakefile"
+        "submodules/aberrant-splicing-pipeline/Snakefile"
 
 # 3 mae
 subworkflow mae:
     workdir:
-        "../mae-pipeline"
+        "submodules/mae-pipeline"
     snakefile:
-        "../mae-pipeline/Snakefile"
+        "submodules/mae-pipeline/Snakefile"
 
 # 4 variants
 subworkflow variants:
     workdir:
-        "../variant-annotation-pipeline"
+        "submodules/variant-annotation-pipeline"
     snakefile:
-        "../variant-annotation-pipeline/Snakefile"
-
-# 5 proteomics
-subworkflow proteomics:
-    workdir:
-        "../proteomics-pipeline"
-    snakefile:
-        "../proteomics-pipeline/Snakefile"
-
+        "submodules/variant-annotation-pipeline/Snakefile"
 
 
 
