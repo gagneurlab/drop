@@ -14,7 +14,7 @@ SAMPLE_FILE_MAPPING: /s/public_webshare/public/genetic_diagnosis_demo/raw_data/f
 SAMPLE_ANNOTATION: /s/public_webshare/public/genetic_diagnosis_demo/raw_data/sample_annotation.tsv  
 # For SAMPLE_FILE_MAPPING: assays
 rna_assay: RNA_ID
-dna_assay: notYET
+dna_assay: DNA_ID
 
 # INPUT: Gene Annotation
 GENE_ANNOTATION: {"v29": "/s/public_webshare/public/genetic_diagnosis_test_data/raw_data/annotation/gencode.v29lift37.annotation.gtf.gz"}
