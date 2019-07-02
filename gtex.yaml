@@ -49,6 +49,6 @@ DATASETS: [
     "all",
     "small",
     ]
-PROC_DATA: tmp/output_data #### CHANGE THIS to match other modules
+
 
 

@@ -4,7 +4,7 @@ projectTitle: MLL Project
 htmlOutputPath: Output/html
 fileRegex: .*\.R
 
-DATASET_NAME: mll ### Changed name from PROJECT_NAME to DATASET_NAME to avoid confusion with projectTitle from above
+DATASET_NAME: mll
 
 # OUTPUT Directory
 ROOT: /s/project
@@ -48,5 +48,4 @@ DATASETS: [
     "all",
     "small",
     ]
-PROC_DATA: tmp/output_data #### CHANGE THIS to match other modules
 
