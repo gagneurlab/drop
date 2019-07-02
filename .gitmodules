@@ -10,3 +10,6 @@
 [submodule "submodules/genetic-diagnosis-tools"]
 	path = submodules/genetic-diagnosis-tools
 	url = git@i12g-gagneurweb.informatik.tu-muenchen.de:gagneurlab/genetic-diagnosis-tools.git
+[submodule "config_parser"]
+	path = config_parser
+	url = git@i12g-gagneurweb.informatik.tu-muenchen.de:mumichae/config_parser.git
