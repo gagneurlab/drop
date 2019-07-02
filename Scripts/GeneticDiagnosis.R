@@ -3,15 +3,17 @@
 #' author: mumichae
 #' wb:
 #'  input:
-#'  - variants: '`sm variants( "../variant-annotation-pipeline/Output/html/index.html")`'
-#'  - abb_expr: '`sm aberrantExp( "../aberrant-expression-pipeline/Output/html/index.html")`'
-#'  - abb_splicing: '`sm aberrantSplicing( "../aberrant-splicing-pipeline/Output/html/index.html")`'
-#'  - mae: '`sm mae( "../mae-pipeline/Output/html/index.html")`'
+#'  - abb_expr: '`sm aberrantExp( "submodules/aberrant-expression-pipeline/Output/html/index.html")`'
+#'  - abb_splicing: '`sm aberrantSplicing( "submodules/aberrant-splicing-pipeline/Output/html/index.html")`'
+#'  - mae: '`sm mae( "submodules/mae-pipeline/Output/html/index.html")`'
 #' output:
 #'   html_document:
 #'    code_folding: hide
 #'    code_download: TRUE
 #'---
+
+
+# #'  - variants: '`sm variants( "submodules/variant-annotation-pipeline/Output/html/index.html")`'
 
 saveRDS(snakemake, "tmp/outrider_overview.snakemake")
 # snakemake <- readRDS("tmp/outrider_overview.snakemake")
