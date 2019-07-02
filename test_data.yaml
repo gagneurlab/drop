@@ -4,10 +4,10 @@ projectTitle: Demo Project
 htmlOutputPath: Output/html
 fileRegex: .*\.R
 
-DATASET_NAME: geuvadis ### Changed name from PROJECT_NAME to DATASET_NAME to avoid confusion with projectTitle from above
+DATASET_NAME: genetic_diagnosis_test_data ### Changed name from PROJECT_NAME to DATASET_NAME to avoid confusion with projectTitle from above
 
 # OUTPUT Directory
-ROOT: /s/public_webshare/public/genetic_diagnosis_test_data
+ROOT: /s/public_webshare/public
 
 # INPUT: Sample annotation
 SAMPLE_FILE_MAPPING: /s/public_webshare/public/genetic_diagnosis_test_data/raw_data/filemapping.tsv
