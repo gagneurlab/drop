@@ -4,14 +4,14 @@ projectTitle: Demo Project
 htmlOutputPath: Output/html
 fileRegex: .*\.R
 
-DATASET_NAME: genetic_diagnosis_test_data ### Changed name from PROJECT_NAME to DATASET_NAME to avoid confusion with projectTitle from above
+DATASET_NAME: genetic_diagnosis_demo ### Changed name from PROJECT_NAME to DATASET_NAME to avoid confusion with projectTitle from above
 
 # OUTPUT Directory
 ROOT: /s/public_webshare/public
 
 # INPUT: Sample annotation
-SAMPLE_FILE_MAPPING: /s/public_webshare/public/genetic_diagnosis_test_data/raw_data/filemapping.tsv
-SAMPLE_ANNOTATION: /s/public_webshare/public/genetic_diagnosis_test_data/raw_data/sample_annotation.tsv  
+SAMPLE_FILE_MAPPING: /s/public_webshare/public/genetic_diagnosis_demo/raw_data/filemapping.tsv
+SAMPLE_ANNOTATION: /s/public_webshare/public/genetic_diagnosis_demo/raw_data/sample_annotation.tsv  
 # For SAMPLE_FILE_MAPPING: assays
 rna_assay: RNA_ID
 dna_assay: notYET
@@ -48,5 +48,5 @@ DATASETS: [
     "all",
     "small",
     ]
-PROC_DATA: /s/public_webshare/public/genetic_diagnosis_test_data/output_data #### CHANGE THIS to match other modules
+PROC_DATA: /s/public_webshare/public/genetic_diagnosis_demo/output_data #### CHANGE THIS to match other modules
 

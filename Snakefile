@@ -74,7 +74,7 @@ rule mae:
         mae(htmlOutputPath + "/index.html"),
         mae(htmlOutputPath + "/readme.html")
     output:
-        touch("submodules/mae-pipeline/" + hmlOutputPath + "/../all.done")
+        touch("submodules/mae-pipeline/" + htmlOutputPath + "/../all.done")
         
 
 rule rulegraph:
