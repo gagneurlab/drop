@@ -1,0 +1,52 @@
+---
+webDir: /s/public_webshare/public/genetic_diagnosis_test_data/webDir
+projectTitle: Demo Project
+htmlOutputPath: Output/html
+fileRegex: .*\.R
+
+DATASET_NAME: geuvadis ### Changed name from PROJECT_NAME to DATASET_NAME to avoid confusion with projectTitle from above
+
+# OUTPUT Directory
+ROOT: /s/public_webshare/public/genetic_diagnosis_test_data
+
+# INPUT: Sample annotation
+SAMPLE_FILE_MAPPING: /s/public_webshare/public/genetic_diagnosis_test_data/raw_data/filemapping.tsv
+SAMPLE_ANNOTATION: /s/public_webshare/public/genetic_diagnosis_test_data/raw_data/sample_annotation.tsv  
+# For SAMPLE_FILE_MAPPING: assays
+rna_assay: RNA_ID
+dna_assay: notYET
+
+# INPUT: Gene Annotation
+GENE_ANNOTATION: {"v29": "/s/public_webshare/public/genetic_diagnosis_test_data/raw_data/annotation/gencode.v29lift37.annotation.gtf.gz"}
+CHROMOSOME_FORMAT_rna: UCSC
+CHROMOSOME_FORMAT_dna: UCSC
+
+
+
+#### Aberrant Expression
+## count settings
+strand_column: COUNT_AS_STRANDED
+paired_end_column: PAIRED_END
+count_mode_column: COUNT_MODE
+inter_feature_column: COUNT_OVERLAP
+## outrider settings
+outrider_group: OUTRIDER_GROUP
+min_outrider_ids: 10
+fpkmCutoff: 1
+
+
+#### Monoallelic Expression
+gene_assembly: "hg19"
+VEP_VERSION: 94 
+## For Variants only
+#CHROMOSOME_NAMES: "1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,X,Y,MT"
+#filter_vcf: {"FILTER": ["PASS"]} ## Example: {"FILTER": ["PASS"], "QUAL" : 20} for numeric values it will be tested with >= 
+
+
+#### Aberrant Splicing
+DATASETS: [
+    "all",
+    "small",
+    ]
+PROC_DATA: /s/public_webshare/public/genetic_diagnosis_test_data/output_data #### CHANGE THIS to match other modules
+
