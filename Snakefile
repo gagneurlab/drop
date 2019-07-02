@@ -76,12 +76,6 @@ rule mae:
     output:
         touch("submodules/mae-pipeline/Output/all.done")
         
-rule proteomics:
-    input:
-        proteomics( "submodules/proteomics-pipeline/Output/html/index.html"),
-        proteomics("submodules/proteomics-pipeline/Output/html/readme.html")
-    output:
-        touch("submodules/proteomics-pipeline/Output/all.done")
 
 rule rulegraph:
     shell: "snakemake --rulegraph | dot -Tsvg -Grankdir=TB > {config[htmlOutputPath]}/dep.svg"
