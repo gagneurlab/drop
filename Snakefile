@@ -24,12 +24,12 @@ subworkflow mae:
     snakefile:
         "submodules/mae-pipeline/Snakefile"
 
-# 4 variants
-subworkflow variants:
-    workdir:
-        "submodules/variant-annotation-pipeline"
-    snakefile:
-        "submodules/variant-annotation-pipeline/Snakefile"
+## 4 variants
+#subworkflow variants:
+#    workdir:
+#        "submodules/variant-annotation-pipeline"
+#    snakefile:
+#        "submodules/variant-annotation-pipeline/Snakefile"
 
 
 
@@ -41,60 +41,47 @@ rule all:
     input: 
         rules.Index.output, # rule.Index.output is  "Output/html/index.html"
         htmlOutputPath + "/readme.html",
-        variants( "../variant-annotation-pipeline/Output/html/index.html"),
-        variants("../variant-annotation-pipeline/Output/html/readme.html"),
-        aberrantExp( "../aberrant-expression-pipeline/Output/html/index.html"),
-        aberrantExp("../aberrant-expression-pipeline/Output/html/readme.html"),
-        aberrantSplicing( "../aberrant-splicing-pipeline/Output/html/index.html"),
-        aberrantSplicing("../aberrant-splicing-pipeline/Output/html/readme.html"),
-        mae( "../mae-pipeline/Output/html/index.html"),
-        mae("../mae-pipeline/Output/html/readme.html"),
-        proteomics( "../proteomics-pipeline/Output/html/index.html"),
-        proteomics("../proteomics-pipeline/Output/html/readme.html")
+        aberrantExp( "submodules/aberrant-expression-pipeline/Output/html/index.html"),
+        aberrantExp("submodules/aberrant-expression-pipeline/Output/html/readme.html"),
+        aberrantSplicing( "submodules/aberrant-splicing-pipeline/Output/html/index.html"),
+        aberrantSplicing("submodules/aberrant-splicing-pipeline/Output/html/readme.html"),
+        mae( "submodules/mae-pipeline/Output/html/index.html"),
+        mae("submodules/mae-pipeline/Output/html/readme.html")
     output: 
         touch("Output/all.done"),
-        touch("../variant-annotation-pipeline/Output/all.done"),
-        touch("../aberrant-expression-pipeline/Output/all.done"),
-        touch("../aberrant-splicing-pipeline/Output/all.done"),
-        touch("../mae-pipeline/Output/all.done"),
-        touch("../proteomics-pipeline/Output/all.done")
-        
+        touch("submodules/aberrant-expression-pipeline/Output/all.done"),
+        touch("submodules/aberrant-splicing-pipeline/Output/all.done"),
+        touch("submodules/mae-pipeline/Output/all.done")
 
-rule variants:
-    input:
-        variants( "../variant-annotation-pipeline/Output/html/index.html"),
-        variants("../variant-annotation-pipeline/Output/html/readme.html")
-    output:
-        touch("../variant-annotation-pipeline/Output/all.done")
-     
-        
+
+
 rule aberrant_expression:
     input:
-        aberrantExp("../aberrant-expression-pipeline/Output/html/index.html"),
-        aberrantExp("../aberrant-expression-pipeline/Output/html/readme.html")
+        aberrantExp("submodules/aberrant-expression-pipeline/Output/html/index.html"),
+        aberrantExp("submodules/aberrant-expression-pipeline/Output/html/readme.html")
     output:
-        touch("../aberrant-expression-pipeline/Output/all.done")
+        touch("submodules/aberrant-expression-pipeline/Output/all.done")
         
 rule aberrant_splicing:
     input:
-        aberrantSplicing( "../aberrant-splicing-pipeline/Output/html/index.html"),
-        aberrantSplicing("../aberrant-splicing-pipeline/Output/html/readme.html")
+        aberrantSplicing( "submodules/aberrant-splicing-pipeline/Output/html/index.html"),
+        aberrantSplicing("submodules/aberrant-splicing-pipeline/Output/html/readme.html")
     output:
-        touch("../aberrant-splicing-pipeline/Output/all.done")
+        touch("submodules/aberrant-splicing-pipeline/Output/all.done")
 
 rule mae:
     input: 
-        mae( "../mae-pipeline/Output/html/index.html"),
-        mae("../mae-pipeline/Output/html/readme.html")
+        mae( "submodules/mae-pipeline/Output/html/index.html"),
+        mae("submodules/mae-pipeline/Output/html/readme.html")
     output:
-        touch("../mae-pipeline/Output/all.done")
+        touch("submodules/mae-pipeline/Output/all.done")
         
 rule proteomics:
     input:
-        proteomics( "../proteomics-pipeline/Output/html/index.html"),
-        proteomics("../proteomics-pipeline/Output/html/readme.html")
+        proteomics( "submodules/proteomics-pipeline/Output/html/index.html"),
+        proteomics("submodules/proteomics-pipeline/Output/html/readme.html")
     output:
-        touch("../proteomics-pipeline/Output/all.done")
+        touch("submodules/proteomics-pipeline/Output/all.done")
 
 rule rulegraph:
     shell: "snakemake --rulegraph | dot -Tsvg -Grankdir=TB > {config[htmlOutputPath]}/dep.svg"
