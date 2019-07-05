@@ -1,7 +1,9 @@
-import pandas as pd
 import os
-import numpy as np
+from config_parser import ConfigHelper
 
+parser = ConfigHelper(config)
+config = parser.config # needed if you dont provide the wbuild.yaml as configfile
+htmlOutputPath = config["htmlOutputPath"]
 
 # 1 aberrant Expression
 subworkflow aberrantExp:
@@ -32,26 +34,20 @@ subworkflow mae:
 #        "submodules/variant-annotation-pipeline/Snakefile"
 
 
-
-include: ".wBuild/wBuild.snakefile"  # Has to be here in order to update the config with the new variables
+include: os.getcwd() + "/.wBuild/wBuild.snakefile"  # Has to be here in order to update the config with the new variables
 htmlOutputPath = config["htmlOutputPath"]  if (config["htmlOutputPath"] != None) else "Output/html"
-
+if not os.path.exists('tmp'):
+    os.makedirs('tmp')
 
 rule all:
     input: 
         rules.Index.output, # rule.Index.output is  "Output/html/index.html"
         htmlOutputPath + "/readme.html",
-        aberrantExp(htmlOutputPath + "/index.html"),
-        aberrantExp(htmlOutputPath + "/readme.html"),
-        aberrantSplicing(htmlOutputPath + "/index.html"),
-        aberrantSplicing(htmlOutputPath + "/readme.html"),
-        mae(htmlOutputPath + "/index.html"),
-        mae(htmlOutputPath + "/readme.html")
-    output: 
+        aberrantExp(htmlOutputPath  + "/aberrant_expression.done"),
+        aberrantSplicing(htmlOutputPath  + "/aberrant_splicing.done"),
+        mae(htmlOutputPath  + "/mae.done")
+    output:
         touch(htmlOutputPath + "/../all.done"),
-        touch("submodules/aberrant-expression-pipeline/" + htmlOutputPath + "/../all.done"),
-        touch("submodules/aberrant-splicing-pipeline/" + htmlOutputPath + "/../all.done"),
-        touch("submodules/mae-pipeline/" + htmlOutputPath + "/../all.done")
 
 
 
@@ -60,21 +56,21 @@ rule aberrant_expression:
         aberrantExp(htmlOutputPath + "/index.html"),
         aberrantExp(htmlOutputPath + "/readme.html")
     output:
-        touch("submodules/aberrant-expression-pipeline/" + htmlOutputPath  + "/../all.done")
+        touch(htmlOutputPath  + "/aberrant_expression.done")
         
 rule aberrant_splicing:
     input:
         aberrantSplicing(htmlOutputPath + "/index.html"),
         aberrantSplicing(htmlOutputPath + "/readme.html")
     output:
-        touch("submodules/aberrant-splicing-pipeline/" + htmlOutputPath + "/../all.done")
+        touch(htmlOutputPath + "/aberrant_splicing.done")
 
 rule mae:
     input: 
         mae(htmlOutputPath + "/index.html"),
         mae(htmlOutputPath + "/readme.html")
     output:
-        touch("submodules/mae-pipeline/" + htmlOutputPath + "/../all.done")
+        touch(htmlOutputPath + "/mae.done")
         
 
 rule rulegraph:
