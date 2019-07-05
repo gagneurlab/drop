@@ -1,28 +1,26 @@
 ---
-webDir: /s/public_webshare/project/gtex_genetic_diagnosis
-projectTitle: GTEx Genetic Diagnosis
+webDir: /s/public_webshare/project/mll
+projectTitle: MLL Project
 htmlOutputPath: Output/html
 fileRegex: .*\.R
 
-DATASET_NAME: gtex_genetic_diagnosis
+DATASET_NAME: mll
 
 # OUTPUT Directory
 ROOT: /s/project
 
 # INPUT: Sample annotation
-SAMPLE_FILE_MAPPING: /s/project/gtex_genetic_diagnosis/processed_data/sample_file_mapping.tsv
-SAMPLE_ANNOTATION: /s/project/gtex_genetic_diagnosis/processed_data/sample_annotation.tsv
+SAMPLE_FILE_MAPPING: /s/project/mll/rawdata/sample_info/sample_file_mapping.tsv
+SAMPLE_ANNOTATION: /s/project/mll/rawdata/sample_info/sample_annotation.tsv  
 # For SAMPLE_FILE_MAPPING: assays
-rna_assay: RNA-Seq
-dna_assay: WGS
+rna_assay: RNA_ID
+dna_assay: VCF_ID
 
 # INPUT: Gene Annotation
-GENE_ANNOTATION: {
-    "v29": "/s/genomes/human/hg19/gencode29/gencode.v29lift37.annotation.gtf.gz",
-    #"v19": "/s/project/gtex_genetic_diagnosis/gencode.v19.genes.v7.patched_contigs.gtf"
-    }
-CHROMOSOME_FORMAT_rna: NCBI
+GENE_ANNOTATION: {"v29": "/s/genomes/human/hg19/gencode29/gencode.v29lift37.annotation.gtf.gz"}
+CHROMOSOME_FORMAT_rna: UCSC
 CHROMOSOME_FORMAT_dna: NCBI
+
 
 
 #### Aberrant Expression
@@ -36,10 +34,11 @@ outrider_group: OUTRIDER_GROUP
 min_outrider_ids: 40
 fpkmCutoff: 1
 
+
 #### Monoallelic Expression
-gene_assembly: "hg19" ### also for MAE
+gene_assembly: "hg19"
 VEP_VERSION: 94
-#For variants only
+# For vvariants
 #CHROMOSOME_NAMES: "1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,X,Y,MT"
 #filter_vcf: {"FILTER": ["PASS"]} ## Example: {"FILTER": ["PASS"], "QUAL" : 20} for numeric values it will be tested with >= 
 
@@ -49,6 +48,4 @@ DATASETS: [
     "all",
     "small",
     ]
-PROC_DATA: tmp/output_data #### CHANGE THIS to match other modules
-
 

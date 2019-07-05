@@ -1,10 +1,10 @@
 ---
-webDir: /s/public_webshare/public/genetic_diagnosis_test_data/webDir
+webDir: /s/public_webshare/public/genetic_diagnosis_demo/webDir
 projectTitle: Demo Project
 htmlOutputPath: Output/html
 fileRegex: .*\.R
 
-DATASET_NAME: genetic_diagnosis_demo ### Changed name from PROJECT_NAME to DATASET_NAME to avoid confusion with projectTitle from above
+DATASET_NAME: genetic_diagnosis_demo
 
 # OUTPUT Directory
 ROOT: /s/public_webshare/public
@@ -14,10 +14,10 @@ SAMPLE_FILE_MAPPING: /s/public_webshare/public/genetic_diagnosis_demo/raw_data/f
 SAMPLE_ANNOTATION: /s/public_webshare/public/genetic_diagnosis_demo/raw_data/sample_annotation.tsv  
 # For SAMPLE_FILE_MAPPING: assays
 rna_assay: RNA_ID
-dna_assay: notYET
+dna_assay: DNA_ID
 
 # INPUT: Gene Annotation
-GENE_ANNOTATION: {"v29": "/s/public_webshare/public/genetic_diagnosis_test_data/raw_data/annotation/gencode.v29lift37.annotation.gtf.gz"}
+GENE_ANNOTATION: {"v29": "/s/public_webshare/public/genetic_diagnosis_demo/raw_data/annotation/gencode.v29lift37.annotation.gtf.gz"}
 CHROMOSOME_FORMAT_rna: UCSC
 CHROMOSOME_FORMAT_dna: UCSC
 
@@ -31,7 +31,7 @@ count_mode_column: COUNT_MODE
 inter_feature_column: COUNT_OVERLAP
 ## outrider settings
 outrider_group: OUTRIDER_GROUP
-min_outrider_ids: 10
+min_outrider_ids: 1
 fpkmCutoff: 1
 
 
@@ -48,5 +48,4 @@ DATASETS: [
     "all",
     "small",
     ]
-PROC_DATA: /s/public_webshare/public/genetic_diagnosis_demo/output_data #### CHANGE THIS to match other modules
 
