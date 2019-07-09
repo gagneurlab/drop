@@ -41,8 +41,6 @@ if not os.path.exists('tmp'):
 
 rule all:
     input: 
-        rules.Index.output, # rule.Index.output is  "Output/html/index.html"
-        htmlOutputPath + "/readme.html",
         aberrantExp(htmlOutputPath  + "/aberrant_expression.done"),
         aberrantSplicing(htmlOutputPath  + "/aberrant_splicing.done"),
         mae(htmlOutputPath  + "/mae.done")
@@ -53,21 +51,18 @@ rule all:
 
 rule aberrant_expression:
     input:
-        aberrantExp(htmlOutputPath + "/index.html"),
         aberrantExp(htmlOutputPath + "/readme.html")
     output:
         touch(htmlOutputPath  + "/aberrant_expression.done")
         
 rule aberrant_splicing:
     input:
-        aberrantSplicing(htmlOutputPath + "/index.html"),
         aberrantSplicing(htmlOutputPath + "/readme.html")
     output:
         touch(htmlOutputPath + "/aberrant_splicing.done")
 
 rule mae:
     input: 
-        mae(htmlOutputPath + "/index.html"),
         mae(htmlOutputPath + "/readme.html")
     output:
         touch(htmlOutputPath + "/mae.done")
