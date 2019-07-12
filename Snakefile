@@ -26,13 +26,6 @@ subworkflow mae:
     snakefile:
         "submodules/mae-pipeline/Snakefile"
 
-## 4 variants
-#subworkflow variants:
-#    workdir:
-#        "submodules/variant-annotation-pipeline"
-#    snakefile:
-#        "submodules/variant-annotation-pipeline/Snakefile"
-
 
 include: os.getcwd() + "/.wBuild/wBuild.snakefile"  # Has to be here in order to update the config with the new variables
 htmlOutputPath = config["htmlOutputPath"]  if (config["htmlOutputPath"] != None) else "Output/html"
