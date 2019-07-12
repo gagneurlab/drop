@@ -19,7 +19,7 @@ dna_assay: DNA_ID
 # INPUT: Gene Annotation
 GENE_ANNOTATION: {"v29": "/s/public_webshare/public/genetic_diagnosis_demo/raw_data/annotation/gencode.v29lift37.annotation.gtf.gz"}
 CHROMOSOME_FORMAT_rna: UCSC
-CHROMOSOME_FORMAT_dna: UCSC
+CHROMOSOME_FORMAT_dna: NCBI
 
 
 
@@ -30,7 +30,7 @@ paired_end_column: PAIRED_END
 count_mode_column: COUNT_MODE
 inter_feature_column: COUNT_OVERLAP
 ## outrider settings
-outrider_group: OUTRIDER_GROUP
+outrider_group: OUTRIDER_GROUP ### also for splicing 
 min_outrider_ids: 1
 fpkmCutoff: 1
 
@@ -38,9 +38,6 @@ fpkmCutoff: 1
 #### Monoallelic Expression
 gene_assembly: "hg19"
 VEP_VERSION: 94 
-## For Variants only
-#CHROMOSOME_NAMES: "1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,X,Y,MT"
-#filter_vcf: {"FILTER": ["PASS"]} ## Example: {"FILTER": ["PASS"], "QUAL" : 20} for numeric values it will be tested with >= 
 
 
 #### Aberrant Splicing
