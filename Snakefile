@@ -34,29 +34,29 @@ if not os.path.exists('tmp'):
 
 rule all:
     input: 
-        aberrantExp(htmlOutputPath  + "/aberrant_expression.done"),
-        aberrantSplicing(htmlOutputPath  + "/aberrant_splicing.done"),
-        mae(htmlOutputPath  + "/mae.done")
+        aberrantExp(rules.Index.output),
+        aberrantSplicing(rules.Index.output),
+        mae(rules.Index.output)        
     output:
         touch(htmlOutputPath + "/../all.done"),
 
 
-
+######## Do not delete this!!!
 rule aberrant_expression:
     input:
-        aberrantExp(htmlOutputPath + "/readme.html")
+        aberrantExp(rules.Index.output)
     output:
         touch(htmlOutputPath  + "/aberrant_expression.done")
         
 rule aberrant_splicing:
     input:
-        aberrantSplicing(htmlOutputPath + "/readme.html")
+        aberrantSplicing(rules.Index.output)
     output:
         touch(htmlOutputPath + "/aberrant_splicing.done")
 
 rule mae:
     input: 
-        mae(htmlOutputPath + "/readme.html")
+        mae(rules.Index.output)
     output:
         touch(htmlOutputPath + "/mae.done")
         
