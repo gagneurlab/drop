@@ -1,5 +1,6 @@
 ### SNAKEFILE GENETIC DIAGNOSIS PIPELINE
 import os
+import re
 from config_parser import ConfigHelper
 
 ## ADD tmp/ DIR
@@ -58,10 +59,11 @@ subworkflow mae:
 
 rule all:
     input: 
-        "tmp/gdp_overview.done" , #rules.Index.output,
         aberrantExp("tmp/aberrant_expression.done"),
-        aberrantSplicing("tmp/aberrant_splicing.done"),
+#       aberrantSplicing("tmp/aberrant_splicing.done"),
         mae("tmp/mae.done"),
+	"tmp/gdp_overview.done" ,
+        htmlOutputPath + "/readme.html"
     output:
         touch("tmp/gdp_all.done")
 
@@ -85,7 +87,20 @@ rule MAE:
         touch("tmp/gdp_mae.done")
 
 
-print("In GDP", rules.Index.output)
+rule getIndexNames:
+    input:
+        maeIndex= mae("tmp/mae.done"),
+        abExpIndex=aberrantExp("tmp/aberrant_expression.done"),
+#        abSpIndex=aberrantSplicing(rules.Index.output),
+    output:
+        indexFile=parser.getProcDataDir() + "/indexNames.txt"
+    run: 
+        indexList = [x for x in os.listdir(config["htmlOutputPath"]) if (re.search("_index.html$",x) and ("genetic_diagnosis" not in x))]
+        with open(output.indexFile, 'w') as file_handler:
+    	    for item in indexList:
+                file_handler.write("{}\n".format(item))
+
+
 rule gdp_overview:
     input:
         rules.Index.output

@@ -1,30 +1,24 @@
 #'---
 #' title: Genetic Diagnosis Overview
-#' author: mumichae, salazar
+#' author: salazar
 #' wb:
 #'  input:
-#'  - abExp: '`sm config["htmlOutputPath"] + "/Scripts_Outrider_Overview.html"  `'
-#'  - mae:  '`sm config["htmlOutputPath"] + "/Scripts_MAE_Results_MAE.html"  `' 
+#'    - indexFile:  '`sm parser.getProcDataDir() + "/indexNames.txt"  `' 
 #' output:
 #'   html_document:
 #'    code_folding: hide
 #'    code_download: TRUE
 #'---
 
-### Index script
-#' INDEX 
-1
-#gene_annotation_names <- names(snakemake@config$GENE_ANNOTATION)
-#summarie_titles <- paste(gene_annotation_names, names(snakemake@config$outrider_filtered))
-#summaries <- paste('[', summarie_titles ,'](', gsub(snakemake@config$htmlOutputPath, ".", snakemake@input$summaries), ')', sep = '')
-#summaries <- paste(summaries, sep = '\n')
+#' # Links for Pipeline Steps
 
-# 
-# #'  - abb_expr: '`sm config["htmlOutputPath"] + "/aberrant-expression_index.html" `'
-# #'  - abb_splicing: '`sm config["htmlOutputPath"] + "/aberrant-splicing_index.html" `'
-# #'  - mae: '`sm config["htmlOutputPath"] + "/mae_index.html" `' #' output:
+indexNames <- scan(snakemake@input$indexFile, character(), quote = "", sep='\n')
+pipeline_names <- gsub("index.html", "", indexNames)
+pipeline_names <- gsub("-", " ",pipeline_names)
+pipeline_names <- toupper(gsub("_", " ",pipeline_names))
 
-# #'  - abSpl: '`sm expand(parser.getProcDataDir() + "/aberrant_splicing/FraseR/{dataset}_results.html", dataset=config["DATASETS"] )`'
+links <- paste('[', pipeline_names ,"](./", indexNames, '){target="_blank"}', sep = '')
+links <- paste(links, sep = '\n')
 
+#'   Links:  `r links`
 
-#### make it more automated!!!!! ---> automatically get all indexes that we have! 
