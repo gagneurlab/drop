@@ -24,6 +24,7 @@ with open('tmp/config_mae.yaml', 'w') as yaml_file:
 print("In Snakefile from genetic_diagnosis",config)
 parser = ConfigHelper(config)
 config = parser.config # needed if you dont provide the wbuild.yaml as configfile
+include: os.getcwd() + "/.wBuild/wBuild.snakefile" 
 
 htmlOutputPath = config["htmlOutputPath"]
 
@@ -54,17 +55,13 @@ subworkflow mae:
     configfile:
         "tmp/config_mae.yaml"
 
-include: os.getcwd() + "/.wBuild/wBuild.snakefile"  # Has to be here in order to update the config with the new variables
-htmlOutputPath = config["htmlOutputPath"]  if (config["htmlOutputPath"] != None) else "Output/html"
-include: os.getcwd() + "/.wBuild/wBuild.snakefile" 
-if not os.path.exists('tmp'):
-    os.makedirs('tmp')
 
 rule all:
     input: 
+        "tmp/gdp_overview.done" , #rules.Index.output,
         aberrantExp("tmp/aberrant_expression.done"),
         aberrantSplicing("tmp/aberrant_splicing.done"),
-        mae("tmp/mae.done")        
+        mae("tmp/mae.done"),
     output:
         touch("tmp/gdp_all.done")
 
@@ -86,7 +83,16 @@ rule MAE:
         mae("tmp/mae.done")
     output:
         touch("tmp/gdp_mae.done")
-        
+
+
+print("In GDP", rules.Index.output)
+rule gdp_overview:
+    input:
+        rules.Index.output
+    output:
+        touch("tmp/gdp_overview.done")
+
+
 
 rule rulegraph:
     shell: "snakemake --rulegraph | dot -Tsvg -Grankdir=TB > {config[htmlOutputPath]}/dep.svg"
