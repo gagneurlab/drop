@@ -22,7 +22,7 @@ with open('tmp/config_mae.yaml', 'w') as yaml_file:
     oyaml.dump(config_mae, yaml_file, default_flow_style=False)    
 
 
-print("In Snakefile from genetic_diagnosis",config)
+#print("In Snakefile from genetic_diagnosis",config)
 parser = ConfigHelper(config)
 config = parser.config # needed if you dont provide the wbuild.yaml as configfile
 include: os.getcwd() + "/.wBuild/wBuild.snakefile" 
@@ -62,8 +62,7 @@ rule all:
         aberrantExp("tmp/aberrant_expression.done"),
 #       aberrantSplicing("tmp/aberrant_splicing.done"),
         mae("tmp/mae.done"),
-	"tmp/gdp_overview.done" ,
-        htmlOutputPath + "/readme.html"
+	"tmp/gdp_overview.done" 
     output:
         touch("tmp/gdp_all.done")
 
@@ -103,12 +102,35 @@ rule getIndexNames:
 
 rule gdp_overview:
     input:
-        rules.Index.output
+        rules.Index.output, htmlOutputPath + "/gdp_readme.html"
     output:
         touch("tmp/gdp_overview.done")
 
 
+### RULEGRAPH  
+### rulegraph only works without print statements. Call <snakemake produce_rulegraph> for producing output
 
-rule rulegraph:
-    shell: "snakemake --rulegraph | dot -Tsvg -Grankdir=TB > {config[htmlOutputPath]}/dep.svg"
+## For rule rulegraph.. copy configfile in tmp file
+import oyaml
+with open('tmp/config.yaml', 'w') as yaml_file:
+    oyaml.dump(config, yaml_file, default_flow_style=False)
+    
+rulegraph_filename = htmlOutputPath + "/" + os.path.basename(os.getcwd()) + "_rulegraph"
+rule produce_rulegraph:
+    input:
+        expand(rulegraph_filename + ".{fmt}", fmt=["svg", "png"])
+
+rule create_graph:
+    output:
+        rulegraph_filename + ".dot"
+    shell:
+        "snakemake --configfile tmp/config.yaml --rulegraph > {output}"
+
+rule render_dot:
+    input:
+        "{prefix}.dot"
+    output:
+        "{prefix}.{fmt,(png|svg)}"
+    shell:
+        "dot -T{wildcards.fmt} < {input} > {output}"
 
