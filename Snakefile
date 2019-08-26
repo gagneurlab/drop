@@ -108,7 +108,7 @@ rule gdp_overview:
 
 
 ### RULEGRAPH  
-### rulegraph only works without print statements. Call <snakemake produce_rulegraph> for producing output
+### rulegraph only works without print statements. Call <snakemake --configfile <configfile> produce_rulegraph> for producing output
 
 ## For rule rulegraph.. copy configfile in tmp file
 import oyaml
