@@ -4,20 +4,23 @@ import re
 from config_parser import ConfigHelper
 
 ## ADD tmp/ DIR
-if not os.path.exists('tmp'):
-    os.makedirs('tmp')
+tmpdir = config["ROOT"] +'/tmp'
+config["tmpdir"] = tmpdir
+if not os.path.exists(tmpdir):
+    os.makedirs(tmpdir)
+
 
 ### Write one config file for every subworkflow with a diferent index name
 import oyaml
-with open('tmp/config_aberrant_expression.yaml', 'w') as yaml_file:
+with open(tmpdir + '/config_aberrant_expression.yaml', 'w') as yaml_file:
     config_ae = config.copy()
     oyaml.dump(config_ae, yaml_file, default_flow_style=False)
     
-with open('tmp/config_aberrant_splicing.yaml', 'w') as yaml_file:
+with open(tmpdir + '/config_aberrant_splicing.yaml', 'w') as yaml_file:
     config_as = config.copy()
     oyaml.dump(config_as, yaml_file, default_flow_style=False)
     
-with open('tmp/config_mae.yaml', 'w') as yaml_file:
+with open(tmpdir + '/config_mae.yaml', 'w') as yaml_file:
     config_mae = config.copy()
     oyaml.dump(config_mae, yaml_file, default_flow_style=False)    
 
@@ -36,7 +39,7 @@ subworkflow aberrantExp:
     snakefile:
         "submodules/aberrant-expression-pipeline/Snakefile"
     configfile:
-        "tmp/config_aberrant_expression.yaml"
+        tmpdir + "/config_aberrant_expression.yaml"
 
 # 2 aberrant Splicing
 subworkflow aberrantSplicing:
@@ -45,7 +48,7 @@ subworkflow aberrantSplicing:
     snakefile:
         "submodules/aberrant-splicing-pipeline/Snakefile"
     configfile:
-        "tmp/config_aberrant_splicing.yaml"
+        tmpdir + "/config_aberrant_splicing.yaml"
 
 # 3 mae
 subworkflow mae:
@@ -54,43 +57,43 @@ subworkflow mae:
     snakefile:
         "submodules/mae-pipeline/Snakefile"
     configfile:
-        "tmp/config_mae.yaml"
+        tmpdir + "/config_mae.yaml"
 
 
 rule all:
     input: 
-        aberrantExp("tmp/aberrant_expression.done"),
-#       aberrantSplicing("tmp/aberrant_splicing.done"),
-        mae("tmp/mae.done"),
-	"tmp/gdp_overview.done" 
+        aberrantExp(tmpdir + "/aberrant_expression.done"),
+#       aberrantSplicing(tmpdir + "/aberrant_splicing.done"),
+        mae(tmpdir + "/mae.done"),
+	      tmpdir + "/gdp_overview.done" 
     output:
-        touch("tmp/gdp_all.done")
+        touch(tmpdir + "/gdp_all.done")
 
 ######## Do not delete this!!!
 rule aberrant_expression:
     input:
-        aberrantExp("tmp/aberrant_expression.done")
+        aberrantExp(tmpdir + "/aberrant_expression.done")
     output:
-        touch("tmp/gdp_aberrant_expression.done")
+        touch(tmpdir + "/gdp_aberrant_expression.done")
         
 rule aberrant_splicing:
     input:
-        aberrantSplicing("tmp/aberrant_splicing.done")
+        aberrantSplicing(tmpdir + "/aberrant_splicing.done")
     output:
-        touch("tmp/gdp_aberrant_splicing.done")
+        touch(tmpdir + "/gdp_aberrant_splicing.done")
 
 rule MAE:
     input:
-        mae("tmp/mae.done")
+        mae(tmpdir + "/mae.done")
     output:
-        touch("tmp/gdp_mae.done")
+        touch(tmpdir + "/gdp_mae.done")
 
 
 rule getIndexNames:
     input:
-        maeIndex= mae("tmp/mae.done"),
-        abExpIndex=aberrantExp("tmp/aberrant_expression.done"),
-#        abSpIndex=aberrantSplicing(rules.Index.output),
+        maeIndex= mae(tmpdir + "/mae.done"),
+        abExpIndex=aberrantExp(tmpdir + "/aberrant_expression.done"),
+#        abSpIndex=aberrantSplicing(tmpdir + "/aberrant_splicing.done"),
     output:
         indexFile=parser.getProcDataDir() + "/indexNames.txt"
     run: 
@@ -104,7 +107,7 @@ rule gdp_overview:
     input:
         rules.Index.output, htmlOutputPath + "/gdp_readme.html"
     output:
-        touch("tmp/gdp_overview.done")
+        touch(tmpdir + "/gdp_overview.done")
 
 
 ### RULEGRAPH  
@@ -112,7 +115,7 @@ rule gdp_overview:
 
 ## For rule rulegraph.. copy configfile in tmp file
 import oyaml
-with open('tmp/config.yaml', 'w') as yaml_file:
+with open(tmpdir + '/config.yaml', 'w') as yaml_file:
     oyaml.dump(config, yaml_file, default_flow_style=False)
     
 rulegraph_filename = htmlOutputPath + "/" + os.path.basename(os.getcwd()) + "_rulegraph"
@@ -124,7 +127,7 @@ rule create_graph:
     output:
         rulegraph_filename + ".dot"
     shell:
-        "snakemake --configfile tmp/config.yaml --rulegraph > {output}"
+        "snakemake --configfile" + tmpdir + "/config.yaml --rulegraph > {output}"
 
 rule render_dot:
     input:
