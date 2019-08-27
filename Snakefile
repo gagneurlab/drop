@@ -127,7 +127,7 @@ rule create_graph:
     output:
         rulegraph_filename + ".dot"
     shell:
-        "snakemake --configfile" + tmpdir + "/config.yaml --rulegraph > {output}"
+        "snakemake --configfile " + tmpdir + "/config.yaml --rulegraph > {output}"
 
 rule render_dot:
     input:
