@@ -3,11 +3,26 @@ import os
 import re
 from config_parser import ConfigHelper
 
+#print("In Snakefile from genetic_diagnosis",config)
+parser = ConfigHelper(config)
+config = parser.config # needed if you dont provide the wbuild.yaml as configfile
+include: os.getcwd() + "/.wBuild/wBuild.snakefile" 
+
 ## ADD tmp/ DIR
 tmpdir = config["ROOT"] + '/' + config["DATASET_NAME"] + '/tmp'
 config["tmpdir"] = tmpdir
 if not os.path.exists(tmpdir):
     os.makedirs(tmpdir)
+
+# remove dummy files if they exist
+dummy_files = [
+    tmpdir + "/aberrant_expression.done",
+    tmpdir + "/aberrant_splicing.done",
+    tmpdir + "/mae.done",
+    tmpdir + "/gdp_all.done"]
+for file in dummy_files:
+    if os.path.exists(file):
+        os.remove(file)
 
 
 ### Write one config file for every subworkflow with a diferent index name
@@ -24,11 +39,6 @@ with open(tmpdir + '/config_mae.yaml', 'w') as yaml_file:
     config_mae = config.copy()
     oyaml.dump(config_mae, yaml_file, default_flow_style=False)    
 
-
-#print("In Snakefile from genetic_diagnosis",config)
-parser = ConfigHelper(config)
-config = parser.config # needed if you dont provide the wbuild.yaml as configfile
-include: os.getcwd() + "/.wBuild/wBuild.snakefile" 
 
 htmlOutputPath = config["htmlOutputPath"]
 
