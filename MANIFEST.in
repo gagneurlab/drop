@@ -1,0 +1,9 @@
+include *.md
+include *Snakefile
+include *.R
+exclude .*
+
+# TODO: use R package versions
+include *FraseR*
+include *tMAE*
+

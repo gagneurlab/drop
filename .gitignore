@@ -5,6 +5,12 @@ Output/
 .snakemake/
 .wBuild*
 
+# python package temp files
+.ipynb_checkpoints*
+__pycache__*
+*.egg-info*
+dist/*
+
 # typical latex tmp files
 *.aux
 *.log
@@ -25,15 +31,10 @@ readme.html
 
 # other
 *~
-.ipynb_
-*.ipynb_*
 slurm-*.out
-__pycache__
 ~$
-_cache
 *_cache
 *_files
 *.cache
 tmp/
-resources/missing_exomes.txt
 
