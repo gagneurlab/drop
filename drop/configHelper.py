@@ -45,8 +45,7 @@ class ConfigHelper:
         self.sample_annotation = pd.read_csv(sa_file, sep='\t')
         
         # remove unwanted characters
-        subset_key = config["subset_key"]
-        self.sample_annotation[subset_key] = self.sample_annotation[subset_key].str.replace("(", "").str.replace(")", "")
+        self.sample_annotation["subset_key"] = self.sample_annotation["subset_key"].str.replace("(", "").str.replace(")", "")
         
         
         # Group IDs
@@ -132,9 +131,9 @@ class ConfigHelper:
         ####### PROBLEM IF WGS_ASSAY NOT IN SAMPLE_ANNOTATION: possible solution: create empty cols
         if "rna_assay" not in self.sample_annotation:
             self.sample_annotation["rna_assay"] = ""
-        if wes_assay not in self.sample_annotation:
+        if "wes_assay" not in self.sample_annotation:
             self.sample_annotation["wes_assay"] = ""
-        if wgs_assay not in self.sample_annotation:
+        if "wgs_assay" not in self.sample_annotation:
             self.sample_annotation["wgs_assay"] = ""
         
         mae_files = self.sample_annotation[["rna_assay", "wes_assay", "wgs_assay"]]
@@ -143,7 +142,7 @@ class ConfigHelper:
         
         # remove IDs of non-existing files
         mae_files['vcf_exists'] = [self.checkFileExists(row["DNA_ID"], row["DNA_assay"], verbose=False) for index, row in mae_files.iterrows()]
-        mae_files['rna_exists'] = [self.checkFileExists(x, rna_assay) for x in mae_files[rna_assay]]
+        mae_files['rna_exists'] = [self.checkFileExists(x, "rna_assay") for x in mae_files["rna_assay"]]
         mae_files = mae_files.query("vcf_exists & rna_exists")
         
         return mae_files
@@ -159,8 +158,10 @@ class ConfigHelper:
         @param sampleId: ID of sample
         @param assay: either "rna_assay", "dna_assay", as specified in the config
         """
-        assay = self.config[assay]
-        path = self.sample_file_mapping.query("ASSAY == @assay")
+        if isinstance(assay, str):
+            path = self.sample_file_mapping.query("ASSAY == @assay")
+        else:
+            path = self.sample_file_mapping[self.sample_file_mapping["ASSAY"].isin(assay)]
         path = path.query("ID == @sampleId")["FILE"]
         return path.iloc[0]
     
@@ -173,9 +174,9 @@ class ConfigHelper:
         
         # subset by group if group is specified
         if group is None or ids_by_group is None:
-            sampleIDs = ids_by_group[group]
-        else: # take all IDs of assay
             sampleIDs = self.sample_file_mapping.query("ASSAY == @assay")["ID"]
+        else:
+            sampleIDs = ids_by_group[group]
         
         files = [] # collect file names
         for sampleID in sampleIDs:
@@ -186,25 +187,20 @@ class ConfigHelper:
     Create a full and filtered list of RNA assay IDs subsetted by specified OUTRIDER groups
     """
     def createGroupIds(self, group_key="subset_key", assay_key="rna_assay", sep=','):
-        # deprecated for outrider_files
-        
-        group_col = self.config[group_key]
-        assay = self.config[assay_key]
-        ids = self.getSampleIDs(self.config[assay_key])
         
         # Get unique groups
-        df = self.sample_annotation[self.sample_annotation[assay].isin(ids)]
-        df = df[[assay, group_col]].drop_duplicates().copy()
+        ids = self.getSampleIDs(assay_key)
+        df = self.sample_annotation[self.sample_annotation[assay_key].isin(ids)]
+        df = df[[assay_key, group_key]].drop_duplicates().copy()
         
-        # assumes that groups are comma-separated
         # get unique group names
         groups = []
-        for s in set(df[group_col]):
-            groups.extend(s.split(','))
+        for s in set(df[group_key]):
+            groups.extend(s.split(sep))
         groups = set(groups)
         
         # collect IDs per group
-        return {gr : df[df[group_col].str.contains(f'(^|{sep}){gr}({sep}|$)')][assay].tolist() 
+        return {gr : df[df[group_key].str.contains(f'(^|{sep}){gr}({sep}|$)')][assay_key].tolist() 
                         for gr in groups}
     
     def subsetGroups(self, ids_by_group, subset_col):
