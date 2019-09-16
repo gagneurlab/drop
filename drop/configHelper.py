@@ -29,7 +29,8 @@ class ConfigHelper:
         #   [ID | FILE | ASSAY ] , ASSAY can be for example 'RNA_Seq'
         df_mapping = pd.read_csv(config["SAMPLE_FILE_MAPPING"], sep='\t')
         if not set(df_mapping.columns.values)=={"ID", "FILE", "ASSAY"}:
-            print(f"File columns {df_mapping.columns.values}  do not correspond to required format with columns [ID | FILE | ASSAY]")
+            raise ValueError(f"File columns {df_mapping.columns.values} of sample-file mapping do not correspond to " +
+            f"required format with columns [ID | FILE | ASSAY]. File: {config['SAMPLE_FILE_MAPPING']}")
         
         # cleaning SAMPLE_FILE_MAPPING
         df_mapping.dropna(inplace=True)
@@ -44,12 +45,10 @@ class ConfigHelper:
         logger.debug(f"Loading annotation file: '{sa_file}'")
         self.sample_annotation = pd.read_csv(sa_file, sep='\t')
         
-        # remove unwanted characters
-        self.sample_annotation["subset_key"] = self.sample_annotation["subset_key"].str.replace("(", "").str.replace(")", "")
-        
-        
         # Group IDs
-        self.all_rna_ids = self.createGroupIds(group_key="subset_key", assay_key="rna_assay", sep=',')
+        # remove unwanted characters
+        self.sample_annotation["DROP_GROUP"] = self.sample_annotation["DROP_GROUP"].str.replace("(", "").str.replace(")", "")
+        self.all_rna_ids = self.createGroupIds(group_key="DROP_GROUP", assay_key="RNA_ASSAY", sep=',')
         
         ## outrider
         if "outrider_groups" not in config:
@@ -96,12 +95,12 @@ class ConfigHelper:
         return list(self.sample_file_mapping[self.sample_file_mapping["ASSAY"] == experiment]["ID"]) 
     
     
-    def checkFileExists(self, sampleId, assay, verbose=True):
+    def checkFileExists(self, sampleID, assay, verbose=True):
         # note: we already checked for non-existing files in the init, so we only need to check whether the ID is in the sample_file_mapping here
-        x = self.sample_file_mapping.query("(ASSAY == @assay) & (ID == @sampleId)")["FILE"]
+        x = self.sample_file_mapping.query("(ASSAY == @assay) & (ID == @sampleID)")["FILE"]
         exists = (len(x) != 0)
         if (not exists) and verbose:
-            print(f"FILE NOT FOUND FOR sampleID: {sampleId} and assay {assay}")
+            print(f"FILE NOT FOUND FOR sampleID: {sampleID} and assay {assay}")
         return exists
         
     """
@@ -119,8 +118,8 @@ class ConfigHelper:
         # subset by group
         mae_ids = {}
         for gr, rna_ids in rna_id_by_group.items():
-            mae_subset = all_mae_files [all_mae_files ["rna_assay"].isin(rna_ids)]
-            vcf_rna_pairs = zip(mae_subset["DNA_ID"], mae_subset["rna_assay"])
+            mae_subset = all_mae_files [all_mae_files ["RNA_ASSAY"].isin(rna_ids)]
+            vcf_rna_pairs = zip(mae_subset["DNA_ID"], mae_subset["RNA_ASSAY"])
             mae_ids[gr] = list(map(id_sep.join, vcf_rna_pairs))
         
         return mae_ids
@@ -129,20 +128,20 @@ class ConfigHelper:
         # assay ID column in sample_annotation, entry for ASSAY in sample_file_mapping
         
         ####### PROBLEM IF WGS_ASSAY NOT IN SAMPLE_ANNOTATION: possible solution: create empty cols
-        if "rna_assay" not in self.sample_annotation:
-            self.sample_annotation["rna_assay"] = ""
-        if "wes_assay" not in self.sample_annotation:
-            self.sample_annotation["wes_assay"] = ""
-        if "wgs_assay" not in self.sample_annotation:
-            self.sample_annotation["wgs_assay"] = ""
+        if "RNA_ASSAY" not in self.sample_annotation:
+            self.sample_annotation["RNA_ASSAY"] = ""
+        if "WES_ASSAY" not in self.sample_annotation:
+            self.sample_annotation["WES_ASSAY"] = ""
+        if "WGS_ASSAY" not in self.sample_annotation:
+            self.sample_annotation["WGS_ASSAY"] = ""
         
-        mae_files = self.sample_annotation[["rna_assay", "wes_assay", "wgs_assay"]]
-        mae_files = pd.melt(mae_files, id_vars=["rna_assay"], value_vars=["wes_assay", "wgs_assay"], var_name="DNA_assay", value_name="DNA_ID")
+        mae_files = self.sample_annotation[["RNA_ASSAY", "WES_ASSAY", "WGS_ASSAY"]]
+        mae_files = pd.melt(mae_files, id_vars=["RNA_ASSAY"], value_vars=["WES_ASSAY", "WGS_ASSAY"], var_name="DNA_assay", value_name="DNA_ID")
         mae_files.dropna(inplace=True)
         
         # remove IDs of non-existing files
         mae_files['vcf_exists'] = [self.checkFileExists(row["DNA_ID"], row["DNA_assay"], verbose=False) for index, row in mae_files.iterrows()]
-        mae_files['rna_exists'] = [self.checkFileExists(x, "rna_assay") for x in mae_files["rna_assay"]]
+        mae_files['rna_exists'] = [self.checkFileExists(x, "RNA_ASSAY") for x in mae_files["RNA_ASSAY"]]
         mae_files = mae_files.query("vcf_exists & rna_exists")
         
         return mae_files
@@ -156,7 +155,7 @@ class ConfigHelper:
         """
         Function for getting the file path given the sampleId and assay
         @param sampleId: ID of sample
-        @param assay: either "rna_assay", "dna_assay", as specified in the config
+        @param assay: either "RNA_ASSAY", "dna_assay", as specified in the config
         """
         if isinstance(assay, str):
             path = self.sample_file_mapping.query("ASSAY == @assay")
@@ -186,7 +185,7 @@ class ConfigHelper:
     """
     Create a full and filtered list of RNA assay IDs subsetted by specified OUTRIDER groups
     """
-    def createGroupIds(self, group_key="subset_key", assay_key="rna_assay", sep=','):
+    def createGroupIds(self, group_key="DROP_GROUP", assay_key="RNA_ASSAY", sep=','):
         
         # Get unique groups
         ids = self.getSampleIDs(assay_key)
@@ -203,15 +202,13 @@ class ConfigHelper:
         return {gr : df[df[group_key].str.contains(f'(^|{sep}){gr}({sep}|$)')][assay_key].tolist() 
                         for gr in groups}
     
-    def subsetGroups(self, ids_by_group, subset_col):
-        if subset_col is None:
+    def subsetGroups(self, ids_by_group, subset_groups):
+        if subset_groups is None:
             return ids_by_group
         else:
-            return {gr:ids for gr, ids in ids_by_group.items() if gr in subset_col}
+            return {gr:ids for gr, ids in ids_by_group.items() if gr in subset_groups}
     
     def getGeneAnnotationFile(self, annotation):
-        ## ANNOTATION IS NOW A KEY TO DICTIONARY
-        # deprecated --- i = self.config["GENE_ANNOTATION_NAMES"].index(annotation)
         return self.config["GENE_ANNOTATION"][annotation]
 
  
