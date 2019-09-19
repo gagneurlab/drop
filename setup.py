@@ -24,6 +24,7 @@ setuptools.setup(
     long_description_content_type="text/markdown",
     url="https://i12g-gagneurweb.informatik.tu-muenchen.de/gitlab/salazar/drop.git",
     packages=setuptools.find_packages(include=["drop", "wBuild", "snakemake"]),
+    entry_points={'console_scripts': ['drop=drop.cli:main']},
     package_data={'drop': extra_files},
     include_package_data=True
 )
