@@ -2,7 +2,7 @@ import os
 import oyaml
 
 def getRoot():
-    return os.path.dirname(__file__)
+    return os.path.join(os.path.dirname(__file__), "modules")
 
 methods = {'AE': 'aberrant-expression-pipeline',
            'AS': 'aberrant-splicing-pipeline',
@@ -14,21 +14,27 @@ def getMethodPath(method, link_type='workdir'):
         workdir: directory of the submodule
         snakeflie: path to Snakefile
         configfile: link to config file
+        rules: link to extra rules
     """
     if method not in methods.keys():
         raise ValueError(f'{method} is not a valid method. Must be one of {methods.keys()}')
     
     if link_type == 'workdir':
         return os.path.join(getRoot(), methods[method])
-    if link_type == 'snakefile':
+    elif link_type == 'snakefile':
         return os.path.join(getRoot(), methods[method], 'Snakefile')
+    elif link_type == 'rules':
+      return os.path.join(getRoot(), methods[method], 'snakeRules')
+    else:
+      raise ValueError(f'invalid link_type: "{link_type}"')
 
 def setupTempFiles(config):
     
     # create temporary directory
-    tmpdir = config["ROOT"] + '/' + config["DATASET_NAME"] + '/tmp'
+    tmpdir = os.path.join(config["ROOT"], config["DATASET_NAME"], 'tmp')
     if not os.path.exists(tmpdir):
-        os.makedirs(tmpdir)
+      print(f"create temporary files directory {tmpdir}")
+      os.mkdir(tmpdir)
 
     config_files = {}
     dummy_files = {}
@@ -45,5 +51,4 @@ def setupTempFiles(config):
             os.remove(done_file)
 
     return tmpdir, config_files, dummy_files
-
 
