@@ -15,15 +15,15 @@ class ConfigHelper:
         if html_root:
             config["htmlOutputPath"] = f"{html_root}/{config['htmlOutputPath']}"
         
-        # set default parameters for missing keys
-        if "indexWithFolderName" not in config:
-            config["indexWithFolderName"] = True
-        if "fileRegex" not in config:
-            config["fileRegex"] = ".*\.R"
-        if "use_gene_names" not in config:
-            config["use_gene_names"] = True
-        
         self.config = config
+        
+        # set default parameters for missing keys
+        if not self.keyInConfig("indexWithFolderName"):
+            self.config["indexWithFolderName"] = True
+        if not self.keyInConfig("fileRegex"):
+            self.config["fileRegex"] = ".*\.R"
+        if not self.keyInConfig("use_gene_names"):
+            self.config["use_gene_names"] = True
         
         # SAMPLE_FILE_MAPPING has to have the following structure:
         #   [ID | FILE | ASSAY ] , ASSAY can be for example 'RNA_Seq'
@@ -51,30 +51,39 @@ class ConfigHelper:
         self.all_rna_ids = self.createGroupIds(group_key="DROP_GROUP", assay_key="RNA_ASSAY", sep=',')
         
         ## outrider
-        if "outrider_groups" not in config:
+        if not self.keyInConfig("outrider_groups"):
             self.config["outrider_groups"] = list(self.all_rna_ids.keys())
-        if "min_outrider_ids" not in config or config["min_outrider_ids"] is None:
+        if not self.keyInConfig("min_outrider_ids"):
             self.config["min_outrider_ids"] = 40
         self.outrider_all = self.subsetGroups(self.all_rna_ids, self.config["outrider_groups"])
         self.outrider_filtered = {name:ids for name, ids in self.outrider_all.items() if len(ids) > self.config["min_outrider_ids"]}
-        config["outrider_all"], config["outrider_filtered"] = self.outrider_all, self.outrider_filtered
+        self.config["outrider_all"], self.config["outrider_filtered"] = self.outrider_all, self.outrider_filtered
         
         ## fraser
-        if "fraser_groups" not in config:
+        if not self.keyInConfig("fraser_groups"):
             self.config["fraser_groups"] = list(self.all_rna_ids.keys())
-        if "min_fraser_ids" not in config or config["min_fraser_ids"] is None:
+        if not self.keyInConfig("min_fraser_ids"):
             self.config["min_fraser_ids"] = 40
         self.fraser_all = self.subsetGroups(self.all_rna_ids, self.config["fraser_groups"])
         self.fraser_filtered = {name:ids for name, ids in self.fraser_all.items() if len(ids) > self.config["min_fraser_ids"]}
-        config["fraser_all"], config["fraser_filtered"] = self.fraser_all, self.fraser_filtered
+        self.config["fraser_all"], self.config["fraser_filtered"] = self.fraser_all, self.fraser_filtered
         
         ## mae
-        if "mae_groups" not in config:
+        if not self.keyInConfig("mae_groups"):
             self.config["mae_groups"] = list(self.all_rna_ids.keys())
         mae_rna_by_group = self.subsetGroups(self.all_rna_ids, self.config["mae_groups"])
         self.mae_ids = self.createMaeIDS(mae_rna_by_group, id_sep='--')
-        config["mae_ids"] = self.mae_ids
+        self.config["mae_ids"] = self.mae_ids
         
+    def keyInConfig(self, key):
+        """
+        checks whether key is in config or if the value is null
+        """
+        if key in self.config:
+            return self.config[key] is not None
+        else:
+            print(f'{key} not in config, using default')
+        return False
     
     """ 
     Get directory path for processed data
