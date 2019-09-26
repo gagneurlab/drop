@@ -31,7 +31,7 @@ def getMethodPath(method, link_type='workdir'):
 def setupTempFiles(config):
     
     # create temporary directory
-    tmpdir = os.path.join(config["ROOT"], config["DATASET_NAME"], 'tmp')
+    tmpdir = os.path.join(config["ROOT"], 'tmp')
     if not os.path.exists(tmpdir):
       print(f"create temporary files directory {tmpdir}")
       os.mkdir(tmpdir)

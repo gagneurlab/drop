@@ -5,9 +5,8 @@ htmlOutputPath:
 indexWithFolderName: true ### if True then the index name will be the name of the parent of scripts dir: <dir>_index.html
 fileRegex: .*\.R
 
-# OUTPUT Directories for processed data & results:<ROOT>/<DATASET_NAME>/processed_data & <ROOT>/<DATASET_NAME>/processed_results
+# root directory of project, this is where all the pipeline output will be
 ROOT: 
-DATASET_NAME: 
 
 # INPUT: Sample annotation
 SAMPLE_FILE_MAPPING: 
