@@ -1,6 +1,7 @@
 import os
 import pandas as pd
-import wbuild.utils as wbu
+import wbuild
+import pathlib
 from snakemake.logging import logger
 import warnings
 warnings.filterwarnings("ignore", 'This pattern has match groups')
@@ -9,12 +10,13 @@ class ConfigHelper:
     
     def __init__(self, config, html_root=None):
 
-        if not config:
-            wconf = wbu.Config()
+        if config is None:
+            wconf = wbuild.utils.Config()
             config = wconf.conf_dict
-        if html_root:
-            config["htmlOutputPath"] = f"{html_root}/{config['htmlOutputPath']}"
         
+        if html_root is not None:
+            config["htmlOutputPath"] = f"{html_root}/{config['htmlOutputPath']}"        
+
         self.config = config
         
         # set default parameters for missing keys
@@ -119,7 +121,13 @@ class ConfigHelper:
         if not isinstance(group, str):
             group = list(group)[0]
         return self.mae_ids[group]
-    
+
+    def getMaeAll(self):
+        all_ids = []
+        for group in self.config["mae_groups"]:
+            all_ids.extend(self.mae_ids[group])
+        return all_ids
+
     def createMaeIDS(self, rna_id_by_group, id_sep='--'):
         
         all_mae_files = self.allMaeFiles()

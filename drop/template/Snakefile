@@ -2,10 +2,13 @@
 import os
 import re
 import drop
+import pathlib
+import wbuild
 
 parser = drop.config(config)
-config = parser.config # needed if you dont provide the wbuild.yaml as configfile
-include: os.getcwd() + "/.wBuild/wBuild.snakefile" 
+config = parser.config
+config['wBuildPath'] =  str(pathlib.Path(wbuild.__file__).parent)
+include: config['wBuildPath'] + "/wBuild.snakefile"
 
 tmpdir, config_files, dummy_files = drop.setupTempFiles(config)
 config["tmpdir"] = tmpdir
@@ -40,16 +43,6 @@ rule all:
     output:
         touch(tmpdir + "/drop_all.done")
 
-rule aberrant_expression:
-    input: AE(dummy_files["AE"])
-        
-rule aberrant_splicing:
-    input: AS(dummy_files["AS"])
-
-rule MAE:
-    input: AS(dummy_files["MAE"])
-
-
 rule getIndexNames:
     input:
         AE(dummy_files["AE"]),
@@ -63,40 +56,58 @@ rule getIndexNames:
     	    for item in indexList:
                 file_handler.write(f"{item}\n")
 
+### Aberrant Expression
+rule AE:
+    input: AE(dummy_files["AE"])
 
-### RULEGRAPH  
-### rulegraph only works without print statements. Call <snakemake produce_graphs> for producing output
+rule AE_count:
+    input: 
+        AE(expand(
+            parser.getProcDataDir() + "/aberrant_expression/{annotation}/outrider/{dataset}/total_counts.Rds",
+            annotation=list(config["GENE_ANNOTATION"].keys()), 
+            dataset=parser.outrider_filtered
+        )),
+        AE(config["htmlOutputPath"] + "/Scripts_Counting_AllDatasets.html")
 
-## For rule rulegraph.. copy configfile in tmp file
-import oyaml
-with open(tmpdir + '/config.yaml', 'w') as yaml_file:
-    oyaml.dump(config, yaml_file, default_flow_style=False)
+rule AE_outrider:
+    input: 
+        AE(expand(
+            parser.getProcResultsDir() + "/aberrant_expression/{annotation}/outrider/{dataset}/ods.Rds",
+            annotation=list(config["GENE_ANNOTATION"].keys()),
+            dataset=parser.outrider_filtered
+        )),
+        AE(expand(
+            parser.getProcResultsDir() + "/aberrant_expression/{annotation}/outrider/{dataset}/OUTRIDER_results.tsv",
+            annotation=list(config["GENE_ANNOTATION"].keys()),
+            dataset=parser.outrider_filtered
+        ))
 
-rulegraph_filename = htmlOutputPath + "/" + os.path.basename(os.getcwd()) + "_rulegraph"
-dag_filename = htmlOutputPath + "/" + os.path.basename(os.getcwd()) + "_dag"
+### Aberrant Splicing
+rule AS:
+    input: AS(dummy_files["AS"])
 
-rule produce_graphs:
+## Monoallelic Expression
+rule MAE:
+    input: MAE(dummy_files["MAE"])
+
+rule MAE_count:
+    input: 
+        MAE(expand(
+            parser.getProcDataDir() + "/mae/allelic_counts/{mae_id}.csv.gz",
+            mae_id=parser.getMaeAll()
+        ))
+
+rule MAE_only:
     input:
-        expand("{graph}.{fmt}", fmt=["svg", "png"], graph=[rulegraph_filename, dag_filename])
+        MAE(config["htmlOutputPath"] + "/Scripts_MAE_Results_Overview.html"),
+        MAE(expand(
+            parser.getProcResultsDir() + "/mae/{dataset}/MAE_results_{annotation}.Rds",
+            dataset=parser.mae_ids.keys(), annotation=list(config["GENE_ANNOTATION"].keys())
+        ))
 
-rule create_rulegraph:
-    output:
-        rulegraph_filename + ".dot"
-    shell:
-        "snakemake --configfile " + tmpdir + "/config.yaml --rulegraph > {output}"
-        
-        
-rule create_dag:
-    output:
-        dag_filename + ".dot"
-    shell:
-        "snakemake --configfile " + tmpdir + "/config.yaml --dag > {output}"
-
-
-rule render_dot:
+rule MAE_qc:
     input:
-        "{prefix}.dot"
-    output:
-        "{prefix}.{fmt,(png|svg)}"
-    shell:
-        "dot -T{wildcards.fmt} < {input} > {output}"
+        MAE(config["htmlOutputPath"] + "/Scripts_QC_DNA_RNA_matrix_plot.html"),
+        MAE(parser.getProcResultsDir() + "/mae/" + config["qc_group"] + "/dna_rna_qc_matrix.Rds")
+
+
