@@ -50,7 +50,7 @@ class ConfigHelper:
         # Group IDs
         # remove unwanted characters
         self.sample_annotation["DROP_GROUP"] = self.sample_annotation["DROP_GROUP"].str.replace("(", "").str.replace(")", "")
-        self.all_rna_ids = self.createGroupIds(group_key="DROP_GROUP", assay_key="RNA_ASSAY", sep=',')
+        self.all_rna_ids = self.createGroupIds(group_key="DROP_GROUP", assay_key="RNA_ID", sep=',')
         
         ## outrider
         if not self.keyInConfig("outrider_groups"):
@@ -135,31 +135,27 @@ class ConfigHelper:
         # subset by group
         mae_ids = {}
         for gr, rna_ids in rna_id_by_group.items():
-            mae_subset = all_mae_files [all_mae_files ["RNA_ASSAY"].isin(rna_ids)]
-            vcf_rna_pairs = zip(mae_subset["DNA_ID"], mae_subset["RNA_ASSAY"])
+            mae_subset = all_mae_files [all_mae_files ["RNA_ID].isin(rna_ids)]
+            vcf_rna_pairs = zip(mae_subset["DNA_ID"], mae_subset["RNA_ID"])
             mae_ids[gr] = list(map(id_sep.join, vcf_rna_pairs))
         
         return mae_ids
         
-    def allMaeFiles(self):
-        # assay ID column in sample_annotation, entry for ASSAY in sample_file_mapping
-        
+    def allMaeFiles(self):        
         ####### PROBLEM IF WGS_ASSAY NOT IN SAMPLE_ANNOTATION: possible solution: create empty cols
-        if "RNA_ASSAY" not in self.sample_annotation:
-            self.sample_annotation["RNA_ASSAY"] = ""
-        if "WES_ASSAY" not in self.sample_annotation:
-            self.sample_annotation["WES_ASSAY"] = ""
-        if "WGS_ASSAY" not in self.sample_annotation:
-            self.sample_annotation["WGS_ASSAY"] = ""
+        #if "RNA_ID" not in self.sample_annotation:
+        #    self.sample_annotation["RNA_ID"] = ""
+        #if "DNA_ID" not in self.sample_annotation:
+        #    self.sample_annotation["DNA_ID"] = ""
         
-        mae_files = self.sample_annotation[["RNA_ASSAY", "WES_ASSAY", "WGS_ASSAY"]]
-        mae_files = pd.melt(mae_files, id_vars=["RNA_ASSAY"], value_vars=["WES_ASSAY", "WGS_ASSAY"], var_name="DNA_assay", value_name="DNA_ID")
+        mae_files = self.sample_annotation[["RNA_ID", "DNA_ID"]]
+        #mae_files = pd.melt(mae_files, id_vars=["RNA_ID"], value_vars=["WES_ASSAY", "WGS_ASSAY"], var_name="DNA_assay", value_name="DNA_ID")
         mae_files.dropna(inplace=True)
         
         # remove IDs of non-existing files
-        mae_files['vcf_exists'] = [self.checkFileExists(row["DNA_ID"], row["DNA_assay"], verbose=False) for index, row in mae_files.iterrows()]
-        mae_files['rna_exists'] = [self.checkFileExists(x, "RNA_ASSAY") for x in mae_files["RNA_ASSAY"]]
-        mae_files = mae_files.query("vcf_exists & rna_exists")
+        #mae_files['vcf_exists'] = [self.checkFileExists(row["DNA_ID"], row["DNA_assay"], verbose=False) for index, row in mae_files.iterrows()]
+        #mae_files['rna_exists'] = [self.checkFileExists(x, "RNA_ID") for x in mae_files["RNA_ID"]]
+        #mae_files = mae_files.query("vcf_exists & rna_exists")
         
         return mae_files
     
@@ -172,7 +168,7 @@ class ConfigHelper:
         """
         Function for getting the file path given the sampleId and assay
         @param sampleId: ID of sample
-        @param assay: either "RNA_ASSAY", "dna_assay", as specified in the config
+        @param assay: either "RNA_ID", "dna_assay", as specified in the config
         """
         if isinstance(assay, str):
             path = self.sample_file_mapping.query("ASSAY == @assay")
@@ -202,7 +198,7 @@ class ConfigHelper:
     """
     Create a full and filtered list of RNA assay IDs subsetted by specified OUTRIDER groups
     """
-    def createGroupIds(self, group_key="DROP_GROUP", assay_key="RNA_ASSAY", sep=','):
+    def createGroupIds(self, group_key="DROP_GROUP", assay_key="RNA_ID", sep=','):
         
         # Get unique groups
         ids = self.getSampleIDs(assay_key)
