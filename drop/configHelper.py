@@ -27,30 +27,16 @@ class ConfigHelper:
         if not self.keyInConfig("use_gene_names"):
             self.config["use_gene_names"] = True
         
-        # SAMPLE_FILE_MAPPING has to have the following structure:
-        #   [ID | FILE | ASSAY ] , ASSAY can be for example 'RNA_Seq'
-        df_mapping = pd.read_csv(config["SAMPLE_FILE_MAPPING"], sep='\t')
-        if not set(df_mapping.columns.values)=={"ID", "FILE", "ASSAY"}:
-            raise ValueError(f"File columns {df_mapping.columns.values} of sample-file mapping do not correspond to " +
-            f"required format with columns [ID | FILE | ASSAY]. File: {config['SAMPLE_FILE_MAPPING']}")
+        # SAMPLE_ANNOTATION
+        self.sample_annotation = self.getSampleAnnotation(config["SAMPLE_ANNOTATION"])
         
-        # cleaning SAMPLE_FILE_MAPPING
-        df_mapping.dropna(inplace=True)
-        df_mapping["existent"] = [os.path.exists(x) for x in df_mapping["FILE"]]
-        df_mapping = df_mapping[df_mapping["existent"]]
-        df_mapping.drop_duplicates(inplace=True)
-        
-        self.sample_file_mapping = df_mapping
-        
-        # SAMPLE_ANNOTATION must have assay names as specified in sample-file mappping for ID columns
-        sa_file = config["SAMPLE_ANNOTATION"]
-        logger.debug(f"Loading annotation file: '{sa_file}'")
-        self.sample_annotation = pd.read_csv(sa_file, sep='\t')
+        # SAMPLE_FILE_MAPPING
+        self.sample_file_mapping = self.createSampleFileMapping(self.sample_annotation)
         
         # Group IDs
         # remove unwanted characters
         self.sample_annotation["DROP_GROUP"] = self.sample_annotation["DROP_GROUP"].str.replace("(", "").str.replace(")", "")
-        self.all_rna_ids = self.createGroupIds(group_key="DROP_GROUP", assay_key="RNA_ID", sep=',')
+        self.all_rna_ids = self.createGroupIds(group_key="DROP_GROUP", file_type="RNA_BAM_FILE", sep=',')
         
         ## outrider
         if not self.keyInConfig("outrider_groups"):
@@ -77,6 +63,41 @@ class ConfigHelper:
         self.mae_ids = self.createMaeIDS(mae_rna_by_group, id_sep='--')
         self.config["mae_ids"] = self.mae_ids
         
+    def getSampleAnnotation(self, filename, sep='\t'):
+        """
+        read and check sample annotation for missing columns
+        """
+        sample_annotation = pd.read_csv(filename, sep=sep)
+        #TODO add more column names
+        mandatory_columns = {"RNA_ID", "RNA_BAM_FILE", "DNA_ID", "DNA_VCF_FILE"}
+        missing_cols = [x for x in mandatory_columns if x not in sample_annotation.columns.values]
+        if len(missing_cols) > 0:
+            raise ValueError(f"Incorrect columns in sample annotation, missing:\n {missing_cols}\n")
+        return sample_annotation
+    
+    def createSampleFileMapping(self, sample_annotation):
+        """
+        create a sample file mapping with unique entries of existing files
+            columns: [ID | ASSAY | FILE_TYPE | FILE_TYPE ]
+        """
+        
+        melt1 = pd.melt(sample_annotation,
+                        id_vars=['RNA_ID', 'DNA_ID'],
+                        value_vars=['RNA_BAM_FILE', 'DNA_VCF_FILE'],
+                        var_name='FILE_TYPE', value_name='FILE_PATH')
+        
+        file_mapping = pd.melt(melt1, 
+                               id_vars=['FILE_TYPE', 'FILE_PATH'],
+                               value_vars=['RNA_ID', 'DNA_ID'],
+                               var_name='ASSAY', value_name='ID')
+        
+        # cleaning SAMPLE_FILE_MAPPING
+        file_mapping.dropna(inplace=True)
+        existent = [os.path.exists(x) for x in file_mapping["FILE_PATH"]]
+        file_mapping = file_mapping[existent].drop_duplicates()
+        
+        return file_mapping
+        
     def keyInConfig(self, key):
         """
         checks whether key is in config or if the value is null
@@ -100,18 +121,20 @@ class ConfigHelper:
         return self.config["ROOT"] + "/processed_results"
     
     """
-    Get sample ID by experiment
+    Get sample ID by file type
     """
-    def getSampleIDs(self, experiment):
-        return list(self.sample_file_mapping[self.sample_file_mapping["ASSAY"] == experiment]["ID"]) 
+    def getSampleIDs(self, file_type):
+        fm = self.sample_file_mapping
+        return list(fm[fm["FILE_TYPE"] == file_type]["ID"]) 
     
     
-    def checkFileExists(self, sampleID, assay, verbose=True):
-        # note: we already checked for non-existing files in the init, so we only need to check whether the ID is in the sample_file_mapping here
-        x = self.sample_file_mapping.query("(ASSAY == @assay) & (ID == @sampleID)")["FILE"]
+    def checkFileExists(self, sampleID, file_type, verbose=True):
+        # note: we already checked for non-existing files in the init, so we
+        # only need to check whether the ID is in the sample_file_mapping here
+        x = self.sample_file_mapping.query("(FILE_TYPE == @file_type) & (ID == @sampleID)")["FILE"]
         exists = (len(x) != 0)
         if (not exists) and verbose:
-            print(f"FILE NOT FOUND FOR sampleID: {sampleID} and assay {assay}")
+            print(f"FILE NOT FOUND FOR sampleID: {sampleID} and file type {file_type}")
         return exists
         
     """
@@ -130,32 +153,21 @@ class ConfigHelper:
 
     def createMaeIDS(self, rna_id_by_group, id_sep='--'):
         
-        all_mae_files = self.allMaeFiles()
+        all_mae_files = self.getAllMaeFiles()
         
         # subset by group
         mae_ids = {}
         for gr, rna_ids in rna_id_by_group.items():
-            mae_subset = all_mae_files [all_mae_files ["RNA_ID].isin(rna_ids)]
+            mae_subset = all_mae_files [all_mae_files ["RNA_ID"].isin(rna_ids)]
             vcf_rna_pairs = zip(mae_subset["DNA_ID"], mae_subset["RNA_ID"])
             mae_ids[gr] = list(map(id_sep.join, vcf_rna_pairs))
         
         return mae_ids
         
-    def allMaeFiles(self):        
-        ####### PROBLEM IF WGS_ASSAY NOT IN SAMPLE_ANNOTATION: possible solution: create empty cols
-        #if "RNA_ID" not in self.sample_annotation:
-        #    self.sample_annotation["RNA_ID"] = ""
-        #if "DNA_ID" not in self.sample_annotation:
-        #    self.sample_annotation["DNA_ID"] = ""
+    def getAllMaeFiles(self):
         
         mae_files = self.sample_annotation[["RNA_ID", "DNA_ID"]]
-        #mae_files = pd.melt(mae_files, id_vars=["RNA_ID"], value_vars=["WES_ASSAY", "WGS_ASSAY"], var_name="DNA_assay", value_name="DNA_ID")
-        mae_files.dropna(inplace=True)
-        
-        # remove IDs of non-existing files
-        #mae_files['vcf_exists'] = [self.checkFileExists(row["DNA_ID"], row["DNA_assay"], verbose=False) for index, row in mae_files.iterrows()]
-        #mae_files['rna_exists'] = [self.checkFileExists(x, "RNA_ID") for x in mae_files["RNA_ID"]]
-        #mae_files = mae_files.query("vcf_exists & rna_exists")
+        mae_files = mae_files.dropna()
         
         return mae_files
     
@@ -164,55 +176,57 @@ class ConfigHelper:
             group = list(group)[0]
         return self.all_rna_ids[group]
     
-    def getFilePath(self, sampleId, assay):
+    def getFilePath(self, sampleId, file_type):
         """
-        Function for getting the file path given the sampleId and assay
-        @param sampleId: ID of sample
-        @param assay: either "RNA_ID", "dna_assay", as specified in the config
+        Function for getting the file path given the sampleId and file t
+        sampleId: ID of sample
+        file_type: e.g. "RNA_BAM_FILE", "DNA_VCF_FILE"
         """
-        if isinstance(assay, str):
-            path = self.sample_file_mapping.query("ASSAY == @assay")
+        fm = self.sample_file_mapping
+        if isinstance(file_type, str):
+            path = fm.query("FILE_TYPE == @file_type")
         else:
-            path = self.sample_file_mapping[self.sample_file_mapping["ASSAY"].isin(assay)]
-        path = path.query("ID == @sampleId")["FILE"]
+            path = fm[fm["FILE_TYPE"].isin(file_type)]
+        path = path.query("ID == @sampleId")["FILE_PATH"]
         return path.iloc[0]
     
-    def getFilePaths(self, assay, group=None, ids_by_group=None):
+    def getFilePaths(self, file_type, group=None, ids_by_group=None):
         """
-        assay: name of ass column
+        file_type: e.g. "RNA_BAM_FILE", "DNA_VCF_FILE"
         group: name of dataset/ group
         ids_by_group: dictionary of IDs by group names
         """
         
         # subset by group if group is specified
         if group is None or ids_by_group is None:
-            sampleIDs = self.sample_file_mapping.query("ASSAY == @assay")["ID"]
+            sampleIDs = self.sample_file_mapping.query("FILE_TYPE == @file_type")["ID"]
         else:
             sampleIDs = ids_by_group[group]
         
         files = [] # collect file names
         for sampleID in sampleIDs:
-            files.append(self.getFilePath(sampleID, assay))
+            files.append(self.getFilePath(sampleID, file_type))
         return files
     
-    """
-    Create a full and filtered list of RNA assay IDs subsetted by specified OUTRIDER groups
-    """
-    def createGroupIds(self, group_key="DROP_GROUP", assay_key="RNA_ID", sep=','):
+    def createGroupIds(self, group_key="DROP_GROUP", file_type="RNA_ID", sep=','):
+        """
+        Create a full and filtered list of RNA assay IDs subsetted by specified OUTRIDER groups
+        """
+        sa = self.sample_annotation
         
         # Get unique groups
-        ids = self.getSampleIDs(assay_key)
-        df = self.sample_annotation[self.sample_annotation[assay_key].isin(ids)]
-        df = df[[assay_key, group_key]].drop_duplicates().copy()
+        ids = self.getSampleIDs(file_type)
+        sa = sa[sa[file_type].isin(ids)]
+        sa = sa[[file_type, group_key]].drop_duplicates().copy()
         
         # get unique group names
         groups = []
-        for s in set(df[group_key]):
+        for s in set(sa[group_key]):
             groups.extend(s.split(sep))
         groups = set(groups)
         
         # collect IDs per group
-        return {gr : df[df[group_key].str.contains(f'(^|{sep}){gr}({sep}|$)')][assay_key].tolist() 
+        return {gr : sa[sa[group_key].str.contains(f'(^|{sep}){gr}({sep}|$)')][file_type].tolist() 
                         for gr in groups}
     
     def subsetGroups(self, ids_by_group, subset_groups):
