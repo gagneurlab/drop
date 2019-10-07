@@ -78,7 +78,7 @@ class ConfigHelper:
     def createSampleFileMapping(self, sample_annotation):
         """
         create a sample file mapping with unique entries of existing files
-            columns: [ID | ASSAY | FILE_TYPE | FILE_TYPE ]
+            columns: [ID | ASSAY | FILE_TYPE | FILE_PATH ]
         """
         
         melt1 = pd.melt(sample_annotation,
@@ -208,16 +208,19 @@ class ConfigHelper:
             files.append(self.getFilePath(sampleID, file_type))
         return files
     
-    def createGroupIds(self, group_key="DROP_GROUP", file_type="RNA_ID", sep=','):
+    def createGroupIds(self, group_key="DROP_GROUP", file_type="RNA_BAM_FILE", sep=','):
         """
         Create a full and filtered list of RNA assay IDs subsetted by specified OUTRIDER groups
         """
         sa = self.sample_annotation
+        sf = self.sample_file_mapping
+        
+        assay_id = sf[sf["FILE_TYPE"] == file_type]["ASSAY"].iloc[0]
         
         # Get unique groups
         ids = self.getSampleIDs(file_type)
-        sa = sa[sa[file_type].isin(ids)]
-        sa = sa[[file_type, group_key]].drop_duplicates().copy()
+        df = sa[sa[assay_id].isin(ids)]
+        df = df[[assay_id, group_key]].drop_duplicates().copy()
         
         # get unique group names
         groups = []
@@ -226,7 +229,7 @@ class ConfigHelper:
         groups = set(groups)
         
         # collect IDs per group
-        return {gr : sa[sa[group_key].str.contains(f'(^|{sep}){gr}({sep}|$)')][file_type].tolist() 
+        return {gr : df[df[group_key].str.contains(f'(^|{sep}){gr}({sep}|$)')][assay_id].tolist() 
                         for gr in groups}
     
     def subsetGroups(self, ids_by_group, subset_groups):
