@@ -5,13 +5,10 @@ installation
 ```
 # clone repos
 git clone git@i12g-gagneurweb.informatik.tu-muenchen.de:mumichae/drop_analysis.git
-git clone git@i12g-gagneurweb.informatik.tu-muenchen.de:salazar/drop.git
-
-# init submodules
-cd drop
-git submodule update --init --recursive
+git clone git@i12g-gagneurweb.informatik.tu-muenchen.de:salazar/drop.git --recursive
 
 # install drop package
+cd drop
 pip install -e .
 
 # init wbuild (still uses repo folder not user folder!)
