@@ -4,9 +4,8 @@ installation
 
 ```
 # clone repos
-git clone git@i12g-gagneurweb.informatik.tu-muenchen.de:mumichae/drop_analysis.git --recursive
+git clone git@i12g-gagneurweb.informatik.tu-muenchen.de:mumichae/drop_analysis.git
 git clone git@i12g-gagneurweb.informatik.tu-muenchen.de:salazar/drop.git --recursive
-
 
 # install drop package
 cd drop
