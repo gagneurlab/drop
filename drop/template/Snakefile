@@ -111,3 +111,10 @@ rule MAE_qc:
         MAE(parser.getProcResultsDir() + "/mae/" + config["qc_group"] + "/dna_rna_qc_matrix.Rds")
 
 
+rule produce_rulegraphs:
+    input:
+        MAE(htmlOutputPath + "/MAE_rulegraph.svg"),
+        AS(htmlOutputPath + "/AS_rulegraph.svg"),
+        AE(htmlOutputPath + "/AE_rulegraph.svg"),
+    output:
+        touch(tmpdir + "/rulegraphs.done")
