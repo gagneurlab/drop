@@ -1,9 +1,9 @@
 language: python
 sudo: required
 dist: xenial
-#cache:
-#  - directories:
-#    - $HOME/R/Library
+cache:
+  - directories:
+    - $HOME/R/Library
 
 addons:
   apt:
@@ -18,6 +18,12 @@ python:
 
 install:
   - pip install -e .
+  - R -e "
+      message(.libPaths())
+      install.packages('BiocManager')
+      BiocManager::install('OUTRIDER', Ncpus=10, ask=FALSE)
+    "
+  - R -e 
 
 script:
   - pytest
