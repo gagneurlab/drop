@@ -63,6 +63,7 @@ class ConfigHelper:
         self.mae_ids = self.createMaeIDS(mae_rna_by_group, id_sep='--')
         self.config["mae_ids"] = self.mae_ids
         
+        
     def getSampleAnnotation(self, filename, sep='\t'):
         """
         read and check sample annotation for missing columns
@@ -80,21 +81,25 @@ class ConfigHelper:
         create a sample file mapping with unique entries of existing files
             columns: [ID | ASSAY | FILE_TYPE | FILE_PATH ]
         """
+
+        assay_mapping = {'RNA_ID':'RNA_BAM_FILE', 'DNA_ID':'DNA_VCF_FILE'}                        
         
-        melt1 = pd.melt(sample_annotation,
-                        id_vars=['RNA_ID', 'DNA_ID'],
-                        value_vars=['RNA_BAM_FILE', 'DNA_VCF_FILE'],
-                        var_name='FILE_TYPE', value_name='FILE_PATH')
+        assay_subsets = []
+        for id_, file_type in assay_mapping.items():
+            df = sample_annotation[[id_, file_type]].drop_duplicates().copy()
+            df.rename(columns={id_:'ID', file_type:'FILE_PATH'}, inplace=True)
+            df['ASSAY'] = id_
+            df['FILE_TYPE'] = file_type
+            assay_subsets.append(df)
         
-        file_mapping = pd.melt(melt1, 
-                               id_vars=['FILE_TYPE', 'FILE_PATH'],
-                               value_vars=['RNA_ID', 'DNA_ID'],
-                               var_name='ASSAY', value_name='ID')
+        file_mapping = pd.concat(assay_subsets)
         
         # cleaning SAMPLE_FILE_MAPPING
         file_mapping.dropna(inplace=True)
         existent = [os.path.exists(x) for x in file_mapping["FILE_PATH"]]
         file_mapping = file_mapping[existent].drop_duplicates()
+        
+        file_mapping.to_csv(self.getProcDataDir() + "/file_mapping.csv", index=False)
         
         return file_mapping
         
