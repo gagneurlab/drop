@@ -1,0 +1,59 @@
+language: r
+sudo: required
+dist: xenial
+cache:
+  - directories:
+    - $HOME/R/Library
+
+
+
+addons:
+  apt:
+    packages:
+      - libxml2-dev
+      - tk-dev
+      - libgit2-dev
+
+r:
+  - bioc-devel
+  - bioc-release
+  - 3.5.3
+  - 3.5.0
+
+stages:
+  - Setup Cache
+  - Test
+
+# setup cache first
+jobs:
+  include:
+    - stage: Setup Cache
+      r: bioc-devel
+      script: true
+    - stage: Setup Cache
+      r: bioc-release
+      script: true
+    - stage: Setup Cache
+      r: 3.5.3
+      script: true
+    - stage: Setup Cache
+      r: 3.5.0
+      script: true
+
+before_install:
+  - tlmgr install index marginfix bera nowidow parnotes
+
+install:
+  - R --version
+  - Rscript setupEnv.R
+
+script:
+  - R CMD build .
+  - R CMD BiocCheck --no-check-vignettes *tar.gz
+  - R CMD check --no-vignettes --timings *tar.gz
+  - R -e 'devtools::run_examples()'
+  - cd vignettes && R CMD Sweave --engine=knitr::knitr --pdf FraseR.Rnw
+
+
+after_success:
+  - test $TRAVIS_BUILD_STAGE_NAME = "Test" && Rscript -e 'covr::codecov()'
