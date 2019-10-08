@@ -1,9 +1,10 @@
-### SNAKEFILE GENETIC DIAGNOSIS PIPELINE
 import os
 import re
 import drop
 import pathlib
 import wbuild
+
+configfile: "config.yaml" # default config file
 
 parser = drop.config(config)
 config = parser.config
@@ -57,10 +58,10 @@ rule getIndexNames:
                 file_handler.write(f"{item}\n")
 
 ### Aberrant Expression
-rule AE:
+rule aberrant_expression:
     input: AE(dummy_files["AE"])
 
-rule AE_count:
+rule aberrant_expression_count:
     input: 
         AE(expand(
             parser.getProcDataDir() + "/aberrant_expression/{annotation}/outrider/{dataset}/total_counts.Rds",
@@ -69,7 +70,7 @@ rule AE_count:
         )),
         AE(config["htmlOutputPath"] + "/Scripts_Counting_AllDatasets.html")
 
-rule AE_outrider:
+rule aberrant_expression_outrider:
     input: 
         AE(expand(
             parser.getProcResultsDir() + "/aberrant_expression/{annotation}/outrider/{dataset}/ods.Rds",
@@ -83,9 +84,9 @@ rule AE_outrider:
         ))
 
 ### Aberrant Splicing
-rule AS:
+rule aberrant_splicing:
     input: AS(dummy_files["AS"])
-
+    
 ## Monoallelic Expression
 rule MAE:
     input: MAE(dummy_files["MAE"])
@@ -97,11 +98,11 @@ rule MAE_count:
             mae_id=parser.getMaeAll()
         ))
 
-rule MAE_only:
+rule MAE_result:
     input:
         MAE(config["htmlOutputPath"] + "/Scripts_MAE_Results_Overview.html"),
         MAE(expand(
-            parser.getProcResultsDir() + "/mae/{dataset}/MAE_results_{annotation}.Rds",
+            parser.getProcResultsDir() + "/mae/{dataset}/MAE_results_{annotation}.tsv",
             dataset=parser.mae_ids.keys(), annotation=list(config["GENE_ANNOTATION"].keys())
         ))
 
@@ -110,7 +111,7 @@ rule MAE_qc:
         MAE(config["htmlOutputPath"] + "/Scripts_QC_DNA_RNA_matrix_plot.html"),
         MAE(parser.getProcResultsDir() + "/mae/" + config["qc_group"] + "/dna_rna_qc_matrix.Rds")
 
-
+## Rule graph: DAG of workflow rules
 rule produce_rulegraphs:
     input:
         MAE(htmlOutputPath + "/MAE_rulegraph.svg"),
@@ -118,3 +119,4 @@ rule produce_rulegraphs:
         AE(htmlOutputPath + "/AE_rulegraph.svg"),
     output:
         touch(tmpdir + "/rulegraphs.done")
+
