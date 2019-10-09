@@ -5,6 +5,13 @@ import glob
 with open("README.md", "r") as fh:
     long_description = fh.read()
 
+requirements = [
+    'wbuild @ git+https://github.com/gagneurlab/wBuild.git@master#egg=wbuild',
+    #'wbuild',
+    'snakemake>=3.13.2',
+    'oyaml>=0.9',
+    'pandas',
+]
 
 extra_files = []
 for (path, directories, filenames) in os.walk('drop/'):
@@ -26,5 +33,7 @@ setuptools.setup(
     packages=setuptools.find_packages(include=["drop", "wBuild", "snakemake"]),
     entry_points={'console_scripts': ['drop=drop.cli:main']},
     package_data={'drop': extra_files},
-    include_package_data=True
+    include_package_data=True,
+    install_requires=requirements
 )
+
