@@ -109,7 +109,7 @@ rule MAE_result:
 rule MAE_qc:
     input:
         MAE(config["htmlOutputPath"] + "/Scripts_QC_DNA_RNA_matrix_plot.html"),
-        MAE(parser.getProcResultsDir() + "/mae/" + config["qc_group"] + "/dna_rna_qc_matrix.Rds")
+        MAE(parser.getProcResultsDir() + "/mae/" + config["mae"]["qcGroup"] + "/dna_rna_qc_matrix.Rds")
 
 ## Rule graph: DAG of workflow rules
 rule produce_rulegraphs:

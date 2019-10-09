@@ -24,10 +24,9 @@ class ConfigHelper:
             self.config["indexWithFolderName"] = True
         if not self.keyInConfig("fileRegex"):
             self.config["fileRegex"] = ".*\.R"
-        if not self.keyInConfig("use_gene_names"):
-            self.config["use_gene_names"] = True
+            
         
-        # SAMPLE_ANNOTATION
+        # sample annotation
         self.sample_annotation = self.getSampleAnnotation(config["sampleAnnotation"])
         
         # TODO Delete thisSAMPLE_FILE_MAPPING
@@ -39,28 +38,32 @@ class ConfigHelper:
         self.all_rna_ids = self.createGroupIds(group_key="DROP_GROUP", file_type="RNA_BAM_FILE", sep=',')
         
         ## outrider
-	if not (("aberrantExpression" in self.config) and ("groups" in self.config["aberrantExpression"])):
+	if not (("aberrantExpression" in self.config) and ("useGeneNames" in self.config["aberrantExpression"]) and (self.config["aberrantExpression"]["useGeneNames"] is not None)):
+             self.config["useGeneNames"] = True
+ 
+	if not (("aberrantExpression" in self.config) and ("groups" in self.config["aberrantExpression"]) and (self.config["aberrantExpression"]["groups"] is not None)):
             self.config["aberrantExpression"]["groups"] = list(self.all_rna_ids.keys())
 
-	if not (("aberrantExpression" in self.config) and ("minIds" in self.config["aberrantExpression"])):
+	if not (("aberrantExpression" in self.config) and ("minIds" in self.config["aberrantExpression"]) and (self.config["aberrantExpression"]["minIds"] is not None)):
             self.config["aberrantExpression"]["minIds"] = 40
         self.outrider_all = self.subsetGroups(self.all_rna_ids, self.config["aberrantExpression"]["groups"])
         self.outrider_filtered = {name:ids for name, ids in self.outrider_all.items() if len(ids) > self.config["aberrantExpression"]["minIds"]}
         self.config["outrider_all"], self.config["outrider_filtered"] = self.outrider_all, self.outrider_filtered
         
         ## fraser
-        if not self.keyInConfig("fraser_groups"):
-            self.config["fraser_groups"] = list(self.all_rna_ids.keys())
-        if not self.keyInConfig("min_fraser_ids"):
-            self.config["min_fraser_ids"] = 40
-        self.fraser_all = self.subsetGroups(self.all_rna_ids, self.config["fraser_groups"])
-        self.fraser_filtered = {name:ids for name, ids in self.fraser_all.items() if len(ids) > self.config["min_fraser_ids"]}
+        if not (("aberrantSplicing" in self.config) and ("groups" in self.config["aberrantSplicing"]) and (self.config["aberrantSplicing"]["groups"] is not None)):
+            self.config"aberrantSplicing"]["groups"] = list(self.all_rna_ids.keys())
+        
+        if not (("aberrantSplicing" in self.config) and ("minIds" in self.config["aberrantSplicing"]) and (self.config["aberrantSplicing"]["minIds"] is not None)):
+            self.config["aberrantSplicing"]["minIds"] = 40
+        self.fraser_all = self.subsetGroups(self.all_rna_ids, self.config["aberrantSplicing"]["groups"])
+        self.fraser_filtered = {name:ids for name, ids in self.fraser_all.items() if len(ids) > self.config["aberrantSplicing"]["minIds"]}
         self.config["fraser_all"], self.config["fraser_filtered"] = self.fraser_all, self.fraser_filtered
         
         ## mae
-        if not self.keyInConfig("mae_groups"):
-            self.config["mae_groups"] = list(self.all_rna_ids.keys())
-        mae_rna_by_group = self.subsetGroups(self.all_rna_ids, self.config["mae_groups"])
+        if not (("mae" in self.config) and ("groups" in self.config["mae"]) and (self.config["mae"]["groups"] is not None)):
+            self.config["mae"]["groups"] = list(self.all_rna_ids.keys())
+        mae_rna_by_group = self.subsetGroups(self.all_rna_ids, self.config["mae"]["groups"])
         self.mae_ids = self.createMaeIDS(mae_rna_by_group, id_sep='--')
         self.config["mae_ids"] = self.mae_ids
         
@@ -153,7 +156,7 @@ class ConfigHelper:
 
     def getMaeAll(self):
         all_ids = []
-        for group in self.config["mae_groups"]:
+        for group in self.config["mae"]["groups"]:
             all_ids.extend(self.mae_ids[group])
         return all_ids
 
