@@ -1,0 +1,9 @@
+[submodule "drop/modules/aberrant-expression-pipeline"]
+	path = drop/modules/aberrant-expression-pipeline
+	url = https://github.com/mumichae/aberrant-expression-pipeline.git
+[submodule "drop/modules/aberrant-splicing-pipeline"]
+	path = drop/modules/aberrant-splicing-pipeline
+	url = https://github.com/mumichae/aberrant-splicing-pipeline.git
+[submodule "drop/modules/mae-pipeline"]
+	path = drop/modules/mae-pipeline
+	url = https://github.com/mumichae/mae-pipeline.git
