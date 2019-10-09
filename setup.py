@@ -23,17 +23,18 @@ for (path, directories, filenames) in os.walk('drop/'):
 
 setuptools.setup(
     name="drop",
-    version="0.0.1",
+    version="0.9.0",
     author="Michaela Müller, Daniela Andrade Salazar",
     author_email="mumichae@in.tum.de",
     description="Detection of RNA Outlier Pipeline",
     long_description=long_description,
     long_description_content_type="text/markdown",
-    url="https://i12g-gagneurweb.informatik.tu-muenchen.de/gitlab/salazar/drop.git",
-    packages=setuptools.find_packages(include=["drop", "wBuild", "snakemake"]),
+    url="https://github.com/mumichae/drop",
+    packages=setuptools.find_packages(include=["drop"]),
     entry_points={'console_scripts': ['drop=drop.cli:main']},
     package_data={'drop': extra_files},
     include_package_data=True,
     install_requires=requirements
 )
+
 

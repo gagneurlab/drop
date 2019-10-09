@@ -1,6 +1,6 @@
+from .setupDrop import setupDrop as drop
 from .configHelper import ConfigHelper as config
 from .submodules import *
-
 
 def init():
     wbuild.cli.init()
