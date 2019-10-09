@@ -1,0 +1,29 @@
+language: python
+sudo: required
+dist: xenial
+cache:
+  - directories:
+    - $HOME/R/Library
+
+addons:
+  apt:
+    packages:
+      - r-base
+#      - libxml2-dev
+#      - tk-dev
+#      - libgit2-dev
+
+python:
+  - "3.7"
+
+install:
+  - pip install -e .
+  - R -e "
+      message(.libPaths())
+      install.packages('BiocManager')
+      BiocManager::install('OUTRIDER', Ncpus=10, ask=FALSE)
+    "
+  - R -e 
+
+script:
+  - pytest
