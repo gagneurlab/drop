@@ -65,7 +65,7 @@ rule aberrant_expression_count:
     input: 
         AE(expand(
             parser.getProcDataDir() + "/aberrant_expression/{annotation}/outrider/{dataset}/total_counts.Rds",
-            annotation=list(config["GENE_ANNOTATION"].keys()), 
+            annotation=list(config["geneAnnotation"].keys()), 
             dataset=parser.outrider_filtered
         )),
         AE(config["htmlOutputPath"] + "/Scripts_Counting_AllDatasets.html")
@@ -74,12 +74,12 @@ rule aberrant_expression_outrider:
     input: 
         AE(expand(
             parser.getProcResultsDir() + "/aberrant_expression/{annotation}/outrider/{dataset}/ods.Rds",
-            annotation=list(config["GENE_ANNOTATION"].keys()),
+            annotation=list(config["geneAnnotation"].keys()),
             dataset=parser.outrider_filtered
         )),
         AE(expand(
             parser.getProcResultsDir() + "/aberrant_expression/{annotation}/outrider/{dataset}/OUTRIDER_results.tsv",
-            annotation=list(config["GENE_ANNOTATION"].keys()),
+            annotation=list(config["geneAnnotation"].keys()),
             dataset=parser.outrider_filtered
         ))
 
@@ -103,7 +103,7 @@ rule MAE_result:
         MAE(config["htmlOutputPath"] + "/Scripts_MAE_Results_Overview.html"),
         MAE(expand(
             parser.getProcResultsDir() + "/mae/{dataset}/MAE_results_{annotation}.tsv",
-            dataset=parser.mae_ids.keys(), annotation=list(config["GENE_ANNOTATION"].keys())
+            dataset=parser.mae_ids.keys(), annotation=list(config["geneAnnotation"].keys())
         ))
 
 rule MAE_qc:

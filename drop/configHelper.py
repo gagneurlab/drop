@@ -28,9 +28,9 @@ class ConfigHelper:
             self.config["use_gene_names"] = True
         
         # SAMPLE_ANNOTATION
-        self.sample_annotation = self.getSampleAnnotation(config["SAMPLE_ANNOTATION"])
+        self.sample_annotation = self.getSampleAnnotation(config["sampleAnnotation"])
         
-        # SAMPLE_FILE_MAPPING
+        # TODO Delete thisSAMPLE_FILE_MAPPING
         self.sample_file_mapping = self.createSampleFileMapping(self.sample_annotation)
         
         # Group IDs
@@ -39,12 +39,13 @@ class ConfigHelper:
         self.all_rna_ids = self.createGroupIds(group_key="DROP_GROUP", file_type="RNA_BAM_FILE", sep=',')
         
         ## outrider
-        if not self.keyInConfig("outrider_groups"):
-            self.config["outrider_groups"] = list(self.all_rna_ids.keys())
-        if not self.keyInConfig("min_outrider_ids"):
-            self.config["min_outrider_ids"] = 40
-        self.outrider_all = self.subsetGroups(self.all_rna_ids, self.config["outrider_groups"])
-        self.outrider_filtered = {name:ids for name, ids in self.outrider_all.items() if len(ids) > self.config["min_outrider_ids"]}
+	if not (("aberrantExpression" in self.config) and ("groups" in self.config["aberrantExpression"])):
+            self.config["aberrantExpression"]["groups"] = list(self.all_rna_ids.keys())
+
+	if not (("aberrantExpression" in self.config) and ("minIds" in self.config["aberrantExpression"])):
+            self.config["aberrantExpression"]["minIds"] = 40
+        self.outrider_all = self.subsetGroups(self.all_rna_ids, self.config["aberrantExpression"]["groups"])
+        self.outrider_filtered = {name:ids for name, ids in self.outrider_all.items() if len(ids) > self.config["aberrantExpression"]["minIds"]}
         self.config["outrider_all"], self.config["outrider_filtered"] = self.outrider_all, self.outrider_filtered
         
         ## fraser
@@ -117,13 +118,13 @@ class ConfigHelper:
     Get directory path for processed data
     """
     def getProcDataDir(self):
-        return self.config["ROOT"] + "/processed_data"
+        return self.config["root"] + "/processed_data"
     
     """ 
     Get directory path for processed results
     """
     def getProcResultsDir(self):
-        return self.config["ROOT"] + "/processed_results"
+        return self.config["root"] + "/processed_results"
     
     """
     Get sample ID by file type
@@ -244,7 +245,7 @@ class ConfigHelper:
             return {gr:ids for gr, ids in ids_by_group.items() if gr in subset_groups}
     
     def getGeneAnnotationFile(self, annotation):
-        return self.config["GENE_ANNOTATION"][annotation]
+        return self.config["geneAnnotation"][annotation]
 
  
         
