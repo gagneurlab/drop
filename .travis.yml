@@ -20,6 +20,10 @@ python:
 install:
   - pip install -e .
   - R -e "message(.libPaths())"
+  - mkdir ~/project
+  - cd ~/project
+  - drop init
+  - snakemake -n
 
 script:
   - pytest
