@@ -1,27 +1,24 @@
 # Detection of RNA Outlier Pipeline
 
-installation
-
+## Installation
+You can install `drop` from github using `pip`. For this you need to recursively clone the repository with all its submodules first.
 ```
-# clone repos
-git clone git@i12g-gagneurweb.informatik.tu-muenchen.de:mumichae/drop_analysis.git
-git clone git@i12g-gagneurweb.informatik.tu-muenchen.de:salazar/drop.git --recursive
-
-# install drop package
+git clone https://github.com/mumichae/drop.git --recursive
 cd drop
 pip install -e .
-
-# init wbuild (still uses repo folder not user folder!)
-(cd drop/modules/aberrant-splicing-pipeline;
-    mkdir .wBuild;
-    wbuild update;)
-
-# how to run one analysis? (this should be through drop_analysis itself!)
-cd drop/modules/aberrant-splicing-pipeline
-snakemake -n --configfile ../../../../drop_analysis/config.yaml 
-
-# something like
-# cd ../drop_analysis
-# snakemake -n splicing
 ```
 
+## Start a new project
+A new `drop` project needs to be initialized, which creates the necessary files.
+```
+cd <new/project/path>
+drop init
+```
+Fill in the paths to the raw data as well as different settings for the config file. Create the sample annotation file according to ... Once these files are set up, you can look the complete workflow using
+```
+snakemake -n
+```
+This shows you the rules of all subworkflows. Omit `-n` if you are sure that you want you execute all printed rules. You can also invoke single workflows explicitly e.g. for aberrant splicing with 
+```
+snakemake aberrant_expression -n
+```
