@@ -3,7 +3,7 @@
 ## Installation
 You can install `drop` from github using `pip`. For this you need to recursively clone the repository with all its submodules first.
 ```
-git clone https://github.com/mumichae/drop.git --recursive
+git clone https://github.com/mumichae/drop.git --recurse-submodules
 cd drop
 pip install -e .
 ```
