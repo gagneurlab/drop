@@ -2,7 +2,8 @@ import os
 import oyaml
 
 def getRoot():
-    return os.path.join(os.path.dirname(__file__), "modules")
+    return os.path.join(os.getcwd(), ".drop")
+    #return os.path.join(os.path.dirname(__file__), "modules")
 
 methods = {'AE': 'aberrant-expression-pipeline',
            'AS': 'aberrant-splicing-pipeline',

@@ -1,0 +1,53 @@
+projectTitle: Detection of RNA Outlier Pipeline, Demo Dataset
+htmlOutputPath: Output/htmlOutput
+webDir: Output/webDir
+indexWithFolderName: true
+fileRegex: .*\.R
+
+root: Output
+
+# INPUT: Sample annotation
+sampleAnnotation: Data/sample_annotation.tsv
+
+# INPUT: Gene Annotation
+geneAnnotation: {
+  v29: Data/gencode.v29lift37.annotation.gtf.gz
+  }
+
+#### Aberrant Expression
+aberrantExpression: {
+  minIds: 1,
+  fpkmCutoff: 1,
+  groups: null,
+  padjCutoff: .05,
+  zscoreCutoff: 0,
+  useGeneNames: true
+  }
+
+
+#### Aberrant Splicing
+aberrantSplicing: {
+  groups: null,
+  minIds: 10,
+  deltaPsiCutoff : 0.05
+}
+
+#### Monoallelic Expression
+mae: {
+  geneAssembly: hg19,
+  genome: Data/hg19.fa,
+  gatkIgnoreHeaderCheck: true,
+  padjCutoff: .05,
+  allelicRatioCutoff: 0.8,
+  maxAF: .001,
+  groups: null,
+  # VCF-BAM matching
+  qcVcf: {
+      UCSC: Data/qc_vcf_ucsc_1000G.vcf.gz,
+      NCBI: Data/qc_vcf_ncbi_1000G.vcf.gz
+      },
+  qcGroup: all
+}
+
+
+

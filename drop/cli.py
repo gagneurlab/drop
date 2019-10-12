@@ -1,7 +1,3 @@
-# -*- coding: utf-8 -*-
-"""CLI interface to wbuild."""
-
-import sys
 import os
 import click
 import wbuild
@@ -18,12 +14,13 @@ def setup_paths():
     """Setup the wbuild paths
     """
     templatePath = pathlib.Path(drop.__file__).parent / 'template'
+    modulePath = pathlib.Path(drop.__file__).parent / 'modules'
     wbuildPath = pathlib.Path(wbuild.__file__).parent / '.wBuild'
-    return templatePath, wbuildPath
+    return templatePath, modulePath, wbuildPath
 
 @click.group()
 @click_log.simple_verbosity_option(logger)
-# @click.version_option('1.4.2',prog_name='wBuild')
+@click.version_option('0.9.0',prog_name='drop')
 def main():
     pass
 
@@ -34,8 +31,9 @@ def init():
 
     This will prepare wBuild in the current project
     """
-    templatePath, wbuildPath = setup_paths()
+    templatePath, modulePath, wbuildPath = setup_paths()
     distutils.dir_util.copy_tree(str(wbuildPath), './.wBuild')
+    
     if not os.path.isfile("Snakefile"):
         shutil.copy(str(templatePath / 'Snakefile'), '.')
     if not os.path.isfile("config.yaml"):
@@ -43,15 +41,17 @@ def init():
     if not os.path.exists("Scripts"):
         distutils.dir_util.copy_tree(str(templatePath), 'Scripts')
     
+    distutils.dir_util.copy_tree(str(modulePath), '.drop')
+    
     ### search for a file containing the word readme and .md
     readme_exists = False
-    onlyfiles = [f for f in os.listdir(".") if os.path.isfile(os.path.join(".", f))]
-    for f in onlyfiles:
+    for f in os.listdir("."):
+        if os.path.isfile(os.path.join(".", f)):
+            continue
         if ("readme" in f) and f.endswith(".md"):
             readme_exists = True
             break
     if not readme_exists:
-        #shutil.copy(str(templatePath / 'readme.md'), '.')
         open('readme.md', 'a').close()
 
     logger.info("init...done")
