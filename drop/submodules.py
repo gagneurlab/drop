@@ -35,10 +35,13 @@ def getMethodPath(method, link_type='workdir', tmp_dir=None):
     else:
       raise ValueError(f'invalid link_type: "{link_type}"')
 
+def getTmpDir():
+    return os.path.join('.drop', 'tmp')
+
 def setupTempFiles(config):
     
     # create temporary directory
-    tmpdir = os.path.join('.drop', 'tmp')
+    tmpdir = getTmpDir()
     if not os.path.exists(tmpdir):
         print(f"create temporary files directory {tmpdir}")
         os.mkdir(tmpdir)
