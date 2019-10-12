@@ -25,12 +25,7 @@ def main():
     pass
 
 
-@main.command()
-def init():
-    """Initialize the repository with wbuild.
-
-    This will prepare wBuild in the current project
-    """
+def setFiles():
     templatePath, modulePath, wbuildPath = setup_paths()
     distutils.dir_util.copy_tree(str(wbuildPath), './.wBuild')
     
@@ -41,17 +36,33 @@ def init():
     if not os.path.exists("Scripts"):
         distutils.dir_util.copy_tree(str(templatePath), 'Scripts')
     
+    if os.path.exists('.drop'):
+        distutils.dir_util.remove_tree('.drop')
+        print('overwriting module scripts')
     distutils.dir_util.copy_tree(str(modulePath), '.drop')
-    
-    ### search for a file containing the word readme and .md
-    readme_exists = False
-    for f in os.listdir("."):
-        if os.path.isfile(os.path.join(".", f)):
-            continue
-        if ("readme" in f) and f.endswith(".md"):
-            readme_exists = True
-            break
-    if not readme_exists:
-        open('readme.md', 'a').close()
 
-    logger.info("init...done")
+
+@main.command()
+def init():
+    
+    if os.path.exists('.drop'):
+        print('.drop already exists, use drop update instead to update to a newer version')
+    else:
+        setFiles()
+        ### search for a file containing the word readme and .md
+        readme_exists = False
+        for f in os.listdir("."):
+            if os.path.isfile(os.path.join(".", f)):
+                continue
+            if ("readme" in f) and f.endswith(".md"):
+                readme_exists = True
+                break
+        if not readme_exists:
+            open('readme.md', 'a').close()
+        logger.info("init...done")
+
+@main.command()
+def update():
+    # TODO: check version first
+    setFiles()
+    logger.info("update...done")
