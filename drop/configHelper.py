@@ -107,6 +107,9 @@ class ConfigHelper:
         setKey(config, ["mae"], "maxAF", .001)
         setKey(config, ["mae"], "groups", None)
         setKey(config, ["mae"], "qcGroup", None)
+        setKey(config, ["tools"], "samtoolsCmd", "samtools")
+        setKey(config, ["tools"], "bcftoolsCmd", "bcftools")
+        setKey(config, ["tools"], "gatkCmd", "gatk")
         
         return config
         
