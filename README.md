@@ -1,4 +1,5 @@
 # Detection of RNA Outlier Pipeline
+![](drop.png)
 
 ## Installation
 You can install `drop` from github using `pip`. For this you need to recursively clone the repository with all its submodules first.
