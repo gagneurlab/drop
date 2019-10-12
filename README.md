@@ -1,4 +1,6 @@
 # Detection of RNA Outlier Pipeline
+[![Pipeline status](https://travis-ci.org/mumichae/drop.svg?branch=master)](https://travis-ci.org/mumichae/drop)
+[![Version](https://img.shields.io/badge/Version-0.9.0-green.svg)](https://github.com/gagneurlab/mumichae/drop/master)
 <img src="drop_sticker.png" alt="drop logo" width="200" class="center"/>
 
 ## Installation
