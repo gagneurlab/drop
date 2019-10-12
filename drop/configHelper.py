@@ -8,28 +8,12 @@ warnings.filterwarnings("ignore", 'This pattern has match groups')
 
 class ConfigHelper:
     
-    def __init__(self, config, html_root=None):
-
-        if config is None:
-            wconf = wbuild.utils.Config()
-            config = wconf.conf_dict
+    def __init__(self, config):
         
-        if html_root is not None:
-            config["htmlOutputPath"] = f"{html_root}/{config['htmlOutputPath']}"        
-
-        self.config = config
-        
-        # set default parameters for missing keys
-        if not self.keyInConfig("indexWithFolderName"):
-            self.config["indexWithFolderName"] = True
-        if not self.keyInConfig("fileRegex"):
-            self.config["fileRegex"] = ".*\.R"
-            
+        self.config = self.setDefaults(config)
         
         # sample annotation
         self.sample_annotation = self.getSampleAnnotation(config["sampleAnnotation"])
-        
-        # TODO Delete thisSAMPLE_FILE_MAPPING
         self.sample_file_mapping = self.createSampleFileMapping(self.sample_annotation)
         
         # Group IDs
@@ -73,6 +57,58 @@ class ConfigHelper:
         self.mae_ids = self.createMaeIDS(mae_rna_by_group, id_sep='--')
         self.config["mae_ids"] = self.mae_ids
         
+    def setDefaults(self, config):
+        """
+        set defaults for config keys
+        """
+        
+        if config is None:
+            wconf = wbuild.utils.Config()
+            config = wconf.conf_dict
+        
+        # check for missing keys
+        def check_keys(dict_, keys):
+            for key in keys:
+                try:
+                    dict_[key]
+                except:
+                    raise KeyError(f"{key} is mandatory but missing")
+                    
+        mandatory_keys = ["htmlOutputPath", "root", "geneAnnotation", "sampleAnnotation",
+                           "aberrantExpression", "aberrantSplicing", "mae"]
+        check_keys(config, keys=mandatory_keys)
+        check_keys(config["mae"], keys=["genome", "qcVcf"])
+        check_keys(config["mae"]["qcVcf"], keys=["UCSC", "NCBI"])
+        
+        # set default
+        def setKey(dict_, sub, key, default):
+            if sub is not None:
+                for x in sub:
+                    dict_ = dict_[x]
+            if key not in dict_ or dict_[key] is None:
+                print(f'{key} not in config{sub}, using default')
+                dict_[key] = default
+        
+        config["indexWithFolderName"] = True
+        config["fileRegex"] = ".*\.R"
+        setKey(config, None, "projectTitle", "DROP: Detection of RNA Outlier Pipeline")
+        setKey(config, None, "tmpdir", os.path.join(config["root"], "tmp"))
+        setKey(config, ["aberrantExpression"], "fpkmCutoff", 1)
+        setKey(config, ["aberrantExpression"], "groups", None)
+        setKey(config, ["aberrantExpression"], "padjCutoff", .05)
+        setKey(config, ["aberrantExpression"], "zscoreCutoff", 0)
+        setKey(config, ["aberrantExpression"], "useGeneNames", True)
+        setKey(config, ["aberrantSplicing"], "groups", None)
+        setKey(config, ["aberrantSplicing"], "deltaPsiCutoff", 0.05)
+        setKey(config, ["mae"], "geneAssembly", "hg19")
+        setKey(config, ["mae"], "gatkIgnoreHeaderCheck", True)
+        setKey(config, ["mae"], "padjCutoff", .05)
+        setKey(config, ["mae"], "allelicRatioCutoff", 0.8)
+        setKey(config, ["mae"], "maxAF", .001)
+        setKey(config, ["mae"], "groups", None)
+        setKey(config, ["mae"], "qcGroup", None)
+        
+        return config
         
     def getSampleAnnotation(self, filename, sep='\t'):
         """
@@ -113,16 +149,6 @@ class ConfigHelper:
         
         return file_mapping
         
-    def keyInConfig(self, key):
-        """
-        checks whether key is in config or if the value is null
-        """
-        if key in self.config:
-            return self.config[key] is not None
-        else:
-            print(f'{key} not in config, using default')
-        return False
-    
     """ 
     Get directory path for processed data
     """
