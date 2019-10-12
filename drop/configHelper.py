@@ -39,12 +39,13 @@ class ConfigHelper:
         
         ## outrider
         self.config["useGeneNames"] = self.config["aberrantExpression"]["useGeneNames"]
- 
+        
         if self.config["aberrantExpression"]["groups"] is None:
             self.config["aberrantExpression"]["groups"] = list(self.all_rna_ids.keys())
 
         if self.config["aberrantExpression"]["minIds"] is None:
             self.config["aberrantExpression"]["minIds"] = 40
+        
         self.outrider_all = self.subsetGroups(self.all_rna_ids, self.config["aberrantExpression"]["groups"])
         self.outrider_filtered = {name:ids 
             for name, ids in self.outrider_all.items()
