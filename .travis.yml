@@ -6,6 +6,25 @@ cache:
   - directories:
     - $HOME/R/Library
 
+python:
+  - "3.6"
+
+before_install:
+  - sudo apt-get update
+  - wget https://repo.continuum.io/miniconda/Miniconda3-latest-Linux-x86_64.sh -O miniconda.sh
+  - bash miniconda.sh -b -p $HOME/miniconda
+  - source "$HOME/miniconda/etc/profile.d/conda.sh"
+  - hash -r
+  - conda config --set always_yes yes --set changeps1 no
+  - conda update -q conda
+  - conda create -q -n drop_env python=$TRAVIS_PYTHON_VERSION
+  - conda install -q -c bioconda gatk4=4.0.1.0-0 samtools=1.7 bcftools=1.7
+  - java -version
+  - alias gatk='gatk-launch'
+  - gatk --help
+  - samtools --version
+  - bcftools --version
+
 addons:
   apt:
     packages:
@@ -14,16 +33,12 @@ addons:
 #      - tk-dev
 #      - libgit2-dev
 
-python:
-  - "3.7"
-
 install:
   - pip install -e .
   - R -e "message(.libPaths())"
   - mkdir ~/project
   - cd ~/project
   - drop init
-  - snakemake -n
 
 script:
-  - pytest
+  - snakemake -n
