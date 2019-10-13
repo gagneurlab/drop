@@ -7,16 +7,12 @@ def setupDrop(config):
 
     installRPackages()
     
-    # parser config file
+    config['wBuildPath'] =  str(pathlib.Path(wbuild.__file__).parent)
+    config["tmpdir"], config["configFileCopies"], config["finalFiles"] = drop.setupTempFiles(config)
+    
+    # add info from sample annotation etc.
     parser = drop.config(config)
     config = parser.config
-    config['wBuildPath'] =  str(pathlib.Path(wbuild.__file__).parent)
-    
-    # temporary files
-    tmpdir, config_files, dummy_files = drop.setupTempFiles(config)
-    config["tmpdir"] = tmpdir
-    config["configFileCopies"] = config_files
-    config["finalFiles"] = dummy_files
     
     return parser, config
 

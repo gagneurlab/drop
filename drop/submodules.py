@@ -1,11 +1,10 @@
 import os
-import oyaml
+from ruamel.yaml import YAML
 
 METHODS = {'AE': 'aberrant-expression-pipeline',
            'AS': 'aberrant-splicing-pipeline',
            'MAE': 'mae-pipeline'}
 ROOT = os.path.join(os.getcwd(), ".drop")
-#return os.path.join(os.path.dirname(__file__), "modules")
 
 def getMethodPath(method, link_type='workdir', tmp_dir=None):
     """
@@ -47,9 +46,11 @@ def setupTempFiles(config):
         
         # save config files
         conf_file = getMethodPath(method, link_type = 'config_file', tmp_dir=TMP_DIR)
-        with open(conf_file, 'w') as yaml_file:
-            oyaml.dump(config.copy(), yaml_file, default_flow_style=False)
-            config_files[method] = conf_file
+        config_files[method] = conf_file
+        with open(conf_file, 'w') as f:
+            yaml=YAML()
+            yaml.default_flow_style = False
+            yaml.dump(config.copy(), f)
         
         # final rule output file
         done_file = getMethodPath(method, link_type='final_file', tmp_dir=TMP_DIR)
@@ -57,6 +58,6 @@ def setupTempFiles(config):
         # remove if it exists
         if os.path.exists(done_file):
             os.remove(done_file)
-
+    print(config)
     return TMP_DIR, config_files, done_files
 
