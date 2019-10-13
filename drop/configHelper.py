@@ -173,11 +173,19 @@ class ConfigHelper:
         return {gr : df[df[group_key].str.contains(f'(^|{sep}){gr}({sep}|$)')][assay_id].tolist() 
                         for gr in groups}
     
-    def subsetGroups(self, ids_by_group, subset_groups):
+    def subsetGroups(self, ids_by_group, subset_groups, warn=30, error=10):
         if subset_groups is None:
-            return ids_by_group
+            subset = ids_by_group
         else:
-            return {gr:ids for gr, ids in ids_by_group.items() if gr in subset_groups}
+            subset = {gr:ids for gr, ids in ids_by_group.items() if gr in subset_groups}
+        
+        for group in subset_groups:
+            if len(subset[group]) < error:
+                raise ValueError(f'Too few IDs in DROP_GROUP {group}, please ensure that it has at least {error} IDs')
+            elif len(subset[group]) < warn:
+                print(f'WARNING: Less than {warn} IDs in DROP_GROUP {group}')
+        
+        return subset
     
     def createMaeIDS(self, ids_by_group, subset_groups, id_sep='--'):
         """

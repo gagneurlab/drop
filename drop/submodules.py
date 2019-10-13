@@ -58,6 +58,6 @@ def setupTempFiles(config):
         # remove if it exists
         if os.path.exists(done_file):
             os.remove(done_file)
-    print(config)
+    
     return TMP_DIR, config_files, done_files
 
