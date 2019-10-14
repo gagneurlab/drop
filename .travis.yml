@@ -7,7 +7,7 @@ cache:
     - $HOME/R/Library
 
 python:
-  - "3.6"
+  - "3.6.7"
 
 before_install:
   - sudo apt-get update
@@ -17,9 +17,9 @@ before_install:
   - hash -r
   - conda config --set always_yes yes --set changeps1 no
   - conda create -q -n drop_env python=$TRAVIS_PYTHON_VERSION
-  - source activate drop_env
+  - conda activate drop_env
   - python --version
-  - conda install -q -c bioconda gatk4=4.0.1.0-0 samtools=1.7.0 bcftools=1.7.0
+  - conda install -c bioconda gatk4 samtools=1.7.0 bcftools=1.7.0
   - java -version
   - alias gatk='gatk-launch'
   - gatk --help
