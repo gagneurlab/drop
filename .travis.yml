@@ -15,11 +15,11 @@ before_install:
   - bash miniconda.sh -b -p $HOME/miniconda
   - source "$HOME/miniconda/etc/profile.d/conda.sh"
   - hash -r
-  - conda config --set always_yes yes #--set changeps1 no
+  - conda config --set always_yes yes --set changeps1 no
   - conda create -q -n drop_env python=$TRAVIS_PYTHON_VERSION
   - source activate drop_env
   - python --version
-  - conda install -q -c bioconda gatk4=4.0.1.0-0 samtools=1.7 bcftools=1.7
+  - conda install -q -c bioconda gatk4=4.0.1.0-0 samtools=1.7.0 bcftools=1.7.0
   - java -version
   - alias gatk='gatk-launch'
   - gatk --help
