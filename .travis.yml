@@ -19,6 +19,7 @@ before_install:
   - conda update -q conda
   - conda create -q -n drop_env python=$TRAVIS_PYTHON_VERSION
   - source activate drop_env
+  - python --version
   - conda install -q -c bioconda gatk4=4.0.1.0-0 samtools=1.7 bcftools=1.7
   - java -version
   - alias gatk='gatk-launch'
