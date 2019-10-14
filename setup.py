@@ -9,7 +9,6 @@ requirements = [
     'wbuild @ git+https://github.com/gagneurlab/wBuild.git@master#egg=wbuild',
     #'wbuild',
     'snakemake>=3.13.2',
-    'oyaml>=0.9',
     'pandas',
 ]
 

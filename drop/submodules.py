@@ -1,5 +1,5 @@
 import os
-from ruamel.yaml import YAML
+import yaml
 
 METHODS = {'AE': 'aberrant-expression-pipeline',
            'AS': 'aberrant-splicing-pipeline',
@@ -48,8 +48,6 @@ def setupTempFiles(config):
         conf_file = getMethodPath(method, link_type = 'config_file', tmp_dir=TMP_DIR)
         config_files[method] = conf_file
         with open(conf_file, 'w') as f:
-            yaml=YAML()
-            yaml.default_flow_style = False
             yaml.dump(config.copy(), f)
         
         # final rule output file
