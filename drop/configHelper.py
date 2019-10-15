@@ -18,6 +18,7 @@ class ConfigHelper:
             config = wconf.conf_dict
         
         self.config = self.setDefaults(config)
+        self.createDirs()
         
         # sample annotation
         self.sample_annotation = self.getSampleAnnotation(config["sampleAnnotation"])
@@ -39,6 +40,16 @@ class ConfigHelper:
         groups = self.setKey(self.config, ["mae"], "groups", self.all_rna_ids.keys())
         self.mae_ids = self.createMaeIDS(self.all_rna_ids, groups, id_sep='--')
         self.config["mae_ids"] = self.mae_ids
+        
+        
+    def createDirs(self):
+        
+        def createIfMissing(directory):
+            if not os.path.exists(directory):
+                os.makedirs(directory)
+        
+        createIfMissing(self.getProcDataDir())
+        createIfMissing(self.getProcResultsDir())
         
     def checkConfig(self, config):
         # check for missing keys
@@ -90,10 +101,10 @@ class ConfigHelper:
         setKey(config, ["mae"], "qcGroup", None)
         
         # commandline tools
-        #setKey(config, None, "tools", dict())
-        #setKey(config, ["tools"], "samtoolsCmd", "samtools")
-        #setKey(config, ["tools"], "bcftoolsCmd", "bcftools")
-        #setKey(config, ["tools"], "gatkCmd", "gatk")
+        setKey(config, None, "tools", dict())
+        setKey(config, ["tools"], "samtoolsCmd", "samtools")
+        setKey(config, ["tools"], "bcftoolsCmd", "bcftools")
+        setKey(config, ["tools"], "gatkCmd", "gatk")
         
         return config
     
