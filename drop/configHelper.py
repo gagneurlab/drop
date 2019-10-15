@@ -7,7 +7,8 @@ import warnings
 warnings.filterwarnings("ignore", 'This pattern has match groups')
 
 #TODO add more column names
-SAMPLE_ANNOTATION_COLUMNS = ["RNA_ID", "RNA_BAM_FILE", "DNA_ID", "DNA_VCF_FILE", "DROP_GROUP"]
+SAMPLE_ANNOTATION_COLUMNS = ["RNA_ID", "RNA_BAM_FILE", "DNA_ID", "DNA_VCF_FILE", "DROP_GROUP",
+"PAIRED_END", "COUNT_MODE", "COUNT_OVERLAPS", "STRAND"]
 
 class ConfigHelper:
     
@@ -18,11 +19,12 @@ class ConfigHelper:
             config = wconf.conf_dict
         
         self.config = self.setDefaults(config)
+        self.createDirs()
         
         # sample annotation
         self.sample_annotation = self.getSampleAnnotation(config["sampleAnnotation"])
         self.sample_file_mapping = self.createSampleFileMapping(self.sample_annotation)
-        
+
         self.all_rna_ids = self.createGroupIds(group_key="DROP_GROUP", file_type="RNA_BAM_FILE", sep=',')
         
         # aberrantExpression
@@ -39,6 +41,17 @@ class ConfigHelper:
         groups = self.setKey(self.config, ["mae"], "groups", self.all_rna_ids.keys())
         self.mae_ids = self.createMaeIDS(self.all_rna_ids, groups, id_sep='--')
         self.config["mae_ids"] = self.mae_ids
+        
+        
+    def createDirs(self):
+        
+        def createIfMissing(directory):
+            if not os.path.exists(directory):
+                print(f"creating {directory}")
+                os.makedirs(directory)
+        
+        createIfMissing(self.getProcDataDir())
+        createIfMissing(self.getProcResultsDir())
         
     def checkConfig(self, config):
         # check for missing keys
@@ -90,10 +103,10 @@ class ConfigHelper:
         setKey(config, ["mae"], "qcGroup", None)
         
         # commandline tools
-        #setKey(config, None, "tools", dict())
-        #setKey(config, ["tools"], "samtoolsCmd", "samtools")
-        #setKey(config, ["tools"], "bcftoolsCmd", "bcftools")
-        #setKey(config, ["tools"], "gatkCmd", "gatk")
+        setKey(config, None, "tools", dict())
+        setKey(config, ["tools"], "samtoolsCmd", "samtools")
+        setKey(config, ["tools"], "bcftoolsCmd", "bcftools")
+        setKey(config, ["tools"], "gatkCmd", "gatk")
         
         return config
     
@@ -143,7 +156,11 @@ class ConfigHelper:
         # cleaning SAMPLE_FILE_MAPPING
         file_mapping.dropna(inplace=True)
         existent = [os.path.exists(x) for x in file_mapping["FILE_PATH"]]
+        if sum(existent) < file_mapping.shape[0]:
+            print("WARNING: there are files in the sample annotation that do not exist")
         file_mapping = file_mapping[existent].drop_duplicates()
+        if file_mapping.shape[0] == 0:
+            raise ValueError("No files exist in sample annotation. Please check your sample annotation.")
         
         file_mapping.to_csv(self.getProcDataDir() + "/file_mapping.csv", index=False)
         
@@ -155,7 +172,7 @@ class ConfigHelper:
         """
         sa = self.sample_annotation
         sf = self.sample_file_mapping
-        
+
         assay_id = sf[sf["FILE_TYPE"] == file_type]["ASSAY"].iloc[0]
         
         # Get unique groups
