@@ -37,8 +37,15 @@ addons:
 install:
   - pip install -e .
   - R -e "message(.libPaths())"
-  - mkdir ~/project
-  - cd ~/project
+  - mkdir project
+  - cd project
+  - cd $HOME
+  - wget -nc "https://i12g-gagneurweb.informatik.tu-muenchen.de/public/paper/drop_analysis/resource.tar.gz"
+  - tar -zxvf resource.tar.gz
+  - mv resource Data
+  - cd Data
+  - python fix_sample_anno.py
+  - cd ..
   - drop init
 
 script:
