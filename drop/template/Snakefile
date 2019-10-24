@@ -1,122 +1,72 @@
 import os
 import re
 import drop
-import pathlib
-import wbuild
 
-configfile: "config.yaml" # default config file
+configfile: "config.yaml"
 
-parser = drop.config(config)
-config = parser.config
-config['wBuildPath'] =  str(pathlib.Path(wbuild.__file__).parent)
-include: config['wBuildPath'] + "/wBuild.snakefile"
-
-tmpdir, config_files, dummy_files = drop.setupTempFiles(config)
-config["tmpdir"] = tmpdir
-htmlOutputPath = config["htmlOutputPath"]
-
+parser, config = drop.drop(config)
+include: config["wBuildPath"] + "/wBuild.snakefile"
 
 # aberrant expression
 subworkflow AE:
     workdir: drop.getMethodPath("AE", "workdir")
     snakefile: drop.getMethodPath("AE", "snakefile")
-    configfile: config_files["AE"]
+    configfile: config["configFileCopies"]["AE"]
 
 # aberrant splicing
 subworkflow AS:
     workdir: drop.getMethodPath("AS", "workdir")
     snakefile: drop.getMethodPath("AS", "snakefile")
-    configfile: config_files["AS"]
+    configfile: config["configFileCopies"]["AS"]
 
 # monoallelic expression
 subworkflow MAE:
     workdir: drop.getMethodPath("MAE", "workdir")
     snakefile: drop.getMethodPath("MAE", "snakefile")
-    configfile: config_files["MAE"]
-
+    configfile: config["configFileCopies"]["MAE"]
 
 rule all:
     input: 
-        AE(dummy_files["AE"]),
-#       AS(dummy_files["AS"]),
-        MAE(dummy_files["MAE"]),
-        rules.Index.output
+        AE(config["finalFiles"]["AE"]),
+        AS(config["finalFiles"]["AS"]),
+        MAE(config["finalFiles"]["MAE"]),
+        rules.Index.output,
+        config["tmpdir"] + "/rulegraphs.done"
     output:
-        touch(tmpdir + "/drop_all.done")
+        touch(config["tmpdir"] + "/drop_all.done")
 
 rule getIndexNames:
     input:
-        AE(dummy_files["AE"]),
-#       AS(dummy_files["AS"]),
-        MAE(dummy_files["MAE"])
+        AE(config["finalFiles"]["AE"]),
+        AS(config["finalFiles"]["AS"]),
+        MAE(config["finalFiles"]["MAE"])
     output:
         indexFile = parser.getProcDataDir() + "/indexNames.txt"
     run: 
-        indexList = [x for x in os.listdir(htmlOutputPath) if re.search("_index.html$",x)]
+        indexList = [x for x in os.listdir(config["htmlOutputPath"]) if re.search("_index.html$",x)]
         with open(output.indexFile, 'w') as file_handler:
     	    for item in indexList:
                 file_handler.write(f"{item}\n")
 
-### Aberrant Expression
-rule aberrant_expression:
-    input: AE(dummy_files["AE"])
+rule aberrantExpression:
+    input: AE(config["finalFiles"]["AE"])
 
-rule aberrant_expression_count:
-    input: 
-        AE(expand(
-            parser.getProcDataDir() + "/aberrant_expression/{annotation}/outrider/{dataset}/total_counts.Rds",
-            annotation=list(config["geneAnnotation"].keys()), 
-            dataset=parser.outrider_filtered
-        )),
-        AE(config["htmlOutputPath"] + "/Scripts_Counting_AllDatasets.html")
-
-rule aberrant_expression_outrider:
-    input: 
-        AE(expand(
-            parser.getProcResultsDir() + "/aberrant_expression/{annotation}/outrider/{dataset}/ods.Rds",
-            annotation=list(config["geneAnnotation"].keys()),
-            dataset=parser.outrider_filtered
-        )),
-        AE(expand(
-            parser.getProcResultsDir() + "/aberrant_expression/{annotation}/outrider/{dataset}/OUTRIDER_results.tsv",
-            annotation=list(config["geneAnnotation"].keys()),
-            dataset=parser.outrider_filtered
-        ))
-
-### Aberrant Splicing
-rule aberrant_splicing:
-    input: AS(dummy_files["AS"])
+rule aberrantSplicing:
+    input: AS(config["finalFiles"]["AS"])
     
-## Monoallelic Expression
-rule MAE:
-    input: MAE(dummy_files["MAE"])
+rule test:
+    input: AS(parser.getProcDataDir() + "/aberrant_splicing/FraseR/small_results.html")
 
-rule MAE_count:
-    input: 
-        MAE(expand(
-            parser.getProcDataDir() + "/mae/allelic_counts/{mae_id}.csv.gz",
-            mae_id=parser.getMaeAll()
-        ))
+rule mae:
+    input: MAE(config["finalFiles"]["MAE"])
 
-rule MAE_result:
+rule dependencyGraph:
     input:
-        MAE(config["htmlOutputPath"] + "/Scripts_MAE_Results_Overview.html"),
-        MAE(expand(
-            parser.getProcResultsDir() + "/mae/{dataset}/MAE_results_{annotation}.tsv",
-            dataset=parser.mae_ids.keys(), annotation=list(config["geneAnnotation"].keys())
-        ))
-
-rule MAE_qc:
-    input:
-        MAE(config["htmlOutputPath"] + "/Scripts_QC_DNA_RNA_matrix_plot.html"),
-        MAE(parser.getProcResultsDir() + "/mae/" + config["mae"]["qcGroup"] + "/dna_rna_qc_matrix.Rds")
-
-## Rule graph: DAG of workflow rules
-rule produce_rulegraphs:
-    input:
-        MAE(htmlOutputPath + "/MAE_rulegraph.svg"),
-        AS(htmlOutputPath + "/AS_rulegraph.svg"),
-        AE(htmlOutputPath + "/AE_rulegraph.svg"),
+        MAE(config["htmlOutputPath"] + "/MAE_rulegraph.svg"),
+        AS(config["htmlOutputPath"] + "/AS_rulegraph.svg"),
+        AE(config["htmlOutputPath"] + "/AE_rulegraph.svg"),
     output:
-        touch(tmpdir + "/rulegraphs.done")
+        touch(config["tmpdir"] + "/rulegraphs.done")
 
+rule publish_local:
+    shell: "rsync -Ort {config[htmlOutputPath]} {config[webDir]}"
