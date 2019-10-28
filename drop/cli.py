@@ -29,8 +29,8 @@ def setFiles():
     templatePath, modulePath, wbuildPath = setup_paths()
     distutils.dir_util.copy_tree(str(wbuildPath), './.wBuild')
     
-    if not os.path.isfile("Snakefile"):
-        shutil.copy(str(templatePath / 'Snakefile'), '.')
+    shutil.copy(str(templatePath / 'Snakefile'), '.')
+    
     if not os.path.isfile("config.yaml"):
         shutil.copy(str(templatePath / 'config.yaml'), '.')
     if not os.path.exists("Scripts"):
@@ -66,3 +66,4 @@ def update():
     # TODO: check version first
     setFiles()
     logger.info("update...done")
+
