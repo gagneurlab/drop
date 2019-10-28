@@ -8,13 +8,14 @@ def setupDrop(config):
     installRPackages()
     
     config['wBuildPath'] =  str(pathlib.Path(wbuild.__file__).parent)
-    config["tmpdir"], config["configFileCopies"], config["finalFiles"] = drop.setupTempFiles(config)
-    
-    # add info from sample annotation etc.
     parser = drop.config(config)
-    config = parser.config
+
+    tmpdir, confCopies, final = drop.setupTempFiles(parser.config)
+    parser.setKey(parser.config, sub=None, key="tmpdir", default=tmpdir)
+    parser.setKey(parser.config, sub=None, key="configFileCopies", default=confCopies)
+    parser.setKey(parser.config, sub=None, key="finalFiles", default=final)
     
-    return parser, config
+    return parser, parser.parse()
 
 def callR(command):
     

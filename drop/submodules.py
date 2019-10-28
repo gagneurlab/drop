@@ -38,7 +38,7 @@ def setupTempFiles(config):
     TMP_DIR = os.path.join(config['root'], 'tmp')
     if not os.path.exists(TMP_DIR):
         print(f"create temporary files directory {TMP_DIR}")
-        os.mkdir(TMP_DIR)
+        os.makedirs(TMP_DIR)
 
     config_files = {}
     done_files = {}

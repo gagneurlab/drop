@@ -1,12 +1,12 @@
 projectTitle: Detection of RNA Outlier Pipeline
-htmlOutputPath: Output/htmlOutput
+htmlOutputPath: ~/project/Output/htmlOutput
 indexWithFolderName: true
 fileRegex: .*\.R
 
-root: Output
-sampleAnnotation: Data/sample_annotation.tsv
+root: ~/project/Output
+sampleAnnotation: ~/project/Data/sample_annotation.tsv
 geneAnnotation: {
-    v29: Data/gencode.v29lift37.annotation.gtf.gz
+    v29: ~/project/Data/gencode.v29lift37.annotation.gtf.gz
 }
 
 aberrantExpression: {
@@ -26,7 +26,7 @@ aberrantSplicing: {
 
 mae: {
     geneAssembly: hg19,
-    genome: Data/hg19.fa,
+    genome: ~/project/Data/hg19.fa,
     gatkIgnoreHeaderCheck: true,
     padjCutoff: .05,
     allelicRatioCutoff: 0.8,
@@ -34,8 +34,8 @@ mae: {
     groups: null,
     # VCF-BAM matching
     qcVcf: {
-        UCSC: Data/qc_vcf_ucsc_1000G.vcf.gz,
-        NCBI: Data/qc_vcf_ncbi_1000G.vcf.gz
+        UCSC: ~/project/Data/qc_vcf_ucsc_1000G.vcf.gz,
+        NCBI: ~/project/Data/qc_vcf_ncbi_1000G.vcf.gz
      },
     qcGroup: all
 }
