@@ -9,7 +9,17 @@ cache:
 python:
   - "3.6.7"
 
+addons:
+  apt:
+    packages:
+      - r-base
+#      - libxml2-dev
+#      - tk-dev
+#      - libgit2-dev
+
 before_install:
+  - DROP_DIR=$(pwd)
+  - cd $HOME
   - sudo apt-get update
   - wget https://repo.continuum.io/miniconda/Miniconda3-latest-Linux-x86_64.sh -O miniconda.sh
   - bash miniconda.sh -b -p $HOME/miniconda
@@ -21,25 +31,18 @@ before_install:
   - python --version
   - conda install -c bioconda gatk4=4.0.4.0 samtools=1.7.0 bcftools=1.7.0
   - java -version
-  - alias gatk='gatk-launch'
+  #- alias gatk='gatk-launch'
   - gatk --help
   - samtools --version
   - bcftools --version
-
-addons:
-  apt:
-    packages:
-      - r-base
-#      - libxml2-dev
-#      - tk-dev
-#      - libgit2-dev
+  - cd ${DROP_DIR}
 
 install:
-  - pip install -e .
+  - pip install .
   - R -e "message(.libPaths())"
+  - cd $HOME
   - mkdir project
   - cd project
-  - cd $HOME
   - wget -nc "https://i12g-gagneurweb.informatik.tu-muenchen.de/public/paper/drop_analysis/resource.tar.gz"
   - tar -zxvf resource.tar.gz
   - mv resource Data
@@ -49,4 +52,5 @@ install:
   - drop init
 
 script:
-  - snakemake -n
+  - snakemake
+
