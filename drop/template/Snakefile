@@ -11,19 +11,19 @@ include: config["wBuildPath"] + "/wBuild.snakefile"
 subworkflow AE:
     workdir: drop.getMethodPath("AE", "workdir")
     snakefile: drop.getMethodPath("AE", "snakefile")
-    configfile: config["configFileCopies"]["AE"]
+    configfile: drop.getConfFile()
 
 # aberrant splicing
 subworkflow AS:
     workdir: drop.getMethodPath("AS", "workdir")
     snakefile: drop.getMethodPath("AS", "snakefile")
-    configfile: config["configFileCopies"]["AS"]
+    configfile: drop.getConfFile()
 
 # monoallelic expression
 subworkflow MAE:
     workdir: drop.getMethodPath("MAE", "workdir")
     snakefile: drop.getMethodPath("MAE", "snakefile")
-    configfile: config["configFileCopies"]["MAE"]
+    configfile: drop.getConfFile()
 
 rule all:
     input: 

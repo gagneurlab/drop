@@ -10,10 +10,10 @@ def setupDrop(config):
     config['wBuildPath'] =  str(pathlib.Path(wbuild.__file__).parent)
     parser = drop.config(config)
 
-    tmpdir, confCopies, final = drop.setupTempFiles(parser.config)
-    parser.setKey(parser.config, sub=None, key="tmpdir", default=tmpdir)
-    parser.setKey(parser.config, sub=None, key="configFileCopies", default=confCopies)
-    parser.setKey(parser.config, sub=None, key="finalFiles", default=final)
+    tmp_dir, config_file, final_files = drop.setupTempFiles(parser.config)
+    parser.setKey(parser.config, sub=None, key="tmpdir", default=tmp_dir)
+    parser.setKey(parser.config, sub=None, key="configFile", default=config_file)
+    parser.setKey(parser.config, sub=None, key="finalFiles", default=final_files)
     
     return parser, parser.parse()
 

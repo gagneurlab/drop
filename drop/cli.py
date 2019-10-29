@@ -10,6 +10,12 @@ import logging
 logger = logging.getLogger(__name__)
 click_log.basic_config(logger)
 
+@click.group()
+@click_log.simple_verbosity_option(logger)
+@click.version_option('0.9.0',prog_name='drop')
+def main():
+    pass
+
 def setup_paths():
     """Setup the wbuild paths
     """
@@ -17,13 +23,6 @@ def setup_paths():
     modulePath = pathlib.Path(drop.__file__).parent / 'modules'
     wbuildPath = pathlib.Path(wbuild.__file__).parent / '.wBuild'
     return templatePath, modulePath, wbuildPath
-
-@click.group()
-@click_log.simple_verbosity_option(logger)
-@click.version_option('0.9.0',prog_name='drop')
-def main():
-    pass
-
 
 def setFiles():
     templatePath, modulePath, wbuildPath = setup_paths()
@@ -39,7 +38,7 @@ def setFiles():
     if os.path.exists('.drop'):
         distutils.dir_util.remove_tree('.drop')
         print('overwriting module scripts')
-    distutils.dir_util.copy_tree(str(modulePath), '.drop')
+    distutils.dir_util.copy_tree(str(modulePath), '.drop/modules')
 
 
 @main.command()
