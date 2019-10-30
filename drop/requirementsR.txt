@@ -1,4 +1,5 @@
-OUTRIDER=1.3
-c-mertes/FraseR=0.9.5
-mumichae/tMAE=0.9.0
+#gagneurlab/OUTRIDER
+OUTRIDER#>=1.2.4
+c-mertes/FraseR#=0.9.5
+mumichae/tMAE#=0.9.0
 

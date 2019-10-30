@@ -17,10 +17,12 @@ def setupDrop(config):
     
     return parser, parser.parse()
 
-def callR(command):
-    
+def installRPackages():
+    print("install missing R packages")
+    script = pathlib.Path(drop.__file__).parent / "installRPackages.R"
+    requirements = str(pathlib.Path(drop.__file__).parent / 'requirementsR.txt')
     call = subprocess.Popen(
-        ["R", "-e", f'"{command}"'], 
+        ["Rscript", script, requirements], 
         stdout=subprocess.PIPE, 
         stderr=subprocess.STDOUT
     )
@@ -28,22 +30,6 @@ def callR(command):
     stdout, stderr = call.communicate()
     if stderr:
         print(stderr)
-    #print(stdout.decode())
-
-def installRPackages():
-    print("install missing R packages")
-    command = """
-    if (!requireNamespace('BiocManager', quietly = TRUE)) {
-        install.packages('BiocManager')
-    };
-
-    packages <- readLines('requirementsR.txt');
-    packages <- packages[packages != ''];
-    for (package in packages) {
-        if (!requireNamespace(package, quietly = TRUE):
-        BiocManager::install(packages);
-    };
-    """
-    
-    callR(command)
+        exit(1)
+    print(stdout.decode())
 
