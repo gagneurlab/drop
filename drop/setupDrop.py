@@ -31,5 +31,8 @@ def installRPackages():
     if stderr:
         print(stderr)
         exit(1)
-    print(stdout.decode())
+    stdout = stdout.decode()
+    print(stdout)
+    if "Execution halted" in stdout or "Error" in stdout:
+        exit(1)
 
