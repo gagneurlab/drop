@@ -20,19 +20,25 @@ def setupDrop(config):
 def installRPackages():
     print("install missing R packages")
     script = pathlib.Path(drop.__file__).parent / "installRPackages.R"
-    requirements = str(pathlib.Path(drop.__file__).parent / 'requirementsR.txt')
-    call = subprocess.Popen(
-        ["Rscript", script, requirements], 
-        stdout=subprocess.PIPE, 
-        stderr=subprocess.STDOUT
-    )
+    requirements = pathlib.Path(drop.__file__).parent / 'requirementsR.txt'
     
-    stdout, stderr = call.communicate()
-    if stderr:
-        print(stderr)
-        exit(1)
-    stdout = stdout.decode()
-    print(stdout)
-    if "Execution halted" in stdout or "Error" in stdout:
-        exit(1)
+    packages = [x.strip().split("#")[0] for x in open(requirements, 'r')]
+    packages = [x for x in packages if x != '']
+
+    for package in packages:
+        print(f"check {package}")   
+        call = subprocess.Popen(
+            ["Rscript", script, package], 
+            stdout=subprocess.PIPE, 
+            stderr=subprocess.STDOUT
+        )
+        
+        stdout, stderr = call.communicate()
+        if stderr:
+            print(stderr)
+            exit(1)
+        stdout = stdout.decode()
+        print(stdout)
+        if "Execution halted" in stdout or "Error" in stdout:
+            exit(1)
 
