@@ -1,11 +1,9 @@
 options(repos=structure(c(CRAN="https://cloud.r-project.org")))
-Sys.setenv(TAR = "/bin/tar")
 
 if (!requireNamespace('BiocManager', quietly = TRUE)) {
     install.packages('BiocManager')
     BiocManager::install("remotes")
 }
-
 
 args = commandArgs(trailingOnly=TRUE)
 package = args[1]
