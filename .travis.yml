@@ -23,6 +23,8 @@ before_install:
   - sudo add-apt-repository 'deb https://cloud.r-project.org/bin/linux/ubuntu xenial-cran35/'
   - sudo apt-get update
   - sudo apt-get install --allow-unauthenticated r-base
+  - mkdir -p $HOME/R/Library
+  - export R_LIBS_USER="$HOME/R/Library"
   - export TAR="/bin/tar"
   - DROP_DIR=$(pwd)
   - cd $HOME
