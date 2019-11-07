@@ -12,7 +12,6 @@ cache:
 env:
   global:
     - DROP_DIR=$(pwd)
-    - echo $DROP_DIR
     - PROJECT_DIR="$HOME/project"
     - MINICONDA_DIR="$HOME/miniconda"
     - R_LIBS_USER="$HOME/R/Library"
@@ -38,10 +37,12 @@ before_cache:
   - mkdir -p $PROJECT_DIR
   
 before_install:
+  - echo $DROP_DIR
   - bash travis/download_data.sh
   - bash travis/activate_conda.sh
 
 install:
+  - conda activate drop_env
   - cd ${DROP_DIR}
   - pip install .
   - R -e "print(.libPaths())"

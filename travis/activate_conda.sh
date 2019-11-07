@@ -1,16 +1,19 @@
 #!/bin/bash
 set -e
 
+CURRENT_DIR=$(pwd)
 cd $HOME
 CONDA_URL="https://repo.continuum.io/miniconda/Miniconda3-latest-Linux-x86_64.sh"
+CONDA_SCRIPT="$MINICONDA_DIR/etc/profile.d/conda.sh"
 
-if [ -d $MINICONDA_DIR ]
+if [ -d $MINICONDA_DIR ] && [ -e $CONDA_SCRIPT ]
 then
-    source "$MINICONDA_DIR/etc/profile.d/conda.sh"
+    source $CONDA_SCRIPT
 else
+    rm -rf $MINICONDA_DIR
     wget $CONDA_URL -O miniconda.sh
     bash miniconda.sh -b -p $MINICONDA_DIR
-    source "$MINICONDA_DIR/etc/profile.d/conda.sh"
+    source $CONDA_SCRIPT
     hash -r
     conda config --set always_yes yes --set changeps1 no
     conda create -q -n drop_env python=$TRAVIS_PYTHON_VERSION
@@ -21,6 +24,3 @@ else
     samtools --version
     bcftools --version
 fi
-
-conda activate drop_env
-
