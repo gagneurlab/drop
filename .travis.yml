@@ -7,6 +7,16 @@ cache:
     - $HOME/R/Library
     - /usr/bin/R
     - $HOME/miniconda
+    - $HOME/project/Data
+
+env:
+  global:
+    - DROP_DIR=$(pwd)
+    - PROJECT_DIR="$HOME/project"
+    - MINICONDA_DIR="$HOME/miniconda"
+    - R_LIB_DIR="$HOME/R/Library"
+    - export R_LIBS_USER=$R_LIB_DIR
+    - export TAR="/bin/tar"
 
 python:
   - "3.6.7"
@@ -24,43 +34,23 @@ addons:
         key_url: 'http://keyserver.ubuntu.com:11371/pks/lookup?op=get&search=0xe298a3a825c0d65dfd57cbb651716619e084dab9'
 
 before_cache:
-  - mkdir -p $HOME/R/Library
-  - DROP_DIR=$(pwd)
-  - cd $HOME
-  - sudo apt-get update
-  - wget https://repo.continuum.io/miniconda/Miniconda3-latest-Linux-x86_64.sh -O miniconda.sh
-  - bash miniconda.sh -b -p $HOME/miniconda
-  - source "$HOME/miniconda/etc/profile.d/conda.sh"
-  - hash -r
-  - conda config --set always_yes yes --set changeps1 no
-  - conda create -q -n drop_env python=$TRAVIS_PYTHON_VERSION
-  - conda activate drop_env
-  - python --version
-  - conda install -c bioconda gatk4=4.0.4.0 samtools=1.7.0 bcftools=1.7.0
-  - java -version
-  - gatk --help
-  - samtools --version
-  - bcftools --version
-  - cd ${DROP_DIR}
+  - mkdir -p $R_LIB_DIR
+  - mkdir -p $PROJECT_DIR
+  
+before_install:
+  - travis/download_data.sh
+  - travis/activate_conda.sh
 
 install:
-  - source "$HOME/miniconda/etc/profile.d/conda.sh"
-  - conda activate drop_env
+  - cd ${DROP_DIR}
   - pip install .
   - R -e "print(.libPaths())"
+  - R -e "install.packages('data.table')"
 
 before_script:
-  - export R_LIBS_USER="$HOME/R/Library"
-  - export TAR="/bin/tar"
-  - cd $HOME
-  - mkdir project
-  - cd project
-  - wget -nc "https://i12g-gagneurweb.informatik.tu-muenchen.de/public/paper/drop_analysis/resource.tar.gz"
-  - tar -zxvf resource.tar.gz
-  - mv resource Data
-  - cd Data
+  - cd $HOME/project/Data
   - python fix_sample_anno.py
-  - cd ..
+  - cd $HOME/project/
   - drop init
   - travis_wait 30 snakemake -n
 
