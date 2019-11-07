@@ -44,6 +44,7 @@ before_cache:
   - cd ${DROP_DIR}
 
 install:
+  - conda activate drop_env
   - pip install .
   - R -e "print(.libPaths())"
 
@@ -60,6 +61,7 @@ before_script:
   - python fix_sample_anno.py
   - cd ..
   - drop init
+  - travis_wait 30 snakemake -n
 
 script:
   - snakemake
