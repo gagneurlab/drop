@@ -19,12 +19,11 @@ addons:
       #- tk-dev
       - libcurl4-openssl-dev
       - libssl-dev
+    sources:
+      - sourceline: 'deb https://cloud.r-project.org/bin/linux/ubuntu xenial-cran35/'
+        key_url: 'https://cran.r-project.org/bin/linux/ubuntu/xenial-cran35/Release.gpg'
 
 before_cache:
-  - sudo apt-key adv --keyserver keyserver.ubuntu.com --recv-keys E084DAB9
-  - sudo add-apt-repository 'deb https://cloud.r-project.org/bin/linux/ubuntu xenial-cran35/'
-  - sudo apt-get update
-  - sudo apt-get install --allow-unauthenticated r-base
   - mkdir -p $HOME/R/Library
   - DROP_DIR=$(pwd)
   - cd $HOME
