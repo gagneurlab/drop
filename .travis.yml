@@ -26,8 +26,6 @@ before_cache:
   - sudo apt-get update
   - sudo apt-get install --allow-unauthenticated r-base
   - mkdir -p $HOME/R/Library
-  - export R_LIBS_USER="$HOME/R/Library"
-  - export TAR="/bin/tar"
   - DROP_DIR=$(pwd)
   - cd $HOME
   - sudo apt-get update
@@ -51,6 +49,8 @@ install:
   - R -e "print(.libPaths())"
 
 before_script:
+  - export R_LIBS_USER="$HOME/R/Library"
+  - export TAR="/bin/tar"
   - cd $HOME
   - mkdir project
   - cd project
