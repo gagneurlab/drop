@@ -12,10 +12,10 @@ cache:
 env:
   global:
     - DROP_DIR=$(pwd)
+    - echo $DROP_DIR
     - PROJECT_DIR="$HOME/project"
     - MINICONDA_DIR="$HOME/miniconda"
-    - R_LIB_DIR="$HOME/R/Library"
-    - export R_LIBS_USER=$R_LIB_DIR
+    - R_LIBS_USER="$HOME/R/Library"
     - export TAR="/bin/tar"
 
 python:
@@ -34,12 +34,12 @@ addons:
         key_url: 'http://keyserver.ubuntu.com:11371/pks/lookup?op=get&search=0xe298a3a825c0d65dfd57cbb651716619e084dab9'
 
 before_cache:
-  - mkdir -p $R_LIB_DIR
+  - mkdir -p $R_LIBS_USER
   - mkdir -p $PROJECT_DIR
   
 before_install:
-  - travis/download_data.sh
-  - travis/activate_conda.sh
+  - bash travis/download_data.sh
+  - bash travis/activate_conda.sh
 
 install:
   - cd ${DROP_DIR}
