@@ -44,6 +44,7 @@ before_cache:
   - cd ${DROP_DIR}
 
 install:
+  - source "$HOME/miniconda/etc/profile.d/conda.sh"
   - conda activate drop_env
   - pip install .
   - R -e "print(.libPaths())"
