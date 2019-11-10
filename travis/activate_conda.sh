@@ -4,11 +4,10 @@ set -e
 CURRENT_DIR=$(pwd)
 cd $HOME
 CONDA_URL="https://repo.continuum.io/miniconda/Miniconda3-latest-Linux-x86_64.sh"
-CONDA_SCRIPT="$MINICONDA_DIR/etc/profile.d/conda.sh"
 
 if [ -d $MINICONDA_DIR ] && [ -e $CONDA_SCRIPT ]
 then
-    source $CONDA_SCRIPT
+    echo "using cached miniconda"
 else
     rm -rf $MINICONDA_DIR
     wget $CONDA_URL -O miniconda.sh

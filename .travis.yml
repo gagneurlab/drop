@@ -14,6 +14,7 @@ env:
     - DROP_DIR=$(pwd)
     - PROJECT_DIR="$HOME/project"
     - MINICONDA_DIR="$HOME/miniconda"
+    - CONDA_SCRIPT="$MINICONDA_DIR/etc/profile.d/conda.sh"
     - R_LIBS_USER="$HOME/R/Library"
     - export TAR="/bin/tar"
 
@@ -37,21 +38,22 @@ before_cache:
   - mkdir -p $PROJECT_DIR
   
 before_install:
-  - echo $DROP_DIR
+  - cd $DROP_DIR
   - bash travis/download_data.sh
   - bash travis/activate_conda.sh
+  - source $CONDA_SCRIPT
 
 install:
   - conda activate drop_env
-  - cd ${DROP_DIR}
+  - cd $DROP_DIR
   - pip install .
   - R -e "print(.libPaths())"
   - R -e "install.packages('data.table')"
 
 before_script:
-  - cd $HOME/project/Data
+  - cd $PROJECT_DIR/Data
   - python fix_sample_anno.py
-  - cd $HOME/project/
+  - cd $PROJECT_DIR
   - drop init
   - travis_wait 30 snakemake -n
 
