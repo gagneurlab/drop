@@ -51,8 +51,6 @@ install:
   - R -e "install.packages('data.table')"
 
 before_script:
-  - cd $PROJECT_DIR/Data
-  - python fix_sample_anno.py
   - cd $PROJECT_DIR
   - drop init
   - travis_wait 30 snakemake -n
