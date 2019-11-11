@@ -28,6 +28,8 @@ addons:
       #- tk-dev
       - libcurl4-openssl-dev
       - libssl-dev
+      - libblas-dev
+      - liblapack-dev
       - gfortran
     sources:
       - sourceline: 'deb https://cloud.r-project.org/bin/linux/ubuntu xenial-cran35/'
@@ -35,6 +37,7 @@ addons:
 
 before_cache:
   - mkdir -p $R_LIBS_USER
+  - chmod -R 777 $R_LIBS_USER
   
 before_install:
   - cd $DROP_DIR
