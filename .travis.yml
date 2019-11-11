@@ -34,11 +34,11 @@ addons:
 
 before_cache:
   - mkdir -p $R_LIBS_USER
-  - mkdir -p $PROJECT_DIR
   
 before_install:
   - cd $DROP_DIR
   - bash travis/download_data.sh
+  - mkdir -p $PROJECT_DIR
   - bash travis/activate_conda.sh
   - source $CONDA_SCRIPT
 
