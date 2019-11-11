@@ -37,8 +37,8 @@ before_cache:
   
 before_install:
   - cd $DROP_DIR
-  - bash travis/download_data.sh
   - mkdir -p $PROJECT_DIR
+  - bash travis/download_data.sh
   - bash travis/activate_conda.sh
   - source $CONDA_SCRIPT
 
