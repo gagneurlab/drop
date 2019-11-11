@@ -37,8 +37,6 @@ before_cache:
   
 before_install:
   - cd $DROP_DIR
-  - mkdir -p $PROJECT_DIR
-  - bash travis/download_data.sh
   - bash travis/activate_conda.sh
   - source $CONDA_SCRIPT
 
@@ -50,7 +48,9 @@ install:
   - R -e "install.packages('data.table')"
 
 before_script:
+  - mkdir -p $PROJECT_DIR
   - cd $PROJECT_DIR
+  - bash travis/download_data.sh
   - drop init
   - travis_wait 30 snakemake -n
 
