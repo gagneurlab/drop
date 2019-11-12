@@ -15,7 +15,7 @@ env:
     - MINICONDA_DIR="$HOME/miniconda"
     - CONDA_SCRIPT="$MINICONDA_DIR/etc/profile.d/conda.sh"
     - R_LIBS_USER="$HOME/R/Library"
-    - export TAR="/bin/tar"
+    - TAR="/bin/tar"
 
 python:
   - "3.6.7"
@@ -25,7 +25,7 @@ addons:
     packages:
       - r-base
       - libxml2-dev
-      #- tk-dev
+#      - tk-dev
       - libcurl4-openssl-dev
       - libssl-dev
       - libblas-dev
@@ -38,11 +38,13 @@ addons:
 #before_cache:
 #  - mkdir -p $R_LIBS_USER
 #  - chmod -R 777 $R_LIBS_USER
-
-before_install:
-  - cd $DROP_DIR
-  - bash travis/activate_conda.sh
-  - source $CONDA_SCRIPT
+#  - mkdir -p $MINICONDA_DIR
+  
+# before_install:
+#  - cd $DROP_DIR
+#  - echo $CONDA_SCRIPT
+#  - bash travis/activate_conda.sh
+#  - source $CONDA_SCRIPT
 
 install:
   - Rscript travis/installRPackages.R OUTRIDER
