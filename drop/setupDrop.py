@@ -2,6 +2,7 @@ import drop
 import subprocess
 import pathlib
 import wbuild
+import re
 
 def setupDrop(config):
 
@@ -37,8 +38,10 @@ def installRPackages():
         if stderr:
             print(stderr)
             exit(1)
+            
         stdout = stdout.decode()
-        print(stdout)
-        if "Execution halted" in stdout or "Error" in stdout:
+        ep = re.compile("Execution halted|^ERROR", re.M)
+        if ep.search(stdout):
+            print(stdout)
             exit(1)
 
