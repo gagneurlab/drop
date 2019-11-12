@@ -35,30 +35,33 @@ addons:
       - sourceline: 'deb https://cloud.r-project.org/bin/linux/ubuntu xenial-cran35/'
         key_url: 'http://keyserver.ubuntu.com:11371/pks/lookup?op=get&search=0xe298a3a825c0d65dfd57cbb651716619e084dab9'
 
-before_cache:
-  - mkdir -p $R_LIBS_USER
-  - chmod -R 777 $R_LIBS_USER
-  
+#before_cache:
+#  - mkdir -p $R_LIBS_USER
+#  - chmod -R 777 $R_LIBS_USER
+
 before_install:
   - cd $DROP_DIR
   - bash travis/activate_conda.sh
   - source $CONDA_SCRIPT
 
 install:
+  - Rscript travis/installRPackages.R OUTRIDER
+#  - Rscript travis/installRPackages.R 
   - conda activate drop_env
   - cd $DROP_DIR
   - pip install .
-  - R -e "print(.libPaths())"
-  - R -e "install.packages('data.table')"
+#  - R -e "print(.libPaths())"
+#  - R -e "install.packages('data.table')"
 
-before_script:
-  - cd $DROP_DIR
-  - mkdir -p $PROJECT_DIR
-  - bash travis/download_data.sh
-  - cd $PROJECT_DIR
-  - drop init
-  - travis_wait 30 snakemake -n
+# before_script:
+#  - cd $DROP_DIR
+#  - mkdir -p $PROJECT_DIR
+#  - bash travis/download_data.sh
+#  - cd $PROJECT_DIR
+#  - drop init
+#  - travis_wait 30 snakemake -n
 
-script:
-  - snakemake
+#script:
+#  - snakemake
 
+script: true
