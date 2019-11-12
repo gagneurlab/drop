@@ -1,4 +1,4 @@
-language: python
+language: r
 sudo: required
 dist: xenial
 
@@ -15,15 +15,15 @@ env:
     - MINICONDA_DIR="$HOME/miniconda"
     - CONDA_SCRIPT="$MINICONDA_DIR/etc/profile.d/conda.sh"
     - R_LIBS_USER="$HOME/R/Library"
-    - export TAR="/bin/tar"
+    - TAR="/bin/tar"
 
-python:
-  - "3.6.7"
+r:
+  - "3.6.1"
 
 addons:
   apt:
     packages:
-      - r-base
+      #- r-base
       - libxml2-dev
       #- tk-dev
       - libcurl4-openssl-dev
@@ -31,16 +31,18 @@ addons:
       - libblas-dev
       - liblapack-dev
       - gfortran
-    sources:
-      - sourceline: 'deb https://cloud.r-project.org/bin/linux/ubuntu xenial-cran35/'
-        key_url: 'http://keyserver.ubuntu.com:11371/pks/lookup?op=get&search=0xe298a3a825c0d65dfd57cbb651716619e084dab9'
+    #sources:
+    #  - sourceline: 'deb https://cloud.r-project.org/bin/linux/ubuntu xenial-cran35/'
+    #    key_url: 'http://keyserver.ubuntu.com:11371/pks/lookup?op=get&search=0xe298a3a825c0d65dfd57cbb651716619e084dab9'
 
 before_cache:
   - mkdir -p $R_LIBS_USER
   - chmod -R 777 $R_LIBS_USER
+  - mkdir -p $MINICONDA_DIR
   
 before_install:
   - cd $DROP_DIR
+  - echo $CONDA_SCRIPT
   - bash travis/activate_conda.sh
   - source $CONDA_SCRIPT
 
@@ -49,7 +51,7 @@ install:
   - cd $DROP_DIR
   - pip install .
   - R -e "print(.libPaths())"
-  - R -e "install.packages('data.table')"
+  - R -e "if (!requireNamespace("data.table", quietly = TRUE)) install.packages('data.table')"
 
 before_script:
   - cd $DROP_DIR
