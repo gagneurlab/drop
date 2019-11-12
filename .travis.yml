@@ -40,22 +40,21 @@ addons:
 #  - chmod -R 777 $R_LIBS_USER
 #  - mkdir -p $MINICONDA_DIR
   
-# before_install:
-#  - cd $DROP_DIR
-#  - echo $CONDA_SCRIPT
-#  - bash travis/activate_conda.sh
-#  - source $CONDA_SCRIPT
+before_install:
+  
+  - source $CONDA_SCRIPT
 
 install:
-  - Rscript travis/installRPackages.R OUTRIDER
-#  - Rscript travis/installRPackages.R 
-  - conda activate drop_env
   - cd $DROP_DIR
+  - Rscript travis/installRPackages.R OUTRIDER
+  - Rscript travis/installRPackages.R c-mertes/FraseR
+  - Rscript travis/installRPackages.R mumichae/tMAE
+  - echo $CONDA_SCRIPT
+  - bash travis/activate_conda.sh
+  - conda activate drop_env
   - pip install .
-#  - R -e "print(.libPaths())"
-#  - R -e "install.packages('data.table')"
 
-# before_script:
+#before_script:
 #  - cd $DROP_DIR
 #  - mkdir -p $PROJECT_DIR
 #  - bash travis/download_data.sh
@@ -67,3 +66,4 @@ install:
 #  - snakemake
 
 script: true
+
