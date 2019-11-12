@@ -40,10 +40,6 @@ addons:
 #  - chmod -R 777 $R_LIBS_USER
 #  - mkdir -p $MINICONDA_DIR
   
-before_install:
-  
-  - source $CONDA_SCRIPT
-
 install:
   - cd $DROP_DIR
   - Rscript travis/installRPackages.R OUTRIDER
@@ -51,6 +47,7 @@ install:
   - Rscript travis/installRPackages.R mumichae/tMAE
   - echo $CONDA_SCRIPT
   - bash travis/activate_conda.sh
+  - source $CONDA_SCRIPT
   - conda activate drop_env
   - pip install .
 
