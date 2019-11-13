@@ -19,29 +19,29 @@ def setupDrop(config):
     return parser, parser.parse()
 
 def installRPackages():
-    print("install missing R packages")
+    print("check for missing R packages")
     script = pathlib.Path(drop.__file__).parent / "installRPackages.R"
     requirements = pathlib.Path(drop.__file__).parent / 'requirementsR.txt'
     
-    packages = [x.strip().split("#")[0] for x in open(requirements, 'r')]
-    packages = [x for x in packages if x != '']
+    #packages = [x.strip().split("#")[0] for x in open(requirements, 'r')]
+    #packages = [x for x in packages if x != '']
 
-    for package in packages:
-        print(f"check {package}")   
-        call = subprocess.Popen(
-            ["Rscript", script, package], 
+    #for package in packages:
+    #    print(f"check {package}")   
+    call = subprocess.Popen(
+            ["Rscript", script, requirements], 
             stdout=subprocess.PIPE, 
             stderr=subprocess.STDOUT
         )
-        
-        stdout, stderr = call.communicate()
-        if stderr:
-            print(stderr)
-            exit(1)
-            
-        stdout = stdout.decode()
-        ep = re.compile("Execution halted|^ERROR", re.M)
-        if ep.search(stdout):
-            print(stdout)
-            exit(1)
+    
+    # check output for errors
+    stdout, stderr = call.communicate()
+    if stderr:
+        print(stderr)
+        exit(1)
+    stdout = stdout.decode()
+    ep = re.compile("Execution halted|^ERROR", re.M)
+    if ep.search(stdout):
+        print(stdout)
+        exit(1)
 
