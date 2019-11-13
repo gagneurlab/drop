@@ -51,13 +51,12 @@ install:
   - conda activate drop_env
   - pip install .
 
-#before_script:
-#  - cd $DROP_DIR
-#  - mkdir -p $PROJECT_DIR
-#  - bash travis/download_data.sh
-#  - cd $PROJECT_DIR
-#  - drop init
-#  - travis_wait 30 snakemake -n
+before_script:
+  - cd $DROP_DIR
+  - bash travis/download_data.sh
+  - cd $PROJECT_DIR
+  - drop init
+  - travis_wait 30 snakemake -n
 
 #script:
 #  - snakemake
