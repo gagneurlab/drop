@@ -32,14 +32,11 @@ addons:
       - liblapack-dev
       - gfortran
       - graphviz
+      - pandoc
     sources:
       - sourceline: 'deb https://cloud.r-project.org/bin/linux/ubuntu xenial-cran35/'
         key_url: 'http://keyserver.ubuntu.com:11371/pks/lookup?op=get&search=0xe298a3a825c0d65dfd57cbb651716619e084dab9'
-
-#before_cache:
-#  - mkdir -p $R_LIBS_USER
-#  - chmod -R 777 $R_LIBS_USER
-#  - mkdir -p $MINICONDA_DIR
+    update: true
   
 install:
   - cd $DROP_DIR
@@ -57,10 +54,6 @@ before_script:
   - bash travis/download_data.sh
   - cd $PROJECT_DIR
   - drop init
-  - travis_wait 30 snakemake -n
 
-#script:
-#  - snakemake
-
-script: true
-
+script:
+  - snakemake --cores 2
