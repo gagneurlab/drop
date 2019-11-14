@@ -3,6 +3,7 @@ import subprocess
 import pathlib
 import wbuild
 import re
+from snakemake.logging import logger
 
 def setupDrop(config):
 
@@ -19,7 +20,7 @@ def setupDrop(config):
     return parser, parser.parse()
 
 def installRPackages():
-    print("check for missing R packages")
+    logger.info("check for missing R packages")
     script = pathlib.Path(drop.__file__).parent / "installRPackages.R"
     requirements = pathlib.Path(drop.__file__).parent / 'requirementsR.txt'
     
@@ -27,7 +28,7 @@ def installRPackages():
     #packages = [x for x in packages if x != '']
 
     #for package in packages:
-    #    print(f"check {package}")   
+    #    logger.info(f"check {package}")   
     call = subprocess.Popen(
             ["Rscript", script, requirements], 
             stdout=subprocess.PIPE, 

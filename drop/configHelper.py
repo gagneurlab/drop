@@ -59,7 +59,7 @@ class ConfigHelper:
         def createIfMissing(directory):
             directory = pathlib.Path(directory)
             if not directory.exists():
-                print(f"creating {directory}")
+                logger.debug(f"creating {directory}")
                 directory.mkdir(parents=True)
         
         createIfMissing(self.getProcDataDir())
@@ -103,7 +103,6 @@ class ConfigHelper:
         else:
             tmp_dir = submodules.getMethodPath(self.method, type_='tmp_dir')
         setKey(config, None, "tmpdir", tmp_dir)
-        print(tmp_dir)
         
         # aberrant expression
         if self.method == "AE" or self.method is None:
@@ -144,7 +143,7 @@ class ConfigHelper:
             for x in sub:
                 dict_ = dict_[x]
         if key not in dict_ or dict_[key] is None:
-            print(f'{key} not in config{sub}, using default')
+            logger.debug(f'{key} not in config{sub}, using default')
             dict_[key] = default
         return dict_[key]
 
@@ -189,7 +188,7 @@ class ConfigHelper:
         file_mapping.dropna(inplace=True)
         existent = [pathlib.Path(x).exists() for x in file_mapping["FILE_PATH"]]
         if sum(existent) < file_mapping.shape[0]:
-            print("WARNING: there are files in the sample annotation that do not exist")
+            logger.info("WARNING: there are files in the sample annotation that do not exist")
         file_mapping = file_mapping[existent].drop_duplicates()
         if file_mapping.shape[0] == 0:
             raise ValueError("No files exist in sample annotation. Please check your sample annotation.")
@@ -232,7 +231,7 @@ class ConfigHelper:
             if len(subset[group]) < error:
                 raise ValueError(f'Too few IDs in DROP_GROUP {group}, please ensure that it has at least {error} IDs')
             elif len(subset[group]) < warn:
-                print(f'WARNING: Less than {warn} IDs in DROP_GROUP {group}')
+                logger.info(f'WARNING: Less than {warn} IDs in DROP_GROUP {group}')
         
         return subset
     
@@ -272,7 +271,7 @@ class ConfigHelper:
         x = self.sample_file_mapping.query("(FILE_TYPE == @file_type) & (ID == @sampleID)")["FILE"]
         exists = (len(x) != 0)
         if (not exists) and verbose:
-            print(f"FILE NOT FOUND FOR sampleID: {sampleID} and file type {file_type}")
+            logger.debug(f"FILE NOT FOUND FOR sampleID: {sampleID} and file type {file_type}")
         return exists
     
     def getFilePath(self, sampleId, file_type):

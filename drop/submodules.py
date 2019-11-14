@@ -1,5 +1,6 @@
 import pathlib
 import yaml
+from snakemake.logging import logger
 
 METHODS = {'AE': 'aberrant-expression-pipeline',
            'AS': 'aberrant-splicing-pipeline',
@@ -23,13 +24,13 @@ def getConfFile(str_=True):
 def setupTempFiles(config):
     # create temporary directory
     if not TMP_DIR.exists():
-        print(f"create temporary files directory {TMP_DIR}")
+        logger.info(f"create temporary files directory {TMP_DIR}")
         TMP_DIR.mkdir(parents=True)
 
     # save config file
     CONF_FILE = getConfFile(config)
     with open(CONF_FILE, 'w') as f:
-        yaml.dump(config.copy(), f)
+        yaml.safe_dump(config.copy(), f)
     
     done_files = {}
     for method in METHODS.keys():
