@@ -1,22 +1,28 @@
 options(repos=structure(c(CRAN="https://cloud.r-project.org")))
 
+
 if (!requireNamespace('BiocManager', quietly = TRUE)) {
     install.packages('BiocManager')
     BiocManager::install("remotes")
 }
 
 args <- commandArgs(trailingOnly=TRUE)
-#package <- args[1]
-packages <- read.table(args[1], stringsAsFactors=FALSE)[,1]
-
+packages <- read.csv(args[1], stringsAsFactors = FALSE,
+                     header = TRUE, sep = " ", comment.char = "#")
 installed <- rownames(installed.packages())
-for (package in packages) {
-    # split package name from prefix
-    pckg_name = tail(unlist(strsplit(package, split="/")), n=1)
+for (i in 1:nrow(packages)) {
+    
+    pckg_name = tail(unlist(strsplit(packages[i,1], split = "/")), n = 1)
+    
     if (pckg_name %in% installed) {
         message(paste(pckg_name, "already installed"))
     } else {
-        #BiocManager::install(package)
+        INSTALL <- ifelse(packages[i,2] == TRUE, 
+                          BiocManager::install,
+                          install.packages)
+        package <- packages[i,1]
+        message(paste("install", package))
+        INSTALL(packages[i,1])
         message(paste("installed", package))
     }
 }

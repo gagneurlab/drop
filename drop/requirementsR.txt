@@ -1,5 +1,7 @@
-#gagneurlab/OUTRIDER
-OUTRIDER#>=1.2.4
-c-mertes/FraseR#=0.9.5
-mumichae/tMAE#=0.9.0
+package bioconductor
+OUTRIDER#>=1.2.4 TRUE
+c-mertes/FraseR#=0.9.5 TRUE
+mumichae/tMAE#=0.9.0 TRUE
+rmarkdown FALSE
+
 
