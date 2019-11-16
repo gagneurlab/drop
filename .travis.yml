@@ -56,4 +56,5 @@ before_script:
   - drop init
 
 script:
+  - snakemake unlock
   - snakemake --cores 2

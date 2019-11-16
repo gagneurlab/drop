@@ -70,3 +70,15 @@ rule dependencyGraph:
 
 rule publish_local:
     shell: "rsync -Ort {config[htmlOutputPath]} {config[webDir]}"
+
+rule unlock:
+    input:
+       AE(drop.getMethodPath("AE", "unlock")),
+       AS(drop.getMethodPath("AS", "unlock")),
+       MAE(drop.getMethodPath("MAE", "unlock"))
+    shell: 
+        """
+        snakemake --unlock
+        rm {input}
+        """
+

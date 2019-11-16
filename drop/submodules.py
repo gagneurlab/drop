@@ -55,6 +55,7 @@ def getMethodPath(method, type_, str_=True):
         snakefile: path to Snakefile
         config_file: path to config file copy
         final_file: path to empty file used as last output of workflow
+        unlock: path to empty file for unlocking subworkflow
     """
     if method not in METHODS.keys():
         raise ValueError(f'{method} is not a valid method. Must be one of {METHODS.keys()}')
@@ -67,6 +68,8 @@ def getMethodPath(method, type_, str_=True):
         p = TMP_DIR / method
     elif type_ == 'final_file':
         p = TMP_DIR / f'{method}.done'
+    elif type_ == 'unlock':
+        p = TMP_DIR / f'{method}.unlock'
     else:
       raise ValueError(f'invalid type_: "{type_}"')
     
