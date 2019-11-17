@@ -6,7 +6,7 @@ fileRegex: .*\.R
 root: ~/project/Output
 sampleAnnotation: ~/project/Data/sample_annotation.tsv
 geneAnnotation: {
-    v29: ~/project/Data/gencode.v29lift37.annotation.gtf.gz
+    v29: ~/project/Data/gencode_annotation_trunc.gtf
 }
 
 aberrantExpression: {
