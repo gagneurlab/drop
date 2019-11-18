@@ -3,5 +3,12 @@ OUTRIDER#>=1.2.4 TRUE
 c-mertes/FraseR#=0.9.5 TRUE
 mumichae/tMAE#=0.9.0 TRUE
 rmarkdown FALSE
-
+knitr FALSE
+ggplot2 FALSE
+ggthemes FALSE
+cowplot FALSE
+data.table FALSE
+dplyr FALSE
+tidyr FALSE
+magrittr FALSE
 

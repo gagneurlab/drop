@@ -40,9 +40,7 @@ addons:
   
 install:
   - cd $DROP_DIR
-  - Rscript travis/installRPackages.R OUTRIDER
-  - Rscript travis/installRPackages.R c-mertes/FraseR
-  - Rscript travis/installRPackages.R mumichae/tMAE
+  - Rscript drop/installRPackages.R drop/requirementsR.txt
   - echo $CONDA_SCRIPT
   - bash travis/activate_conda.sh
   - source $CONDA_SCRIPT
