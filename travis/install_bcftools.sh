@@ -8,5 +8,6 @@ then
     git clone git://github.com/samtools/bcftools.git
     cd bcftools
     make
+fi
 $HOME/bcftools/bcftools --version
 
