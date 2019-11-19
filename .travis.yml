@@ -7,6 +7,8 @@ cache:
     - $HOME/R/Library
     - /usr/bin/R
     - $HOME/miniconda
+    - $HOME/htslib
+    - $HOME/bcftools
 
 env:
   global:
@@ -33,6 +35,7 @@ addons:
       - gfortran
       - graphviz
       - pandoc
+      - tabix
     sources:
       - sourceline: 'deb https://cloud.r-project.org/bin/linux/ubuntu xenial-cran35/'
         key_url: 'http://keyserver.ubuntu.com:11371/pks/lookup?op=get&search=0xe298a3a825c0d65dfd57cbb651716619e084dab9'
@@ -41,8 +44,8 @@ addons:
 install:
   - cd $DROP_DIR
   - Rscript drop/installRPackages.R drop/requirementsR.txt
-  - echo $CONDA_SCRIPT
-  - bash travis/activate_conda.sh
+  - bash travis/install_bcftools.sh
+  - bash travis/install_conda.sh
   - source $CONDA_SCRIPT
   - conda activate drop_env
   - pip install .
@@ -56,3 +59,4 @@ before_script:
 script:
   - snakemake unlock
   - snakemake --cores 2
+
