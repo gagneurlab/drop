@@ -11,4 +11,5 @@ data.table FALSE
 dplyr FALSE
 tidyr FALSE
 magrittr FALSE
+devtools FALSE
 
