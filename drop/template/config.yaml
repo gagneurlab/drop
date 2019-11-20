@@ -10,17 +10,15 @@ geneAnnotation: {
 }
 
 aberrantExpression: {
-    minIds: 1,
+    groups: outrider,
     fpkmCutoff: 1,
-    groups: null,
     padjCutoff: .05,
     zscoreCutoff: 0,
     useGeneNames: true
 }
 
 aberrantSplicing: {
-    groups: null,
-    minIds: 10,
+    groups: fraser,
     deltaPsiCutoff : 0.05
 }
 
@@ -31,13 +29,14 @@ mae: {
     padjCutoff: .05,
     allelicRatioCutoff: 0.8,
     maxAF: .001,
-    groups: null,
+    gnomAD: false,
+    groups: mae,
     # VCF-BAM matching
     qcVcf: {
         UCSC: /home/travis/project/Data/qc_vcf_ucsc_1000G.vcf.gz,
         NCBI: /home/travis/project/Data/qc_vcf_ncbi_1000G.vcf.gz
      },
-    qcGroup: all
+    qcGroup: mae
 }
 
 tools: {
@@ -45,3 +44,4 @@ tools: {
     bcftoolsCmd: /home/travis/bcftools/bcftools,
     samtoolsCmd: samtools
 }
+
