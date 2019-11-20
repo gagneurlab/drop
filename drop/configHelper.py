@@ -127,6 +127,7 @@ class ConfigHelper:
             setKey(config, ["mae"], "padjCutoff", .05, verbose=VERBOSE)
             setKey(config, ["mae"], "allelicRatioCutoff", 0.8, verbose=VERBOSE)
             setKey(config, ["mae"], "maxAF", .001, verbose=VERBOSE)
+            setKey(config, ["mae"], "gnomAD", False, verbose=VERBOSE)
             setKey(config, ["mae"], "groups", None, verbose=VERBOSE)
             setKey(config, ["mae"], "qcGroup", None, verbose=VERBOSE)
         
@@ -225,6 +226,7 @@ class ConfigHelper:
         if subset_groups is None:
             subset = ids_by_group
         else:
+            subset_groups = [subset_groups] if subset_groups.__class__ == str else subset_groups
             subset = {gr:ids for gr, ids in ids_by_group.items() if gr in subset_groups}
         
         for group in subset_groups:
@@ -239,7 +241,7 @@ class ConfigHelper:
         """
         create MAE IDs from smaple annotation
         """
-        rna_id_by_group = self.subsetGroups(ids_by_group, subset_groups)
+        rna_id_by_group = self.subsetGroups(ids_by_group, subset_groups, warn=1, error=1)
         all_mae_files = self.sample_annotation[["RNA_ID", "DNA_ID"]].drop_duplicates().dropna()
         
         # subset by group
