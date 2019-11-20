@@ -56,7 +56,7 @@ before_script:
   - cd $PROJECT_DIR
   - drop init
 
-script:
-  - snakemake unlock
-  - snakemake --cores 2
+script: true
+  #- snakemake unlock
+  #- snakemake --cores 2
 
