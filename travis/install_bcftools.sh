@@ -1,7 +1,7 @@
 #!/bin/bash
 set -e
 
-if [ ! -d $HOME/bcftools ] || [ ! -d $HOME/htslib ]
+if [ ! -f $HOME/bcftools/bcftools ] || [ ! -d $HOME/htslib ]
 then
     cd $HOME
     git clone git://github.com/samtools/htslib.git
