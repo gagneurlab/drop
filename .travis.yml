@@ -43,7 +43,7 @@ addons:
   
 install:
   - cd $DROP_DIR
-  - Rscript drop/installRPackages.R drop/requirementsR.txt
+  - Rscript travis/installRPackages.R drop/requirementsR.txt
   - bash travis/install_bcftools.sh
   - bash travis/install_conda.sh
   - source $CONDA_SCRIPT
