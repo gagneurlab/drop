@@ -17,9 +17,11 @@ for (i in 1:nrow(packages)) {
     if (pckg_name %in% installed) {
         message(paste(pckg_name, "already installed"))
     } else {
-        INSTALL <- ifelse(packages[i,2] == TRUE, 
-                          BiocManager::install,
-                          install.packages)
+        if (packages[i,2] == TRUE) {
+            INSTALL <- BiocManager::install
+        } else {
+            INSTALL <- install.packages
+        }
         package <- packages[i,1]
         message(paste("install", package))
         INSTALL(packages[i,1])
