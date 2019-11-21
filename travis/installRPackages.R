@@ -3,6 +3,7 @@ START_TIME <- Sys.time()
 options(repos=structure(c(CRAN="https://cloud.r-project.org")))
 if (!requireNamespace('BiocManager', quietly = TRUE)) {
     install.packages('BiocManager')
+    install.packages('R.utils')
     BiocManager::install("remotes")
 }
 
