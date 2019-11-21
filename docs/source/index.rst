@@ -8,11 +8,14 @@ DROP is ...
    :caption: Contents:
 
    installation
+   prepare
+   pipeline
    license
    help
 
 Quickstart
 -----------
+
 Install via pip
 
     pip install drop
