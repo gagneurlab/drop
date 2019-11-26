@@ -4,7 +4,14 @@ Preparing the Input Data
 Filling the Config File
 -----------------------
 
-The config file is in *YAML* format. It is composed of general and module-specific parameters. First, we describe the types of variables in *YAML* and then we provide a description and examples of each variable.
+The config file is in *YAML* format. It is composed of general and module-specific parameters. Variables are declared by writing the variable name followed by a colon, a space, and the value, for example:
+
+``# full comment line``
+
+``variable_1: /path/file.txt  # inline comment``
+
+First, we describe the types of variables in *YAML* and then we provide a description and examples of each variable.
+
 
 Types of variables in *YAML*
 ++++++++++++++++++++++++++++
@@ -31,10 +38,9 @@ htmlOutputPath    character   Full path of the folder where the HTML files are r
 root              character   Full path of the folder where the subdirectories processed_data and processed_results will be created containing DROP's output files     /data/project1
 sampleAnnotation  character   Full path of the sample annotation table                                                                                                 /data/project1/sample_annotation.tsv
 geneAnnotation    dictionary  A key-value list of the annotation name (key) and the full path to the GTF file (value). More than one annotation file can be provided.  {"anno1": /path/to/gtf.gtf}
-bcftoolsCmd       character   The command how to run bcftools                                                                                                          bcftools
-samtoolsCmd       character   The command how to run samtools                                                                                                          samtools
-gatkCmd           character   The command how to run GATK                                                                                                              gatk
+tools             dictionary  A key-value list of different commands (key) and the command (value) to run them                                                         {gatkCmd: gatk, bcftoolsCmd: bcftools, samtoolsCmd: samtools}
 ================  ==========  =======================================================================================================================================  ==
+
 
 Aberrant expression parameters
 ++++++++++++++++++++++++++++++
@@ -74,7 +80,8 @@ fastaFile           character   Full path of a human reference fasta file       
 groups              list        Same as in aberrant expression.                                                                                           ['group1', 'group2']
 allelicRatioCutoff  numeric     A number between [0.5, 1) indicating the maximum allelic ratio allele1/(allele1+allele2) for the test to be significant.  0.8
 padjCutoff          numeric     Same as in aberrant expression.                                                                                           0.05
-maxAfCutoff         numeric     Maximum allele frequency (of the minor allele) cut-off. Variants with AF equal or below this number are considered rare.  0.001
+maxAF               numeric     Maximum allele frequency (of the minor allele) cut-off. Variants with AF equal or below this number are considered rare.  0.001
+addGnomAD           boolean     Whether or not to add the allele frequencies from gnomAD                                                                  true
 qcVcf               dictionary  A key-value list of the chromosome format (key) and the full path to the VCF file used for matching samples (value)       {UCSC: /path/to/qc_ucsc.vcf.gz, NCBI: /path/to/qc_ncbi.vcf.gz}
 qcGroups            list        Same as “groups”, but for the VCF-BAM matching                                                                            ['group1', 'group2']    
 ==================  ==========  ========================================================================================================================  ==
