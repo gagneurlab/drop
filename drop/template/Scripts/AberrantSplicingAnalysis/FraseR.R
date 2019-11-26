@@ -5,7 +5,11 @@
 #'  py:
 #'   - |
 #'     datasets = config['aberrantSplicing']['groups']
+#'  params:
+#'    - tmpdir: drop.getTmpDir()
 #'  input:
+#'  - fds_files: '`sm expand(parser.getProcDataDir() + "/aberrant_splicing/datasets/savedObjects/{dataset}/pajdBetaBinomial_psiSite.h5", dataset=datasets)`'
+#'  - result_tables: '`sm expand(parser.getProcDataDir() + "/aberrant_splicing/results/{dataset}_results.tsv", dataset=datasets)`'
 #' output:
 #'   html_document:
 #'    code_folding: hide
@@ -13,12 +17,9 @@
 #'---
 
 #+ echo=F
-saveRDS(snakemake, ".tmp/AberrantSplicing_Analysis.snakemake")
-# snakemake <- readRDS(".tmp/AberrantSplicing_Analysis.snakemake")
-
-
-#'  - fds_files: '`sm expand(parser.getProcDataDir() + "/aberrant_splicing/datasets/savedObjects/{dataset}/pajdBinomial_psiSite.h5", dataset=datasets)`'
-#'  - result_tables: '`sm expand(parser.getProcDataDir() + "/aberrant_splicing/results/{dataset}_results.tsv", dataset=datasets)`'
+saveRDS(snakemake, file.path(snakemake@params$tmpdir, 
+                             "AberrantSplicing_FRASER.snakemake"))
+# snakemake <- readRDS(".drop/tmp/AberrantSplicing_FRASER.snakemake")
 
 #' FraseR objects: `r paste(snakemake@input$fds_files)`  
 #' FraseR results: `r paste(snakemake@input$result_tables)`  
