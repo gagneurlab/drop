@@ -10,7 +10,7 @@ The config file is in *YAML* format. It is composed of general and module-specif
 
 ``variable_1: /path/file.txt  # inline comment``
 
-First, we describe the types of variables in *YAML* and then we provide a description and examples of each variable.
+A variable can be of different types: string, numeric, list and dictionary. First, we describe each of those types of variables in *YAML* and then we provide a description and examples of each variable.
 
 
 Types of variables in *YAML*
