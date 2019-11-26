@@ -1,0 +1,36 @@
+#'---
+#' title: Analysis Example
+#' author: salazar
+#' wb:
+#'  py:
+#'    - |
+#'     datasets = config["mae"]["groups"]
+#'     annotations = list(config["geneAnnotation"].keys())
+#'  input:
+#'    - count_matrices: '`sm expand(parser.getProcDataDir() + "/mae/allelic_counts/{mae_id}.csv.gz", mae_id=parser.getMaeAll())`'
+#'    - results_tables: '`sm expand(parser.getProcResultsDir() + "/mae/{dataset}/MAE_results_{annotation}.tsv", dataset=datasets, annotation=annotations)`'
+#'    - html: '`sm config["htmlOutputPath"] + "/Scripts_MAE_Results_Overview.html"`'
+#' output:
+#'   html_document:
+#'    code_folding: hide
+#'    code_download: TRUE
+#'---
+
+print(getwd())
+#+ echo=F
+saveRDS(snakemake, '.tmp/mae.snakemake')
+# snakemake <- readRDS('.tmp/mae.snakemake')
+
+#' `r snakemake@input$matrix`  
+#' `r snakemake@input$html`
+
+
+library(tMAE)
+file <- results_tables[[1]]
+res <- fread()
+sample <- res[1, MAE_ID]
+
+#' Load the file of interest
+file_location <- strsplit(file, "/")[[1]]
+res_sample <- readRDS(paste0(paste(file_location[1:eval(length(file_location)-2)], collapse = "/"), "/samples/", sample, "_res.Rds"))
+plotMA(res_sample, rare_column = 'rare')
