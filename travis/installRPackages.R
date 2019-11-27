@@ -15,7 +15,7 @@ install_packages <- function(packages) {
     installed <- rownames(installed.packages())
     for (i in 1:nrow(packages)) {
             
-        pckg_name = tail(unlist(strsplit(packages[i,1], split = "/")), n = 1)
+        pckg_name <- tail(unlist(strsplit(packages[i,1], split = "/")), n = 1)
            
         if (pckg_name %in% installed) {
             message(paste(pckg_name, "already installed"))
@@ -26,9 +26,9 @@ install_packages <- function(packages) {
                 INSTALL <- install.packages
             }
             package <- packages[i,1]
-            message(paste("install", package))
-            #INSTALL(packages[i,1])
-            message(paste("installed", package))
+            message(paste("installing", package))
+            INSTALL(packages[i,1])
+            message(paste(package, "successfully installed"))
         }
     }
 }
