@@ -19,8 +19,11 @@ aberrantExpression: {
 
 aberrantSplicing: {
     groups: fraser,
-    deltaPsiCutoff : 0.05,
-    padjCutoff: .05
+    filter: false,
+    correction: PCA,
+    padjCutoff: 1,
+    zScoreCutoff: 0,
+    deltaPsiCutoff : 0.05
 }
 
 mae: {

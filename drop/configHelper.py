@@ -110,13 +110,17 @@ class ConfigHelper:
             setKey(config, ["aberrantExpression"], "fpkmCutoff", 1, verbose=VERBOSE)
             setKey(config, ["aberrantExpression"], "groups", None, verbose=VERBOSE)
             setKey(config, ["aberrantExpression"], "padjCutoff", .05, verbose=VERBOSE)
-            setKey(config, ["aberrantExpression"], "zscoreCutoff", 0, verbose=VERBOSE)
+            setKey(config, ["aberrantExpression"], "zScoreCutoff", 0, verbose=VERBOSE)
             setKey(config, ["aberrantExpression"], "useGeneNames", True, verbose=VERBOSE)
         
         # aberrant splicing
         if self.method == "AS" or self.method is None:
             setKey(config, None, "aberrantSplicing", dict(), verbose=VERBOSE)
             setKey(config, ["aberrantSplicing"], "groups", None, verbose=VERBOSE)
+            setKey(config, ["aberrantSplicing"], "filter", False, verbose=VERBOSE)
+            setKey(config, ["aberrantSplicing"], "correction", "PCA", verbose=VERBOSE)
+            setKey(config, ["aberrantSplicing"], "padjCutoff", 0.05, verbose=VERBOSE)
+            setKey(config, ["aberrantSplicing"], "zScoreCutoff", 0.05, verbose=VERBOSE)
             setKey(config, ["aberrantSplicing"], "deltaPsiCutoff", 0.05, verbose=VERBOSE)
         
         # monoallelic expression
@@ -323,8 +327,12 @@ class ConfigHelper:
         Get a list of all MAE IDs from the groups specified in the config.
         Useful for collecting all MAE IDs ungrouped.
         """
+        print("getMaeAll")
         all_ids = []
-        for group in self.config["mae"]["groups"]:
+        groups = self.config["mae"]["groups"]
+        if groups.__class__ == str:
+            groups = [groups]
+        for group in groups:
             all_ids.extend(self.mae_ids[group])
         return all_ids
     
