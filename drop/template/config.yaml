@@ -19,6 +19,10 @@ aberrantExpression: {
 
 aberrantSplicing: {
     groups: fraser,
+    filter: false,
+    correction: PCA,
+    padjCutoff: 1,
+    zScoreCutoff: 0,
     deltaPsiCutoff : 0.05
 }
 

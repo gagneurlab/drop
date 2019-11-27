@@ -110,13 +110,17 @@ class ConfigHelper:
             setKey(config, ["aberrantExpression"], "fpkmCutoff", 1, verbose=VERBOSE)
             setKey(config, ["aberrantExpression"], "groups", None, verbose=VERBOSE)
             setKey(config, ["aberrantExpression"], "padjCutoff", .05, verbose=VERBOSE)
-            setKey(config, ["aberrantExpression"], "zscoreCutoff", 0, verbose=VERBOSE)
+            setKey(config, ["aberrantExpression"], "zScoreCutoff", 0, verbose=VERBOSE)
             setKey(config, ["aberrantExpression"], "useGeneNames", True, verbose=VERBOSE)
         
         # aberrant splicing
         if self.method == "AS" or self.method is None:
             setKey(config, None, "aberrantSplicing", dict(), verbose=VERBOSE)
             setKey(config, ["aberrantSplicing"], "groups", None, verbose=VERBOSE)
+            setKey(config, ["aberrantSplicing"], "filter", False, verbose=VERBOSE)
+            setKey(config, ["aberrantSplicing"], "correction", "PCA", verbose=VERBOSE)
+            setKey(config, ["aberrantSplicing"], "padjCutoff", 0.05, verbose=VERBOSE)
+            setKey(config, ["aberrantSplicing"], "zScoreCutoff", 0.05, verbose=VERBOSE)
             setKey(config, ["aberrantSplicing"], "deltaPsiCutoff", 0.05, verbose=VERBOSE)
         
         # monoallelic expression
