@@ -43,6 +43,7 @@ addons:
   
 install:
   - cd $DROP_DIR
+  - R -e "remove.packages('FraseR')"
   - Rscript travis/installRPackages.R drop/requirementsR.txt
   - bash travis/install_bcftools.sh
   - bash travis/install_conda.sh
