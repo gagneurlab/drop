@@ -327,8 +327,12 @@ class ConfigHelper:
         Get a list of all MAE IDs from the groups specified in the config.
         Useful for collecting all MAE IDs ungrouped.
         """
+        print("getMaeAll")
         all_ids = []
-        for group in self.config["mae"]["groups"]:
+        groups = self.config["mae"]["groups"]
+        if groups.__class__ == str:
+            groups = [groups]
+        for group in groups:
             all_ids.extend(self.mae_ids[group])
         return all_ids
     
