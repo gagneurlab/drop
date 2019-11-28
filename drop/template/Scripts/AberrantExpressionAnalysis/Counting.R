@@ -6,6 +6,8 @@
 #'   - |
 #'    annotations = list(config["geneAnnotation"].keys())
 #'    datasets = config["aberrantExpression"]["groups"]
+#'  params:
+#'    - tmpdir: '`sm drop.getTmpDir()`'
 #'  input:
 #'    - count_files: '`sm expand(parser.getProcDataDir() + "/aberrant_expression/{annotation}/outrider/{dataset}/total_counts.Rds", annotation=annotations, dataset=datasets)`'
 #'    - html: '`sm expand(config["htmlOutputPath"] + "/AberrantExpression/Counting/{annotation}/Summary_{dataset}.html", annotation=annotations, dataset=datasets)`'
@@ -16,8 +18,8 @@
 #'---
 
 #+ echo=F
-saveRDS(snakemake, ".tmp/AberrantExpression_Counting.snakemake")
-# snakemake <- readRDS(".tmp/AberrantExpression_Counting.snakemake")
+saveRDS(snakemake, file.path(snakemake@params$tmpdir, "AberrantExpression_Counting.snakemake"))
+# snakemake <- readRDS(".drop/tmp/AberrantExpression_Counting.snakemake")
 
 groups <- names(snakemake@config$outrider_all)
 anno_version <- names(snakemake@config$geneAnnotation)

@@ -7,7 +7,7 @@
 #'    annotations = list(config["geneAnnotation"].keys())
 #'    datasets = config["aberrantExpression"]["groups"]
 #'  params:
-#'    - tmpdir: drop.getTmpDir()
+#'    - tmpdir: '`sm drop.getTmpDir()`'
 #'  input:
 #'    - ods_files: '`sm expand(parser.getProcResultsDir() + "/aberrant_expression/{annotation}/outrider/{dataset}/ods.Rds", annotation=annotations, dataset=datasets)`'
 #'    - result_tables: '`sm expand(parser.getProcResultsDir() + "/aberrant_expression/{annotation}/outrider/{dataset}/OUTRIDER_results.tsv", annotation=annotations, dataset=datasets)`'
@@ -43,15 +43,17 @@ summaries_titles <- sapply(anno_version, function(v) {
 #' ## Analyze individual results
 #' ### Read outrider object and results
 library(OUTRIDER)
-ods <- readRDS(ods_files[[1]])
-res <- fread(results_tables[[1]])
+#ods <- readRDS(snakemake@input$ods_files[[1]])
+#res <- fread(snakemake@input$results_tables[[1]])
  
 #' Get a gene and sample of interest
-gene <- res[1, geneID]
-sample <- res[1, sampleID]
+#gene <- res[1, geneID]
+#sample <- res[1, sampleID]
 
 #' Example of a volcano plot
-plotVolcano(ods, sample)  # scroll over the plot and find your gene(s) of interest
+#plotVolcano(ods, sample)  # scroll over the plot and find your gene(s) of interest
 
 #' Gene expression plot
-plotExpressionRank(ods, gene)  # scroll over the plot and find your sample(s) of interest
+#plotExpressionRank(ods, gene)  # scroll over the plot and find your sample(s) of interest
+
+

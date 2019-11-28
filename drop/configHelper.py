@@ -318,6 +318,9 @@ class ConfigHelper:
         return self.all_rna_ids[group]
     
     def getMaeByGroup(self, group):
+        if self.method != 'MAE':
+            self.method = 'MAE'
+            self.parse()
         if not isinstance(group, str):
             group = list(group)[0]
         return self.mae_ids[group]
@@ -327,7 +330,9 @@ class ConfigHelper:
         Get a list of all MAE IDs from the groups specified in the config.
         Useful for collecting all MAE IDs ungrouped.
         """
-        print("getMaeAll")
+        if self.method != 'MAE':
+            self.method = 'MAE'
+            self.parse()
         all_ids = []
         groups = self.config["mae"]["groups"]
         if groups.__class__ == str:

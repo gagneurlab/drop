@@ -3,7 +3,7 @@
 #' author: salazar
 #' wb:
 #'  input:
-#'    - indexFile: '`sm parser.getProcDataDir() + "/indexNames.txt"`' 
+#'    - indexFile: '`sm parser.getProcDataDir() + "/indexNames.txt"  `' 
 #' output:
 #'   html_document:
 #'    code_folding: hide

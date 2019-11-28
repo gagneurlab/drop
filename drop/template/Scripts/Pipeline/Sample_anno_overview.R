@@ -3,7 +3,7 @@
 #' author: vyepez
 #' wb:
 #'  params:
-#'   - tmpdir: '`sm drop.getMethodPath(METHOD, "tmp_dir")`'
+#'   - tmpdir: '`sm drop.getTmpDir()`'
 #'  input: 
 #' output:
 #'   html_document:

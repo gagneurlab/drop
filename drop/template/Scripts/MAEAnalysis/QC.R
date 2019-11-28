@@ -2,6 +2,8 @@
 #' title: OUTRIDER results
 #' author: mumichae
 #' wb:
+#'  params:
+#'    - tmpdir: '`sm drop.getTmpDir()`'
 #'  input:
 #'    - matrix: '`sm parser.getProcResultsDir() + "/mae/" + config["mae"]["qcGroup"] + "/dna_rna_qc_matrix.Rds"`'
 #'    - html: '`sm config["htmlOutputPath"] + "/Scripts_QC_DNA_RNA_matrix_plot.html"`'
@@ -13,7 +15,7 @@
 
 print(getwd())
 #+ echo=F
-saveRDS(snakemake, '.tmp/mae_qc.snakemake')
+saveRDS(snakemake, file.path(snakemake@params$tmpdir, 'mae_qc.snakemake'))
 # snakemake <- readRDS('.tmp/mae_qc.snakemake')
 
 #' `r snakemake@input$matrix`  
