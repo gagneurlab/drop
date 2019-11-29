@@ -58,7 +58,7 @@ before_script:
   - drop init
 
 script:
-  - snakemake n
+  - snakemake -n
   - snakemake aberrantExpression --cores 2
   - snakemake aberrantSplicing --cores 2
   - snakemake mae --cores 2
