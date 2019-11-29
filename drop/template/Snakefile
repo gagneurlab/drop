@@ -76,9 +76,12 @@ rule unlock:
        AE(drop.getMethodPath("AE", "unlock")),
        AS(drop.getMethodPath("AS", "unlock")),
        MAE(drop.getMethodPath("MAE", "unlock"))
+    params:
+       finalFiles = " ".join(config["finalFiles"].values())
     shell: 
         """
         snakemake --unlock
         rm {input}
+        rm -f {params.finalFiles}
         """
 
