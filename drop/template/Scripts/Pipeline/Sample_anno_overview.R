@@ -5,6 +5,7 @@
 #'  params:
 #'   - tmpdir: '`sm drop.getTmpDir()`'
 #'  input: 
+#'   - sampleAnnotation: '`sm config["sampleAnnotation"]`'
 #' output:
 #'   html_document:
 #'    code_folding: hide
@@ -20,8 +21,7 @@ suppressPackageStartupMessages({
   library(magrittr)
 })
 
-# sa <- fread('/s/project/drop-analysis/sample_annotation.tsv')
-sa <- fread(snakemake@config$sampleAnnotation)
+sa <- fread(snakemake@input$sampleAnnotation)
 
 #' Number of rows and columns in tha sample annotation
 dim(sa)
