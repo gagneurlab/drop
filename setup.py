@@ -8,7 +8,7 @@ with open("README.md", "r") as fh:
 requirements = [
     'wbuild @ git+https://github.com/gagneurlab/wBuild.git@master#egg=wbuild',
     #'wbuild',
-    'snakemake>=3.13.2',
+    'snakemake==5.5.2',
     'pandas',
 ]
 

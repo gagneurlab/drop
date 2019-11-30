@@ -5,48 +5,62 @@ dist: xenial
 cache:
   - directories:
     - $HOME/R/Library
+    - /usr/bin/R
+    - $HOME/miniconda
+    - $HOME/htslib
+    - $HOME/bcftools
+
+env:
+  global:
+    - DROP_DIR=$(pwd)
+    - PROJECT_DIR="$HOME/project"
+    - MINICONDA_DIR="$HOME/miniconda"
+    - CONDA_SCRIPT="$MINICONDA_DIR/etc/profile.d/conda.sh"
+    - R_LIBS_USER="$HOME/R/Library"
+    - TAR="/bin/tar"
 
 python:
   - "3.6.7"
-
-before_install:
-  - sudo apt-get update
-  - wget https://repo.continuum.io/miniconda/Miniconda3-latest-Linux-x86_64.sh -O miniconda.sh
-  - bash miniconda.sh -b -p $HOME/miniconda
-  - source "$HOME/miniconda/etc/profile.d/conda.sh"
-  - hash -r
-  - conda config --set always_yes yes --set changeps1 no
-  - conda create -q -n drop_env python=$TRAVIS_PYTHON_VERSION
-  - conda activate drop_env
-  - python --version
-  - conda install -c bioconda gatk4=4.0.4.0 samtools=1.7.0 bcftools=1.7.0
-  - java -version
-  - alias gatk='gatk-launch'
-  - gatk --help
-  - samtools --version
-  - bcftools --version
 
 addons:
   apt:
     packages:
       - r-base
-#      - libxml2-dev
+      - libxml2-dev
 #      - tk-dev
-#      - libgit2-dev
-
+      - libcurl4-openssl-dev
+      - libssl-dev
+      - libblas-dev
+      - liblapack-dev
+      - gfortran
+      - graphviz
+      - pandoc
+      - tabix
+    sources:
+      - sourceline: 'deb https://cloud.r-project.org/bin/linux/ubuntu xenial-cran35/'
+        key_url: 'http://keyserver.ubuntu.com:11371/pks/lookup?op=get&search=0xe298a3a825c0d65dfd57cbb651716619e084dab9'
+    update: true
+  
 install:
-  - pip install -e .
-  - R -e "message(.libPaths())"
-  - mkdir project
-  - cd project
-  - cd $HOME
-  - wget -nc "https://i12g-gagneurweb.informatik.tu-muenchen.de/public/paper/drop_analysis/resource.tar.gz"
-  - tar -zxvf resource.tar.gz
-  - mv resource Data
-  - cd Data
-  - python fix_sample_anno.py
-  - cd ..
+  - cd $DROP_DIR
+#  - R -e "print(.libPaths()); if ('FraseR' %in% rownames(installed.packages())) remove.packages('FraseR')"
+  - Rscript travis/installRPackages.R drop/requirementsR.txt
+  - bash travis/install_bcftools.sh
+  - bash travis/install_conda.sh
+  - source $CONDA_SCRIPT
+  - conda activate drop_env
+  - pip install .
+
+before_script:
+  - cd $DROP_DIR
+  - bash travis/download_data.sh
+  - cd $PROJECT_DIR
   - drop init
 
 script:
   - snakemake -n
+  - snakemake aberrantExpression --cores 2
+  - snakemake aberrantSplicing --cores 2
+  - snakemake mae --cores 2
+  - snakemake --cores 2
+

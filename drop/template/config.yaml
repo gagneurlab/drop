@@ -1,47 +1,51 @@
 projectTitle: Detection of RNA Outlier Pipeline
-htmlOutputPath: Output/htmlOutput
+htmlOutputPath: /home/travis/project/Output/htmlOutput
 indexWithFolderName: true
 fileRegex: .*\.R
 
-root: Output
-sampleAnnotation: Data/sample_annotation.tsv
+root: /home/travis/project/Output
+sampleAnnotation: /home/travis/project/Data/sample_annotation.tsv
 geneAnnotation: {
-    v29: Data/gencode.v29lift37.annotation.gtf.gz
+    v29: /home/travis/project/Data/gencode_annotation_trunc.gtf
 }
 
 aberrantExpression: {
-    minIds: 1,
+    groups: outrider,
     fpkmCutoff: 1,
-    groups: null,
     padjCutoff: .05,
     zscoreCutoff: 0,
     useGeneNames: true
 }
 
 aberrantSplicing: {
-    groups: null,
-    minIds: 10,
+    groups: fraser,
+    filter: false,
+    correction: PCA,
+    padjCutoff: 1,
+    zScoreCutoff: 0,
     deltaPsiCutoff : 0.05
 }
 
 mae: {
     geneAssembly: hg19,
-    genome: Data/hg19.fa,
+    genome: /home/travis/project/Data/chr21.fa,
     gatkIgnoreHeaderCheck: true,
     padjCutoff: .05,
     allelicRatioCutoff: 0.8,
+    addAF: false,
     maxAF: .001,
-    groups: null,
+    groups: mae,
     # VCF-BAM matching
     qcVcf: {
-        UCSC: Data/qc_vcf_ucsc_1000G.vcf.gz,
-        NCBI: Data/qc_vcf_ncbi_1000G.vcf.gz
+        UCSC: /home/travis/project/Data/qc_vcf_ucsc_1000G.vcf.gz,
+        NCBI: /home/travis/project/Data/qc_vcf_ncbi_1000G.vcf.gz
      },
-    qcGroup: all
+    qcGroup: mae
 }
 
 tools: {
     gatkCmd: gatk,
-    bcftoolsCmd: bcftools,
+    bcftoolsCmd: /home/travis/bcftools/bcftools,
     samtoolsCmd: samtools
 }
+

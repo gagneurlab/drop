@@ -1,4 +1,4 @@
-import os
+from drop import submodules
 import pandas as pd
 import wbuild
 import pathlib
@@ -6,68 +6,88 @@ from snakemake.logging import logger
 import warnings
 warnings.filterwarnings("ignore", 'This pattern has match groups')
 
-#TODO add more column names
 SAMPLE_ANNOTATION_COLUMNS = ["RNA_ID", "RNA_BAM_FILE", "DNA_ID", "DNA_VCF_FILE", "DROP_GROUP",
 "PAIRED_END", "COUNT_MODE", "COUNT_OVERLAPS", "STRAND"]
+VERBOSE = True
 
 class ConfigHelper:
     
-    def __init__(self, config):
+    def __init__(self, config, method=None):
         
+        self.method = method
         if config is None:
             wconf = wbuild.utils.Config()
             config = wconf.conf_dict
         
+        config = self.checkConfig(config)
         self.config = self.setDefaults(config)
         self.createDirs()
         
+        
+    def parse(self):
+        """
+        parse sample annotation, create sample-file mapping and extract IDs for each submodule
+        """
         # sample annotation
-        self.sample_annotation = self.getSampleAnnotation(config["sampleAnnotation"])
+        self.sample_annotation = self.getSampleAnnotation(self.config["sampleAnnotation"])
         self.sample_file_mapping = self.createSampleFileMapping(self.sample_annotation)
 
         self.all_rna_ids = self.createGroupIds(group_key="DROP_GROUP", file_type="RNA_BAM_FILE", sep=',')
         
-        # aberrantExpression
-        groups = self.setKey(self.config, ["aberrantExpression"], "groups", self.all_rna_ids.keys())
-        self.outrider_ids = self.subsetGroups(self.all_rna_ids, groups)
-        self.config["outrider_ids"] = self.outrider_ids
+        if self.method == "AE" or self.method is None:
+            groups = self.setKey(self.config, ["aberrantExpression"], "groups", self.all_rna_ids.keys())
+            self.outrider_ids = self.subsetGroups(self.all_rna_ids, groups)
+            self.config["outrider_ids"] = self.outrider_ids
         
-        # aberrantSplicing
-        groups = self.setKey(self.config, ["aberrantSplicing"], "groups", self.all_rna_ids.keys())
-        self.fraser_ids = self.subsetGroups(self.all_rna_ids, groups)
-        self.config["fraser_ids"] = self.fraser_ids
+        if self.method == "AS" or self.method is None:
+            groups = self.setKey(self.config, ["aberrantSplicing"], "groups", self.all_rna_ids.keys())
+            self.fraser_ids = self.subsetGroups(self.all_rna_ids, groups)
+            self.config["fraser_ids"] = self.fraser_ids
         
-        # mae
-        groups = self.setKey(self.config, ["mae"], "groups", self.all_rna_ids.keys())
-        self.mae_ids = self.createMaeIDS(self.all_rna_ids, groups, id_sep='--')
-        self.config["mae_ids"] = self.mae_ids
+        if self.method == "MAE" or self.method is None:
+            groups = self.setKey(self.config, ["mae"], "groups", self.all_rna_ids.keys())
+            self.mae_ids = self.createMaeIDS(self.all_rna_ids, groups, id_sep='--')
+            self.config["mae_ids"] = self.mae_ids
         
-        
+        return self.config
+
+    
+    #### FILE CHECKING AND DEFAULT SETTINGS
+    
     def createDirs(self):
         
         def createIfMissing(directory):
-            if not os.path.exists(directory):
-                print(f"creating {directory}")
-                os.makedirs(directory)
+            directory = pathlib.Path(directory)
+            if not directory.exists():
+                logger.debug(f"creating {directory}")
+                directory.mkdir(parents=True)
         
         createIfMissing(self.getProcDataDir())
         createIfMissing(self.getProcResultsDir())
         
     def checkConfig(self, config):
-        # check for missing keys
+        
         def check_keys(dict_, keys):
+            keys = dict_.keys() if keys is None else keys
             for key in keys:
                 try:
                     dict_[key]
                 except:
                     raise KeyError(f"{key} is mandatory but missing")
-                    
+                # get real path
+                if isinstance(dict_[key], str):
+                    filename = dict_[key]
+                    dict_[key] = str(pathlib.Path(filename).expanduser())
+        
         FILE_KEYS = ["htmlOutputPath", "root", "geneAnnotation", "sampleAnnotation", "mae"]
         check_keys(config, keys=FILE_KEYS)
+        check_keys(config["geneAnnotation"], keys=None)
         check_keys(config["mae"], keys=["genome", "qcVcf"])
         check_keys(config["mae"]["qcVcf"], keys=["UCSC", "NCBI"])
+        
+        return config
     
-    def setDefaults(self, config):
+    def setDefaults(self, config, method=None):
         """
         set defaults for config keys
         """
@@ -77,47 +97,63 @@ class ConfigHelper:
         
         setKey = self.setKey
         setKey(config, None, "projectTitle", "DROP: Detection of RNA Outlier Pipeline")
-        setKey(config, None, "tmpdir", os.path.join(config["root"], "tmp"))
+        
+        if self.method is None:
+            tmp_dir = submodules.getTmpDir()
+        else:
+            tmp_dir = submodules.getMethodPath(self.method, type_='tmp_dir')
+        setKey(config, None, "tmpdir", tmp_dir)
         
         # aberrant expression
-        setKey(config, None, "aberrantExpression", dict())
-        setKey(config, ["aberrantExpression"], "fpkmCutoff", 1)
-        setKey(config, ["aberrantExpression"], "groups", None)
-        setKey(config, ["aberrantExpression"], "padjCutoff", .05)
-        setKey(config, ["aberrantExpression"], "zscoreCutoff", 0)
-        setKey(config, ["aberrantExpression"], "useGeneNames", True)
+        if self.method == "AE" or self.method is None:
+            setKey(config, None, "aberrantExpression", dict(), verbose=VERBOSE)
+            setKey(config, ["aberrantExpression"], "fpkmCutoff", 1, verbose=VERBOSE)
+            setKey(config, ["aberrantExpression"], "groups", None, verbose=VERBOSE)
+            setKey(config, ["aberrantExpression"], "padjCutoff", .05, verbose=VERBOSE)
+            setKey(config, ["aberrantExpression"], "zScoreCutoff", 0, verbose=VERBOSE)
+            setKey(config, ["aberrantExpression"], "useGeneNames", True, verbose=VERBOSE)
         
         # aberrant splicing
-        setKey(config, None, "aberrantSplicing", dict())
-        setKey(config, ["aberrantSplicing"], "groups", None)
-        setKey(config, ["aberrantSplicing"], "deltaPsiCutoff", 0.05)
+        if self.method == "AS" or self.method is None:
+            setKey(config, None, "aberrantSplicing", dict(), verbose=VERBOSE)
+            setKey(config, ["aberrantSplicing"], "groups", None, verbose=VERBOSE)
+            setKey(config, ["aberrantSplicing"], "filter", False, verbose=VERBOSE)
+            setKey(config, ["aberrantSplicing"], "correction", "PCA", verbose=VERBOSE)
+            setKey(config, ["aberrantSplicing"], "padjCutoff", 0.05, verbose=VERBOSE)
+            setKey(config, ["aberrantSplicing"], "zScoreCutoff", 0.05, verbose=VERBOSE)
+            setKey(config, ["aberrantSplicing"], "deltaPsiCutoff", 0.05, verbose=VERBOSE)
         
         # monoallelic expression
-        setKey(config, None, "mae", dict())
-        setKey(config, ["mae"], "geneAssembly", "hg19")
-        setKey(config, ["mae"], "gatkIgnoreHeaderCheck", True)
-        setKey(config, ["mae"], "padjCutoff", .05)
-        setKey(config, ["mae"], "allelicRatioCutoff", 0.8)
-        setKey(config, ["mae"], "maxAF", .001)
-        setKey(config, ["mae"], "groups", None)
-        setKey(config, ["mae"], "qcGroup", None)
+        if self.method == "MAE" or self.method is None:
+            setKey(config, None, "mae", dict(), verbose=VERBOSE)
+            setKey(config, ["mae"], "geneAssembly", "hg19", verbose=VERBOSE)
+            setKey(config, ["mae"], "gatkIgnoreHeaderCheck", True, verbose=VERBOSE)
+            setKey(config, ["mae"], "padjCutoff", .05, verbose=VERBOSE)
+            setKey(config, ["mae"], "allelicRatioCutoff", 0.8, verbose=VERBOSE)
+            setKey(config, ["mae"], "maxAF", .001, verbose=VERBOSE)
+            setKey(config, ["mae"], "gnomAD", False, verbose=VERBOSE)
+            setKey(config, ["mae"], "groups", None, verbose=VERBOSE)
+            setKey(config, ["mae"], "qcGroup", None, verbose=VERBOSE)
         
         # commandline tools
-        setKey(config, None, "tools", dict())
-        setKey(config, ["tools"], "samtoolsCmd", "samtools")
-        setKey(config, ["tools"], "bcftoolsCmd", "bcftools")
-        setKey(config, ["tools"], "gatkCmd", "gatk")
+        setKey(config, None, "tools", dict(), verbose=VERBOSE)
+        setKey(config, ["tools"], "samtoolsCmd", "samtools", verbose=VERBOSE)
+        setKey(config, ["tools"], "bcftoolsCmd", "bcftools", verbose=VERBOSE)
+        setKey(config, ["tools"], "gatkCmd", "gatk", verbose=VERBOSE)
         
         return config
     
-    def setKey(self, dict_, sub, key, default):
+    def setKey(self, dict_, sub, key, default, verbose=False):
         if sub is not None:
             for x in sub:
                 dict_ = dict_[x]
         if key not in dict_ or dict_[key] is None:
-            print(f'{key} not in config{sub}, using default')
+            logger.debug(f'{key} not in config{sub}, using default')
             dict_[key] = default
         return dict_[key]
+
+
+    #### FILE PARSING AND ID EXTRACTION
     
     def getSampleAnnotation(self, filename, sep='\t'):
         """
@@ -155,9 +191,9 @@ class ConfigHelper:
         
         # cleaning SAMPLE_FILE_MAPPING
         file_mapping.dropna(inplace=True)
-        existent = [os.path.exists(x) for x in file_mapping["FILE_PATH"]]
+        existent = [pathlib.Path(x).exists() for x in file_mapping["FILE_PATH"]]
         if sum(existent) < file_mapping.shape[0]:
-            print("WARNING: there are files in the sample annotation that do not exist")
+            logger.info("WARNING: there are files in the sample annotation that do not exist")
         file_mapping = file_mapping[existent].drop_duplicates()
         if file_mapping.shape[0] == 0:
             raise ValueError("No files exist in sample annotation. Please check your sample annotation.")
@@ -194,13 +230,14 @@ class ConfigHelper:
         if subset_groups is None:
             subset = ids_by_group
         else:
+            subset_groups = [subset_groups] if subset_groups.__class__ == str else subset_groups
             subset = {gr:ids for gr, ids in ids_by_group.items() if gr in subset_groups}
         
         for group in subset_groups:
             if len(subset[group]) < error:
                 raise ValueError(f'Too few IDs in DROP_GROUP {group}, please ensure that it has at least {error} IDs')
             elif len(subset[group]) < warn:
-                print(f'WARNING: Less than {warn} IDs in DROP_GROUP {group}')
+                logger.info(f'WARNING: Less than {warn} IDs in DROP_GROUP {group}')
         
         return subset
     
@@ -208,7 +245,7 @@ class ConfigHelper:
         """
         create MAE IDs from smaple annotation
         """
-        rna_id_by_group = self.subsetGroups(ids_by_group, subset_groups)
+        rna_id_by_group = self.subsetGroups(ids_by_group, subset_groups, warn=1, error=1)
         all_mae_files = self.sample_annotation[["RNA_ID", "DNA_ID"]].drop_duplicates().dropna()
         
         # subset by group
@@ -220,8 +257,9 @@ class ConfigHelper:
         
         return mae_ids
     
+
+    #### GETTERS ####
     
-    ## GETTERS
     def getProcDataDir(self):
         return self.config["root"] + "/processed_data"
     
@@ -239,7 +277,7 @@ class ConfigHelper:
         x = self.sample_file_mapping.query("(FILE_TYPE == @file_type) & (ID == @sampleID)")["FILE"]
         exists = (len(x) != 0)
         if (not exists) and verbose:
-            print(f"FILE NOT FOUND FOR sampleID: {sampleID} and file type {file_type}")
+            logger.debug(f"FILE NOT FOUND FOR sampleID: {sampleID} and file type {file_type}")
         return exists
     
     def getFilePath(self, sampleId, file_type):
@@ -280,6 +318,9 @@ class ConfigHelper:
         return self.all_rna_ids[group]
     
     def getMaeByGroup(self, group):
+        if self.method != 'MAE':
+            self.method = 'MAE'
+            self.parse()
         if not isinstance(group, str):
             group = list(group)[0]
         return self.mae_ids[group]
@@ -289,8 +330,14 @@ class ConfigHelper:
         Get a list of all MAE IDs from the groups specified in the config.
         Useful for collecting all MAE IDs ungrouped.
         """
+        if self.method != 'MAE':
+            self.method = 'MAE'
+            self.parse()
         all_ids = []
-        for group in self.config["mae"]["groups"]:
+        groups = self.config["mae"]["groups"]
+        if groups.__class__ == str:
+            groups = [groups]
+        for group in groups:
             all_ids.extend(self.mae_ids[group])
         return all_ids
     
