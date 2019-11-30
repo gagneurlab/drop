@@ -57,10 +57,10 @@ before_script:
   - cd $PROJECT_DIR
   - drop init
 
-script: true
-#  - snakemake -n
-#  - snakemake aberrantExpression --cores 2
-#  - snakemake aberrantSplicing --cores 2
-#  - snakemake mae --cores 2
-#  - snakemake --cores 2
+script:
+  - snakemake -n
+  - snakemake aberrantExpression --cores 2
+  - snakemake aberrantSplicing --cores 2
+  - snakemake mae --cores 2
+  - snakemake --cores 2
 
