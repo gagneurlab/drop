@@ -38,8 +38,6 @@ def setupTempFiles(config):
         # final rule output file
         done_file = getMethodPath(method, type_='final_file', str_=False)
         done_files[method] = str(done_file)
-        if done_file.exists():
-            done_file.unlink()
         
         # create module tmp Dir if missing
         tmp_dir = getMethodPath(method, type_='tmp_dir', str_=False)

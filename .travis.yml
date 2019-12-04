@@ -43,7 +43,8 @@ addons:
   
 install:
   - cd $DROP_DIR
-  - Rscript drop/installRPackages.R drop/requirementsR.txt
+#  - R -e "print(.libPaths()); if ('FraseR' %in% rownames(installed.packages())) remove.packages('FraseR')"
+  - Rscript travis/installRPackages.R drop/requirementsR.txt
   - bash travis/install_bcftools.sh
   - bash travis/install_conda.sh
   - source $CONDA_SCRIPT
@@ -56,7 +57,10 @@ before_script:
   - cd $PROJECT_DIR
   - drop init
 
-script: true
-  #- snakemake unlock
-  #- snakemake --cores 2
+script:
+  - snakemake -n
+  - snakemake aberrantExpression --cores 2
+  - snakemake aberrantSplicing --cores 2
+  - snakemake mae --cores 2
+  - snakemake --cores 2
 

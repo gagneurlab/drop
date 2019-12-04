@@ -33,7 +33,7 @@ def setFiles():
     if not os.path.isfile("config.yaml"):
         shutil.copy(str(templatePath / 'config.yaml'), '.')
     if not os.path.exists("Scripts"):
-        distutils.dir_util.copy_tree(str(templatePath), 'Scripts')
+        distutils.dir_util.copy_tree(str(templatePath / 'Scripts'), 'Scripts')
     
     if os.path.exists('.drop'):
         distutils.dir_util.remove_tree('.drop')

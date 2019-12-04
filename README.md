@@ -23,5 +23,5 @@ snakemake -n
 ```
 This shows you the rules of all subworkflows. Omit `-n` if you are sure that you want you execute all printed rules. You can also invoke single workflows explicitly e.g. for aberrant splicing with 
 ```
-snakemake aberrant_expression -n
+snakemake aberrantExpression -n
 ```

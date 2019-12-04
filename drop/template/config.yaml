@@ -19,6 +19,10 @@ aberrantExpression: {
 
 aberrantSplicing: {
     groups: fraser,
+    filter: false,
+    correction: PCA,
+    padjCutoff: 1,
+    zScoreCutoff: 0,
     deltaPsiCutoff : 0.05
 }
 
@@ -28,8 +32,8 @@ mae: {
     gatkIgnoreHeaderCheck: true,
     padjCutoff: .05,
     allelicRatioCutoff: 0.8,
+    addAF: false,
     maxAF: .001,
-    gnomAD: false,
     groups: mae,
     # VCF-BAM matching
     qcVcf: {
