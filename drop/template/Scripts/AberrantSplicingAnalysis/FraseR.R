@@ -3,14 +3,14 @@
 #' author: salazar, mumichae, vyepez
 #' wb:
 #'  py:
-#'   - |
-#'     datasets = config['aberrantSplicing']['groups']
+#'    - |
+#'      datasets = config['aberrantSplicing']['groups']
 #'  params:
 #'    - tmpdir: '`sm drop.getTmpDir()`'
-#'  - fds_files: '`sm AS(expand(parser.getProcDataDir() +
+#'    - fds_files: '`sm AS(expand(parser.getProcDataDir() +
 #'                "/aberrant_splicing/datasets/savedObjects/{dataset}/pajdBetaBinomial_psiSite.h5",
 #'                dataset=datasets))`'
-#'  - result_tables: '`sm AS(expand(parser.getProcDataDir() +
+#'    - result_tables: '`sm AS(expand(parser.getProcDataDir() +
 #'                    "/aberrant_splicing/results/{dataset}_results.tsv",
 #'                    dataset=datasets))`'
 #'  input:
