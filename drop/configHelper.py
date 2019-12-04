@@ -108,7 +108,7 @@ class ConfigHelper:
         if self.method == "AE" or self.method is None:
             setKey(config, None, "aberrantExpression", dict(), verbose=VERBOSE)
             setKey(config, ["aberrantExpression"], "fpkmCutoff", 1, verbose=VERBOSE)
-            setKey(config, ["aberrantExpression"], "implemenation", 'pca', verbose=VERBOSE)
+            setKey(config, ["aberrantExpression"], "implementation", "autoencoder", verbose=VERBOSE)
             setKey(config, ["aberrantExpression"], "groups", None, verbose=VERBOSE)
             setKey(config, ["aberrantExpression"], "padjCutoff", .05, verbose=VERBOSE)
             setKey(config, ["aberrantExpression"], "zScoreCutoff", 0, verbose=VERBOSE)
