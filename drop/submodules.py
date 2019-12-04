@@ -65,9 +65,9 @@ def getMethodPath(method, type_, str_=True):
     elif type_ == 'tmp_dir':
         p = TMP_DIR / method
     elif type_ == 'final_file':
-        p = TMP_DIR / f'{method}.done'
+        p = TMP_DIR / method / 'done'
     elif type_ == 'unlock':
-        p = TMP_DIR / f'{method}.unlock'
+        p = TMP_DIR / method / 'unlock'
     else:
       raise ValueError(f'invalid type_: "{type_}"')
     

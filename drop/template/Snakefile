@@ -50,12 +50,15 @@ rule getIndexNames:
 
 rule aberrantExpression:
     input: AE(config["finalFiles"]["AE"])
+    output: drop.getTmpDir() + "/AE.done"
 
 rule aberrantSplicing:
     input: AS(config["finalFiles"]["AS"])
+    output: drop.getTmpDir() + "/AS.done"
     
 rule test:
     input: AS(parser.getProcDataDir() + "/aberrant_splicing/FraseR/small_results.html")
+    output: drop.getTmpDir() + "/MAE.done"
 
 rule mae:
     input: MAE(config["finalFiles"]["MAE"])
@@ -84,28 +87,4 @@ rule unlock:
         rm {input}
         rm -f {params.finalFiles}
         """
-
-# output files
-rule results:
-    input:
-        AE(expand(parser.getProcDataDir() +
-               "/aberrant_expression/{annotation}/outrider/{dataset}/total_counts.Rds",
-               annotation=annotations, dataset=datasets)),
-        AE(expand(config["htmlOutputPath"] +
-               "/AberrantExpression/Counting/{annotation}/Summary_{dataset}.html",
-                annotation=annotations, dataset=datasets)),
-        AE(expand(parser.getProcResultsDir() +
-                "/aberrant_expression/{annotation}/outrider/{dataset}/ods.Rds",
-                annotation=annotations, dataset=datasets))
-    output:
-        expand(parser.getProcDataDir() +
-               "/aberrant_expression/{annotation}/outrider/{dataset}/total_counts.Rds",
-               annotation=annotations, dataset=datasets),
-        expand(config["htmlOutputPath"] +
-               "/AberrantExpression/Counting/{annotation}/Summary_{dataset}.html",
-                annotation=annotations, dataset=datasets),
-        expand(parser.getProcResultsDir() +
-                  "/aberrant_expression/{annotation}/outrider/{dataset}/ods.Rds",
-                  annotation=annotations, dataset=datasets),
-
 

@@ -8,13 +8,14 @@
 #'    datasets = config["aberrantExpression"]["groups"]
 #'  params:
 #'    - tmpdir: '`sm drop.getTmpDir()`'
-#'  input:
 #'    - count_files: '`sm expand(parser.getProcDataDir() +
 #'                    "/aberrant_expression/{annotation}/outrider/{dataset}/total_counts.Rds",
 #'                    annotation=annotations, dataset=datasets)`'
 #'    - html: '`sm expand(config["htmlOutputPath"] +
 #'              "/AberrantExpression/Counting/{annotation}/Summary_{dataset}.html",
 #'              annotation=annotations, dataset=datasets)`'
+#'  input:
+#'    - AE: '`sm drop.getTmpDir() + "/AE.done"`'
 #' output:
 #'   html_document:
 #'    code_folding: hide
@@ -27,7 +28,7 @@ saveRDS(snakemake, file.path(snakemake@params$tmpdir, "AberrantExpression_Counti
 
 groups <- names(snakemake@config$outrider_all)
 anno_version <- names(snakemake@config$geneAnnotation)
-html_file_dir <- gsub(snakemake@config$htmlOutputPath, '.', dirname(dirname(snakemake@input$html)))
+html_file_dir <- gsub(snakemake@config$htmlOutputPath, '.', dirname(dirname(snakemake@params$html)))
 summaries_titles <- sapply(anno_version, function(v) {
         paste0('[', groups ,'](', html_file_dir, '/', v, '/Summary_', groups, '.html){target="_blank"}', collapse = ' ')
     }

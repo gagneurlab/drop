@@ -8,7 +8,6 @@
 #'    datasets = config["aberrantExpression"]["groups"]
 #'  params:
 #'    - tmpdir: '`sm drop.getTmpDir()`'
-#'  input:
 #'    - ods_files: '`sm expand(parser.getProcResultsDir() +
 #'                  "/aberrant_expression/{annotation}/outrider/{dataset}/ods.Rds",
 #'                  annotation=annotations, dataset=datasets)`'
@@ -18,6 +17,8 @@
 #'    - html: '`sm expand(config["htmlOutputPath"] +
 #'             "/AberrantExpression/Outrider/{annotation}/Summary_{dataset}.html",
 #'             annotation=annotations, dataset=datasets)`'
+#'  input:
+#'    - AE: '`sm drop.getTmpDir() + "/AE.done"`'
 #' output:
 #'   html_document:
 #'    code_folding: hide
@@ -31,7 +32,7 @@ saveRDS(snakemake, file.path(snakemake@params$tmpdir,
 
 groups <- names(snakemake@config$outrider_all)
 anno_version <- names(snakemake@config$geneAnnotation)
-html_file_dir <- gsub(snakemake@config$htmlOutputPath, '.', dirname(dirname(snakemake@input$html)))
+html_file_dir <- gsub(snakemake@config$htmlOutputPath, '.', dirname(dirname(snakemake@params$html)))
 summaries_titles <- sapply(anno_version, function(v) {
   paste0('[', groups ,'](', html_file_dir, '/', v, '/Summary_', groups, '.html){target="_blank"}', collapse = ' ')
 }
@@ -42,15 +43,15 @@ summaries_titles <- sapply(anno_version, function(v) {
 #' `r paste0('Gene annotation version ', names(summaries_titles), ': ', summaries_titles, collapse = '\n')`
 #' 
 #' Links to the OUTRIDER output and results files:
-#' `r paste(snakemake@input$ods_files, collapse = '\n')`  
-#' `r paste(snakemake@input$result_tables, collapse = '\n')`
+#' `r paste(snakemake@params$ods_files, collapse = '\n')`  
+#' `r paste(snakemake@params$result_tables, collapse = '\n')`
 #' 
 
 #' ## Analyze individual results
 #' ### Read outrider object and results
 library(OUTRIDER)
-#ods <- readRDS(snakemake@input$ods_files[[1]])
-#res <- fread(snakemake@input$results_tables[[1]])
+#ods <- readRDS(snakemake@params$ods_files[[1]])
+#res <- fread(snakemake@params$results_tables[[1]])
  
 #' Get a gene and sample of interest
 #gene <- res[1, geneID]

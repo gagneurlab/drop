@@ -4,10 +4,11 @@
 #' wb:
 #'  params:
 #'    - tmpdir: '`sm drop.getTmpDir()`'
-#'  input:
 #'    - matrix: '`sm MAE(parser.getProcResultsDir() + "/mae/" +
 #'                config["mae"]["qcGroup"] + "/dna_rna_qc_matrix.Rds")`'
 #'    - html: '`sm MAE(config["htmlOutputPath"] + "/Scripts_QC_DNA_RNA_matrix_plot.html")`'
+#'  input:
+#'    - MAE: '`sm drop.getTmpDir() + "/MAE.done"`'
 #' output:
 #'   html_document:
 #'    code_folding: hide
@@ -19,5 +20,5 @@ print(getwd())
 saveRDS(snakemake, file.path(snakemake@params$tmpdir, 'mae_qc.snakemake'))
 # snakemake <- readRDS('.tmp/mae_qc.snakemake')
 
-#' `r snakemake@input$matrix`  
-#' `r snakemake@input$html`
+#' `r snakemake@params$matrix`  
+#' `r snakemake@params$html`
