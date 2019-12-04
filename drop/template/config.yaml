@@ -11,6 +11,7 @@ geneAnnotation:
 aberrantExpression:
     groups: outrider
     fpkmCutoff: 1
+    implementation: autoencoder
     padjCutoff: .05
     zscoreCutoff: 0
 
