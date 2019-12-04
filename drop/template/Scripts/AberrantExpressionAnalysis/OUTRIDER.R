@@ -9,15 +9,15 @@
 #'  params:
 #'    - tmpdir: '`sm drop.getTmpDir()`'
 #'  input:
-#'    - ods_files: '`sm AE(expand(parser.getProcResultsDir() +
+#'    - ods_files: '`sm expand(parser.getProcResultsDir() +
 #'                  "/aberrant_expression/{annotation}/outrider/{dataset}/ods.Rds",
-#'                  annotation=annotations, dataset=datasets))`'
-#'    - result_tables: '`sm AE(expand(parser.getProcResultsDir() +
+#'                  annotation=annotations, dataset=datasets)`'
+#'    - result_tables: '`sm expand(parser.getProcResultsDir() +
 #'                      "/aberrant_expression/{annotation}/outrider/{dataset}/OUTRIDER_results.tsv",
-#'                      annotation=annotations, dataset=datasets))`'
-#'    - html: '`sm AE(expand(config["htmlOutputPath"] +
+#'                      annotation=annotations, dataset=datasets)`'
+#'    - html: '`sm expand(config["htmlOutputPath"] +
 #'             "/AberrantExpression/Outrider/{annotation}/Summary_{dataset}.html",
-#'             annotation=annotations, dataset=datasets))`'
+#'             annotation=annotations, dataset=datasets)`'
 #' output:
 #'   html_document:
 #'    code_folding: hide

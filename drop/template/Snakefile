@@ -85,3 +85,27 @@ rule unlock:
         rm -f {params.finalFiles}
         """
 
+# output files
+rule results:
+    input:
+        AE(expand(parser.getProcDataDir() +
+               "/aberrant_expression/{annotation}/outrider/{dataset}/total_counts.Rds",
+               annotation=annotations, dataset=datasets)),
+        AE(expand(config["htmlOutputPath"] +
+               "/AberrantExpression/Counting/{annotation}/Summary_{dataset}.html",
+                annotation=annotations, dataset=datasets)),
+        AE(expand(parser.getProcResultsDir() +
+                "/aberrant_expression/{annotation}/outrider/{dataset}/ods.Rds",
+                annotation=annotations, dataset=datasets))
+    output:
+        expand(parser.getProcDataDir() +
+               "/aberrant_expression/{annotation}/outrider/{dataset}/total_counts.Rds",
+               annotation=annotations, dataset=datasets),
+        expand(config["htmlOutputPath"] +
+               "/AberrantExpression/Counting/{annotation}/Summary_{dataset}.html",
+                annotation=annotations, dataset=datasets),
+        expand(parser.getProcResultsDir() +
+                  "/aberrant_expression/{annotation}/outrider/{dataset}/ods.Rds",
+                  annotation=annotations, dataset=datasets),
+
+

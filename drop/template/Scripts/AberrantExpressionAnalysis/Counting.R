@@ -9,12 +9,12 @@
 #'  params:
 #'    - tmpdir: '`sm drop.getTmpDir()`'
 #'  input:
-#'    - count_files: '`sm AE(expand(parser.getProcDataDir() +
+#'    - count_files: '`sm expand(parser.getProcDataDir() +
 #'                    "/aberrant_expression/{annotation}/outrider/{dataset}/total_counts.Rds",
-#'                    annotation=annotations, dataset=datasets))`'
-#'    - html: '`sm AE(expand(config["htmlOutputPath"] +
+#'                    annotation=annotations, dataset=datasets)`'
+#'    - html: '`sm expand(config["htmlOutputPath"] +
 #'              "/AberrantExpression/Counting/{annotation}/Summary_{dataset}.html",
-#'              annotation=annotations, dataset=datasets))`'
+#'              annotation=annotations, dataset=datasets)`'
 #' output:
 #'   html_document:
 #'    code_folding: hide
