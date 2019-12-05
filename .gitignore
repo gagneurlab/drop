@@ -22,6 +22,9 @@ dist/*
 # snakemake build
 auto
 
+# documentation build
+docs/build/*
+
 # IDE project files
 *.project
 readme.html
