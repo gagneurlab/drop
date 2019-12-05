@@ -50,15 +50,15 @@ rule getIndexNames:
 
 rule aberrantExpression:
     input: AE(config["finalFiles"]["AE"])
-    output: drop.getTmpDir() + "/AE.done"
+    output: touch(drop.getTmpDir() + "/AE.done")
 
 rule aberrantSplicing:
     input: AS(config["finalFiles"]["AS"])
-    output: drop.getTmpDir() + "/AS.done"
+    output: touch(drop.getTmpDir() + "/AS.done")
     
 rule mae:
     input: MAE(config["finalFiles"]["MAE"])
-    output: drop.getTmpDir() + "/MAE.done"
+    output: touch(drop.getTmpDir() + "/MAE.done")
 
 rule dependencyGraph:
     input:
