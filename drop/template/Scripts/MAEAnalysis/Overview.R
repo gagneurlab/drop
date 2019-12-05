@@ -1,6 +1,6 @@
 #'---
-#' title: Analysis Example
-#' author: salazar, mumichae, vyepez
+#' title: Monoallelic Expression
+#' author:
 #' wb:
 #'  py:
 #'    - |
@@ -41,7 +41,7 @@ suppressPackageStartupMessages({
 all_files <- paste0("* ", snakemake@params$mae_ids, ": ",
        snakemake@params$count_matrices, collapse = "\n")
 #'
-#' # Monoallelic Expression
+#' # All Samples
 #' 
 #'  `r all_files`
 #' 

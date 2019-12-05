@@ -1,6 +1,6 @@
 #'---
-#' title: Analysis Example
-#' author: salazar, mumichae, vyepez
+#' title: Aberrant Splicing
+#' author:
 #' wb:
 #'  py:
 #'    - |

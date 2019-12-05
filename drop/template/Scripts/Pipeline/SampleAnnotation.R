@@ -1,6 +1,6 @@
 #'---
 #' title: Sample Annotation Overview
-#' author: vyepez
+#' author:
 #' wb:
 #'  params:
 #'   - tmpdir: '`sm drop.getTmpDir()`'
