@@ -120,6 +120,7 @@ class ConfigHelper:
             setKey(config, ["aberrantSplicing"], "recount", False, verbose=VERBOSE)
             setKey(config, ["aberrantSplicing"], "longRead", True, verbose=VERBOSE)
             setKey(config, ["aberrantSplicing"], "filter", False, verbose=VERBOSE)
+            setKey(config, ["aberrantSplicing"], "minExpressionInOneSample", 20, verbose=VERBOSE)
             setKey(config, ["aberrantSplicing"], "correction", "PCA", verbose=VERBOSE)
             setKey(config, ["aberrantSplicing"], "padjCutoff", 0.05, verbose=VERBOSE)
             setKey(config, ["aberrantSplicing"], "zScoreCutoff", 0.05, verbose=VERBOSE)

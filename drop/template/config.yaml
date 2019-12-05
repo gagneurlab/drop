@@ -20,6 +20,7 @@ aberrantSplicing:
     recount: true
     longRead: false
     filter: false
+    minExpressionInOneSample: 20
     correction: PCA
     padjCutoff: 1
     zScoreCutoff: 0
