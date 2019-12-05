@@ -56,12 +56,9 @@ rule aberrantSplicing:
     input: AS(config["finalFiles"]["AS"])
     output: drop.getTmpDir() + "/AS.done"
     
-rule test:
-    input: AS(parser.getProcDataDir() + "/aberrant_splicing/FraseR/small_results.html")
-    output: drop.getTmpDir() + "/MAE.done"
-
 rule mae:
     input: MAE(config["finalFiles"]["MAE"])
+    output: drop.getTmpDir() + "/MAE.done"
 
 rule dependencyGraph:
     input:

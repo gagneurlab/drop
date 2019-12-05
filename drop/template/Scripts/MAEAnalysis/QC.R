@@ -4,9 +4,9 @@
 #' wb:
 #'  params:
 #'    - tmpdir: '`sm drop.getTmpDir()`'
-#'    - matrix: '`sm MAE(parser.getProcResultsDir() + "/mae/" +
-#'                config["mae"]["qcGroup"] + "/dna_rna_qc_matrix.Rds")`'
-#'    - html: '`sm MAE(config["htmlOutputPath"] + "/Scripts_QC_DNA_RNA_matrix_plot.html")`'
+#'    - matrix: '`sm parser.getProcResultsDir() + "/mae/" +
+#'                config["mae"]["qcGroup"] + "/dna_rna_qc_matrix.Rds"`'
+#'    - html: '`sm config["htmlOutputPath"] + "/Scripts_QC_DNA_RNA_matrix_plot.html"`'
 #'  input:
 #'    - MAE: '`sm drop.getTmpDir() + "/MAE.done"`'
 #' output:

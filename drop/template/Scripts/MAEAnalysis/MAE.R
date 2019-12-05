@@ -9,13 +9,13 @@
 #'     mae_ids = parser.getMaeAll()
 #'  params:
 #'    - tmpdir: '`sm drop.getTmpDir()`'
-#'    - count_matrices: '`sm MAE(expand(parser.getProcDataDir() + 
+#'    - count_matrices: '`sm expand(parser.getProcDataDir() + 
 #'                       "/mae/allelic_counts/{mae_id}.csv.gz",
-#'                       mae_id=mae_ids))`'
-#'    - results_tables: '`sm MAE(expand(parser.getProcResultsDir() + 
+#'                       mae_id=mae_ids)`'
+#'    - results_tables: '`sm expand(parser.getProcResultsDir() + 
 #'                       "/mae/{dataset}/MAE_results_{annotation}.tsv", 
-#'                       dataset=datasets, annotation=annotations))`'
-#'    - html: '`sm MAE(config["htmlOutputPath"] + "/Scripts_MAE_Results_Overview.html")`'
+#'                       dataset=datasets, annotation=annotations)`'
+#'    - html: '`sm config["htmlOutputPath"] + "/Scripts_MAE_Results_Overview.html"`'
 #'  input:
 #'    - MAE: '`sm drop.getTmpDir() + "/MAE.done"`'
 #' output:
