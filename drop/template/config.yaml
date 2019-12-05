@@ -12,7 +12,7 @@ aberrantExpression:
     groups: outrider
     fpkmCutoff: 1
     implementation: autoencoder
-    padjCutoff: .05
+    padjCutoff: 1
     zscoreCutoff: 0
 
 aberrantSplicing:

@@ -8,8 +8,8 @@
 #'  params:
 #'    - tmpdir: '`sm drop.getTmpDir()`'
 #'    - fds_files: '`sm expand(parser.getProcDataDir() +
-#'                "/aberrant_splicing/datasets/savedObjects/{dataset}/pajdBetaBinomial_psiSite.h5",
-#'                dataset=datasets)`'
+#'                "/aberrant_splicing/datasets/savedObjects/{dataset}/" + 
+#'                "fds-object.RDS", dataset=datasets)`'
 #'    - result_tables: '`sm expand(parser.getProcDataDir() +
 #'                    "/aberrant_splicing/results/{dataset}_results.tsv",
 #'                    dataset=datasets)`'
@@ -26,30 +26,37 @@ saveRDS(snakemake, file.path(snakemake@params$tmpdir,
                              "AberrantSplicing_FRASER.snakemake"))
 # snakemake <- readRDS(".drop/tmp/AberrantSplicing_FRASER.snakemake")
 
+suppressPackageStartupMessages({
+    library(FraseR)
+    library(magrittr)
+})
+
 #' FraseR objects: `r paste(snakemake@params$fds_files)`  
+#' 
 #' FraseR results: `r paste(snakemake@params$result_tables)`  
+#' 
 
-
+#'
 #' ## Analyze individual results
-#' ### Read outrider object and results
-library(FraseR)
-library(magrittr)
-# fds <- loadFraseRDataSet(file = snakemake@params$fds_files[1])
-# fds <- readRDS(fds_files[[1]])
-#res <- fread(results_tables[[1]])
+#' 
 
-#' check all samples
-#samples(fds) %>% sort
-#sample <- samples(fds)[1]
+fds <- loadFraseRDataSet(file = snakemake@params$fds_files[[1]])
+fds <- readRDS(snakemake@params$fds_files[[1]])
+res <- fread(snakemake@params$result_tables[[1]])
 
-#' Get a gene and sample of interest
-#gene <- res[1, geneID]
-#sample <- res[1, sampleID]
+sample <- samples(fds)[1]
 
-#' Example of a volcano plot
-#plotVolcano(fds, sample, type = 'psi3')  # scroll over the plot and find your gene(s) of interest
+#' Get a splice site and sample of interest
+sample <- res[1, sampleID]
+siteIndex <- 4
 
-#' Gene expression plot
-#plotExpression(fds, type = 'psi3', site = 42850)  # scroll over the plot and find your sample(s) of interest
+#' ## Volcano plot
+#' Hover over the plot and find your splice site(s) of interest
+FraseR::plotVolcano(fds, sample, type = 'psi3')
 
-#plotExpectedVsObservedPsi(fds, type = 'psi3', idx = 42850)
+#' ## Gene expression plot
+#' Hover over the plot and find your sample(s) of interest
+FraseR::plotExpression(fds, type = 'psi3', site = siteIndex)
+
+FraseR::plotExpectedVsObservedPsi(fds, type = 'psi3', idx = siteIndex)
+
