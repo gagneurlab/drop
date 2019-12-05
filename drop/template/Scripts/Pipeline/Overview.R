@@ -5,7 +5,7 @@
 #'  params:
 #'    - tmpdir: '`sm drop.getTmpDir()`'
 #'  input:
-#'    - indexFile: '`sm parser.getProcDataDir() + "/indexNames.txt"`' 
+#'    - indexFile: '`sm config["htmlOutputPath"] + "/indexNames.txt"`' 
 #' output:
 #'   html_document:
 #'    code_folding: hide

@@ -41,7 +41,7 @@ rule getIndexNames:
         AS(config["finalFiles"]["AS"]),
         MAE(config["finalFiles"]["MAE"])
     output:
-        indexFile = parser.getProcDataDir() + "/indexNames.txt"
+        indexFile = config["htmlOutputPath"] + "/indexNames.txt"
     run: 
         indexList = [x for x in os.listdir(config["htmlOutputPath"]) if re.search("_index.html$",x)]
         with open(output.indexFile, 'w') as file_handler:
