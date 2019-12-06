@@ -1,6 +1,8 @@
 # Detection of RNA Outlier Pipeline
 [![Pipeline status](https://travis-ci.org/gagneurlab/drop.svg?branch=master)](https://travis-ci.org/gagneurlab/drop)
 [![Version](https://img.shields.io/badge/Version-0.9.0-green.svg)](https://github.com/gagneurlab/drop/master)
+[DROP documentation](https://drop-rna.readthedocs.io/en/latest/index.html)
+
 <img src="drop_sticker.png" alt="drop logo" width="200" class="center"/>
 
 ## Dependencies
