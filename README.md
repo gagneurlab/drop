@@ -1,12 +1,14 @@
 # Detection of RNA Outlier Pipeline
-[![Pipeline status](https://travis-ci.org/mumichae/drop.svg?branch=master)](https://travis-ci.org/mumichae/drop)
-[![Version](https://img.shields.io/badge/Version-0.9.0-green.svg)](https://github.com/gagneurlab/mumichae/drop/master)
+[![Pipeline status](https://travis-ci.org/gagneurlab/drop.svg?branch=master)](https://travis-ci.org/gagneurlab/drop)
+[![Version](https://img.shields.io/badge/Version-0.9.0-green.svg)](https://github.com/gagneurlab/drop/master)
 <img src="drop_sticker.png" alt="drop logo" width="200" class="center"/>
 
 ## Dependencies
 Programming languages:
 
 + python >= 3.6.7
+     + pip >= 19.1
+     + we recommend using a virtual environment e.g. anaconda
 + R >= 3.5 (https://www.r-project.org/)
 
 ### R packages
@@ -16,27 +18,68 @@ Rscript drop/installRPackages.R drop/requirements.R
 ```
 ### Other packages
 + samtools >= 1.7 (https://www.htslib.org/download/)
-+ bcftools (newest) (https://www.htslib.org/download/)
++ bcftools (newest) (https://github.com/samtools/bcftools)
 + tabix (https://www.htslib.org/download/)
 + GATK (https://software.broadinstitute.org/gatk/)
 + graphviz (https://www.graphviz.org/)
 + pandoc (https://pandoc.org/)
 
 ## Installation
-You can install `drop` from github using `pip`. For this you need to recursively clone the repository with all its submodules first.
+You can install DROP from github using `pip`. For this you need to recursively clone the repository with all its submodules first.
 ```
-git clone https://github.com/mumichae/drop.git --recurse-submodules
+git clone https://github.com/gagneurlab/drop.git --recurse-submodules
+```
+Install DROP (activate your python environment if you are using one)
+```
+# conda activate drop_env # e.g. for environment
 cd drop
-pip install -e .
+pip install .
 ```
+Installation time for complete setup: ~ 1h
 
-## Start a new project
-A new `drop` project needs to be initialized, which creates the necessary files.
+### Initialize a project
+DROP projects are initialized in a separate directory dedictated to the analysis project. Calling the initialization command creates the necessary files.
 ```
-cd <new/project/path>
+cd <project/path>
+drop init
+``` 
+
+# Set up the demo project
+First, initialize the demo directory. We will use `$HOME/drop_demo` in the following.
+```
+cd $HOME/drop_demo
 drop init
 ```
-Fill in the paths to the raw data as well as different settings for the config file. Create the sample annotation file according to ... Once these files are set up, you can look the complete workflow using
+## Download and prepare the data
+The data can be downloaded by running the `travis/download_data.sh` script provided by this repository.
+```
+cd drop # change to wherever you have downloaded the DROP repository
+PROJECT_DIR=$HOME/drop_demo"
+bash travis/download_data.sh
+```
+This will download and extract the demo data into a directory called `Data`. Next, the sample annotation needs to be adapted to the absolute paths. For this, change to the `Data` directory within the demo project directory.
+```
+cd $HOME/drop_demo/Data
+python fix_sample_anno.py
+```
+Finally, open the config in the demo directory and modify the paths. The default location of the demo directory in the config.yaml is `/home/travis/project/`. Replace this with the location of your demo directory for every path in the config.
+
+## Call the pipeline
+Call the complete pipeline using
+```
+snakemake
+```
+Once the pipleine has run through, you will find the output in the `$HOME/drop_demo/Output`. It will consist of raw data and HTML pages. In order to view the complete HTML summary, open `$HOME/drop_demo/Output/htmlOutput/drop_demo_index.html` in the browser.
+
+Expected runtime: 30 min
+
+# Set up a custom project
+## Prepare the input data
+Create a sample annotation that contains the sample IDs, file locations and other information necessary for the pipeline.
+Edit the config file to set the correct file path of sample annotation and locations of non-sample specific input files. For these steps, please refer to the can be found in the [documentation](https://drop-rna.readthedocs.io/en/latest/prepare.html).
+
+## Call the pipeline
+ Once these files are set up, you can execute a dry run
 ```
 snakemake -n
 ```
