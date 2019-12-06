@@ -54,22 +54,28 @@ drop init
 The data can be downloaded by running the `travis/download_data.sh` script provided by this repository.
 ```
 cd drop # change to wherever you have downloaded the DROP repository
-PROJECT_DIR=$HOME/drop_demo"
-bash travis/download_data.sh
+bash travis/download_data.sh $HOME/drop_demo
 ```
 This will download and extract the demo data into a directory called `Data`. Next, the sample annotation needs to be adapted to the absolute paths. For this, change to the `Data` directory within the demo project directory.
 ```
 cd $HOME/drop_demo/Data
 python fix_sample_anno.py
 ```
-Finally, open the config in the demo directory and modify the paths. The default location of the demo directory in the config.yaml is `/home/travis/project/`. Replace this with the location of your demo directory for every path in the config.
+Finally, open the config in the demo directory and modify the paths for all file inputs. The default location of the demo directory in the config.yaml is `/home/travis/project/`. Replace this with the location of your demo directory for every path in the config. For the keys under tools, add the commandline calls or file location of the tools `gatk`, `samtools` and `bcftools` respectively.
+```
+cd $HOME/drop_demo
+nano config.yaml
+# modify the input file paths
+# set the correct commands for tools
+```
 
 ## Call the pipeline
-Call the complete pipeline using
+Call the complete pipeline using `snakemake`.
 ```
+snakemake -n # dryrun
 snakemake
 ```
-Once the pipleine has run through, you will find the output in the `$HOME/drop_demo/Output`. It will consist of raw data and HTML pages. In order to view the complete HTML summary, open `$HOME/drop_demo/Output/htmlOutput/drop_demo_index.html` in the browser.
+Once the pipeline has run through, you will find the output in the `$HOME/drop_demo/Output`. It will consist of raw data and HTML pages. In order to view the complete HTML summary, open `$HOME/drop_demo/Output/htmlOutput/drop_demo_index.html` in the browser.
 
 Expected runtime: 30 min
 

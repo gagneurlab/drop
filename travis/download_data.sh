@@ -1,6 +1,7 @@
 #!/bin/bash
 set -e
 
+PROJECT_DIR=$1
 echo $PROJECT_DIR
 mkdir -p $PROJECT_DIR
 cd $PROJECT_DIR

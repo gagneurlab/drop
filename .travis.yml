@@ -43,7 +43,7 @@ addons:
   
 install:
   - cd $DROP_DIR
-  - R -e "print(.libPaths()); if ('FraseR' %in% rownames(installed.packages())) remove.packages(c('FraseR', 'tMAE'))"
+#  - R -e "print(.libPaths()); if ('FraseR' %in% rownames(installed.packages())) remove.packages(c('FraseR', 'tMAE'))"
   - Rscript travis/installRPackages.R drop/requirementsR.txt
   - bash travis/install_bcftools.sh
   - bash travis/install_conda.sh
@@ -53,7 +53,7 @@ install:
 
 before_script:
   - cd $DROP_DIR
-  - bash travis/download_data.sh
+  - bash travis/download_data.sh $PROJECT_DIR
   - cd $PROJECT_DIR
   - drop init
 
