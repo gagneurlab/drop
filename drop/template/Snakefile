@@ -35,6 +35,9 @@ rule all:
     output:
         touch(config["tmpdir"] + "/drop_all.done")
 
+rule sampleAnnotation:
+    input: rules.Scripts_Pipeline_SampleAnnotation_R.output
+
 rule getIndexNames:
     input:
         AE(config["finalFiles"]["AE"]),
@@ -59,6 +62,9 @@ rule aberrantSplicing:
 rule mae:
     input: MAE(config["finalFiles"]["MAE"])
     output: touch(drop.getTmpDir() + "/MAE.done")
+
+rule sampleQC:
+    input: MAE(drop.getTmpDir() + "/sampleQC.done")
 
 rule dependencyGraph:
     input:
