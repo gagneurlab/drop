@@ -8,7 +8,7 @@ The config file is in *YAML* format. It is composed of general and module-specif
 
 ``# full comment line``
 
-``variable_1: /path/file.txt  # inline comment``
+``variable_1: /path/to/file.txt  # inline comment``
 
 A variable can be of different types: string, numeric, list and dictionary. First, we describe each of those types of variables in *YAML* and then we provide a description and examples of each variable.
 
