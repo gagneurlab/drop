@@ -13,5 +13,4 @@ cd Data
 python fix_sample_anno.py
 gunzip chr21.fa.gz
 samtools faidx chr21.fa
-gatk CreateSequenceDictionary --REFERENCE chr21.fa
 

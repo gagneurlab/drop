@@ -83,7 +83,6 @@ class ConfigHelper:
         check_keys(config, keys=FILE_KEYS)
         check_keys(config["geneAnnotation"], keys=None)
         check_keys(config["mae"], keys=["genome", "qcVcf"])
-        check_keys(config["mae"]["qcVcf"], keys=["UCSC", "NCBI"])
         
         return config
     

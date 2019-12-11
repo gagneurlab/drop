@@ -36,9 +36,7 @@ mae:
     addAF: false
     maxAF: .001
     # VCF-BAM matching
-    qcVcf: 
-        UCSC: /home/travis/project/Data/qc_vcf_ucsc_1000G.vcf.gz
-        NCBI: /home/travis/project/Data/qc_vcf_ncbi_1000G.vcf.gz
+    qcVcf: /home/travis/project/Data/qc_vcf_ucsc_1000G.vcf.gz
     qcGroup: mae
 
 tools:
