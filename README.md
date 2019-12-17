@@ -31,17 +31,22 @@ Rscript drop/installRPackages.R drop/requirements.R
 + pandoc (https://pandoc.org/)
 
 ## Installation
-You can install DROP from github using `pip`. For this you need to recursively clone the repository with all its submodules first.
+Make sure that all of the above listed [dependencies](#dependencies) are installed.
+Then install DROP from github using `pip`. For this you need to recursively clone the repository with all its submodules first.
 ```
 git clone https://github.com/gagneurlab/drop.git --recurse-submodules
 ```
 Install DROP (activate your python environment if you are using one)
 ```
-# conda activate drop_env # e.g. for environment
+# conda activate drop_env
 cd drop
 pip install .
 ```
-Installation time for complete setup: ~ 1h
+Alternatively, you can also install it directly without cloning
+```
+pip install git+https://github.com/gagneurlab/drop.git
+```
+Installation time (including all dependencies): ~ 1h
 
 ### Initialize a project
 DROP projects are initialized in a separate directory dedictated to the analysis project. Calling the initialization command creates the necessary files.
