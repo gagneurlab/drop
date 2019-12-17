@@ -50,13 +50,15 @@ cd <project/path>
 drop init
 ``` 
 
-# Set up the demo project
-First, initialize the demo directory. We will use `$HOME/drop_demo` in the following.
+## Set up the demo project
+First, install the drop module according to [installation](#installation). 
+Initialize the demo directory with a custom test project path.
+In the following we will use `$HOME/drop_demo` as <project/path>.
 ```
 cd $HOME/drop_demo
 drop init
 ```
-## Download and prepare the data
+### Download and prepare the data
 The data can be downloaded by running the `travis/download_data.sh` script provided by this repository.
 ```
 cd drop # change to wherever you have downloaded the DROP repository
@@ -75,7 +77,7 @@ nano config.yaml
 # set the correct commands for tools
 ```
 
-## Call the pipeline
+### Call the pipeline
 Call the complete pipeline using `snakemake`.
 ```
 snakemake -n # dryrun
@@ -85,13 +87,14 @@ Once the pipeline has run through, you will find the output in the `$HOME/drop_d
 
 Expected runtime: 30 min
 
-# Set up a custom project
-## Prepare the input data
+## Set up a custom project
+Install the drop module according to [installation](#installation) and initialize the project in a custom project directory.
+### Prepare the input data
 Create a sample annotation that contains the sample IDs, file locations and other information necessary for the pipeline.
 Edit the config file to set the correct file path of sample annotation and locations of non-sample specific input files. For these steps, please refer to the can be found in the [documentation](https://drop-rna.readthedocs.io/en/latest/prepare.html).
 
-## Call the pipeline
- Once these files are set up, you can execute a dry run
+### Call the pipeline
+Once these files are set up, you can execute a dry run from your project directory
 ```
 snakemake -n
 ```
