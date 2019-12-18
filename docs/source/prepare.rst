@@ -82,8 +82,8 @@ allelicRatioCutoff  numeric     A number between [0.5, 1) indicating the maximum
 padjCutoff          numeric     Same as in aberrant expression.                                                                                           0.05
 maxAF               numeric     Maximum allele frequency (of the minor allele) cut-off. Variants with AF equal or below this number are considered rare.  0.001
 addGnomAD           boolean     Whether or not to add the allele frequencies from gnomAD                                                                  true
-qcVcf               dictionary  A key-value list of the chromosome format (key) and the full path to the VCF file used for matching samples (value)       {UCSC: /path/to/qc_ucsc.vcf.gz, NCBI: /path/to/qc_ncbi.vcf.gz}
-qcGroups            list        Same as “groups”, but for the VCF-BAM matching                                                                            ['group1', 'group2']    
+qcVcf               character   Full path to the VCF file of common variants used for matching samples                                                    /path/to/qc_ucsc.vcf.gz
+qcGroups            list        Groups to be included for the VCF-BAM matching                                                                            ['group1', 'group2']    
 ==================  ==========  ========================================================================================================================  ==
 
 
