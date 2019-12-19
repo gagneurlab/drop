@@ -5,6 +5,7 @@ fileRegex: .*\.R
 
 root: /home/travis/project/Output
 sampleAnnotation: /home/travis/project/Data/sample_annotation.tsv
+
 geneAnnotation:
     v29: /home/travis/project/Data/gencode_annotation_trunc.gtf
 
@@ -23,7 +24,6 @@ aberrantSplicing:
     minExpressionInOneSample: 20
     correction: PCA
     padjCutoff: 1
-    zScoreCutoff: 0
     deltaPsiCutoff : 0.05
 
 mae:
@@ -37,7 +37,7 @@ mae:
     maxAF: .001
     # VCF-BAM matching
     qcVcf: /home/travis/project/Data/qc_vcf_ucsc_1000G.vcf.gz
-    qcGroup: mae
+    qcGroups: mae
 
 tools:
     gatkCmd: gatk
