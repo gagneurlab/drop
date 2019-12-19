@@ -27,7 +27,6 @@ addons:
     packages:
       - r-base
       - libxml2-dev
-#      - tk-dev
       - libcurl4-openssl-dev
       - libssl-dev
       - libblas-dev
@@ -43,7 +42,8 @@ addons:
   
 install:
   - cd $DROP_DIR
-#  - R -e "print(.libPaths()); if ('FraseR' %in% rownames(installed.packages())) remove.packages(c('FraseR', 'tMAE'))"
+  - R -e "if ('FraseR' %in% rownames(installed.packages())) remove.packages('FraseR')"
+#  - R -e "if ('tMAE' %in% rownames(installed.packages())) remove.packages('tMAE')"
   - Rscript travis/installRPackages.R drop/requirementsR.txt
   - bash travis/install_bcftools.sh
   - bash travis/install_conda.sh

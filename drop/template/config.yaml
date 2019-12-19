@@ -1,46 +1,56 @@
 projectTitle: Detection of RNA Outlier Pipeline
-htmlOutputPath: /home/travis/project/Output/htmlOutput
+root:             # root directory of all intermediate output
+htmlOutputPath:   # path for HTML rendered reports
+
+# settings for wBuild - do not change
 indexWithFolderName: true
 fileRegex: .*\.R
 
-root: /home/travis/project/Output
-sampleAnnotation: /home/travis/project/Data/sample_annotation.tsv
+sampleAnnotation: # path to sample annotation (see documenation on how to create it)
 
 geneAnnotation:
-    v29: /home/travis/project/Data/gencode_annotation_trunc.gtf
+    # multiple annotations with custom names are possible
+    # <annotation_name> : <path to gencode v29 annotation>
+    v29:  /path/to/gencode29.gtf.gz # example
 
 aberrantExpression:
-    groups: outrider
+    groups: 
+        - group1
+        - group2
     fpkmCutoff: 1
     implementation: autoencoder
-    padjCutoff: 1
+    padjCutoff: 0.05
     zscoreCutoff: 0
 
 aberrantSplicing:
-    groups: fraser
+    groups:
+        - group1
     recount: true
     longRead: false
-    filter: false
     minExpressionInOneSample: 20
     correction: PCA
-    padjCutoff: 1
-    deltaPsiCutoff : 0.05
+    padjCutoff: 0.05
+    zScoreCutoff: 0
+    deltaPsiCutoff: 0.3
 
 mae:
-    groups: mae
+    groups:
+        - group1
+        - group2
+        - group3
     geneAssembly: hg19
-    genome: /home/travis/project/Data/chr21.fa
+    genome:       # path to genome sequence in fasta format
     gatkIgnoreHeaderCheck: true
     padjCutoff: .05
     allelicRatioCutoff: 0.8
     addAF: false
     maxAF: .001
     # VCF-BAM matching
-    qcVcf: /home/travis/project/Data/qc_vcf_ucsc_1000G.vcf.gz
-    qcGroups: mae
+    qcVcf:        # path to common variantqc_vcf_1000G.vcf.gz
+    qcGroup: mae
 
 tools:
     gatkCmd: gatk
-    bcftoolsCmd: /home/travis/bcftools/bcftools
+    bcftoolsCmd: bcftools
     samtoolsCmd: samtools
 
