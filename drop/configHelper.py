@@ -135,7 +135,7 @@ class ConfigHelper:
             setKey(config, ["mae"], "maxAF", .001, verbose=VERBOSE)
             setKey(config, ["mae"], "gnomAD", False, verbose=VERBOSE)
             setKey(config, ["mae"], "groups", None, verbose=VERBOSE)
-            setKey(config, ["mae"], "qcGroup", None, verbose=VERBOSE)
+            setKey(config, ["mae"], "qcGroups", None, verbose=VERBOSE)
         
         # commandline tools
         setKey(config, None, "tools", dict(), verbose=VERBOSE)
