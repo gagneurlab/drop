@@ -49,7 +49,7 @@ pip install git+https://github.com/gagneurlab/drop.git
 Installation time (including all dependencies): ~ 1h
 
 ### Initialize a project
-DROP projects are initialized in a separate directory dedictated to the analysis project. Calling the initialization command creates the necessary files.
+DROP projects are initialized in a separate directory dedicated to the analysis project. Calling the initialization command creates the necessary files.
 ```
 cd <project/path>
 drop init
