@@ -229,11 +229,14 @@ class ConfigHelper:
                         for gr in groups}
     
     def subsetGroups(self, ids_by_group, subset_groups, warn=30, error=10):
+        print(subset_groups)
+        print(ids_by_group.keys())
         if subset_groups is None:
             subset = ids_by_group
         else:
             subset_groups = [subset_groups] if subset_groups.__class__ == str else subset_groups
             subset = {gr:ids for gr, ids in ids_by_group.items() if gr in subset_groups}
+            print(subset)
         
         for group in subset_groups:
             if len(subset[group]) < error:
