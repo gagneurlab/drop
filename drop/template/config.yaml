@@ -46,7 +46,7 @@ mae:
     addAF: false
     maxAF: .001
     # VCF-BAM matching
-    qcVcf:        # path to common variantqc_vcf_1000G.vcf.gz
+    qcVcf:        # path to common variant file e.g. qc_vcf_1000G.vcf.gz
     qcGroup: mae
 
 tools:
