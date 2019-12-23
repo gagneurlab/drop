@@ -68,3 +68,9 @@ DROP projects are initialized in a separate directory dedictated to the analysis
     
     cd <project/path>
     drop init
+
+    
+Execute the Pipeline
+++++++++++++++++++++
+
+After successful installation and initialization of the project, you need to prepare the sample annotation and config files. Go to :ref:`prepare` for more details.

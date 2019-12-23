@@ -1,3 +1,5 @@
+.. _prepare:
+
 Preparing the Input Data
 ========================
 
