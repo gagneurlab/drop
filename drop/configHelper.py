@@ -46,6 +46,7 @@ class ConfigHelper:
         
         if self.method == "MAE" or self.method is None:
             groups = self.setKey(self.config, ["mae"], "groups", self.all_rna_ids.keys())
+            self.config["mae"]["qcGroups"] = self.setKey(self.config, ["mae"], "qcGroups", groups)
             self.mae_ids = self.createMaeIDS(self.all_rna_ids, groups, id_sep='--')
             self.config["mae_ids"] = self.mae_ids
         
@@ -225,18 +226,19 @@ class ConfigHelper:
         groups = set(groups)
         
         # collect IDs per group
-        return {gr : df[df[group_key].str.contains(f'(^|{sep}){gr}({sep}|$)')][assay_id].tolist() 
+        grouped = {gr : df[df[group_key].str.contains(f'(^|{sep}){gr}({sep}|$)')][assay_id].tolist() 
                         for gr in groups}
+        # remove groups labeled as None
+        grouped = {gr : ids for gr, ids in grouped.items() if gr is not None}
+        return grouped
+
     
     def subsetGroups(self, ids_by_group, subset_groups, warn=30, error=10):
-        print(subset_groups)
-        print(ids_by_group.keys())
         if subset_groups is None:
             subset = ids_by_group
         else:
             subset_groups = [subset_groups] if subset_groups.__class__ == str else subset_groups
             subset = {gr:ids for gr, ids in ids_by_group.items() if gr in subset_groups}
-            print(subset)
         
         for group in subset_groups:
             if len(subset[group]) < error:
