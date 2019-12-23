@@ -74,7 +74,7 @@ This will download and extract the demo data into a directory called `Data`. Nex
 cd $HOME/drop_demo/Data
 python fix_sample_anno.py
 ```
-Finally, open the config in the demo directory and modify the paths for all file inputs. The default location of the demo directory in the config.yaml is `/home/travis/project/`. Replace this with the location of your demo directory for every path in the config. For the keys under tools, add the commandline calls or file location of the tools `gatk`, `samtools` and `bcftools` respectively.
+Finally, open the config in the demo directory and modify the paths for all file inputs. The default location of the demo directory in the config.yaml is `/home/travis/project/`. Replace this with the location of your demo directory for every path in the config. For the keys under tools, add the command line calls or file location of the tools `gatk`, `samtools` and `bcftools` respectively.
 ```
 cd $HOME/drop_demo
 nano config.yaml
@@ -88,7 +88,7 @@ Call the complete pipeline using `snakemake`.
 snakemake -n # dryrun
 snakemake
 ```
-Once the pipeline has run through, you will find the output in the `$HOME/drop_demo/Output`. It will consist of raw data and HTML pages. In order to view the complete HTML summary, open `$HOME/drop_demo/Output/htmlOutput/drop_demo_index.html` in the browser.
+Once the pipeline has run through, you will find the output in the `$HOME/drop_demo/Output`. It will consist of processed data, results and HTML pages. In order to view the complete HTML summary, open `$HOME/drop_demo/Output/htmlOutput/drop_demo_index.html` in the browser.
 
 Expected runtime: 30 min
 
@@ -96,7 +96,7 @@ Expected runtime: 30 min
 Install the drop module according to [installation](#installation) and initialize the project in a custom project directory.
 ### Prepare the input data
 Create a sample annotation that contains the sample IDs, file locations and other information necessary for the pipeline.
-Edit the config file to set the correct file path of sample annotation and locations of non-sample specific input files. For these steps, please refer to the can be found in the [documentation](https://drop-rna.readthedocs.io/en/latest/prepare.html).
+Edit the config file to set the correct file path of sample annotation and locations of non-sample specific input files. For these steps, please refer to the [documentation](https://drop-rna.readthedocs.io/en/latest/prepare.html).
 
 ### Call the pipeline
 Once these files are set up, you can execute a dry run from your project directory
