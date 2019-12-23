@@ -20,7 +20,7 @@ Programming languages:
 ### R packages
 Bioconductor and base R packages need to be installed. The packages are listed in `drop/requirementsR.txt`. A script for installing these packages is provided. From the repository root just execute:
 ```
-Rscript drop/installRPackages.R drop/requirements.R
+Rscript drop/installRPackages.R drop/requirementsR.txt
 ```
 ### Other packages
 + samtools >= 1.7 (https://www.htslib.org/download/)
