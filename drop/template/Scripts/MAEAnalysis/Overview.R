@@ -2,26 +2,23 @@
 #' title: Monoallelic Expression
 #' author:
 #' wb:
-#'  py:
-#'    - |
-#'     datasets = config["mae"]["groups"]
-#'     annotations = list(config["geneAnnotation"].keys())
-#'     mae_ids = parser.getMaeAll()
 #'  params:
 #'    - tmpdir: '`sm drop.getTmpDir()`'
-#'    - mae_ids: '`sm mae_ids`'
+#'    - mae_ids: '`sm parser.getMaeAll()`'
 #'    - count_matrices: '`sm expand(parser.getProcDataDir() + 
 #'                       "/mae/allelic_counts/{mae_id}.csv.gz",
-#'                       mae_id=mae_ids)`'
+#'                       mae_id=parser.getMaeAll())`'
 #'    - results_obj: '`sm expand(parser.getProcResultsDir() + 
-#'                       "/mae/samples/{mae_id}_res.Rds", mae_id=mae_ids)`'
+#'                       "/mae/samples/{mae_id}_res.Rds", 
+#'                       mae_id=parser.getMaeAll())`'
 #'    - results_tables: '`sm expand(parser.getProcResultsDir() + 
 #'                       "/mae/{dataset}/MAE_results_{annotation}.tsv", 
-#'                       dataset=datasets, annotation=annotations)`'
+#'                       dataset=config["mae"]["groups"],
+#'                       annotation=list(config["geneAnnotation"].keys()))`'
 #'    - html: '`sm config["htmlOutputPath"] + "/Scripts_MAE_Results_Overview.html"`'
-#'    - qc_matrix: '`sm parser.getProcResultsDir() + "/mae/" +
-#'                config["mae"]["qcGroup"] + "/dna_rna_qc_matrix.Rds"`'
-#'    - qc_html: '`sm config["htmlOutputPath"] + "/Scripts_QC_DNA_RNA_matrix_plot.html"`'
+#'    - qc_matrix: '`sm expand(parser.getProcResultsDir() + "/mae/{qc_group}/" +
+#'                  "dna_rna_qc_matrix.Rds", qc_group=config["mae"]["qcGroups"])`'
+#'    - qc_html: '`sm config["htmlOutputPath"] + "/Scripts_QC_Overview.html"`'
 #'  input:
 #'    - MAE: '`sm drop.getTmpDir() + "/MAE.done"`'
 #' output:
@@ -61,7 +58,9 @@ plotAllelicCounts(res_sample)
 
 #' # Quality Control: VCF-BAM Matching
 #' 
-#' DNA-RNA matrix: `r snakemake@params$matrix`  
+#' DNA-RNA matrix: 
+#' 
+#' `r paste('    *', snakemake@params$qc_matrix, collapse='\n')`  
 #' 
 #' [QC Overview](`r snakemake@params$html`)
 
