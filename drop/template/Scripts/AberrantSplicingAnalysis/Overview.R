@@ -27,13 +27,13 @@ saveRDS(snakemake, file.path(snakemake@params$tmpdir,
 # snakemake <- readRDS(".drop/tmp/AberrantSplicing_FRASER.snakemake")
 
 suppressPackageStartupMessages({
-    library(FraseR)
+    library(FRASER)
     library(magrittr)
 })
 
-#' FraseR objects: `r paste(snakemake@params$fds_files)`  
+#' FRASER objects: `r paste(snakemake@params$fds_files)`  
 #' 
-#' FraseR results: `r paste(snakemake@params$result_tables)`  
+#' FRASER results: `r paste(snakemake@params$result_tables)`  
 #' 
 
 #'
@@ -52,11 +52,11 @@ siteIndex <- 4
 
 #' ## Volcano plot
 #' Hover over the plot and find your splice site(s) of interest
-FraseR::plotVolcano(fds, sample, type = 'psi3')
+FRASER::plotVolcano(fds, sample, type = 'psi3')
 
 #' ## Gene expression plot
 #' Hover over the plot and find your sample(s) of interest
-FraseR::plotExpression(fds, type = 'psi3', site = siteIndex)
+FRASER::plotExpression(fds, type = 'psi3', site = siteIndex)
 
-FraseR::plotExpectedVsObservedPsi(fds, type = 'psi3', idx = siteIndex)
+FRASER::plotExpectedVsObservedPsi(fds, type = 'psi3', idx = siteIndex)
 
