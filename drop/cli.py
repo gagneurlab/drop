@@ -1,10 +1,11 @@
-import os
 import click
 import wbuild
 import drop
+import yaml
 import pathlib
 import shutil
 import distutils.dir_util
+import subprocess
 import click_log
 import logging
 logger = logging.getLogger(__name__)
@@ -17,52 +18,74 @@ def main():
     pass
 
 def setup_paths():
-    """Setup the wbuild paths
-    """
-    templatePath = pathlib.Path(drop.__file__).parent / 'template'
-    modulePath = pathlib.Path(drop.__file__).parent / 'modules'
-    wbuildPath = pathlib.Path(wbuild.__file__).parent / '.wBuild'
+    templatePath = pathlib.Path(drop.__file__).parent / "template"
+    modulePath = pathlib.Path(drop.__file__).parent / "modules"
+    wbuildPath = pathlib.Path(wbuild.__file__).parent / ".wBuild"
     return templatePath, modulePath, wbuildPath
 
 def setFiles():
     templatePath, modulePath, wbuildPath = setup_paths()
-    distutils.dir_util.copy_tree(str(wbuildPath), './.wBuild')
+    distutils.dir_util.copy_tree(str(wbuildPath), "./.wBuild")
     
-    shutil.copy(str(templatePath / 'Snakefile'), '.')
+    shutil.copy(str(templatePath / "Snakefile"), ".")
     
-    if not os.path.isfile("config.yaml"):
+    ### search for a file containing the word readme and .md
+    if not len(list(pathlib.Path(".").glob("readme*.md"))) > 0:
+        open("readme.md", "a").close()
+    if not pathlib.Path("config.yaml").is_file():
         shutil.copy(str(templatePath / 'config.yaml'), '.')
-    if not os.path.exists("Scripts"):
+    if not pathlib.Path("Scripts").is_dir():
         distutils.dir_util.copy_tree(str(templatePath / 'Scripts'), 'Scripts')
     
-    if os.path.exists('.drop'):
-        distutils.dir_util.remove_tree('.drop')
-        print('overwriting module scripts')
-    distutils.dir_util.copy_tree(str(modulePath), '.drop/modules')
+    if pathlib.Path(".drop").is_dir():
+        distutils.dir_util.remove_tree(".drop")
+        print("overwriting module scripts")
+    distutils.dir_util.copy_tree(str(modulePath), ".drop/modules")
 
 
 @main.command()
 def init():
-    
-    if os.path.exists('.drop'):
-        print('.drop already exists, use drop update instead to update to a newer version')
+    if pathlib.Path(".drop").is_dir():
+        print(".drop already exists, use drop update instead to update to a newer version")
     else:
         setFiles()
-        ### search for a file containing the word readme and .md
-        readme_exists = False
-        for f in os.listdir("."):
-            if os.path.isfile(os.path.join(".", f)):
-                continue
-            if ("readme" in f) and f.endswith(".md"):
-                readme_exists = True
-                break
-        if not readme_exists:
-            open('readme.md', 'a').close()
         logger.info("init...done")
 
 @main.command()
 def update():
-    # TODO: check version first
+    # TODO: check drop version first
     setFiles()
     logger.info("update...done")
 
+@main.command()
+def demo():
+    
+    setFiles()
+    
+    # download data
+    module_dir = str(pathlib.Path(drop.__file__).parent)
+    subprocess.run(["bash", f"{module_dir}/download_data.sh"], stderr=subprocess.PIPE)
+    
+    # fix config file
+    with open("config.yaml", "r") as f:
+        config = yaml.load(f, Loader=yaml.Loader)
+    path_keys = {"root": None,
+                 "htmlOutputPath": None,
+                 "sampleAnnotation": None,
+                 "v29": ["geneAnnotation"],
+                 "genome": ["mae"], "qcVcf": ["mae"]}
+    
+    for key, sub in path_keys.items():
+        # iterate to key and entry
+        dict_ = config
+        if sub is not None:
+            for x in sub:
+                dict_ = dict_[x]
+        # set absolute path
+        dict_[key] = str(pathlib.Path(dict_[key]).resolve())
+    
+    with open("config.yaml", "w") as f:
+        yaml.safe_dump(config.copy(), f, default_flow_style=False,
+                       sort_keys=False)
+    
+    logger.info("demo project created")

@@ -52,12 +52,11 @@ install:
   - pip install .
 
 before_script:
-  - cd $DROP_DIR
-  - bash travis/download_data.sh $PROJECT_DIR
   - cd $PROJECT_DIR
-  - drop init
+  - drop demo
 
 script:
+  - cd $PROJECT_DIR
   - snakemake -n
   - snakemake aberrantExpression --cores 2
   - snakemake aberrantSplicing --cores 2

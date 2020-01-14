@@ -9,5 +9,7 @@ then
     cd bcftools
     make
 fi
-$HOME/bcftools/bcftools --version
+
+export PATH="$HOME/bcftools/bcftools:$PATH"
+bcftools --version
 
