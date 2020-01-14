@@ -10,6 +10,3 @@ then
     make
 fi
 
-export PATH="$HOME/bcftools/bcftools:$PATH"
-bcftools --version
-
