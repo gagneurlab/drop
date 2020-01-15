@@ -54,6 +54,7 @@ install:
   - pip install .
 
 before_script:
+  - mkdir -p $PROJECT_DIR
   - cd $PROJECT_DIR
   - drop demo
 
