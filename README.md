@@ -61,29 +61,10 @@ Initialize the demo directory with a custom test project path.
 In the following we will use `$HOME/drop_demo` as <project/path>.
 ```
 cd $HOME/drop_demo
-drop init
+drop demo
 ```
-### Download and prepare the data
-The data can be downloaded by running the `travis/download_data.sh` script provided by this repository.
-```
-cd drop # change to wherever you have downloaded the DROP repository
-bash travis/download_data.sh $HOME/drop_demo
-```
-This will download and extract the demo data into a directory called `Data`. Next, the sample annotation needs to be adapted to the absolute paths. For this, change to the `Data` directory within the demo project directory.
-```
-cd $HOME/drop_demo/Data
-python fix_sample_anno.py
-```
-Finally, open the config in the demo directory and modify the paths for all file inputs. The default location of the demo directory in the config.yaml is `/home/travis/project/`. Replace this with the location of your demo directory for every path in the config. For the keys under tools, add the command line calls or file location of the tools `gatk`, `samtools` and `bcftools` respectively.
-```
-cd $HOME/drop_demo
-nano config.yaml
-# modify the input file paths
-# set the correct commands for tools
-```
-
-### Call the pipeline
-Call the complete pipeline using `snakemake`.
+This command downloads the demo data, initializes DROP  and adapts the config file paths to your current project directory. 
+Now the pipeline is ready to be executed using `snakemake`.
 ```
 snakemake -n # dryrun
 snakemake
@@ -98,7 +79,7 @@ Install the drop module according to [installation](#installation) and initializ
 Create a sample annotation that contains the sample IDs, file locations and other information necessary for the pipeline.
 Edit the config file to set the correct file path of sample annotation and locations of non-sample specific input files. For these steps, please refer to the [documentation](https://drop-rna.readthedocs.io/en/latest/prepare.html).
 
-### Call the pipeline
+### Execute the pipeline
 Once these files are set up, you can execute a dry run from your project directory
 ```
 snakemake -n
@@ -107,3 +88,4 @@ This shows you the rules of all subworkflows. Omit `-n` if you are sure that you
 ```
 snakemake aberrantExpression -n
 ```
+
