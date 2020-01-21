@@ -110,4 +110,3 @@ OUTRIDER::plotExpressionRank(ods, gene, basePlot = TRUE)
 
 #' ## Expected vs observed counts
 OUTRIDER::plotExpectedVsObservedCounts(ods, gene, basePlot = TRUE)
-

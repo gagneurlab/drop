@@ -61,4 +61,3 @@ FRASER::plotExpression(fds, type = 'psi3', site = siteIndex, basePlot = TRUE)
 #' ## Expected vs observed PSI
 FRASER::plotExpectedVsObservedPsi(fds, type = 'psi3', 
                                   idx = siteIndex, basePlot = TRUE)
-
