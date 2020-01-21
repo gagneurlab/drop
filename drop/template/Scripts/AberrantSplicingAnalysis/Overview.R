@@ -51,12 +51,13 @@ sample <- res[1, sampleID]
 siteIndex <- 4
 
 #' ## Volcano plot
-#' Hover over the plot and find your splice site(s) of interest
-FRASER::plotVolcano(fds, sample, type = 'psi3')
+#' setting basePlot = FALSE creates an interactive plot
+#' that allows finding the junction(s) of interest
+FRASER::plotVolcano(fds, sample, type = 'psi3', basePlot = TRUE)
 
-#' ## Gene expression plot
-#' Hover over the plot and find your sample(s) of interest
-FRASER::plotExpression(fds, type = 'psi3', site = siteIndex)
+#' ## Expression plot
+FRASER::plotExpression(fds, type = 'psi3', site = siteIndex, basePlot = TRUE)
 
-FRASER::plotExpectedVsObservedPsi(fds, type = 'psi3', idx = siteIndex)
-
+#' ## Expected vs observed PSI
+FRASER::plotExpectedVsObservedPsi(fds, type = 'psi3', 
+                                  idx = siteIndex, basePlot = TRUE)
