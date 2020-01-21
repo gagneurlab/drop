@@ -101,13 +101,13 @@ gene <- res[1, geneID]
 sample <- res[1, sampleID]
 
 #' ## Volcano plot
-#' setting basePlot = TRUE creates an interactive plot
+#' setting basePlot = FALSE creates an interactive plot
 #' that allows finding the gene(s) of interest
-OUTRIDER::plotVolcano(ods, sample, basePlot = FALSE)
+OUTRIDER::plotVolcano(ods, sample, basePlot = TRUE)
 
 #' ## Gene expression plot
-OUTRIDER::plotExpressionRank(ods, gene, basePlot = FALSE)
+OUTRIDER::plotExpressionRank(ods, gene, basePlot = TRUE)
 
 #' ## Expected vs observed counts
-OUTRIDER::plotExpectedVsObservedCounts(ods, gene, basePlot = FALSE)
+OUTRIDER::plotExpectedVsObservedCounts(ods, gene, basePlot = TRUE)
 
