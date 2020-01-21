@@ -51,14 +51,14 @@ sample <- res[1, sampleID]
 siteIndex <- 4
 
 #' ## Volcano plot
-#' setting basePlot = TRUE creates an interactive plot
+#' setting basePlot = FALSE creates an interactive plot
 #' that allows finding the junction(s) of interest
-FRASER::plotVolcano(fds, sample, type = 'psi3', basePlot = FALSE)
+FRASER::plotVolcano(fds, sample, type = 'psi3', basePlot = TRUE)
 
 #' ## Expression plot
-FRASER::plotExpression(fds, type = 'psi3', site = siteIndex, basePlot = FALSE)
+FRASER::plotExpression(fds, type = 'psi3', site = siteIndex, basePlot = TRUE)
 
 #' ## Expected vs observed PSI
 FRASER::plotExpectedVsObservedPsi(fds, type = 'psi3', 
-                                  idx = siteIndex, basePlot = FALSE)
+                                  idx = siteIndex, basePlot = TRUE)
 
