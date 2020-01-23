@@ -25,7 +25,7 @@ aberrantExpression:
 aberrantSplicing:
     groups:
         - group1
-    recount: true
+    recount: false
     longRead: false
     minExpressionInOneSample: 20
     correction: PCA
