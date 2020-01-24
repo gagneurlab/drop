@@ -42,7 +42,7 @@ addons:
   
 install:
   - cd $DROP_DIR
-#  - R -e "if ('FRASER' %in% rownames(installed.packages())) remove.packages('FRASER')"
+  - R -e "if ('FRASER' %in% rownames(installed.packages())) remove.packages('FRASER')"
 #  - R -e "if ('tMAE' %in% rownames(installed.packages())) remove.packages('tMAE')"
   - Rscript travis/installRPackages.R drop/requirementsR.txt
   - bash travis/install_bcftools.sh
