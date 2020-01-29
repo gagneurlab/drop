@@ -2,7 +2,7 @@
 [![Pipeline status](https://travis-ci.org/gagneurlab/drop.svg?branch=master)](https://travis-ci.org/gagneurlab/drop)
 [![Version](https://img.shields.io/badge/Version-0.9.0-green.svg)](https://github.com/gagneurlab/drop/master)
 
-The manuscript main file, supplementary figures and table can be found in the manuscript folder.
+The manuscript main file, supplementary figures and table can be found in the manuscript folder or in [protocol exchange](https://protocolexchange.researchsquare.com/article/993ff4a5-38ce-4261-902a-600dbd528ba2/v1).
 
 
 [DROP documentation](https://drop-rna.readthedocs.io/en/latest/index.html)
