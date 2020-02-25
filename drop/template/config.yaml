@@ -27,7 +27,9 @@ aberrantSplicing:
         - group1
     recount: false
     longRead: false
+    filter: true
     minExpressionInOneSample: 20
+    minDeltaPsi: 0
     correction: PCA
     padjCutoff: 0.05
     zScoreCutoff: 0
