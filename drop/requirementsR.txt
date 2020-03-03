@@ -1,6 +1,6 @@
 package bioconductor
 OUTRIDER TRUE
-c-mertes/FRASER TRUE
+gagneurlab/FRASER TRUE
 mumichae/tMAE TRUE
 VariantAnnotation TRUE
 rmarkdown FALSE
