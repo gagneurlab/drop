@@ -11,7 +11,7 @@
 #'                "/aberrant_splicing/datasets/savedObjects/{dataset}/" + 
 #'                "fds-object.RDS", dataset=datasets)`'
 #'    - result_tables: '`sm expand(parser.getProcDataDir() +
-#'                    "/aberrant_splicing/results/{dataset}_results.tsv",
+#'                    "/aberrant_splicing/results/{dataset}_results_per_junction.tsv",
 #'                    dataset=datasets)`'
 #'  input:
 #'    - AS: '`sm drop.getTmpDir() + "/AS.done"`'
