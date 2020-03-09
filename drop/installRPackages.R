@@ -6,8 +6,6 @@ if (!requireNamespace('BiocManager', quietly = TRUE)) {
     BiocManager::install("remotes")
 }
 
-BiocManager::install('gagneurlab/FRASER', ref = 'R3.6')
-
 args <- commandArgs(trailingOnly=TRUE)
 packages <- read.csv(args[1], stringsAsFactors = FALSE,
                      header = TRUE, sep = " ", comment.char = "#")
