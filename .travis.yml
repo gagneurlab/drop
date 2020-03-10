@@ -43,7 +43,7 @@ addons:
 install:
   - cd $DROP_DIR
   - R -e "if ('FRASER' %in% rownames(installed.packages())) remove.packages('FRASER')"
-  - R -e "install.packages('BiocManager'); BiocManager::install('gagneurlab/FRASER', ref = 'R3.6')"
+  - R -e "install.packages('BiocManager'); BiocManager::install("remotes"); BiocManager::install('gagneurlab/FRASER', ref = 'R3.6')"
 #  - R -e "if ('tMAE' %in% rownames(installed.packages())) remove.packages('tMAE')"
   - Rscript travis/installRPackages.R drop/requirementsR.txt
   - bash travis/install_bcftools.sh
