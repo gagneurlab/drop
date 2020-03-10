@@ -6,9 +6,6 @@ if (!requireNamespace('BiocManager', quietly = TRUE)) {
     BiocManager::install("remotes")
 }
 
-# Install specific version of FRASER
-if ('FRASER' %in% rownames(installed.packages())) remove.packages('FRASER')
-BiocManager::install('gagneurlab/FRASER', ref = 'R3.6')
 
 args <- commandArgs(trailingOnly=TRUE)
 packages <- read.csv(args[1], stringsAsFactors = FALSE,
