@@ -107,6 +107,8 @@ class ConfigHelper:
         setKey = self.setKey
         setKey(config, None, "projectTitle", "DROP: Detection of RNA Outlier Pipeline")
         
+        setKey(config, None, "geneAssembly", "hg19")
+        
         if self.method is None:
             tmp_dir = submodules.getTmpDir()
         else:
@@ -139,7 +141,6 @@ class ConfigHelper:
         # monoallelic expression
         if self.method == "MAE" or self.method is None:
             setKey(config, None, "mae", dict(), verbose=VERBOSE)
-            setKey(config, ["mae"], "geneAssembly", "hg19", verbose=VERBOSE)
             setKey(config, ["mae"], "gatkIgnoreHeaderCheck", True, verbose=VERBOSE)
             setKey(config, ["mae"], "padjCutoff", .05, verbose=VERBOSE)
             setKey(config, ["mae"], "allelicRatioCutoff", 0.8, verbose=VERBOSE)

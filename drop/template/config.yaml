@@ -13,6 +13,8 @@ geneAnnotation:
     # <annotation_name> : <path to gencode v29 annotation>
     v29:  /path/to/gencode29.gtf.gz # example
 
+geneAssembly: hg19  # either hg19 or hg38
+
 aberrantExpression:
     groups: 
         - group1
@@ -40,7 +42,6 @@ mae:
         - group1
         - group2
         - group3
-    geneAssembly: hg19
     genome:       # path to genome sequence in fasta format
     gatkIgnoreHeaderCheck: true
     padjCutoff: .05
