@@ -6,6 +6,7 @@ if (!requireNamespace('BiocManager', quietly = TRUE)) {
     BiocManager::install("remotes")
 }
 
+
 args <- commandArgs(trailingOnly=TRUE)
 packages <- read.csv(args[1], stringsAsFactors = FALSE,
                      header = TRUE, sep = " ", comment.char = "#")
