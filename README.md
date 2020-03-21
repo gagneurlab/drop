@@ -56,6 +56,8 @@ drop init
 ``` 
 
 ## Set up the demo project
+This will download a sample annotation, config file, other resources, 10 BAM files and 2 VCF files from the GEUVADIS project subset to chromosome 21.
+
 First, install the drop module according to [installation](#installation). 
 Initialize the demo directory with a custom test project path.
 In the following we will use `$HOME/drop_demo` as <project/path>.
@@ -71,7 +73,7 @@ snakemake
 ```
 Once the pipeline has run through, you will find the output in the `$HOME/drop_demo/Output`. It will consist of processed data, results and HTML pages. In order to view the complete HTML summary, open `$HOME/drop_demo/Output/htmlOutput/drop_demo_index.html` in the browser.
 
-Expected runtime: 30 min
+Expected runtime: 25 min
 
 ## Set up a custom project
 Install the drop module according to [installation](#installation) and initialize the project in a custom project directory.
