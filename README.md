@@ -70,7 +70,7 @@ Now the pipeline is ready to be executed using `snakemake`.
 snakemake -n # dryrun
 snakemake
 ```
-Once the pipeline has run through, you will find the output in the `$HOME/drop_demo/Output`. It will consist of processed data, results and HTML pages. In order to view the complete HTML summary, open `$HOME/drop_demo/Output/htmlOutput/drop_demo_index.html` in the browser.
+Once the pipeline has run through, you will find the output in the `$HOME/drop_demo/Output`. It will consist of processed data, results and HTML pages. In order to view the complete HTML summary, open `$HOME/drop_demo/Output/htmlOutput/drop_demo_index.html` in the browser. Please note that this is a very small subset of the data used in the manuscript (100 samples and all chromosomes).
 
 Expected runtime: 25 min
 
