@@ -56,7 +56,6 @@ drop init
 ``` 
 
 ## Set up the demo project
-This will download a sample annotation, config file, other resources, 10 BAM files and 2 VCF files from the GEUVADIS project subset to chromosome 21.
 
 First, install the drop module according to [installation](#installation). 
 Initialize the demo directory with a custom test project path.
@@ -65,7 +64,7 @@ In the following we will use `$HOME/drop_demo` as <project/path>.
 cd $HOME/drop_demo
 drop demo
 ```
-This command downloads the demo data, initializes DROP  and adapts the config file paths to your current project directory. 
+This command downloads the demo data (10 BAM files and 2 VCF files from the GEUVADIS project subset to chromosome 21), initializes DROP and adapts the config file paths to your current project directory. 
 Now the pipeline is ready to be executed using `snakemake`.
 ```
 snakemake -n # dryrun
