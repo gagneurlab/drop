@@ -13,4 +13,5 @@ dplyr FALSE
 tidyr FALSE
 magrittr FALSE
 devtools FALSE
+BSgenome.Hsapiens.UCSC.hg19 TRUE
 
