@@ -13,7 +13,7 @@ geneAnnotation:
     # <annotation_name> : <path to gencode v29 annotation>
     v29:  /path/to/gencode29.gtf.gz # example
 
-geneAssembly: hg19  # either hg19 or hg38
+genomeAssembly: hg19  # either hg19 or hg38
 
 aberrantExpression:
     groups: 
