@@ -15,7 +15,7 @@ Programming languages:
 + python >= 3.6.7
      + pip >= 19.1
      + we recommend using a virtual environment e.g. anaconda
-+ R >= 3.5 (https://www.r-project.org/)
++ R >= 3.5 (https://www.r-project.org/). We recomment not to install R and its packages through conda.
 
 ### R packages
 Bioconductor and base R packages need to be installed. The packages are listed in `drop/requirementsR.txt`. A script for installing these packages is provided. From the repository root just execute:
