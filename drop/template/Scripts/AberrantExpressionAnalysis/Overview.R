@@ -48,7 +48,7 @@ display_text <- function(caption, links) {
 }
 
 # get parameters
-datasets <- snakemake@params$datasets
+datasets <- sort(snakemake@params$datasets)
 annotations <- snakemake@params$annotations
 htmlDir <- snakemake@params$htmlDir
 
