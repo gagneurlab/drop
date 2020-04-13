@@ -11,7 +11,7 @@
 #'                "/aberrant_splicing/datasets/savedObjects/{dataset}/" + 
 #'                "fds-object.RDS", dataset=datasets)`'
 #'    - result_tables: '`sm expand(parser.getProcDataDir() +
-#'                    "/aberrant_splicing/results/{dataset}_results.tsv",
+#'                    "/aberrant_splicing/results/{dataset}_results_per_junction.tsv",
 #'                    dataset=datasets)`'
 #'  input:
 #'    - AS: '`sm drop.getTmpDir() + "/AS.done"`'
@@ -54,7 +54,7 @@ datasets <- sort(snakemake@config$aberrantSplicing$groups)
 #' ## Summaries
 #' ### Counts summary
 #+ echo=FALSE
-htmlDir <- './aberrant_splicing/FraseR'
+htmlDir <- './AberrantSplicing'
 count_links <- get_html_path(datasets = datasets,
                              htmlDir = htmlDir, 
                              fileName = paste0(datasets, '_countSummary.html'))
@@ -80,8 +80,8 @@ fraser_links <- get_html_path(datasets = datasets,
 #' ## Analyze individual results
 #' 
 
+# Load the files
 fds <- loadFraseRDataSet(file = snakemake@params$fds_files[[1]])
-fds <- readRDS(snakemake@params$fds_files[[1]])
 res <- fread(snakemake@params$result_tables[[1]])
 
 #' Display the results table of the first dataset
