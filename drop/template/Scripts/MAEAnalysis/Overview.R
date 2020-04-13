@@ -5,9 +5,9 @@
 #'  params:
 #'    - tmpdir: '`sm drop.getTmpDir()`'
 #'    - mae_ids: '`sm parser.getMaeAll()`'
-#'    - count_matrices: '`sm expand(parser.getProcDataDir() + 
-#'                       "/mae/allelic_counts/{mae_id}.csv.gz",
-#'                       mae_id=parser.getMaeAll())`'
+#'    - allelic_counts: '`sm expand(parser.getProcDataDir() + 
+#'                          "/mae/allelic_counts/{mae_id}.csv.gz",
+#'                          mae_id=parser.getMaeAll())`'
 #'    - results_obj: '`sm expand(parser.getProcResultsDir() + 
 #'                       "/mae/samples/{mae_id}_res.Rds", 
 #'                       mae_id=parser.getMaeAll())`'
@@ -18,7 +18,6 @@
 #'    - html: '`sm config["htmlOutputPath"] + "/Scripts_MAE_Results_Overview.html"`'
 #'    - qc_matrix: '`sm expand(parser.getProcResultsDir() + "/mae/{qc_group}/" +
 #'                  "dna_rna_qc_matrix.Rds", qc_group=config["mae"]["qcGroups"])`'
-#'    - qc_html: '`sm config["htmlOutputPath"] + "/Scripts_QC_Overview.html"`'
 #'  input:
 #'    - MAE: '`sm drop.getTmpDir() + "/MAE.done"`'
 #' output:
@@ -32,20 +31,25 @@ saveRDS(snakemake, file.path(snakemake@params$tmpdir, "MAE_analysis.snakemake"))
 # snakemake <- readRDS(".drop/tmp/MAE_analysis.snakemake")
 
 suppressPackageStartupMessages({
-    library(tMAE)
+  library(tMAE)
 })
 
-all_files <- paste0("* ", snakemake@params$mae_ids, ": ",
-       snakemake@params$count_matrices, collapse = "\n")
+
+#' ## Files
+#' ### Allelic counts
+#' Located in `r file.path(snakemake@config$root, 'processed_data/mae/allelic_counts/')`
+#' 
+#' ### Results tables of each sample
+#' Located in `r file.path(snakemake@config$root, 'processed_results/mae/samples/')`
+#' 
+#' ### Aggregated results tables of each group
+#' `r paste('* ', snakemake@params$results_tables, collapse = '\n')`  
 #'
-#' # All Samples
-#' 
-#'  `r all_files`
-#' 
-#' [MAE Pipeline Output](`r snakemake@params$html`)
+#' ### MAE Pipeline Output
+#' [MAE Pipeline Output](`r "./Scripts_MAE_Datasets.html"`)
 #' 
 
-#' # Analyze Individual Results
+#' ## Analyze Individual Results
 #' 
 file <- snakemake@params$results_tables[[1]]
 res <- fread(file)
@@ -53,14 +57,24 @@ res <- fread(file)
 file_location <- strsplit(file, "/")[[1]]
 res_sample <- readRDS(snakemake@params$results_obj[[1]])
 
-plotMA4MAE(res_sample)
-plotAllelicCounts(res_sample)
+if(is.null(res_sample$rare)){
+  g1 <- plotMA4MAE(res_sample)
+  g2 <- plotAllelicCounts(res_sample)
+} else {
+  g1 <- plotMA4MAE(res_sample, rare_column = 'rare')
+  g2 <- plotAllelicCounts(res_sample, rare_column = 'rare')
+}
 
-#' # Quality Control: VCF-BAM Matching
+#' ### MA plot: fold change vs RNA coverage
+g1
+
+#' ### Alternative vs Reference plot
+g2
+
+#' ## Quality Control: VCF-BAM Matching
+#' 
+#' [QC Overview](`r "./Scripts_QC_Datasets.html"`)
 #' 
 #' DNA-RNA matrix: 
-#' 
-#' `r paste('    *', snakemake@params$qc_matrix, collapse='\n')`  
-#' 
-#' [QC Overview](`r snakemake@params$qc_html`)
+#' `r paste('* ', snakemake@params$qc_matrix, collapse='\n')`  
 

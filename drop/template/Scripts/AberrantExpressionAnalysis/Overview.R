@@ -22,7 +22,7 @@
 #'    - AE: '`sm drop.getTmpDir() + "/AE.done"`'
 #' output:
 #'   html_document:
-#'    code_folding: hide
+#'    code_folding: show
 #'    code_download: TRUE
 #'---
 
@@ -59,8 +59,10 @@ htmlDir <- snakemake@params$htmlDir
 #' 
 #' **Gene annotations:** `r paste(annotations, collapse = ', ')`
 #'
-#' # Count Summaries
+#' ## Summaries
+#' ### Counts summary
 #+ echo=FALSE
+htmlDir <- './AberrantExpression'
 count_links <- sapply(annotations, get_html_path, 
                       datasets = datasets,
                       htmlDir = file.path(htmlDir, "Counting"), 
@@ -68,46 +70,46 @@ count_links <- sapply(annotations, get_html_path,
 #' 
 #' `r display_text(caption = 'Gene annotation version ', count_links)`
 #' 
-#' # OUTRIDER Results
+#' ### OUTRIDER summary
 #+ echo=FALSE
 outrider_links <- sapply(annotations, get_html_path, 
                       datasets = datasets,
                       htmlDir = file.path(htmlDir, "Outrider"), 
                       fileName = paste0('Summary_', datasets, '.html'))
 #' 
-#' 
 #' `r display_text(caption = 'Gene annotation version ', outrider_links)`
 #' 
-#' 
-#' OUTRIDER dataset (ods) files 
+#' ## Files
+#' ### OUTRIDER datasets (ods)
 #' 
 #' `r paste('* ', snakemake@params$odsFiles, collapse = '\n')`
 #' 
-#' 
-#' Results tables
+#' ### Results tables
 #' 
 #'  `r paste('* ', snakemake@params$resultTables, collapse = '\n')`
 #' 
-#'   
-#' # Analyze Individual Results
+  
+#' ## Analyze Individual Results
 ods <- readRDS(snakemake@params$odsFiles[[1]])
 res <- fread(snakemake@params$resultTables[[1]])
 
-DT::datatable(res)
+#' Display the results table of the first dataset
+#+ echo=FALSE
+DT::datatable(res, filter = 'top')
 
-#' Choose a random gene and sample
+#' Choose a random gene and sample to plot. Outliers are in red.
 #+ echo=TRUE
 gene <- res[1, geneID]
 sample <- res[1, sampleID]
 
-#' ## Volcano plot
+#' ### Volcano plot
 #' setting basePlot = FALSE creates an interactive plot
 #' that allows finding the gene(s) of interest
 OUTRIDER::plotVolcano(ods, sample, basePlot = TRUE)
 
-#' ## Gene expression plot
+#' ### Gene expression plot (normalized counts)
 OUTRIDER::plotExpressionRank(ods, gene, basePlot = TRUE)
 
-#' ## Expected vs observed counts
+#' ### Expected vs observed counts
 OUTRIDER::plotExpectedVsObservedCounts(ods, gene, basePlot = TRUE)
 
