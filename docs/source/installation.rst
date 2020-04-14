@@ -21,7 +21,7 @@ Bioconductor and base R packages need to be installed. The packages are listed i
 
 .. code-block:: bash
     
-    Rscript drop/installRPackages.R drop/requirements.R
+    Rscript drop/installRPackages.R drop/requirementsR.txt
 
     
 Other packages
@@ -44,7 +44,7 @@ Then install DROP from github using ``pip``. For this you can either recursively
 .. code-block:: bash
 
     git clone https://github.com/gagneurlab/drop.git --recurse-submodules
-    # activate your python environment if you are using one
+    # activate your python environment if you are using one, e.g. drop_env
     # conda activate drop_env
     cd drop
     pip install .

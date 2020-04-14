@@ -52,8 +52,8 @@ Every single module can be called independently.
 Subworkflow                Description                                                       
 ========================  =======================================================================
 ``aberrantExpression``     Aberrant expression pipeline
-``aberrantSplicig``        Aberrant splicing pipeline
-``mae``                    Monoallelic expression pipeline
+``aberrantSplicing``       Aberrant splicing pipeline
+``mae``                    Monoalleic expression pipeline
 ========================  =======================================================================
 
 An example for calling the aberrant expression pipeline with 10 cores would be 
@@ -61,8 +61,6 @@ An example for calling the aberrant expression pipeline with 10 cores would be
 .. code-block:: bash
 
     snakemake aberrantExpression --cores 10
-
-
 
 Rerunning the Pipeline
 ----------------------
@@ -85,7 +83,7 @@ to unlock it. This will call snakemake's ``unlock`` command for every module
 Updating DROP
 +++++++++++++
 Everytime a project is initialized, a temporary folder ``.drop`` will be created in the project folder. If a new version of drop is installed, the ``.drop`` folder has to be updated for each project that has been initialized using an older version.
-For this run:
+To do this run:
 
 .. code-block:: bash
 
