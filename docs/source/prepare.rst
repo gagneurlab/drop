@@ -43,8 +43,9 @@ projectTitle         character   Title of the project to be displayed on the ren
 htmlOutputPath       character   Full path of the folder where the HTML files are rendered                                                                                ``/data/project1/htmlOutput``
 indexWithFolderName  boolean     variable needed for wBuild, do not edit it                                                                                               ``true``
 fileRegex            character   variable needed for wBuild, do not edit it                                                                                               ``.*\.R``
-root                 character   Full path of the folder where the subdirectories processed_data and processed_results will be created containing DROP's output files.    ``/data/project1``
+genomeAssembly       character   Either hg19 or hg38, depending on the genome assembly used for mapping                                                                   ``/data/project1``
 sampleAnnotation     character   Full path of the sample annotation table                                                                                                 ``/data/project1/sample_annotation.tsv``
+root                 character   Full path of the folder where the subdirectories processed_data and processed_results will be created containing DROP's output files.    ``/data/project1``
 geneAnnotation       dictionary  A key-value list of the annotation name (key) and the full path to the GTF file (value). More than one annotation file can be provided.  ``anno1: /path/to/gtf1.gtf``
 
                                                                                                                                                                           ``anno2: /path/to/gtf2.gtf``
@@ -62,9 +63,10 @@ Aberrant expression dictionary
 ================  =========  =====================================================================================================================================  ======
 Parameter         Type       Description                                                                                                                            Default/Examples
 ================  =========  =====================================================================================================================================  ======
-groups            list       DROP groups that should be executed in this module. If not specified, all groups are used.                                             ``- group1``
+groups            list       DROP groups that should be executed in this module. If not specified or ``null`` all groups are used.                                  ``- group1``
 
                                                                                                                                                                     ``- group2``
+minIds            numeric    A non-negative number indicating the minimum number of samples that a group needs in order to be analyzed. We recommend at least 50.   ``1``
 fpkmCutoff        numeric    A non-negative number indicating the minimum FPKM 5% of the samples per gene should have. If a gene has less it will be filtered out.  ``1 # suggested by OUTRIDER``
 implementation    character  Either 'autoencoder', 'pca' or 'peer'. Methods to remove sample covariation in OUTRIDER.                                               ``autoencoder``
 zScoreCutoff      numeric    A non-negative number. Z scores (in absolute value) greater than this cutoff are considered as outliers.                               ``0``
@@ -78,9 +80,12 @@ Aberrant splicing dictionary
 Parameter                 Type       Description                                                                                   Default/Examples
 ========================  =========  ============================================================================================  ======
 groups                    list       Same as in aberrant expression.                                                               ``# see aberrant expression example``
-recount                   boolean    If true, it forces samples to be recounted                                                    ``false``
+minIds                    numeric    Same as in aberrant expression.                                                               ``1``
+recount                   boolean    If true, it forces samples to be recounted.                                                   ``false``
 longRead                  boolean    Set to true only if counting Nanopore or PacBio long reads.                                   ``false``
+filter                    boolean    If false, no filter is applied. We recommend filtering.                                       ``true``
 minExpressionInOneSample  numeric    The minimal read count in at least one sample required for an intron to pass the filter.      ``20``
+minDeltaPsi               numeric    The minimal variation (in delta psi) required for an intron to pass the filter.               ``0.05``
 correction                character  Either 'PCA' or 'PCA-BB-Decoder'. Methods to remove sample covariation in FRASER.             ``PCA``
 deltaPsiCutoff            numeric    A non-negative number. Delta psi values greater than this cutoff are considered as outliers.  ``0.3 # suggested by FRASER``
 padjCutoff                numeric    Same as in aberrant expression.                                                               ``0.1``
@@ -90,25 +95,25 @@ padjCutoff                numeric    Same as in aberrant expression.            
 Mono-allelic expression dictionary
 ++++++++++++++++++++++++++++++++++
 
-==================  =========  ========================================================================================================================  ======
-Parameter           Type       Description                                                                                                               Default/Examples
-==================  =========  ========================================================================================================================  ======
-groups              list       Same as in aberrant expression.                                                                                           ``# see aberrant expression example``
-geneAssembly        character  Either hg19 or hg38, depending on the genome build used                                                                   ``hg19``
-genome              character  Full path of a human reference genome fasta file                                                                          ``/path/to/hg19.fa``
-padjCutoff          numeric    Same as in aberrant expression.                                                                                           ``0.05``
-allelicRatioCutoff  numeric    A number between [0.5, 1) indicating the maximum allelic ratio allele1/(allele1+allele2) for the test to be significant.  ``0.8``
-addAF               boolean    Whether or not to add the allele frequencies from gnomAD                                                                  ``true``
-maxAF               numeric    Maximum allele frequency (of the minor allele) cut-off. Variants with AF equal or below this number are considered rare.  ``0.001``
-qcVcf               character  Full path to the vcf file used for VCF-BAM matching                                                                       ``/path/to/qc_vcf.vcf.gz``
-qcGroups            list       Same as “groups”, but for the VCF-BAM matching                                                                            ``# see aberrant expression example``
-==================  =========  ========================================================================================================================  ======
+=====================  =========  ========================================================================================================================  ======
+Parameter              Type       Description                                                                                                               Default/Examples
+=====================  =========  ========================================================================================================================  ======
+groups                 list       Same as in aberrant expression.                                                                                           ``# see aberrant expression example``
+genome                 character  Full path of a human reference genome fasta file                                                                          ``/path/to/hg19.fa``
+gatkIgnoreHeaderCheck  boolean    If true (recommended), it ignores the header warnings of a VCF file when performing the allelic counts                    ``true``
+padjCutoff             numeric    Same as in aberrant expression.                                                                                           ``0.05``
+allelicRatioCutoff     numeric    A number between [0.5, 1) indicating the maximum allelic ratio allele1/(allele1+allele2) for the test to be significant.  ``0.8``
+addAF                  boolean    Whether or not to add the allele frequencies from gnomAD                                                                  ``true``
+maxAF                  numeric    Maximum allele frequency (of the minor allele) cut-off. Variants with AF equal or below this number are considered rare.  ``0.001``
+qcVcf                  character  Full path to the vcf file used for VCF-BAM matching                                                                       ``/path/to/qc_vcf.vcf.gz``
+qcGroups               list       Same as “groups”, but for the VCF-BAM matching                                                                            ``# see aberrant expression example``
+=====================  =========  ========================================================================================================================  ======
 
 
 Creating the Sample Annotation Table
 ------------------------------------
 
-For details on how to generate the sample annotation, please refer to the DROP paper. Here we provide some examples.
+For details on how to generate the sample annotation, please refer to the DROP manuscript. Here we provide some examples.
 
 Example of RNA replicates 
 ++++++++++++++++++++++++++++++++++
