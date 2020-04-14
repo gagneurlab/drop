@@ -1,6 +1,6 @@
 package bioconductor
 OUTRIDER TRUE
-c-mertes/FRASER TRUE
+gagneurlab/FRASER TRUE
 mumichae/tMAE TRUE
 VariantAnnotation TRUE
 rmarkdown FALSE
@@ -13,4 +13,5 @@ dplyr FALSE
 tidyr FALSE
 magrittr FALSE
 devtools FALSE
+BSgenome.Hsapiens.UCSC.hg19 TRUE
 

@@ -22,8 +22,11 @@ class ConfigHelper:
         config = self.checkConfig(config)
         self.config = self.setDefaults(config)
         self.createDirs()
-        
-        
+    
+    # Function to remove duplicate elements inside a DROP group    
+    def drop_dups(self, l):
+      return(list(set(l)))
+      
     def parse(self):
         """
         parse sample annotation, create sample-file mapping and extract IDs for each submodule
@@ -37,17 +40,23 @@ class ConfigHelper:
         if self.method == "AE" or self.method is None:
             groups = self.setKey(self.config, ["aberrantExpression"], "groups", self.all_rna_ids.keys())
             self.outrider_ids = self.subsetGroups(self.all_rna_ids, groups)
+            for k,v in self.outrider_ids.items():
+              self.outrider_ids[k] = self.drop_dups(v)
             self.config["outrider_ids"] = self.outrider_ids
         
         if self.method == "AS" or self.method is None:
             groups = self.setKey(self.config, ["aberrantSplicing"], "groups", self.all_rna_ids.keys())
             self.fraser_ids = self.subsetGroups(self.all_rna_ids, groups)
+            for k,v in self.fraser_ids.items():
+              self.fraser_ids[k] = self.drop_dups(v)
             self.config["fraser_ids"] = self.fraser_ids
         
         if self.method == "MAE" or self.method is None:
             groups = self.setKey(self.config, ["mae"], "groups", self.all_rna_ids.keys())
             self.config["mae"]["qcGroups"] = self.setKey(self.config, ["mae"], "qcGroups", groups)
             self.mae_ids = self.createMaeIDS(self.all_rna_ids, groups, id_sep='--')
+            for k,v in self.mae_ids.items():
+              self.mae_ids[k] = self.drop_dups(v)
             self.config["mae_ids"] = self.mae_ids
         
         return self.config
@@ -98,6 +107,8 @@ class ConfigHelper:
         setKey = self.setKey
         setKey(config, None, "projectTitle", "DROP: Detection of RNA Outlier Pipeline")
         
+        setKey(config, None, "genomeAssembly", "hg19")
+        
         if self.method is None:
             tmp_dir = submodules.getTmpDir()
         else:
@@ -121,6 +132,7 @@ class ConfigHelper:
             setKey(config, ["aberrantSplicing"], "longRead", False, verbose=VERBOSE)
             setKey(config, ["aberrantSplicing"], "filter", True, verbose=VERBOSE)
             setKey(config, ["aberrantSplicing"], "minExpressionInOneSample", 20, verbose=VERBOSE)
+            setKey(config, ["aberrantSplicing"], "minDeltaPsi", 0, verbose=VERBOSE)
             setKey(config, ["aberrantSplicing"], "correction", "PCA", verbose=VERBOSE)
             setKey(config, ["aberrantSplicing"], "padjCutoff", 0.05, verbose=VERBOSE)
             setKey(config, ["aberrantSplicing"], "zScoreCutoff", 0.05, verbose=VERBOSE)
@@ -129,7 +141,6 @@ class ConfigHelper:
         # monoallelic expression
         if self.method == "MAE" or self.method is None:
             setKey(config, None, "mae", dict(), verbose=VERBOSE)
-            setKey(config, ["mae"], "geneAssembly", "hg19", verbose=VERBOSE)
             setKey(config, ["mae"], "gatkIgnoreHeaderCheck", True, verbose=VERBOSE)
             setKey(config, ["mae"], "padjCutoff", .05, verbose=VERBOSE)
             setKey(config, ["mae"], "allelicRatioCutoff", 0.8, verbose=VERBOSE)

@@ -42,25 +42,28 @@ addons:
   
 install:
   - cd $DROP_DIR
-#  - R -e "if ('FraseR' %in% rownames(installed.packages())) remove.packages('FraseR')"
-  - R -e "if ('tMAE' %in% rownames(installed.packages())) remove.packages('tMAE')"
+  - R -e "if ('FRASER' %in% rownames(installed.packages())) remove.packages('FRASER')"
+  - R -e "install.packages('BiocManager'); BiocManager::install('remotes'); BiocManager::install('gagneurlab/FRASER', ref = 'R3.6')"
+#  - R -e "if ('tMAE' %in% rownames(installed.packages())) remove.packages('tMAE')"
   - Rscript travis/installRPackages.R drop/requirementsR.txt
   - bash travis/install_bcftools.sh
+  - export PATH="$HOME/bcftools:$PATH"
+  - bcftools --version
   - bash travis/install_conda.sh
   - source $CONDA_SCRIPT
   - conda activate drop_env
   - pip install .
 
 before_script:
-  - cd $DROP_DIR
-  - bash travis/download_data.sh $PROJECT_DIR
+  - mkdir -p $PROJECT_DIR
   - cd $PROJECT_DIR
-  - drop init
+  - drop demo
 
 script:
-  - snakemake -n
-  - snakemake aberrantExpression --cores 2
-  - snakemake aberrantSplicing --cores 2
-  - snakemake mae --cores 2
-  - snakemake --cores 2
+ - cd $PROJECT_DIR
+ - snakemake -n
+ - snakemake aberrantExpression --cores 2
+ - snakemake aberrantSplicing --cores 2
+ - snakemake mae --cores 2
+ - snakemake --cores 2
 

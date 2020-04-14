@@ -9,5 +9,4 @@ then
     cd bcftools
     make
 fi
-$HOME/bcftools/bcftools --version
 

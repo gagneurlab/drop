@@ -62,5 +62,5 @@ plotAllelicCounts(res_sample)
 #' 
 #' `r paste('    *', snakemake@params$qc_matrix, collapse='\n')`  
 #' 
-#' [QC Overview](`r snakemake@params$html`)
+#' [QC Overview](`r snakemake@params$qc_html`)
 

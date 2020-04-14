@@ -36,7 +36,7 @@ rule all:
         touch(config["tmpdir"] + "/drop_all.done")
 
 rule sampleAnnotation:
-    input: rules.Scripts_Pipeline_SampleAnnotation_R.output
+    input: parser.getProcDataDir() + "/sample_anno/sample_anno.done"
 
 rule getIndexNames:
     input:

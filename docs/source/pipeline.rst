@@ -1,5 +1,5 @@
-Executing the Pipeline
-======================
+Pipeline Commands
+=================
 
 DROP is `Snakemake <https://snakemake.readthedocs.io/en/stable/executing/cli.html>`_ pipeline, so it is called with the ``snakemake`` command.
 
@@ -49,14 +49,18 @@ Every single module can be called independently.
     snakemake <subworkflow>
     
 ========================  =======================================================================
-<subworkflow>                Description                                                       
+Subworkflow                Description                                                       
 ========================  =======================================================================
 ``aberrantExpression``     Aberrant expression pipeline
 ``aberrantSplicing``       Aberrant splicing pipeline
 ``mae``                    Monoalleic expression pipeline
 ========================  =======================================================================
 
+An example for calling the aberrant expression pipeline with 10 cores would be 
 
+.. code-block:: bash
+
+    snakemake aberrantExpression --cores 10
 
 Rerunning the Pipeline
 ----------------------

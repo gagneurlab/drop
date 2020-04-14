@@ -6,6 +6,8 @@
 #'   - tmpdir: '`sm drop.getTmpDir()`'
 #'  input: 
 #'   - sampleAnnotation: '`sm config["sampleAnnotation"]`'
+#'  output:
+#'   - done: '`sm parser.getProcDataDir() + "/sample_anno/sample_anno.done"`'
 #' output:
 #'   html_document:
 #'    code_folding: hide
@@ -65,4 +67,24 @@ if(sum(duplicated(unique(sa[,.(RNA_ID, RNA_BAM_FILE)])$RNA_ID)) > 0){
 #' Barplot with DROP groups
 unique(sa[,.(RNA_ID, DROP_GROUP)])$DROP_GROUP %>% strsplit(',') %>% unlist %>%
   table %>% barplot(xlab = 'DROP groups', ylab = 'Number of samples')
+
+# Obtain genes that overlap with HPO terms
+#+echo=F
+if(!is.null(sa$HPO_TERMS)){
+  sa2 <- sa[, .SD[1], by = RNA_ID]
+  hpo_dt <- fread('https://i12g-gagneurweb.in.tum.de/public/paper/drop_analysis/resource/hpo_genes.tsv.gz')
+  
+  sapply(1:nrow(sa2), function(i){
+    hpos <- strsplit(sa2[i, HPO_TERMS], split = ',') %>% unlist
+    genes <- paste(sort(hpo_dt[HPO_id %in% hpos, hgncSymbol]), collapse = ',')
+    set(sa2, i, 'HPO_matching_genes', value = genes)
+  }) %>% invisible()  # don't print result
+  sa2 <- sa2[, .(RNA_ID, HPO_matching_genes)]
+  
+  fwrite(sa2, 
+         file.path(snakemake@config$root, 'processed_data/sample_anno/genes_overlapping_HPO_terms.tsv'), 
+         na = NA, sep = "\t", row.names = F, quote = F)
+}
+
+file.create(snakemake@output$done)
 
