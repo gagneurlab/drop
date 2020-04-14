@@ -49,6 +49,7 @@ root                 character   Full path of the folder where the subdirectorie
 geneAnnotation       dictionary  A key-value list of the annotation name (key) and the full path to the GTF file (value). More than one annotation file can be provided.  ``anno1: /path/to/gtf1.gtf``
 
                                                                                                                                                                           ``anno2: /path/to/gtf2.gtf``
+scanBamParam         character   Either null or the path to an Rds file containing a scanBamParam object. Refer to the advanced options below.                            ``/path/to/scanBamParam.Rds``
 tools                dictionary  A key-value list of different commands (key) and the command (value) to run them                                                         ``gatkCmd: gatk``
 
                                                                                                                                                                           ``bcftoolsCmd: bcftools``
@@ -144,3 +145,22 @@ RNA_ID  DNA_ID  DROP_GROUP  RNA_BAM_FILE         DNA_VCF_FILE
 S10R    S10G    WGS         /path/to/S10R.BAM    /path/to/multi_sample.vcf.gz
 S20R    S20G    WGS         /path/to/S20R.BAM    /path/to/multi_sample.vcf.gz
 ======  ======  ==========  ===================  ==
+
+
+Advanced options
+----------------
+
+When executing `drop init` a hidden folder `.drop` is created containing all the
+scripts from DROP. The advanced user might want to edit some of them. For 
+example adding plots to the `Summary` scripts or specifying threads.
+Keep in mind that when executing `drop update`, all the scripts in the `.drop` 
+folder will be deleted.
+
+Also, the user can provide a `scanBamParam` object to influence which fields of 
+the BAM files are imported and therefore counted in the aberrant expression and 
+splicing modules. Refer to the function's documentation <https://www.rdocumentation.org/packages/Rsamtools/versions/1.24.0/topics/ScanBamParam>_ for details.
+
+
+
+
+
