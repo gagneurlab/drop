@@ -33,7 +33,7 @@ aberrantSplicing:
     filter: true
     minExpressionInOneSample: 20
     minDeltaPsi: 0
-    correction: PCA
+    implementation: PCA
     padjCutoff: 0.05
     zScoreCutoff: 0
     deltaPsiCutoff: 0.3

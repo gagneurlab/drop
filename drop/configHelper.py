@@ -134,7 +134,7 @@ class ConfigHelper:
             setKey(config, ["aberrantSplicing"], "filter", True, verbose=VERBOSE)
             setKey(config, ["aberrantSplicing"], "minExpressionInOneSample", 20, verbose=VERBOSE)
             setKey(config, ["aberrantSplicing"], "minDeltaPsi", 0, verbose=VERBOSE)
-            setKey(config, ["aberrantSplicing"], "correction", "PCA", verbose=VERBOSE)
+            setKey(config, ["aberrantSplicing"], "implementation", "PCA", verbose=VERBOSE)
             setKey(config, ["aberrantSplicing"], "padjCutoff", 0.05, verbose=VERBOSE)
             setKey(config, ["aberrantSplicing"], "zScoreCutoff", 0.05, verbose=VERBOSE)
             setKey(config, ["aberrantSplicing"], "deltaPsiCutoff", 0.05, verbose=VERBOSE)
