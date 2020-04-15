@@ -155,9 +155,10 @@ them. For example, to add new plots to the ``Summary`` scripts, or add
 columns to the results tables. Also, users might want to modify the threads of
 each script. Finally, other functionalities can be added. 
 
-Also, the user can provide a `scanBamParam` object to influence which fields of 
-the BAM files are imported and therefore counted in the aberrant expression and 
-splicing modules. Refer to the function's documentation <https://www.rdocumentation.org/packages/Rsamtools/versions/1.24.0/topics/ScanBamParam>_ for details.
+In order to influence which fields of the BAM files are imported, the user can 
+provide a `scanBamParam` object. This will affect how the files are counted in 
+the aberrant expression and splicing modules. Refer to the function's 
+`documentation <https://www.rdocumentation.org/packages/Rsamtools/versions/1.24.0/topics/ScanBamParam>`_ for details.
 
 
 
