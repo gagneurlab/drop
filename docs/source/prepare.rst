@@ -87,7 +87,7 @@ longRead                  boolean    Set to true only if counting Nanopore or Pa
 filter                    boolean    If false, no filter is applied. We recommend filtering.                                       ``true``
 minExpressionInOneSample  numeric    The minimal read count in at least one sample required for an intron to pass the filter.      ``20``
 minDeltaPsi               numeric    The minimal variation (in delta psi) required for an intron to pass the filter.               ``0.05``
-correction                character  Either 'PCA' or 'PCA-BB-Decoder'. Methods to remove sample covariation in FRASER.             ``PCA``
+implementation            character  Either 'PCA' or 'PCA-BB-Decoder'. Methods to remove sample covariation in FRASER.             ``PCA``
 deltaPsiCutoff            numeric    A non-negative number. Delta psi values greater than this cutoff are considered as outliers.  ``0.3 # suggested by FRASER``
 padjCutoff                numeric    Same as in aberrant expression.                                                               ``0.1``
 ========================  =========  ============================================================================================  ======
