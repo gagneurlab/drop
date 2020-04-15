@@ -150,11 +150,10 @@ S20R    S20G    WGS         /path/to/S20R.BAM    /path/to/multi_sample.vcf.gz
 Advanced options
 ----------------
 
-When executing `drop init` a hidden folder `.drop` is created containing all the
-scripts from DROP. The advanced user might want to edit some of them. For 
-example adding plots to the `Summary` scripts or specifying threads.
-Keep in mind that when executing `drop update`, all the scripts in the `.drop` 
-folder will be deleted.
+The user might want to clone drop locally and edit some scripts to personalize
+them. For example, to add new plots to the ``Summary`` scripts, or add 
+columns to the results tables. Also, users might want to modify the threads of
+each script. Finally, other functionalities can be added. 
 
 Also, the user can provide a `scanBamParam` object to influence which fields of 
 the BAM files are imported and therefore counted in the aberrant expression and 
