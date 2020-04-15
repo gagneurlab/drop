@@ -90,6 +90,7 @@ outrider_links <- sapply(annotations, get_html_path,
 #' 
   
 #' ## Analyze Individual Results
+# Read the first ods object and results table
 ods <- readRDS(snakemake@params$odsFiles[[1]])
 res <- fread(snakemake@params$resultTables[[1]])
 
