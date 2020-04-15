@@ -5,7 +5,7 @@
 The manuscript main file, supplementary figures and table can be found in the manuscript folder or in [protocol exchange](https://protocolexchange.researchsquare.com/article/993ff4a5-38ce-4261-902a-600dbd528ba2/v1).
 
 
-[DROP documentation](https://drop-rna.readthedocs.io/en/latest/index.html)
+[DROP documentation](https://gagneurlab-drop.readthedocs.io/en/latest/)
 
 <img src="drop_sticker.png" alt="drop logo" width="200" class="center"/>
 
