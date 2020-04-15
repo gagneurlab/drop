@@ -108,6 +108,7 @@ class ConfigHelper:
         setKey(config, None, "projectTitle", "DROP: Detection of RNA Outlier Pipeline")
         
         setKey(config, None, "genomeAssembly", "hg19")
+        setKey(config, None, "scanBamParam", "null")
         
         if self.method is None:
             tmp_dir = submodules.getTmpDir()
