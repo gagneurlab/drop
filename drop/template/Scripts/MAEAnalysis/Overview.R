@@ -50,13 +50,10 @@ suppressPackageStartupMessages({
 #' 
 
 #' ## Analyze Individual Results
-#' 
-file <- snakemake@params$results_tables[[1]]
-res <- fread(file)
-
-file_location <- strsplit(file, "/")[[1]]
+# Read the first results table
 res_sample <- readRDS(snakemake@params$results_obj[[1]])
 
+#+echo=F
 if(is.null(res_sample$rare)){
   g1 <- plotMA4MAE(res_sample)
   g2 <- plotAllelicCounts(res_sample)
@@ -75,6 +72,6 @@ g2
 #' 
 #' [QC Overview](`r "./Scripts_QC_Datasets.html"`)
 #' 
-#' DNA-RNA matrix: 
+#' ### DNA-RNA matrix: 
 #' `r paste('* ', snakemake@params$qc_matrix, collapse='\n')`  
 
