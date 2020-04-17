@@ -59,11 +59,11 @@ before_script:
   - cd $PROJECT_DIR
   - drop demo
 
-script: 
- - cd $PROJECT_DIR
- - snakemake -n
- - snakemake aberrantExpression --cores 2
- - snakemake aberrantSplicing --cores 2
- - snakemake mae --cores 2
- - snakemake --cores 2
+script: true
+# - cd $PROJECT_DIR
+# - snakemake -n
+# - snakemake aberrantExpression --cores 2
+# - snakemake aberrantSplicing --cores 2
+# - snakemake mae --cores 2
+# - snakemake --cores 2
 
