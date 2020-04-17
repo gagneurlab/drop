@@ -61,36 +61,38 @@ tools                dictionary  A key-value list of different commands (key) an
 Aberrant expression dictionary
 ++++++++++++++++++++++++++++++
 
-================  =========  =====================================================================================================================================  ======
-Parameter         Type       Description                                                                                                                            Default/Examples
-================  =========  =====================================================================================================================================  ======
-groups            list       DROP groups that should be executed in this module. If not specified or ``null`` all groups are used.                                  ``- group1``
+============================  =========  =====================================================================================================================================  ======
+Parameter                     Type       Description                                                                                                                            Default/Examples
+============================  =========  =====================================================================================================================================  ======
+groups                        list       DROP groups that should be executed in this module. If not specified or ``null`` all groups are used.                                  ``- group1``
 
-                                                                                                                                                                    ``- group2``
-minIds            numeric    A non-negative number indicating the minimum number of samples that a group needs in order to be analyzed. We recommend at least 50.   ``1``
-fpkmCutoff        numeric    A non-negative number indicating the minimum FPKM 5% of the samples per gene should have. If a gene has less it will be filtered out.  ``1 # suggested by OUTRIDER``
-implementation    character  Either 'autoencoder', 'pca' or 'peer'. Methods to remove sample covariation in OUTRIDER.                                               ``autoencoder``
-zScoreCutoff      numeric    A non-negative number. Z scores (in absolute value) greater than this cutoff are considered as outliers.                               ``0``
-padjCutoff        numeric    A number between (0, 1] indicating the maximum FDR an event can have in order to be considered an outlier.                             ``0.05``
-================  =========  =====================================================================================================================================  ======
+                                                                                                                                                                                ``- group2``
+minIds                        numeric    A non-negative number indicating the minimum number of samples that a group needs in order to be analyzed. We recommend at least 50.   ``1``
+fpkmCutoff                    numeric    A non-negative number indicating the minimum FPKM 5% of the samples per gene should have. If a gene has less it will be filtered out.  ``1 # suggested by OUTRIDER``
+implementation                character  Either 'autoencoder', 'pca' or 'peer'. Methods to remove sample covariation in OUTRIDER.                                               ``autoencoder``
+zScoreCutoff                  numeric    A non-negative number. Z scores (in absolute value) greater than this cutoff are considered as outliers.                               ``0``
+padjCutoff                    numeric    A number between (0, 1] indicating the maximum FDR an event can have in order to be considered an outlier.                             ``0.05``
+maxTestedDimensionProportion  numeric    An integer that controls the maximum value that the encoding dimension can take. Refer to the advanced options below.                  ``3``
+============================  =========  =====================================================================================================================================  ======
 
 Aberrant splicing dictionary
 ++++++++++++++++++++++++++++
 
-========================  =========  ============================================================================================  ======
-Parameter                 Type       Description                                                                                   Default/Examples
-========================  =========  ============================================================================================  ======
-groups                    list       Same as in aberrant expression.                                                               ``# see aberrant expression example``
-minIds                    numeric    Same as in aberrant expression.                                                               ``1``
-recount                   boolean    If true, it forces samples to be recounted.                                                   ``false``
-longRead                  boolean    Set to true only if counting Nanopore or PacBio long reads.                                   ``false``
-filter                    boolean    If false, no filter is applied. We recommend filtering.                                       ``true``
-minExpressionInOneSample  numeric    The minimal read count in at least one sample required for an intron to pass the filter.      ``20``
-minDeltaPsi               numeric    The minimal variation (in delta psi) required for an intron to pass the filter.               ``0.05``
-implementation            character  Either 'PCA' or 'PCA-BB-Decoder'. Methods to remove sample covariation in FRASER.             ``PCA``
-deltaPsiCutoff            numeric    A non-negative number. Delta psi values greater than this cutoff are considered as outliers.  ``0.3 # suggested by FRASER``
-padjCutoff                numeric    Same as in aberrant expression.                                                               ``0.1``
-========================  =========  ============================================================================================  ======
+============================  =========  ============================================================================================  ======
+Parameter                     Type       Description                                                                                   Default/Examples
+============================  =========  ============================================================================================  ======
+groups                        list       Same as in aberrant expression.                                                               ``# see aberrant expression example``
+minIds                        numeric    Same as in aberrant expression.                                                               ``1``
+recount                       boolean    If true, it forces samples to be recounted.                                                   ``false``
+longRead                      boolean    Set to true only if counting Nanopore or PacBio long reads.                                   ``false``
+filter                        boolean    If false, no filter is applied. We recommend filtering.                                       ``true``
+minExpressionInOneSample      numeric    The minimal read count in at least one sample required for an intron to pass the filter.      ``20``
+minDeltaPsi                   numeric    The minimal variation (in delta psi) required for an intron to pass the filter.               ``0.05``
+implementation                character  Either 'PCA' or 'PCA-BB-Decoder'. Methods to remove sample covariation in FRASER.             ``PCA``
+deltaPsiCutoff                numeric    A non-negative number. Delta psi values greater than this cutoff are considered as outliers.  ``0.3 # suggested by FRASER``
+padjCutoff                    numeric    Same as in aberrant expression.                                                               ``0.1``
+maxTestedDimensionProportion  numeric    Same as in aberrant expression.                                                               ``6``
+============================  =========  ============================================================================================  ======
 
 
 Mono-allelic expression dictionary
@@ -155,8 +157,15 @@ them. For example, to add new plots to the ``Summary`` scripts, or add
 columns to the results tables. Also, users might want to modify the threads of
 each script. Finally, other functionalities can be added. 
 
+The aberrant expression and splicing modules use a denoising autoencoder to 
+correct for sample covariation. This process reduces the fitting space to a 
+dimension smaller than the number of samples N. The encoding dimension is optimized.
+We recommend the search space to be at most N/3 for the aberrant expression, 
+and N/6 for the aberrant splicing case. Nevertheless, the user can specify the 
+denominator with the parameter ``maxTestedDimensionProportion``.
+
 In order to influence which fields of the BAM files are imported, the user can 
-provide a `scanBamParam` object. This will affect how the files are counted in 
+provide a ``scanBamParam`` object. This will affect how the files are counted in 
 the aberrant expression and splicing modules. Refer to the function's 
 `documentation <https://www.rdocumentation.org/packages/Rsamtools/versions/1.24.0/topics/ScanBamParam>`_ for details.
 
