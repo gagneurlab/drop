@@ -221,7 +221,7 @@ class ConfigHelper:
     
     def createGroupIds(self, group_key="DROP_GROUP", file_type="RNA_BAM_FILE", sep=','):
         """
-        Create a full and filtered list of RNA assay IDs subsetted by specified OUTRIDER groups
+        Create a full and filtered list of RNA assay IDs subsetted by specified DROP groups
         """
         sa = self.sample_annotation
         sf = self.sample_file_mapping
@@ -303,7 +303,7 @@ class ConfigHelper:
     
     def getFilePath(self, sampleId, file_type):
         """
-        Function for getting the file path given the sampleId and file t
+        Function for getting the file path given the sampleId and file type
         sampleId: ID of sample
         file_type: e.g. "RNA_BAM_FILE", "DNA_VCF_FILE"
         """
