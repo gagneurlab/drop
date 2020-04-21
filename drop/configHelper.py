@@ -124,6 +124,7 @@ class ConfigHelper:
             setKey(config, ["aberrantExpression"], "groups", None, verbose=VERBOSE)
             setKey(config, ["aberrantExpression"], "padjCutoff", .05, verbose=VERBOSE)
             setKey(config, ["aberrantExpression"], "zScoreCutoff", 0, verbose=VERBOSE)
+            setKey(config, ["aberrantSplicing"], "maxTestedDimensionProportion", 3, verbose=VERBOSE)
         
         # aberrant splicing
         if self.method == "AS" or self.method is None:
@@ -138,6 +139,7 @@ class ConfigHelper:
             setKey(config, ["aberrantSplicing"], "padjCutoff", 0.05, verbose=VERBOSE)
             setKey(config, ["aberrantSplicing"], "zScoreCutoff", 0.05, verbose=VERBOSE)
             setKey(config, ["aberrantSplicing"], "deltaPsiCutoff", 0.05, verbose=VERBOSE)
+            setKey(config, ["aberrantSplicing"], "maxTestedDimensionProportion", 6, verbose=VERBOSE)
         
         # monoallelic expression
         if self.method == "MAE" or self.method is None:
@@ -219,7 +221,7 @@ class ConfigHelper:
     
     def createGroupIds(self, group_key="DROP_GROUP", file_type="RNA_BAM_FILE", sep=','):
         """
-        Create a full and filtered list of RNA assay IDs subsetted by specified OUTRIDER groups
+        Create a full and filtered list of RNA assay IDs subsetted by specified DROP groups
         """
         sa = self.sample_annotation
         sf = self.sample_file_mapping
@@ -301,7 +303,7 @@ class ConfigHelper:
     
     def getFilePath(self, sampleId, file_type):
         """
-        Function for getting the file path given the sampleId and file t
+        Function for getting the file path given the sampleId and file type
         sampleId: ID of sample
         file_type: e.g. "RNA_BAM_FILE", "DNA_VCF_FILE"
         """

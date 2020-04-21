@@ -23,7 +23,8 @@ aberrantExpression:
     fpkmCutoff: 1
     implementation: autoencoder
     padjCutoff: 0.05
-    zscoreCutoff: 0
+    zScoreCutoff: 0
+    maxTestedDimensionProportion: 3
 
 aberrantSplicing:
     groups:
@@ -37,6 +38,7 @@ aberrantSplicing:
     padjCutoff: 0.05
     zScoreCutoff: 0
     deltaPsiCutoff: 0.3
+    maxTestedDimensionProportion: 6
 
 mae:
     groups:
@@ -51,7 +53,7 @@ mae:
     maxAF: .001
     # VCF-BAM matching
     qcVcf:        # path to common variant file e.g. qc_vcf_1000G.vcf.gz
-    qcGroup: mae
+    qcGroups: mae
 
 tools:
     gatkCmd: gatk
