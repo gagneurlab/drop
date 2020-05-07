@@ -42,8 +42,8 @@ addons:
   
 install:
   - cd $DROP_DIR
-  - R -e "if ('FRASER' %in% rownames(installed.packages())) remove.packages('FRASER')"
-  - R -e "if ('tMAE' %in% rownames(installed.packages())) remove.packages('tMAE')"
+#  - R -e "if ('FRASER' %in% rownames(installed.packages())) remove.packages('FRASER')"
+#  - R -e "if ('tMAE' %in% rownames(installed.packages())) remove.packages('tMAE')"
   - Rscript travis/installRPackages.R drop/requirementsR.txt
   - bash travis/install_bcftools.sh
   - export PATH="$HOME/bcftools:$PATH"
@@ -58,11 +58,11 @@ before_script:
   - cd $PROJECT_DIR
   - drop demo
 
-script: true
-# - cd $PROJECT_DIR
-# - snakemake -n
-# - snakemake aberrantExpression --cores 2
-# - snakemake aberrantSplicing --cores 2
-# - snakemake mae --cores 2
-# - snakemake --cores 2
+script:
+ - cd $PROJECT_DIR
+ - snakemake -n
+ - snakemake aberrantExpression --cores 2
+ - snakemake aberrantSplicing --cores 2
+ - snakemake mae --cores 2
+ - snakemake --cores 2
 
