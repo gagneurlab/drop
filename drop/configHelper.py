@@ -186,6 +186,11 @@ class ConfigHelper:
         col = col.str.replace(" ", "").str.replace("(|)", "", regex=True)
         sample_annotation["DROP_GROUP"] = col
         
+        # set ID type as string
+        sample_annotation = sample_annotation.astype({
+            "RNA_ID": str, "DNA_ID": str
+        })
+        
         return sample_annotation
     
     def createSampleFileMapping(self, sample_annotation):
