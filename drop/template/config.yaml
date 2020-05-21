@@ -31,6 +31,7 @@ aberrantSplicing:
         - group1
     recount: false
     longRead: false
+    keepNonStandardChrs: true
     filter: true
     minExpressionInOneSample: 20
     minDeltaPsi: 0
