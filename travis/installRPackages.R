@@ -19,19 +19,15 @@ install_packages <- function(packages) {
         pckg_name <- tail(unlist(strsplit(package, split = "/")), n = 1)
         version <- packages[i, 'version']
         
-        if (pckg_name %in% installed & is.na(version)) {
+        if (pckg_name %in% installed & 
+            (is.na(version) | compareVersion(as.character(packageVersion(pckg_name)), version) >= 0)) {
             message(paste(pckg_name, "already installed"))
-            continue
+        } else{
+            message(paste("installing", package))
+            BiocManager::install(package)
+            message(paste(package, "successfully installed"))
         }
-        if(pckg_name %in% installed & compareVersion(as.character(packageVersion(pckg_name)), version) >= 0){
-            message(paste(pckg_name, "already installed"))
-            continue
-        } 
-        
-        message(paste("installing", package))
-        BiocManager::install(package)
-        message(paste(package, "successfully installed"))
-        }
+    }
 }
 
 maxTime <- max(30, (60*30 - difftime(Sys.time(), START_TIME, units="sec")))
