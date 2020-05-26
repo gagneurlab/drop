@@ -1,17 +1,18 @@
-package bioconductor
-OUTRIDER TRUE
-c-mertes/FRASER TRUE
-mumichae/tMAE TRUE
-VariantAnnotation TRUE
-rmarkdown FALSE
-knitr FALSE
-ggplot2 FALSE
-ggthemes FALSE
-cowplot FALSE
-data.table FALSE
-dplyr FALSE
-tidyr FALSE
-magrittr FALSE
-devtools FALSE
-BSgenome.Hsapiens.UCSC.hg19 TRUE
-
+package bioconductor version
+OUTRIDER TRUE 
+c-mertes/FRASER TRUE 1.1.1
+mumichae/tMAE TRUE 
+VariantAnnotation TRUE 
+rmarkdown FALSE 
+knitr FALSE 
+ggplot2 FALSE 
+ggthemes FALSE 
+cowplot FALSE 
+data.table FALSE 
+dplyr FALSE 
+tidyr FALSE 
+magrittr FALSE 
+devtools FALSE  
+BSgenome.Hsapiens.UCSC.hg19 TRUE 
+MafDb.gnomAD.r2.1.hs37d5 TRUE 
+MafDb.gnomAD.r2.1.GRCh38 TRUE 

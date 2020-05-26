@@ -14,23 +14,24 @@ packages <- read.csv(args[1], stringsAsFactors = FALSE,
 install_packages <- function(packages) {
     installed <- rownames(installed.packages())
     for (i in 1:nrow(packages)) {
-            
-        pckg_name <- tail(unlist(strsplit(packages[i,1], split = "/")), n = 1)
-           
-        if (pckg_name %in% installed) {
+        
+        package <- packages[i,1]    
+        pckg_name <- tail(unlist(strsplit(package, split = "/")), n = 1)
+        version <- packages[i, 'version']
+        
+        if (pckg_name %in% installed & is.na(version)) {
             message(paste(pckg_name, "already installed"))
-        } else {
-            if (packages[i,2] == TRUE) {
-                INSTALL <- BiocManager::install
-            } else {
-                INSTALL <- install.packages
-            }
-            package <- packages[i,1]
-            message(paste("installing", package))
-            INSTALL(packages[i,1])
-            message(paste(package, "successfully installed"))
+            continue
         }
-    }
+        if(pckg_name %in% installed & compareVersion(as.character(packageVersion(pckg_name)), version) >= 0){
+            message(paste(pckg_name, "already installed"))
+            continue
+        } 
+        
+        message(paste("installing", package))
+        BiocManager::install(package)
+        message(paste(package, "successfully installed"))
+        }
 }
 
 maxTime <- max(30, (60*30 - difftime(Sys.time(), START_TIME, units="sec")))
