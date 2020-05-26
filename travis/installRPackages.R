@@ -10,6 +10,7 @@ if (!requireNamespace('BiocManager', quietly = TRUE)) {
 args <- commandArgs(trailingOnly=TRUE)
 packages <- read.csv(args[1], stringsAsFactors = FALSE,
                      header = TRUE, sep = " ", comment.char = "#")
+message('Required packages read')
 
 install_packages <- function(packages) {
     installed <- rownames(installed.packages())
