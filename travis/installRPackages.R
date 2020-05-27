@@ -21,12 +21,15 @@ install_packages <- function(packages) {
         pckg_name = tail(unlist(strsplit(package, split = "/")), n = 1)
         version <- packages[i, 'version']
         
+        must_install <- TRUE
+        
+        # Do not install if already installed and version is at least the min required
         if (pckg_name %in% installed) {
             if((version == '' | compareVersion(as.character(packageVersion(pckg_name)), version) >= 0)){
                 message(paste(pckg_name, "already installed"))
                 must_install <- FALSE
-            } else must_install <- TRUE
-        } else must_install <- TRUE
+            } 
+        } 
         
         if(isTRUE(must_install)){
             message(paste("install", package))
