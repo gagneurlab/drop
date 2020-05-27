@@ -16,24 +16,22 @@ installed <- rownames(installed.packages())
 
 install_packages <- function(packages) {
     for (i in 1:nrow(packages)) {
-    
-    pckg_name = tail(unlist(strsplit(packages[i,1], split = "/")), n = 1)
-    version <- packages[i, 3]
-    right_version <- (version == '' | compareVersion(as.character(packageVersion(pckg_name)), version) >= 0)
-
-    if (pckg_name %in% installed & isTRUE(right_version)) {
-        message(paste(pckg_name, "already installed"))
-    } else {
-        if (packages[i,2] == TRUE) {
-            INSTALL <- BiocManager::install
-        } else {
-            INSTALL <- install.packages
-        }
+        
         package <- packages[i,1]
-        message(paste("install", package))
-        INSTALL(packages[i,1])
-        message(paste("installed", package))
-    }
+        pckg_name = tail(unlist(strsplit(package, split = "/")), n = 1)
+        version <- packages[i, 'version']
+        
+        if (pckg_name %in% installed) {
+            if((version == '' | compareVersion(as.character(packageVersion(pckg_name)), version) >= 0)){
+                message(paste(pckg_name, "already installed"))
+            } else must_install <- TRUE
+        } else must_install <- TRUE
+        
+        if(is.TRUE(must_install)){
+            message(paste("install", package))
+            BiocManager::install(packages)
+            message(paste("installed", package))
+        }
     }
 }
 
