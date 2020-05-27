@@ -30,7 +30,7 @@ install_packages <- function(packages) {
         
         if(isTRUE(must_install)){
             message(paste("install", package))
-            BiocManager::install(packages)
+            BiocManager::install(package)
             message(paste("installed", package))
         }
     }
