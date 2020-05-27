@@ -1,8 +1,10 @@
-options(repos=structure(c(CRAN="https://cloud.r-project.org")))
+START_TIME <- Sys.time()
 
+options(repos=structure(c(CRAN="https://cloud.r-project.org")))
 
 if (!requireNamespace('BiocManager', quietly = TRUE)) {
     install.packages('BiocManager')
+    install.packages('R.utils')
     BiocManager::install("remotes")
 }
 
@@ -11,7 +13,9 @@ args <- commandArgs(trailingOnly=TRUE)
 packages <- read.csv(args[1], stringsAsFactors = FALSE,
                      header = TRUE, sep = " ", comment.char = "#")
 installed <- rownames(installed.packages())
-for (i in 1:nrow(packages)) {
+
+install_packages <- function(packages) {
+    for (i in 1:nrow(packages)) {
     
     pckg_name = tail(unlist(strsplit(packages[i,1], split = "/")), n = 1)
     
@@ -28,4 +32,13 @@ for (i in 1:nrow(packages)) {
         INSTALL(packages[i,1])
         message(paste("installed", package))
     }
+    }
 }
+
+maxTime <- max(30, (60*30 - difftime(Sys.time(), START_TIME, units="sec")))
+R.utils::withTimeout(timeout=maxTime, {
+    try({
+        install_packages(packages)
+    })
+})
+
