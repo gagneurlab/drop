@@ -24,6 +24,7 @@ install_packages <- function(packages) {
         if (pckg_name %in% installed) {
             if((version == '' | compareVersion(as.character(packageVersion(pckg_name)), version) >= 0)){
                 message(paste(pckg_name, "already installed"))
+                must_install <- FALSE
             } else must_install <- TRUE
         } else must_install <- TRUE
         
