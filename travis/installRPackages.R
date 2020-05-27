@@ -19,10 +19,10 @@ install_packages <- function(packages) {
     
     pckg_name = tail(unlist(strsplit(packages[i,1], split = "/")), n = 1)
     version <- packages[i, 'version']
+    # right_version <- (is.na(version) | compareVersion(as.character(packageVersion(pckg_name)), version) >= 0)
+    right_version <- TRUE
     
-    if (pckg_name %in% installed & 
-        (is.na(version) | compareVersion(as.character(packageVersion(pckg_name)), version) >= 0)
-    ) {
+    if (pckg_name %in% installed & isTRUE(right_version)) {
         message(paste(pckg_name, "already installed"))
     } else {
         if (packages[i,2] == TRUE) {
