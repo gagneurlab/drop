@@ -27,7 +27,7 @@ install_packages <- function(packages) {
             } else must_install <- TRUE
         } else must_install <- TRUE
         
-        if(is.TRUE(must_install)){
+        if(isTRUE(must_install)){
             message(paste("install", package))
             BiocManager::install(packages)
             message(paste("installed", package))
