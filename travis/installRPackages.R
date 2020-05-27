@@ -18,7 +18,7 @@ install_packages <- function(packages) {
     for (i in 1:nrow(packages)) {
     
     pckg_name = tail(unlist(strsplit(packages[i,1], split = "/")), n = 1)
-    version <- packages[i, 'version']
+    version <- packages[i, 3]
     right_version <- (version == '' | compareVersion(as.character(packageVersion(pckg_name)), version) >= 0)
 
     if (pckg_name %in% installed & isTRUE(right_version)) {
