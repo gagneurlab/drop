@@ -34,7 +34,7 @@ aberrantSplicing:
     keepNonStandardChrs: true
     filter: true
     minExpressionInOneSample: 20
-    minDeltaPsi: 0
+    minDeltaPsi: 0.05
     implementation: PCA
     padjCutoff: 0.05
     zScoreCutoff: 0
