@@ -70,7 +70,10 @@ rule sampleQC:
 
 rule exportCounts:
     input:
-        AE(parser.getExportCountFiles("geneCounts"))
+        AE(parser.getExportCountFiles("geneCounts")),
+        AS(parser.getExportCountFiles("splitCounts")),
+        AS(parser.getExportCountFiles("spliceSiteOverlapCounts"))
+print(rules.exportCounts.output)
 
 rule dependencyGraph:
     input:

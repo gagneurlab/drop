@@ -375,7 +375,7 @@ class ConfigHelper:
         
         count_type_map = {"geneCounts":"aberrantExpression",
                           "splitCounts":"aberrantSplicing",
-                          "spliceSiteOverlapCounts":"mae"}
+                          "spliceSiteOverlapCounts":"aberrantSplicing"}
         if prefix not in count_type_map.keys():
             raise ValueError(f"{prefix} not a valid file type for exported counts")
         
