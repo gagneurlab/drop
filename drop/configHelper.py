@@ -112,10 +112,13 @@ class ConfigHelper:
         setKey(config, None, "scanBamParam", "null")
         
         # export settings
+        setKey(config, None, "exportCounts", dict(), verbose=VERBOSE)
         gene_annotations = list(config["geneAnnotation"].keys())
-        setKey(config, None, "exportCounts", gene_annotations, verbose=VERBOSE)
+        setKey(config, ["exportCounts"], "geneAnnotation", gene_annotations, verbose=VERBOSE)
+        setKey(config, ["exportCounts"], "excludeGroups", list(), verbose=VERBOSE)
         
-        anno_incomp = set(config["exportCounts"]) - set(gene_annotations)
+        # check consistency of gene annotations
+        anno_incomp = set(config["exportCounts"]["geneAnnotations"]) - set(gene_annotations)
         if len(anno_incomp) > 0:
             message = f"{anno_incomp} are not valid annotation version in 'geneAnnotation'"
             message += "but required in 'exportCounts'.\n Please make sure they match."
@@ -173,6 +176,8 @@ class ConfigHelper:
     
     def setKey(self, dict_, sub, key, default, verbose=False):
         if sub is not None:
+            if not isinstance(sub, list):
+                raise TypeError(f"{sub} is not of type list")
             for x in sub:
                 dict_ = dict_[x]
         if key not in dict_ or dict_[key] is None:
@@ -381,6 +386,13 @@ class ConfigHelper:
     def getGeneAnnotationFile(self, annotation):
         return self.config["geneAnnotation"][annotation]
         
+    def getExportGroups(self, modules=["aberrantExpression", "aberrantSplicing"]):
+        groups = [] # get all active groups
+        for module in modules:
+          groups.extend(self.config[module]["groups"])
+        exclude = self.config["exportCounts"]["excludeGroups"]
+        return set(groups) - set(exclude)
+        
     def getExportCountFiles(self, prefix):
         
         count_type_map = {"geneCounts":"aberrantExpression",
@@ -389,9 +401,8 @@ class ConfigHelper:
         if prefix not in count_type_map.keys():
             raise ValueError(f"{prefix} not a valid file type for exported counts")
         
-        module = count_type_map[prefix]
-        datasets = self.config[module]["groups"]
-        annotations = self.config["exportCounts"]
+        datasets = self.getExportGroups([count_type_map[prefix]])
+        annotations = self.config["exportCounts"]["geneAnnotations"]
         
         pattern = self.getProcResultsDir()
         if prefix == "geneCounts":

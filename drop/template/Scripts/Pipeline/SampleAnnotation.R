@@ -5,10 +5,12 @@
 #'  params:
 #'   - tmpdir: '`sm drop.getTmpDir()`'
 #'   - export_dir: '`sm parser.getProcResultsDir() + "/exported_counts"`'
+#'   - groups: '`sm parser.getExportGroups()`'
 #'  input: 
 #'   - sampleAnnotation: '`sm config["sampleAnnotation"]`'
 #'  output:
-#'   - done: '`sm parser.getProcDataDir() + "/sample_anno/sample_anno.done"`'
+#'   - export: '`sm touch(parser.getProcResultsDir() + "/exported_counts/sample_anno.done")`'
+#'   - done: '`sm touch(parser.getProcDataDir() + "/sample_anno/sample_anno.done")`'
 #' output:
 #'   html_document:
 #'    code_folding: hide
@@ -96,7 +98,7 @@ sa[, DROP_GROUP := gsub(' ', '', DROP_GROUP)]
 if(!is.null(sa$SEX)) sa[, SEX := tolower(SEX)]
 
 list_groups <- strsplit(sa$DROP_GROUP, split = ',')
-drop_groups <- list_groups %>% unlist %>% unique
+drop_groups <- snakemake@params$groups # list_groups %>% unlist %>% unique
 
 # export processed sample annotation
 for(dataset in drop_groups){
@@ -110,4 +112,3 @@ for(dataset in drop_groups){
   fwrite(sa_sub, file = filename, quote = FALSE, row.names = FALSE, sep = '\t')
 }
 
-file.create(snakemake@output$done) %>% invisible

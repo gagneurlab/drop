@@ -72,8 +72,8 @@ rule exportCounts:
     input:
         AE(parser.getExportCountFiles("geneCounts")),
         AS(parser.getExportCountFiles("splitCounts")),
-        AS(parser.getExportCountFiles("spliceSiteOverlapCounts"))
-print(rules.exportCounts.output)
+        AS(parser.getExportCountFiles("spliceSiteOverlapCounts")),
+        parser.getProcResultsDir() + "/exported_counts/sample_anno.done"
 
 rule dependencyGraph:
     input:
