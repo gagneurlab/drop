@@ -4,6 +4,7 @@
 #' wb:
 #'  params:
 #'   - tmpdir: '`sm drop.getTmpDir()`'
+#'   - export_dir: '`sm parser.getProcResultsDir() + "/exported_counts"`'
 #'  input: 
 #'   - sampleAnnotation: '`sm config["sampleAnnotation"]`'
 #'  output:
@@ -91,23 +92,22 @@ if(!is.null(sa$HPO_TERMS)){
          na = NA, sep = "\t", row.names = F, quote = F)
 }
 
-if(snakemake@config$exportCounts == TRUE){
-  sa[, DROP_GROUP := gsub(' ', '', DROP_GROUP)]
-  if(!is.null(sa$SEX)) sa[, SEX := tolower(SEX)]
-  
-  list_groups <- strsplit(sa$DROP_GROUP, split = ',')
-  drop_groups <- list_groups %>% unlist %>% unique
-  
-  for(dataset in drop_groups){
-    path <- file.path(snakemake@config$root, 'processed_data/exported_counts', dataset)
-    dir.create(path)
-    cols <- intersect(colnames(sa), 
-                      c('RNA_ID', 'DNA_ID', 'PATIENT_ID', 'PAIRED_END', 'STRAND', 
-                        'TISSUE', 'SEX', 'AFFECTED', 'ICD_10'))
-    fwrite(sa[sapply(list_groups, function(x) dataset %in% x), cols, with = F], 
-         file = file.path(path, paste0('sampleAnnotation_', dataset, '.tsv')), 
-         quote = FALSE, row.names = FALSE, sep = '\t')
-  }
+sa[, DROP_GROUP := gsub(' ', '', DROP_GROUP)]
+if(!is.null(sa$SEX)) sa[, SEX := tolower(SEX)]
+
+list_groups <- strsplit(sa$DROP_GROUP, split = ',')
+drop_groups <- list_groups %>% unlist %>% unique
+
+# export processed sample annotation
+for(dataset in drop_groups){
+  cols <- intersect(colnames(sa),
+                    c('RNA_ID', 'DNA_ID', 'PATIENT_ID', 'PAIRED_END', 'STRAND', 
+                      'TISSUE', 'SEX', 'AFFECTED', 'ICD_10'))
+  sa_sub <- sa[sapply(list_groups, function(x) dataset %in% x), cols, with = F]
+  path <- file.path(snakemake@params$export_dir, dataset)
+  dir.create(path)
+  filename <- file.path(path, paste0('sampleAnnotation_', dataset, '.tsv'))
+  fwrite(sa_sub, file = filename, quote = FALSE, row.names = FALSE, sep = '\t')
 }
 
 file.create(snakemake@output$done) %>% invisible
