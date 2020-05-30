@@ -3,6 +3,7 @@ import pandas as pd
 import wbuild
 import pathlib
 from snakemake.logging import logger
+from snakemake.io import expand
 import warnings
 warnings.filterwarnings("ignore", 'This pattern has match groups')
 
@@ -369,6 +370,22 @@ class ConfigHelper:
     
     def getGeneAnnotationFile(self, annotation):
         return self.config["geneAnnotation"][annotation]
+        
+    def getExportCountFiles(self, prefix):
+        
+        count_type_map = {"geneCounts":"aberrantExpression",
+                          "splitCounts":"aberrantSplicing",
+                          "spliceSiteOverlapCounts":"mae"}
+        if prefix not in count_type_map.keys():
+            raise ValueError(f"{prefix} not a valid file type for exported counts")
+        
+        module = count_type_map[prefix]
+        datasets = self.config[module]["groups"]
+        annotations = self.config["geneAnnotation"].keys()
+        
+        pattern = self.getProcResultsDir()
+        pattern += f"/exported_counts/{{dataset}}/{prefix}_{{annotation}}.tsv.gz"
+        return expand(pattern, annotation=annotations, dataset=datasets)
 
  
         
