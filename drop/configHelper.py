@@ -111,6 +111,16 @@ class ConfigHelper:
         setKey(config, None, "genomeAssembly", "hg19")
         setKey(config, None, "scanBamParam", "null")
         
+        # export settings
+        gene_annotations = list(config["geneAnnotation"].keys())
+        setKey(config, None, "exportCounts", gene_annotations, verbose=VERBOSE)
+        
+        anno_incomp = set(config["exportCounts"]) - set(gene_annotations)
+        if len(anno_incomp) > 0:
+            message = f"{anno_incomp} are not valid annotation version in 'geneAnnotation'"
+            message += "but required in 'exportCounts'.\n Please make sure they match."
+            raise ValueError(message)
+        
         if self.method is None:
             tmp_dir = submodules.getTmpDir()
         else:
@@ -381,7 +391,7 @@ class ConfigHelper:
         
         module = count_type_map[prefix]
         datasets = self.config[module]["groups"]
-        annotations = self.config["geneAnnotation"].keys()
+        annotations = self.config["exportCounts"]
         
         pattern = self.getProcResultsDir()
         if prefix == "geneCounts":
