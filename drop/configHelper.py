@@ -384,8 +384,12 @@ class ConfigHelper:
         annotations = self.config["geneAnnotation"].keys()
         
         pattern = self.getProcResultsDir()
-        pattern += f"/exported_counts/{{dataset}}/{prefix}_{{annotation}}.tsv.gz"
-        return expand(pattern, annotation=annotations, dataset=datasets)
+        if prefix == "geneCounts":
+            pattern += f"/exported_counts/{{dataset}}/{prefix}_{{dataset}}--{{annotation}}.tsv.gz"
+            return expand(pattern, annotation=annotations, dataset=datasets)
+        else:
+            pattern += f"/exported_counts/{{dataset}}/{prefix}_{{dataset}}.tsv.gz"
+            return expand(pattern, dataset=datasets)
 
  
         
