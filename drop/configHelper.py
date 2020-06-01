@@ -24,10 +24,6 @@ class ConfigHelper:
         self.config = self.setDefaults(config)
         self.createDirs()
     
-    # Function to remove duplicate elements inside a DROP group    
-    def drop_dups(self, l):
-      return(list(set(l)))
-      
     def parse(self):
         """
         parse sample annotation, create sample-file mapping and extract IDs for each submodule
@@ -41,23 +37,20 @@ class ConfigHelper:
         if self.method == "AE" or self.method is None:
             groups = self.setKey(self.config, ["aberrantExpression"], "groups", self.all_rna_ids.keys())
             self.outrider_ids = self.subsetGroups(self.all_rna_ids, groups)
-            for k,v in self.outrider_ids.items():
-              self.outrider_ids[k] = self.drop_dups(v)
             self.config["outrider_ids"] = self.outrider_ids
         
         if self.method == "AS" or self.method is None:
             groups = self.setKey(self.config, ["aberrantSplicing"], "groups", self.all_rna_ids.keys())
             self.fraser_ids = self.subsetGroups(self.all_rna_ids, groups)
-            for k,v in self.fraser_ids.items():
-              self.fraser_ids[k] = self.drop_dups(v)
             self.config["fraser_ids"] = self.fraser_ids
         
         if self.method == "MAE" or self.method is None:
+            # get MAE groups or set default
             groups = self.setKey(self.config, ["mae"], "groups", self.all_rna_ids.keys())
-            self.config["mae"]["qcGroups"] = self.setKey(self.config, ["mae"], "qcGroups", groups)
+            # get QC groups as subset of MAE groups
+            self.setKey(self.config, ["mae"], "qcGroups", groups)
+
             self.mae_ids = self.createMaeIDS(self.all_rna_ids, groups, id_sep='--')
-            for k,v in self.mae_ids.items():
-              self.mae_ids[k] = self.drop_dups(v)
             self.config["mae_ids"] = self.mae_ids
         
         return self.config
@@ -203,9 +196,10 @@ class ConfigHelper:
         sample_annotation["DROP_GROUP"] = col
         
         # set ID type as string
-        sample_annotation = sample_annotation.astype({
-            "RNA_ID": str, "DNA_ID": str
-        })
+        for ID_key in ["RNA_ID", "DNA_ID"]:
+            sample_annotation[ID_key] = sample_annotation[ID_key].apply(
+                    lambda x: str(x) if not pd.isnull(x) else x
+            )
         
         return sample_annotation
     
@@ -264,11 +258,15 @@ class ConfigHelper:
         grouped = {gr : df[df[group_key].str.contains(f'(^|{sep}){gr}({sep}|$)')][assay_id].tolist() 
                         for gr in groups}
         # remove groups labeled as None
-        grouped = {gr : ids for gr, ids in grouped.items() if gr is not None}
+        grouped = {gr : list(set(ids)) for gr, ids in grouped.items() if gr is not None}
         return grouped
 
     
     def subsetGroups(self, ids_by_group, subset_groups, warn=30, error=10):
+        """
+        warn : number of samples threshold at which to warn about too few samples
+        error: number of samples threshold at which to give error
+        """
         if subset_groups is None:
             subset = ids_by_group
         else:
@@ -277,7 +275,9 @@ class ConfigHelper:
         
         for group in subset_groups:
             if len(subset[group]) < error:
-                raise ValueError(f'Too few IDs in DROP_GROUP {group}, please ensure that it has at least {error} IDs')
+                message = f'Too few IDs in DROP_GROUP {group}'
+                message += ', please ensure that it has at least {error} IDs'
+                raise ValueError(message)
             elif len(subset[group]) < warn:
                 logger.info(f'WARNING: Less than {warn} IDs in DROP_GROUP {group}')
         
