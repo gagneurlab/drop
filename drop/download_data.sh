@@ -12,7 +12,6 @@ mv resource Data
 cd Data
 python fix_sample_anno.py
 gunzip chr21.fa.gz
-samtools faidx chr21.fa
 
 # copy config
 cp config_relative.yaml ../config.yaml
