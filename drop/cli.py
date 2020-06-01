@@ -63,8 +63,10 @@ def demo():
     setFiles()
     
     # download data
-    module_dir = str(pathlib.Path(drop.__file__).parent)
-    subprocess.run(["bash", f"{module_dir}/download_data.sh"], stderr=subprocess.PIPE)
+    logger.info("download data")
+    download_script = str(pathlib.Path(drop.__file__).parent / "download_data.sh")
+    response = subprocess.run(["bash", download_script], stderr=subprocess.STDOUT)
+    response.check_returncode()
     
     # fix config file
     with open("config.yaml", "r") as f:

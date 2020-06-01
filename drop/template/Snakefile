@@ -68,6 +68,13 @@ rule mae:
 rule sampleQC:
     input: MAE(drop.getTmpDir() + "/sampleQC.done")
 
+rule exportCounts:
+    input:
+        AE(parser.getExportCountFiles("geneCounts")),
+        AS(parser.getExportCountFiles("splitCounts")),
+        AS(parser.getExportCountFiles("spliceSiteOverlapCounts")),
+        parser.getProcResultsDir() + "/exported_counts/sample_anno.done"
+
 rule dependencyGraph:
     input:
         MAE(config["htmlOutputPath"] + "/MAE_rulegraph.svg"),

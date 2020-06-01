@@ -3,6 +3,7 @@ import pandas as pd
 import wbuild
 import pathlib
 from snakemake.logging import logger
+from snakemake.io import expand
 import warnings
 warnings.filterwarnings("ignore", 'This pattern has match groups')
 
@@ -110,6 +111,19 @@ class ConfigHelper:
         setKey(config, None, "genomeAssembly", "hg19")
         setKey(config, None, "scanBamParam", "null")
         
+        # export settings
+        setKey(config, None, "exportCounts", dict(), verbose=VERBOSE)
+        gene_annotations = list(config["geneAnnotation"].keys())
+        setKey(config, ["exportCounts"], "geneAnnotation", gene_annotations, verbose=VERBOSE)
+        setKey(config, ["exportCounts"], "excludeGroups", list(), verbose=VERBOSE)
+        
+        # check consistency of gene annotations
+        anno_incomp = set(config["exportCounts"]["geneAnnotations"]) - set(gene_annotations)
+        if len(anno_incomp) > 0:
+            message = f"{anno_incomp} are not valid annotation version in 'geneAnnotation'"
+            message += "but required in 'exportCounts'.\n Please make sure they match."
+            raise ValueError(message)
+        
         if self.method is None:
             tmp_dir = submodules.getTmpDir()
         else:
@@ -162,6 +176,8 @@ class ConfigHelper:
     
     def setKey(self, dict_, sub, key, default, verbose=False):
         if sub is not None:
+            if not isinstance(sub, list):
+                raise TypeError(f"{sub} is not of type list")
             for x in sub:
                 dict_ = dict_[x]
         if key not in dict_ or dict_[key] is None:
@@ -369,6 +385,32 @@ class ConfigHelper:
     
     def getGeneAnnotationFile(self, annotation):
         return self.config["geneAnnotation"][annotation]
+        
+    def getExportGroups(self, modules=["aberrantExpression", "aberrantSplicing"]):
+        groups = [] # get all active groups
+        for module in modules:
+          groups.extend(self.config[module]["groups"])
+        exclude = self.config["exportCounts"]["excludeGroups"]
+        return set(groups) - set(exclude)
+        
+    def getExportCountFiles(self, prefix):
+        
+        count_type_map = {"geneCounts":"aberrantExpression",
+                          "splitCounts":"aberrantSplicing",
+                          "spliceSiteOverlapCounts":"aberrantSplicing"}
+        if prefix not in count_type_map.keys():
+            raise ValueError(f"{prefix} not a valid file type for exported counts")
+        
+        datasets = self.getExportGroups([count_type_map[prefix]])
+        annotations = self.config["exportCounts"]["geneAnnotations"]
+        
+        pattern = self.getProcResultsDir()
+        if prefix == "geneCounts":
+            pattern += f"/exported_counts/{{dataset}}/{prefix}_{{dataset}}--{{annotation}}.tsv.gz"
+            return expand(pattern, annotation=annotations, dataset=datasets)
+        else:
+            pattern += f"/exported_counts/{{dataset}}/{prefix}_{{dataset}}.tsv.gz"
+            return expand(pattern, dataset=datasets)
 
  
         

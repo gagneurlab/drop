@@ -2,7 +2,8 @@
 set -e
 
 # get data
-wget -Nc "https://i12g-gagneurweb.informatik.tu-muenchen.de/public/paper/drop_analysis/resource.tar.gz"
+resource_url="https://www.cmm.in.tum.de/public/paper/drop_analysis/resource.tar.gz"
+wget -Nc $resource_url
 tar -zxvf resource.tar.gz
 rm -rf Data
 mv resource Data
@@ -11,7 +12,6 @@ mv resource Data
 cd Data
 python fix_sample_anno.py
 gunzip chr21.fa.gz
-samtools faidx chr21.fa
 
 # copy config
 cp config_relative.yaml ../config.yaml
