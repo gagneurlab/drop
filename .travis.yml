@@ -65,3 +65,5 @@ script:
   - snakemake aberrantSplicing --cores 2
   - snakemake mae --cores 2
   - snakemake --cores 2
+  - snakemake exportCounts --cores 2
+
