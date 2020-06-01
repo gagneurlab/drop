@@ -80,7 +80,7 @@ unique(sa[,.(RNA_ID, DROP_GROUP)])$DROP_GROUP %>% strsplit(',') %>% unlist %>%
 #+echo=F
 if(!is.null(sa$HPO_TERMS)){
   sa2 <- sa[, .SD[1], by = RNA_ID]
-  hpo_dt <- fread('https://i12g-gagneurweb.in.tum.de/public/paper/drop_analysis/resource/hpo_genes.tsv.gz')
+  hpo_dt <- fread('https://www.cmm.in.tum.de/public/paper/drop_analysis/resource/hpo_genes.tsv.gz')
   
   sapply(1:nrow(sa2), function(i){
     hpos <- strsplit(sa2[i, HPO_TERMS], split = ',') %>% unlist
