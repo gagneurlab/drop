@@ -2,8 +2,8 @@
 set -e
 
 # get data
-resource_url="https://i12g-gagneurweb.in.tum.de/public/paper/drop_analysis/resource.tar.gz"
-wget -Nc --no-check-certificate $resource_url
+resource_url="https://www.cmm.in.tum.de/public/paper/drop_analysis/resource.tar.gz"
+wget -Nc $resource_url
 tar -zxvf resource.tar.gz
 rm -rf Data
 mv resource Data

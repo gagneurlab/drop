@@ -4,7 +4,8 @@
 add_HPO_cols <- function(RES, sample_id_col = 'sampleID', gene_name_col = 'hgncSymbol'){
   require(data.table)
   
-  hpo_dt <- fread('https://i12g-gagneurweb.in.tum.de/public/paper/drop_analysis/resource/hpo_genes.tsv.gz')
+  filename <- 'https://www.cmm.in.tum.de/public/paper/drop_analysis/resource/hpo_genes.tsv.gz'
+  hpo_dt <- fread(filename)
   
   # change column names
   setnames(RES, old = c(sample_id_col, gene_name_col), new = c('sampleID', 'hgncSymbol'))
