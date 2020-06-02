@@ -128,7 +128,7 @@ Creating the Sample Annotation Table
 
 For details on how to generate the sample annotation, please refer to the DROP manuscript. 
 Here we provide some examples on how to deal with certain situations. For simplicity, we
-do not include the other compulsory columns ``PAIRED_END``, ``COUNT_MODE`,
+do not include the other compulsory columns ``PAIRED_END``, ``COUNT_MODE``,
 ``COUNT_OVERLAPS`` and ``STRAND``.
 
 Example of RNA replicates 
