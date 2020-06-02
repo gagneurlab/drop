@@ -33,8 +33,6 @@ rule all:
         rules.Index.output,
         config["htmlOutputPath"] + "/readme.html",
         config["tmpdir"] + "/rulegraphs.done"
-    output:
-        touch(config["tmpdir"] + "/drop_all.done")
 
 rule sampleAnnotation:
     input: parser.getProcDataDir() + "/sample_anno/sample_anno.done"
