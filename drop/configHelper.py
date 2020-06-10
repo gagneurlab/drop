@@ -131,7 +131,7 @@ class ConfigHelper:
             setKey(config, ["aberrantExpression"], "groups", None, verbose=VERBOSE)
             setKey(config, ["aberrantExpression"], "padjCutoff", .05, verbose=VERBOSE)
             setKey(config, ["aberrantExpression"], "zScoreCutoff", 0, verbose=VERBOSE)
-            setKey(config, ["aberrantSplicing"], "maxTestedDimensionProportion", 3, verbose=VERBOSE)
+            setKey(config, ["aberrantExpression"], "maxTestedDimensionProportion", 3, verbose=VERBOSE)
         
         # aberrant splicing
         if self.method == "AS" or self.method is None:
@@ -276,7 +276,8 @@ class ConfigHelper:
         for group in subset_groups:
             if len(subset[group]) < error:
                 message = f'Too few IDs in DROP_GROUP {group}'
-                message += ', please ensure that it has at least {error} IDs'
+                message += f', please ensure that it has at least {error} IDs'
+                message += f', groups: {subset[group]}'
                 raise ValueError(message)
             elif len(subset[group]) < warn:
                 logger.info(f'WARNING: Less than {warn} IDs in DROP_GROUP {group}')
@@ -403,15 +404,8 @@ class ConfigHelper:
         
         datasets = self.getExportGroups([count_type_map[prefix]])
         annotations = self.config["exportCounts"]["geneAnnotations"]
+        genomeAssembly = self.config["genomeAssembly"]
         
-        pattern = self.getProcResultsDir()
-        if prefix == "geneCounts":
-            pattern += f"/exported_counts/{{dataset}}/{prefix}_{{dataset}}--{{annotation}}.tsv.gz"
-            return expand(pattern, annotation=annotations, dataset=datasets)
-        else:
-            pattern += f"/exported_counts/{{dataset}}/{prefix}_{{dataset}}.tsv.gz"
-            return expand(pattern, dataset=datasets)
-
- 
+        pattern = self.getProcResultsDir() + f"/exported_counts/{{dataset}}--{{genomeAssembly}}--{{annotation}}/{prefix}.tsv.gz"
+        return expand(pattern, annotation=annotations, dataset=datasets, genomeAssembly=genomeAssembly)
         
-
