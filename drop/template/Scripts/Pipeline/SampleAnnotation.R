@@ -124,14 +124,18 @@ for(dataset in drop_groups){
   # DESCRIPTION file
   v0 <- 'Title: # Add a title'
   v1 <- paste0('Number of samples: ', nrow(sa_sub))
-  v2 <- ifelse(uniqueN(sa_sub$TISSUE) > 1, 
-               'More than 1 tissue in dataset is not allowed!',
-               paste0('Tissue: ', unique(sa_sub$TISSUE)))
+  v2 <- ifelse(!is.null(sa_sub$TISSUE), 
+               ifelse(uniqueN(sa_sub$TISSUE) > 1, 
+                      'More than 1 tissue in dataset is not allowed!',
+                      paste0('Tissue: ', unique(sa_sub$TISSUE))),
+               'No tissue information')
   v3 <- 'Organism: Homo sapiens'
   v4 <- paste0('Genome assembly: ', genomeAssembly)
   v5 <- paste0('Gene annotation: ', geneAnnotation)
-  v6 <- paste0('Disease (ICD-10: N): ', 
-               paste(unite(data.table(table(sa_sub$ICD_10)), col = 'aux', 'V1', 'N', sep = ': ')$aux, collapse = ', ' ))
+  v6 <- ifelse(!is.null(sa_sub$ICD_10), 
+               paste0('Disease (ICD-10: N): ', 
+                      paste(unite(data.table(table(sa_sub$ICD_10)), col = 'aux', 'V1', 'N', sep = ': ')$aux, collapse = ', ' )),
+               'No disease information')
   v7 <- ifelse(uniqueN(sa_sub$STRAND_SPECIFIC) > 1, 
                'All samples should be either strand- or non-strand-specific!',
                paste0('Strand specific: ', unique(sa_sub$STRAND_SPECIFIC)))
