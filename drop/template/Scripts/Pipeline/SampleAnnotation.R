@@ -24,6 +24,7 @@ saveRDS(snakemake, file.path(snakemake@params$tmpdir, "sample_anno_overview.snak
 suppressPackageStartupMessages({
   library(data.table)
   library(magrittr)
+  library(tidyr)
 })
 
 sa <- fread(snakemake@input$sampleAnnotation)
@@ -63,7 +64,7 @@ if('DNA_VCF_FILE' %in% colnames(sa)){
   if(any(sa$aux1 == F)){
     print('The following VCF files do not exist: ')
     DT::datatable(sa[aux1 == F])
-    }
+  }
 }
 
 #' Check for RNA_IDs with more than one RNA_BAM_FILE
@@ -90,25 +91,54 @@ if(!is.null(sa$HPO_TERMS)){
   sa2 <- sa2[, .(RNA_ID, HPO_matching_genes)]
   
   fwrite(sa2, 
-         file.path(snakemake@config$root, 'processed_data/sample_anno/genes_overlapping_HPO_terms.tsv'), 
+         file.path(snakemake@config$root, 
+                   'processed_data/sample_anno/genes_overlapping_HPO_terms.tsv'), 
          na = NA, sep = "\t", row.names = F, quote = F)
 }
 
 sa[, DROP_GROUP := gsub(' ', '', DROP_GROUP)]
-if(!is.null(sa$SEX)) sa[, SEX := tolower(SEX)]
+sa[, ICD_10 := toupper(ICD_10)]
 
 list_groups <- strsplit(sa$DROP_GROUP, split = ',')
 drop_groups <- snakemake@params$groups # list_groups %>% unlist %>% unique
 
-# export processed sample annotation
+genomeAssembly <- snakemake@config$genomeAssembly
+geneAnnotation <- snakemake@config$exportCounts$geneAnnotations
+
+sa[STRAND == 'no', STRAND_SPECIFIC := FALSE]
+sa[STRAND %in% c('yes', 'reverse'), STRAND_SPECIFIC := TRUE]
+sa[, STRAND := NULL]
+
+# export processed sample annotation and DESCRIPTION file
 for(dataset in drop_groups){
-  cols <- intersect(colnames(sa),
-                    c('RNA_ID', 'DNA_ID', 'PATIENT_ID', 'PAIRED_END', 'STRAND', 
-                      'TISSUE', 'SEX', 'AFFECTED', 'ICD_10'))
+  cols <- intersect(c('RNA_ID', 'INDIVIDUAL_ID', 'TISSUE', 'SEX', 'AFFECTED', 
+                      'ICD_10', 'PAIRED_END', 'STRAND_SPECIFIC'),
+                    colnames(sa))
   sa_sub <- sa[sapply(list_groups, function(x) dataset %in% x), cols, with = F]
-  path <- file.path(snakemake@params$export_dir, dataset)
+  path <- file.path(snakemake@params$export_dir, paste(dataset, genomeAssembly, geneAnnotation, sep = '--'))
   dir.create(path)
-  filename <- file.path(path, paste0('sampleAnnotation_', dataset, '.tsv'))
-  fwrite(sa_sub, file = filename, quote = FALSE, row.names = FALSE, sep = '\t')
+  fwrite(sa_sub, file = file.path(path, 'sampleAnnotation.tsv'), 
+         quote = FALSE, row.names = FALSE, sep = '\t')
+  
+  # DESCRIPTION file
+  v0 <- 'Title: # Add a title'
+  v1 <- paste0('Number of samples: ', nrow(sa_sub))
+  v2 <- ifelse(uniqueN(sa_sub$TISSUE) > 1, 
+               'More than 1 tissue in dataset is not allowed!',
+               paste0('Tissue: ', unique(sa_sub$TISSUE)))
+  v3 <- 'Organism: Homo sapiens'
+  v4 <- paste0('Genome assembly: ', genomeAssembly)
+  v5 <- paste0('Gene annotation: ', geneAnnotation)
+  v6 <- paste0('Disease (ICD-10: N): ', 
+               paste(unite(data.table(table(sa_sub$ICD_10)), col = 'aux', 'V1', 'N', sep = ': ')$aux, collapse = ', ' ))
+  v7 <- ifelse(uniqueN(sa_sub$STRAND_SPECIFIC) > 1, 
+               'All samples should be either strand- or non-strand-specific!',
+               paste0('Strand specific: ', unique(sa_sub$STRAND_SPECIFIC)))
+  v8 <- ifelse(uniqueN(sa_sub$PAIRED_END) > 1, 
+               'All samples should be either single end or paired end!',
+               paste0('Paired end: ', unique(sa_sub$PAIRED_END)))
+  v9 <- 'Contact person: # Use format Name Last_Name, <email address>'
+  
+  writeLines(c(v0, v1, v2, v3, v4, v5, v6, v7, v8, v9), file.path(path, 'DESCRIPTION.txt'))
 }
 
