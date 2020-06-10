@@ -97,7 +97,8 @@ if(!is.null(sa$HPO_TERMS)){
 }
 
 sa[, DROP_GROUP := gsub(' ', '', DROP_GROUP)]
-sa[, ICD_10 := toupper(ICD_10)]
+if(!is.null(sa$ICD_10))
+  sa[, ICD_10 := toupper(ICD_10)]
 
 list_groups <- strsplit(sa$DROP_GROUP, split = ',')
 drop_groups <- snakemake@params$groups # list_groups %>% unlist %>% unique
@@ -137,8 +138,10 @@ for(dataset in drop_groups){
   v8 <- ifelse(uniqueN(sa_sub$PAIRED_END) > 1, 
                'All samples should be either single end or paired end!',
                paste0('Paired end: ', unique(sa_sub$PAIRED_END)))
-  v9 <- 'Contact person: # Use format Name Last_Name, <email address>'
+  v9 <- 'Cite as: RNA-Seq count tables were taken from: # add your citation(s)'
+  v10 <- 'Dataset contact: # Use format Name Last_Name, <email address>'
+  v11 <- 'Comments: # add any comments, if needed, otherwise remove'
   
-  writeLines(c(v0, v1, v2, v3, v4, v5, v6, v7, v8, v9), file.path(path, 'DESCRIPTION.txt'))
+  writeLines(c(v0, v1, v2, v3, v4, v5, v6, v7, v8, v9, v10, v11), file.path(path, 'DESCRIPTION.txt'))
 }
 
