@@ -57,6 +57,16 @@ tools                dictionary  A key-value list of different commands (key) an
                                                                                                                                                                           ``samtoolsCmd: samtools``
 ===================  ==========  =======================================================================================================================================  ======
 
+exportCounts dictionary
+++++++++++++++++++++++++++++++
+
+===============  ====  ==========================================================================================================================  ======
+Parameter        Type  Description                                                                                                                 Default/Examples
+===============  ====  ==========================================================================================================================  ======
+geneAnnotations  list  key(s) from the ``geneAnnotation`` parameter, whose counts should be exported                                               ``- v34``
+excludeGroups    list  aberrant expression and aberrant splicing groups whose counts should not be exported. If ``null`` all groups are exported.  ``- group1``
+===============  ====  ==========================================================================================================================  ======
+
 
 Aberrant expression dictionary
 ++++++++++++++++++++++++++++++
@@ -116,7 +126,10 @@ qcGroups               list       Same as “groups”, but for the VCF-BAM matc
 Creating the Sample Annotation Table
 ------------------------------------
 
-For details on how to generate the sample annotation, please refer to the DROP manuscript. Here we provide some examples.
+For details on how to generate the sample annotation, please refer to the DROP manuscript. 
+Here we provide some examples on how to deal with certain situations. For simplicity, we
+do not include the other compulsory columns ``PAIRED_END``, ``COUNT_MODE``,
+``COUNT_OVERLAPS`` and ``STRAND``.
 
 Example of RNA replicates 
 ++++++++++++++++++++++++++++++++++

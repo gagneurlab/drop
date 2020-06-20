@@ -58,7 +58,7 @@ before_script:
   - cd $PROJECT_DIR
   - drop demo
 
-script:
+script: 
   - cd $PROJECT_DIR
   - snakemake -n
   - snakemake aberrantExpression --cores 2
@@ -66,4 +66,3 @@ script:
   - snakemake mae --cores 2
   - snakemake --cores 2
   - snakemake exportCounts --cores 2
-
