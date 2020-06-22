@@ -90,3 +90,7 @@ This shows you the rules of all subworkflows. Omit `-n` if you are sure that you
 snakemake aberrantExpression -n
 ```
 
+## Datasets
+The following publicly-available datasets of gene counts can be used as controls:
+
+* 119 non-strand specific fibroblasts: [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.3887451.svg)](https://doi.org/10.5281/zenodo.3887451)
