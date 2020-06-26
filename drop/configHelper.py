@@ -107,7 +107,7 @@ class ConfigHelper:
         # export settings
         setKey(config, None, "exportCounts", dict(), verbose=VERBOSE)
         gene_annotations = list(config["geneAnnotation"].keys())
-        setKey(config, ["exportCounts"], "geneAnnotation", gene_annotations, verbose=VERBOSE)
+        setKey(config, ["exportCounts"], "geneAnnotations", gene_annotations, verbose=VERBOSE)
         setKey(config, ["exportCounts"], "excludeGroups", list(), verbose=VERBOSE)
         
         # check consistency of gene annotations
