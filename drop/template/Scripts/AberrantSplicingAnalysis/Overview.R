@@ -4,13 +4,13 @@
 #' wb:
 #'  py:
 #'    - |
-#'      datasets = config['aberrantSplicing']['groups']
+#'      datasets = cfg.AS.groups
 #'  params:
 #'    - tmpdir: '`sm drop.getTmpDir()`'
-#'    - fds_files: '`sm expand(parser.getProcDataDir() +
+#'    - fds_files: '`sm expand(cfg.getProcessedDataDir() +
 #'                "/aberrant_splicing/datasets/savedObjects/{dataset}/" + 
 #'                "fds-object.RDS", dataset=datasets)`'
-#'    - result_tables: '`sm expand(parser.getProcDataDir() +
+#'    - result_tables: '`sm expand(cfg.getProcessedDataDir() +
 #'                    "/aberrant_splicing/results/{dataset}_results_per_junction.tsv",
 #'                    dataset=datasets)`'
 #'  input:

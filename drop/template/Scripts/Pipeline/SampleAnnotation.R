@@ -4,13 +4,13 @@
 #' wb:
 #'  params:
 #'   - tmpdir: '`sm drop.getTmpDir()`'
-#'   - export_dir: '`sm parser.getProcResultsDir() + "/exported_counts"`'
-#'   - groups: '`sm parser.getExportGroups()`'
+#'   - export_dir: '`sm cfg.getProcessedResultsDir() + "/exported_counts"`'
+#'   - groups: '`sm cfg.getExportGroups()`'
 #'  input: 
 #'   - sampleAnnotation: '`sm config["sampleAnnotation"]`'
 #'  output:
-#'   - export: '`sm touch(parser.getProcResultsDir() + "/exported_counts/sample_anno.done")`'
-#'   - done: '`sm touch(parser.getProcDataDir() + "/sample_anno/sample_anno.done")`'
+#'   - export: '`sm touch(cfg.getProcessedResultsDir() + "/exported_counts/sample_anno.done")`'
+#'   - done: '`sm touch(cfg.getProcessedDataDir() + "/sample_anno/sample_anno.done")`'
 #' output:
 #'   html_document:
 #'    code_folding: hide
