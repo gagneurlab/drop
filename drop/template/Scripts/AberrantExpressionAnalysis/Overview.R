@@ -4,17 +4,17 @@
 #' wb:
 #'  py:
 #'   - |
-#'    annotations = list(config["geneAnnotation"].keys())
-#'    datasets = config["aberrantExpression"]["groups"]
+#'    annotations = cfg.getGeneVersions()
+#'    datasets = cfg.AE.groups
 #'  params:
 #'    - annotations: '`sm annotations`'
 #'    - datasets: '`sm datasets`'
 #'    - tmpdir: '`sm drop.getTmpDir()`'
 #'    - htmlDir: '`sm config["htmlOutputPath"] + "/AberrantExpression"`'
-#'    - odsFiles: '`sm expand(parser.getProcResultsDir() +
+#'    - odsFiles: '`sm expand(cfg.getProcessedResultsDir() +
 #'                  "/aberrant_expression/{annotation}/outrider/{dataset}/ods.Rds",
 #'                  annotation=annotations, dataset=datasets)`'
-#'    - resultTables: '`sm expand(parser.getProcResultsDir() +
+#'    - resultTables: '`sm expand(cfg.getProcessedResultsDir() +
 #'                      "/aberrant_expression/{annotation}/outrider/" +
 #'                      "{dataset}/OUTRIDER_results.tsv",
 #'                      annotation=annotations, dataset=datasets)`'

@@ -2,22 +2,25 @@
 #' title: Monoallelic Expression
 #' author:
 #' wb:
+#'  py:
+#'    - |
+#'      annotations = cfg.getGeneVersions()
+#'      datasets = cfg.MAE.groups
+#'      qc_groups = cfg.MAE.qcGroups
 #'  params:
 #'    - tmpdir: '`sm drop.getTmpDir()`'
-#'    - mae_ids: '`sm parser.getMaeAll()`'
-#'    - allelic_counts: '`sm expand(parser.getProcDataDir() + 
+#'    - allelic_counts: '`sm expand(cfg.getProcessedDataDir() + 
 #'                          "/mae/allelic_counts/{mae_id}.csv.gz",
-#'                          mae_id=parser.getMaeAll())`'
-#'    - results_obj: '`sm expand(parser.getProcResultsDir() + 
+#'                          mae_id=cfg.MAE.getMaeAll())`'
+#'    - results_obj: '`sm expand(cfg.getProcessedResultsDir() + 
 #'                       "/mae/samples/{mae_id}_res.Rds", 
-#'                       mae_id=parser.getMaeAll())`'
-#'    - results_tables: '`sm expand(parser.getProcResultsDir() + 
+#'                       mae_id=cfg.MAE.getMaeAll())`'
+#'    - results_tables: '`sm expand(cfg.getProcessedResultsDir() + 
 #'                       "/mae/{dataset}/MAE_results_{annotation}.tsv", 
-#'                       dataset=config["mae"]["groups"],
-#'                       annotation=list(config["geneAnnotation"].keys()))`'
+#'                       dataset=cfg.MAE.groups, annotation=annotations)`'
 #'    - html: '`sm config["htmlOutputPath"] + "/Scripts_MAE_Results_Overview.html"`'
-#'    - qc_matrix: '`sm expand(parser.getProcResultsDir() + "/mae/{qc_group}/" +
-#'                  "dna_rna_qc_matrix.Rds", qc_group=config["mae"]["qcGroups"])`'
+#'    - qc_matrix: '`sm expand(cfg.getProcessedResultsDir() + "/mae/{qc_group}/" +
+#'                  "dna_rna_qc_matrix.Rds", qc_group=cfg.MAE.qcGroups)`'
 #'  input:
 #'    - MAE: '`sm drop.getTmpDir() + "/MAE.done"`'
 #' output:
