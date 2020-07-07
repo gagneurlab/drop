@@ -154,8 +154,9 @@ class ConfigHelper:
             setKey(config, ["mae"], "gatkIgnoreHeaderCheck", True, verbose=VERBOSE)
             setKey(config, ["mae"], "padjCutoff", .05, verbose=VERBOSE)
             setKey(config, ["mae"], "allelicRatioCutoff", 0.8, verbose=VERBOSE)
+            setKey(config, ["mae"], "addAF", False, verbose=VERBOSE)
             setKey(config, ["mae"], "maxAF", .001, verbose=VERBOSE)
-            setKey(config, ["mae"], "gnomAD", False, verbose=VERBOSE)
+            setKey(config, ["mae"], "maxVarFreqCohort", .05, verbose=VERBOSE)
             setKey(config, ["mae"], "groups", None, verbose=VERBOSE)
             setKey(config, ["mae"], "qcGroups", None, verbose=VERBOSE)
         
