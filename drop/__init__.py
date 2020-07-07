@@ -1,3 +1,3 @@
 from .setupDrop import *
-from . import config
 from .submodules import *
+from drop import config
