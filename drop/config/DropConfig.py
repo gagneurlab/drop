@@ -19,10 +19,13 @@ class DropConfig:
         self.config = self.setDefaults(config)
         
         self.root = Path(config["root"])
-        self.sampleAnnotation = SampleAnnotation(config["sampleAnnotation"], self.root)
         self.processedDataDir = self.root / "processed_data"
         self.processedResultsDir = self.root / "processed_results"
+        utils.createIfMissing(self.root)
+        utils.createIfMissing(self.processedDataDir)
+        utils.createIfMissing(self.processedResultsDir)
         
+        self.sampleAnnotation = SampleAnnotation(config["sampleAnnotation"], self.root)
         self.geneAnnotation = self.config["geneAnnotation"]
         self.genomeAssembly = self.config["genomeAssembly"]
         
@@ -46,10 +49,6 @@ class DropConfig:
         self.checkKeys(config["geneAnnotation"], keys=None)
         self.checkKeys(config["mae"], keys=["genome", "qcVcf"])
         return config
-    
-    def checkFiles(self):
-        utils.createIfMissing(self.processedDataDir)
-        utils.createIfMissing(self.processedResultsDir)
     
     def checkKeys(self, dict_, keys):
         keys = dict_.keys() if keys is None else keys
