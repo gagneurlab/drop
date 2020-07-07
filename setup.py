@@ -30,7 +30,7 @@ setuptools.setup(
     long_description=long_description,
     long_description_content_type="text/markdown",
     url="https://github.com/gagneurlab/drop",
-    packages=setuptools.find_packages(include=["drop"]),
+    packages=setuptools.find_packages(include=["drop", "drop.*"]),
     entry_points={'console_scripts': ['drop=drop.cli:main']},
     package_data={'drop': extra_files},
     include_package_data=True,
