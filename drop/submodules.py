@@ -44,7 +44,7 @@ def setupTempFiles(config):
         if not tmp_dir.exists():
             tmp_dir.mkdir(parents=True)
     
-    return TMP_DIR, CONF_FILE, done_files
+    return TMP_DIR, done_files
 
 def getMethodPath(method, type_, str_=True):
     """

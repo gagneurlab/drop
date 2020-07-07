@@ -1,11 +1,17 @@
+from pathlib import Path
 import os
 import re
 import drop
 
+drop.installRPackages()
 configfile: "config.yaml"
+tmpdir, finalFiles = drop.setupTempFiles(config)
 
-parser, config = drop.drop(config)
-include: config["wBuildPath"] + "/wBuild.snakefile"
+cfg = drop.config.DropConfig(config)
+sa = cfg.sampleAnnotation
+config = cfg.config # legacy
+
+include: drop.utils.getWBuildSnakefile()
 
 # aberrant expression
 subworkflow AE:
@@ -27,40 +33,40 @@ subworkflow MAE:
 
 rule all:
     input: 
-        AE(config["finalFiles"]["AE"]),
-        AS(config["finalFiles"]["AS"]),
-        MAE(config["finalFiles"]["MAE"]),
+        AE(finalFiles["AE"]),
+        AS(finalFiles["AS"]),
+        MAE(finalFiles["MAE"]),
         rules.Index.output,
         config["htmlOutputPath"] + "/readme.html",
-        config["tmpdir"] + "/rulegraphs.done"
+        tmpdir / "rulegraphs.done"
 
 rule sampleAnnotation:
-    input: parser.getProcDataDir() + "/sample_anno/sample_anno.done"
+    input: cfg.getProcessedDataDir() + "/sample_anno/sample_anno.done"
 
 rule getIndexNames:
     input:
-        AE(config["finalFiles"]["AE"]),
-        AS(config["finalFiles"]["AS"]),
-        MAE(config["finalFiles"]["MAE"])
+        AE(finalFiles["AE"]),
+        AS(finalFiles["AS"]),
+        MAE(finalFiles["MAE"])
     output:
         indexFile = config["htmlOutputPath"] + "/indexNames.txt"
     run: 
         indexList = [x for x in os.listdir(config["htmlOutputPath"]) if re.search("_index.html$",x)]
         with open(output.indexFile, 'w') as file_handler:
-    	    for item in indexList:
+            for item in indexList:
                 file_handler.write(f"{item}\n")
 
 rule aberrantExpression:
-    input: AE(config["finalFiles"]["AE"])
+    input: AE(finalFiles["AE"])
     output: touch(drop.getTmpDir() + "/AE.done")
 
 rule aberrantSplicing:
     input: 
-        AS(config["finalFiles"]["AS"])
+        AS(finalFiles["AS"])
     output: touch(drop.getTmpDir() + "/AS.done")
     
 rule mae:
-    input: MAE(config["finalFiles"]["MAE"])
+    input: MAE(finalFiles["MAE"])
     output: touch(drop.getTmpDir() + "/MAE.done")
 
 rule sampleQC:
@@ -68,10 +74,10 @@ rule sampleQC:
 
 rule exportCounts:
     input:
-        AE(parser.getExportCountFiles("geneCounts")),
-        AS(parser.getExportCountFiles("splitCounts")),
-        AS(parser.getExportCountFiles("spliceSiteOverlapCounts")),
-        parser.getProcResultsDir() + "/exported_counts/sample_anno.done"
+        AE(cfg.getExportCountFiles("geneCounts")),
+        AS(cfg.getExportCountFiles("splitCounts")),
+        AS(cfg.getExportCountFiles("spliceSiteOverlapCounts")),
+        cfg.getProcessedResultsDir() + "/exported_counts/sample_anno.done"
 
 rule dependencyGraph:
     input:
@@ -79,7 +85,7 @@ rule dependencyGraph:
         AS(config["htmlOutputPath"] + "/AS_rulegraph.svg"),
         AE(config["htmlOutputPath"] + "/AE_rulegraph.svg"),
     output:
-        touch(config["tmpdir"] + "/rulegraphs.done")
+        touch(tmpdir / "rulegraphs.done")
 
 rule publish_local:
     shell: "rsync -Ort {config[htmlOutputPath]} {config[webDir]}"
@@ -90,7 +96,7 @@ rule unlock:
        AS(drop.getMethodPath("AS", "unlock")),
        MAE(drop.getMethodPath("MAE", "unlock"))
     params:
-       finalFiles = " ".join(config["finalFiles"].values())
+       finalFiles = " ".join(finalFiles.values())
     shell: 
         """
         snakemake --unlock
