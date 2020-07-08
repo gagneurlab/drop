@@ -5,10 +5,10 @@ dist: xenial
 cache:
   - directories:
     - $HOME/R/Library
-    - /usr/bin/R
+#    - /usr/bin/R
     - $HOME/miniconda
-    - $HOME/htslib
-    - $HOME/bcftools
+#    - $HOME/htslib
+#    - $HOME/bcftools
 
 env:
   global:
