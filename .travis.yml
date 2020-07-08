@@ -50,7 +50,7 @@ install:
 #  - bcftools --version
   - bash travis/install_conda.sh
   - source $CONDA_SCRIPT
-  - conda activate drop_env
+  - conda activate drop
   - pip install .
 
 before_script:
