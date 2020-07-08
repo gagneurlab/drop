@@ -25,29 +25,29 @@ python:
 addons:
   apt:
     packages:
-      - r-base
-      - libxml2-dev
-      - libcurl4-openssl-dev
-      - libssl-dev
-      - libblas-dev
-      - liblapack-dev
-      - gfortran
-      - graphviz
-      - pandoc
-      - tabix
-    sources:
-      - sourceline: 'deb https://cloud.r-project.org/bin/linux/ubuntu xenial-cran35/'
-        key_url: 'http://keyserver.ubuntu.com:11371/pks/lookup?op=get&search=0xe298a3a825c0d65dfd57cbb651716619e084dab9'
-    update: true
+      #- r-base
+      #- libxml2-dev
+      #- libcurl4-openssl-dev
+      #- libssl-dev
+      #- libblas-dev
+      #- liblapack-dev
+      #- gfortran
+      #- graphviz
+      #- pandoc
+      #- tabix
+    # sources:
+      #- sourceline: 'deb https://cloud.r-project.org/bin/linux/ubuntu xenial-cran35/'
+        #key_url: 'http://keyserver.ubuntu.com:11371/pks/lookup?op=get&search=0xe298a3a825c0d65dfd57cbb651716619e084dab9'
+    #update: true
   
 install:
   - cd $DROP_DIR
 #  - R -e "if ('FRASER' %in% rownames(installed.packages())) remove.packages('FRASER')"
 #  - R -e "if ('tMAE' %in% rownames(installed.packages())) remove.packages('tMAE')"
-  - Rscript travis/installRPackages.R drop/requirementsR.txt
-  - bash travis/install_bcftools.sh
-  - export PATH="$HOME/bcftools:$PATH"
-  - bcftools --version
+#  - Rscript travis/installRPackages.R drop/requirementsR.txt
+#  - bash travis/install_bcftools.sh
+#  - export PATH="$HOME/bcftools:$PATH"
+#  - bcftools --version
   - bash travis/install_conda.sh
   - source $CONDA_SCRIPT
   - conda activate drop_env

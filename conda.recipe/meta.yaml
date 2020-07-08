@@ -1,0 +1,74 @@
+{% set name = "drop" %}
+{% set version = "0.9.0" %}
+
+package:
+  name: "{{ name|lower }}"
+  version: "{{ version }}"
+
+source:
+  git_url: https://github.com/gagneurlab/drop.git
+
+build:
+  number: 0
+  script: "{{ PYTHON }} -m pip install . -vv"
+
+requirements:
+  host:
+    - pip
+    - python
+    - r-base>=4.0.0
+  run:
+    - python
+    - pandas
+    - pip>=19.1
+    - Click>=7.0
+    - click-log
+    - python-dateutil
+    # snakemake
+    - snakemake=>5.5.2
+    - pandoc
+    - graphviz
+    # command line tools
+    - tabix
+    - samtools>=1.7
+    - bcftools>=1.7
+    - gatk4>=4.0.4
+    - star>=2.7
+    # R dependencies
+    - r-base>=4.0.0
+    - r-rmarkdown
+    - r-knitr
+    - r-ggplot2
+    - r-ggthemes
+    - r-cowplot
+    - r-data.table
+    - r-dplyr
+    - r-tidyr
+    - r-magrittr
+    - r-devtools
+    # bioconductor packages
+    - bioconductor-deseq2
+    - bioconductor-GenomicScores
+    - bioconductor-outrider
+    - bioconductor-fraser
+    - bioconductor-variantannotation
+    - bioconductor-bsgenome.hsapiens.ucsc.hg19
+      #- bioconductor-mafdb.gnomad.r2.1.hs37d5
+      #- bioconductor-mafdb.gnomad.r2.1.grch38
+
+test:
+  imports:
+    - drop
+
+about:
+  home: "https://gagneurlab-drop.readthedocs.io"
+  license: MIT
+  license_family: MIT
+  license_file: LICENSE
+  summary: "Detection of RNA Outliers Pipeline"
+  doc_url: 
+  dev_url: 
+
+extra:
+  recipe-maintainers:
+    - mumichae
