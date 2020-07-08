@@ -50,8 +50,8 @@ install:
 #  - bcftools --version
   - bash travis/install_conda.sh
   - pwd
-  - conda env update -f conda.recipe/environment.yaml
   - source $CONDA_SCRIPT
+  - conda env update -f conda.recipe/environment.yaml
   - conda activate drop
   - java -version
   - gatk --help
