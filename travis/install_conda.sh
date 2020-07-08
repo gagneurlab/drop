@@ -15,11 +15,5 @@ else
     hash -r
     conda config --set always_yes yes --set changeps1 no
     conda create -q -n drop python=$TRAVIS_PYTHON_VERSION
-    conda env update -f conda.recipe/environment.yaml
-    conda activate drop
-    java -version
-    gatk --help
-    samtools --version
-    bcftools --version
 fi
 

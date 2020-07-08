@@ -49,8 +49,14 @@ install:
 #  - export PATH="$HOME/bcftools:$PATH"
 #  - bcftools --version
   - bash travis/install_conda.sh
+  - pwd
+  - conda env update -f conda.recipe/environment.yaml
   - source $CONDA_SCRIPT
   - conda activate drop
+  - java -version
+  - gatk --help
+  - samtools --version
+  - bcftools --version
   - pip install .
 
 before_script:
