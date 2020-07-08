@@ -6,7 +6,7 @@ cache:
   - directories:
     - $HOME/R/Library
 #    - /usr/bin/R
-    - $HOME/miniconda
+#    - $HOME/miniconda
 #    - $HOME/htslib
 #    - $HOME/bcftools
 
