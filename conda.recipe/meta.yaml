@@ -6,7 +6,7 @@ package:
   version: "{{ version }}"
 
 source:
-  git_url: https://github.com/gagneurlab/drop.git
+  path: ..
 
 build:
   number: 0
@@ -25,9 +25,10 @@ requirements:
     - click-log
     - python-dateutil
     # snakemake
-    - snakemake=>5.5.2
+    #- snakemake=>5.5.2
     - pandoc
-    - graphviz
+    # - graphviz
+    - wbuild
     # command line tools
     - tabix
     - samtools>=1.7
@@ -64,7 +65,7 @@ about:
   home: "https://gagneurlab-drop.readthedocs.io"
   license: MIT
   license_family: MIT
-  license_file: LICENSE
+  license_file: ../LICENSE
   summary: "Detection of RNA Outliers Pipeline"
   doc_url: 
   dev_url: 

@@ -14,6 +14,5 @@ else
     source $CONDA_SCRIPT
     hash -r
     conda config --set always_yes yes --set changeps1 no
-    conda create -q -n drop python=$TRAVIS_PYTHON_VERSION
 fi
 
