@@ -29,7 +29,7 @@ install:
   - conda config --add channels conda-forge
   - conda config --add channels bioconda
   - conda config --add channels mumichae
-  - travis_wait 30 conda build -q conda.recipe --python=$TRAVIS_PYTHON_VERSION --output-folder $BLD_DIR
+  - travis_wait 30 conda build conda.recipe --python=$TRAVIS_PYTHON_VERSION --output-folder $BLD_DIR
   - conda config --add channels "file://${BLD_DIR}"
   - conda config --get channels
   - conda create -q -n $DROP_ENV python=$TRAVIS_PYTHON_VERSION $PACKAGE_NAME
