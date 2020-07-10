@@ -22,6 +22,8 @@ install:
   - conda info -a
 
   - conda install conda-build
+    # due to: https://github.com/conda/conda/issues/9836
+  - conda install --force-reinstall ld_impl_linux-64
   - conda build conda.recipe --python=$TRAVIS_PYTHON_VERSION --output-folder=$HOME/build
   - conda config --add channels "file://${HOME}/build"
 

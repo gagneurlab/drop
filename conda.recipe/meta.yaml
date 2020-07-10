@@ -28,33 +28,36 @@ requirements:
     #    - pandoc
     #    - graphviz
       #    - wbuild
+  
     # command line tools
     #    - tabix
     #    - samtools>=1.7
     #    - bcftools>=1.7
     #   - gatk4>=4.0.4
     #   - star>=2.7
+
     # R dependencies
     - r-base>=4.0.0
-    #- r-rmarkdown
-    #- r-knitr
-    #- r-ggplot2
-    #- r-ggthemes
-    #- r-cowplot
-    #- r-data.table
-    #- r-dplyr
-    #- r-tidyr
-    #- r-magrittr
-    #   - r-devtools
+    - r-rmarkdown
+    - r-knitr
+    - r-ggplot2
+    - r-ggthemes
+    - r-cowplot
+    - r-data.table
+    - r-dplyr
+    - r-tidyr
+    - r-magrittr
+    - r-devtools
+    
     # bioconductor packages
-      #- bioconductor-deseq2
-      #- bioconductor-GenomicScores
-      #- bioconductor-outrider
-      #- bioconductor-fraser
-      #- bioconductor-variantannotation
-      #- bioconductor-bsgenome.hsapiens.ucsc.hg19
-      #- bioconductor-mafdb.gnomad.r2.1.hs37d5
-      #- bioconductor-mafdb.gnomad.r2.1.grch38
+    - bioconductor-deseq2
+    - bioconductor-GenomicScores
+    - bioconductor-outrider
+    - bioconductor-fraser
+    - bioconductor-variantannotation
+    - bioconductor-bsgenome.hsapiens.ucsc.hg19
+    #- bioconductor-mafdb.gnomad.r2.1.hs37d5
+    #- bioconductor-mafdb.gnomad.r2.1.grch38
 
 test:
   imports:
