@@ -2,7 +2,8 @@
 set -e
 
 cd $HOME
-CONDA_URL="https://repo.continuum.io/miniconda/Miniconda3-latest-Linux-x86_64.sh"
+#CONDA_URL="https://repo.continuum.io/miniconda/Miniconda3-latest-Linux-x86_64.sh"
+CONDA_URL="https://repo.anaconda.com/miniconda/Miniconda3-4.6.14-Linux-x86_64.sh"
 
 if [ -d $MINICONDA_DIR ] && [ -e $CONDA_SCRIPT ]
 then

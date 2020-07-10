@@ -20,14 +20,14 @@ requirements:
   run:
     - python
     - pandas
-    - pip>=19.1
-    - Click>=7.0
-    - click-log
+    - pip
+    #- Click>=7.0
+    #- click-log
     - python-dateutil
     # snakemake
     #- snakemake=>5.5.2
     - pandoc
-    # - graphviz
+    - graphviz
     - wbuild
     # command line tools
     - tabix

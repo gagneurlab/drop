@@ -5,13 +5,6 @@ import glob
 with open("README.md", "r") as fh:
     long_description = fh.read()
 
-requirements = [
-    'wbuild @ git+https://github.com/gagneurlab/wBuild.git@master#egg=wbuild',
-    #'wbuild',
-    'snakemake==5.5.2',
-    'pandas',
-]
-
 extra_files = []
 for (path, directories, filenames) in os.walk('drop/'):
     directories[:] = [d for d in directories if not (d.startswith('.') or d == 'Data')]
@@ -32,8 +25,7 @@ setuptools.setup(
     packages=setuptools.find_packages(include=["drop"]),
     entry_points={'console_scripts': ['drop=drop.cli:main']},
     package_data={'drop': extra_files},
-    include_package_data=True,
-    install_requires=requirements
+    include_package_data=True
 )
 
 
