@@ -7,8 +7,9 @@ if [ -e $HOME/miniconda/etc/profile.d/conda.sh ]
 then
     echo "using cached miniconda"
 else
-    wget $CONDA_URL -O miniconda.sh
-    bash miniconda.sh -b -p $HOME/miniconda
+    rm -rf $HOME/miniconda
+    wget $CONDA_URL -O /tmp/miniconda.sh
+    bash /tmp/miniconda.sh -b -p $HOME/miniconda
     source $HOME/miniconda/etc/profile.d/conda.sh
     hash -r
     conda config --set always_yes yes --set changeps1 no
