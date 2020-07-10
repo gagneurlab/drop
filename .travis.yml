@@ -13,12 +13,13 @@ install:
   - source $HOME/miniconda/etc/profile.d/conda.sh
   - conda update conda
 
-  # Useful for debugging any issues with conda
-  - conda info -a
-
+  - conda config --add channels mumichae
   - conda config --add channels bioconda
   - conda config --add channels conda-forge
   - conda config --add channels anaconda
+
+  # Useful for debugging any issues with conda
+  - conda info -a
 
   - conda install conda-build
   - conda build conda.recipe --python=$TRAVIS_PYTHON_VERSION --output-folder=$HOME/build
