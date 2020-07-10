@@ -13,28 +13,33 @@ build:
   script: "{{ PYTHON }} -m pip install . -vv"
 
 requirements:
+  build:
+    - {{ compiler('c') }}
+
   host:
     - python
     - pip
     - r-base>=4.0.0
+
   run:
     - python
-      #    - pandas
-    #- Click>=7.0
-    #- click-log
-    #    - python-dateutil
+    - pandas
+    - Click>=7.0
+    - click-log
+    - python-dateutil
+
     # snakemake
-    #- snakemake=>5.5.2
-    #    - pandoc
-    #    - graphviz
-      #    - wbuild
+    - snakemake=>5.5.2
+    - pandoc
+    - graphviz
+    #- wbuild
   
     # command line tools
-    #    - tabix
-    #    - samtools>=1.7
-    #    - bcftools>=1.7
-    #   - gatk4>=4.0.4
-    #   - star>=2.7
+    - tabix
+    - samtools>=1.7
+    - bcftools>=1.7
+    - gatk4>=4.0.4
+    - star>=2.7
 
     # R dependencies
     - r-base>=4.0.0
