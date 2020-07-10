@@ -10,7 +10,13 @@ source:
 
 build:
   number: 0
-  script: "{{ PYTHON }} -m pip install . -vv"
+  script: 
+    - "{{ PYTHON }} -m pip install -vv git+https://github.com/gagneurlab/wbuild.git#egg=wbuild"
+    - "${R} -e 'devtoos::install(\"mumichae/tMAE\")'"
+    - "{{ PYTHON }} -m pip install . -vv"
+  rpaths:
+    - lib/R/lib/
+    - lib/
 
 requirements:
   build:
@@ -19,7 +25,15 @@ requirements:
   host:
     - python
     - pip
+
+    # wbuild requirements
+    - pyyaml>=4.2b1
+    - pytest-runner
+
+    # tMAE requirements
     - r-base>=4.0.0
+    - r-devtools
+    - r-biocmanager 
 
   run:
     - python
@@ -67,6 +81,8 @@ requirements:
 test:
   imports:
     - drop
+  commdans:
+    - ${R} -e "library(tMAE)"
 
 about:
   home: "https://gagneurlab-drop.readthedocs.io"
