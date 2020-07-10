@@ -12,7 +12,7 @@ build:
   number: 0
   script: 
     - "{{ PYTHON }} -m pip install -vv git+https://github.com/gagneurlab/wbuild.git#egg=wbuild"
-    - "${R} -e 'devtools::install_github(\"mumichae/tMAE\")'"
+    - "${R} -e 'BiocManager::install(\"mumichae/tMAE\", update=FALSE, ask=FALSE)'"
     - "{{ PYTHON }} -m pip install . -vv"
   rpaths:
     - lib/R/lib/
@@ -47,11 +47,11 @@ requirements:
     - click-log
     - python-dateutil
 
-    # snakemake
+    # snakemake/wbuild
     - snakemake=>5.5.2
     - pandoc
     - graphviz
-    #- wbuild
+    - pyyaml>=4.2b1
   
     # command line tools
     - tabix
@@ -86,8 +86,11 @@ requirements:
 test:
   imports:
     - drop
-  commdans:
+    - wbuild
+  commands:
     - ${R} -e "library(tMAE)"
+    - wbuild --version
+    - drop --version
 
 about:
   home: "https://gagneurlab-drop.readthedocs.io"

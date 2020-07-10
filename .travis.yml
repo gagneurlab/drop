@@ -1,42 +1,44 @@
 language: python
 dist: xenial
 
-cache:
-  - directories:
-    - $HOME/miniconda
+#cache:
+#  - directories:
+#    - $HOME/miniconda
 
 python:
-  - "3.6.7"
+  - "3.7"
 
 install:
-  - bash travis/install_conda.sh
-  - source $HOME/miniconda/etc/profile.d/conda.sh
-  #  - conda update conda
+  # Install Anaconda
+  - wget https://repo.continuum.io/miniconda/Miniconda3-latest-Linux-x86_64.sh -O /tmp/miniconda.sh
+  - bash miniconda.sh -b -p $HOME/miniconda
+  - export PATH="$HOME/miniconda/bin:$PATH"
+  - hash -r
+  - conda config --set always_yes yes --set changeps1 no
+  - conda update -q conda
 
-  - conda config --add channels mumichae
   - conda config --add channels bioconda
   - conda config --add channels conda-forge
-    #  - conda config --add channels anaconda
 
   # Useful for debugging any issues with conda
   - conda info -a
 
   - conda install conda-build
-  # due to: https://github.com/conda/conda/issues/9836
-  #- conda install --force-reinstall ld_impl_linux-64
-  - ls -la $HOME/miniconda/bin $HOME/miniconda
   - conda build conda.recipe --output-folder=$HOME/build
   - conda config --add channels "file://${HOME}/build"
 
   - conda config --get channels
-  - conda create -q -n drop python=$TRAVIS_PYTHON_VERSION drop
+  - conda create -q -n drop drop
   - conda activate drop
 
+  - conda info -a 
+  - conda list 
   - java -version
   - gatk --help
   - samtools --version
   - bcftools --version
   - drop --version
+  - python --version
 
 
 script: true
