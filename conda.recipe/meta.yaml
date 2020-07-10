@@ -12,7 +12,7 @@ build:
   number: 0
   script: 
     - "{{ PYTHON }} -m pip install -vv git+https://github.com/gagneurlab/wbuild.git#egg=wbuild"
-    - "${R} -e 'BiocManager::install(\"mumichae/tMAE\", update=FALSE, ask=FALSE)'"
+    - "${R} -e 'BiocManager::install(\"mumichae/tMAE\", dependencies=FALSE, update=FALSE, ask=FALSE)'"
     - "{{ PYTHON }} -m pip install . -vv"
   rpaths:
     - lib/R/lib/
