@@ -48,12 +48,12 @@ requirements:
     - r-magrittr
     - r-devtools
     # bioconductor packages
-    - bioconductor-deseq2
-    - bioconductor-GenomicScores
-    - bioconductor-outrider
-    - bioconductor-fraser
-    - bioconductor-variantannotation
-    - bioconductor-bsgenome.hsapiens.ucsc.hg19
+      #- bioconductor-deseq2
+      #- bioconductor-GenomicScores
+      #- bioconductor-outrider
+      #- bioconductor-fraser
+      #- bioconductor-variantannotation
+      #- bioconductor-bsgenome.hsapiens.ucsc.hg19
       #- bioconductor-mafdb.gnomad.r2.1.hs37d5
       #- bioconductor-mafdb.gnomad.r2.1.grch38
 
