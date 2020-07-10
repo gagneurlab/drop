@@ -2,6 +2,7 @@
 set -e
 
 CONDA_URL="https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh"
+CONDA_URL="https://repo.anaconda.com/miniconda/Miniconda3-4.6.14-Linux-x86_64.sh"
 
 if [ -e $HOME/miniconda/etc/profile.d/conda.sh ]
 then
