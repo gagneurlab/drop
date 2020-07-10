@@ -12,7 +12,7 @@ build:
   number: 0
   script: 
     - "{{ PYTHON }} -m pip install -vv git+https://github.com/gagneurlab/wbuild.git#egg=wbuild"
-    - "${R} -e 'devtoos::install(\"mumichae/tMAE\")'"
+    - "${R} -e 'devtools::install_github(\"mumichae/tMAE\")'"
     - "{{ PYTHON }} -m pip install . -vv"
   rpaths:
     - lib/R/lib/
@@ -33,7 +33,12 @@ requirements:
     # tMAE requirements
     - r-base>=4.0.0
     - r-devtools
-    - r-biocmanager 
+    - r-biocmanager
+    - r-data.table
+    - r-ggplot2
+    - r-dplyr
+    - bioconductor-DESeq2
+    - bioconductor-GenomicScores 
 
   run:
     - python
