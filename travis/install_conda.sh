@@ -1,18 +1,15 @@
 #!/bin/bash
 set -e
 
-cd $HOME
-#CONDA_URL="https://repo.continuum.io/miniconda/Miniconda3-latest-Linux-x86_64.sh"
-CONDA_URL="https://repo.anaconda.com/miniconda/Miniconda3-4.6.14-Linux-x86_64.sh"
+CONDA_URL="https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh"
 
-if [ -d $MINICONDA_DIR ] && [ -e $CONDA_SCRIPT ]
+if [ -e $HOME/miniconda/etc/profile.d/conda.sh ]
 then
     echo "using cached miniconda"
 else
-    rm -rf $MINICONDA_DIR
     wget $CONDA_URL -O miniconda.sh
-    bash miniconda.sh -b -p $MINICONDA_DIR
-    source $CONDA_SCRIPT
+    bash miniconda.sh -b -p $HOME/miniconda
+    source $HOME/miniconda/etc/profile.d/conda.sh
     hash -r
     conda config --set always_yes yes --set changeps1 no
 fi

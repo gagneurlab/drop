@@ -5,53 +5,34 @@ cache:
   - directories:
     - $HOME/miniconda
 
-env:
-  global:
-    - CONDA_ENV="drop_env"
-    - PACKAGE_NAME="drop"
-    - DROP_DIR=$(pwd)
-    - PROJECT_DIR="${HOME}/project"
-    - MINICONDA_DIR="${HOME}/miniconda"
-    - CONDA_SCRIPT="${MINICONDA_DIR}/etc/profile.d/conda.sh"
-    - R_LIBS_USER="${MINICONDA_DIR}/envs/${DROP_ENV}/lib/R/library"
-    - TAR="/bin/tar"
-    - BLD_DIR=${HOME}/bld-dir
-
 python:
   - "3.6.7"
 
 install:
-  - cd $DROP_DIR
   - bash travis/install_conda.sh
-  - source $CONDA_SCRIPT
-  - conda install conda-build
-  - conda config --add channels anaconda
-  - conda config --add channels conda-forge
+  - source $HOME/miniconda/etc/profile.d/conda.sh
+  - conda update conda
+
+  # Useful for debugging any issues with conda
+  - conda info -a
+
   - conda config --add channels bioconda
-  - conda config --add channels mumichae
-  - travis_wait 30 conda build conda.recipe --python=$TRAVIS_PYTHON_VERSION --output-folder $BLD_DIR
-  - conda config --add channels "file://${BLD_DIR}"
+  - conda config --add channels conda-forge
+  - conda config --add channels anaconda
+
+  - conda install conda-build
+  - conda build conda.recipe --python=$TRAVIS_PYTHON_VERSION --output-folder=$HOME/build
+  - conda config --add channels "file://${HOME}/build"
+
   - conda config --get channels
-  - conda create -q -n $DROP_ENV python=$TRAVIS_PYTHON_VERSION $PACKAGE_NAME
-  - conda activate $DROP_ENV
+  - conda create -q -n drop python=$TRAVIS_PYTHON_VERSION drop
+  - conda activate drop
+
   - java -version
   - gatk --help
   - samtools --version
   - bcftools --version
+  - drop --version
 
-before_script:
-  - mkdir -p $PROJECT_DIR
-  - cd $PROJECT_DIR
-  - $PACKAGE_NAME demo
 
 script: true
-  - cd $PROJECT_DIR
-  - snakemake -n
-  - snakemake aberrantExpression --cores 2
-  - snakemake aberrantSplicing --cores 2
-  - snakemake mae --cores 2
-  - snakemake --cores 2
-  - snakemake exportCounts --cores 2
-  
-after_success:
-  - conda env remove -n $DROP_ENV
