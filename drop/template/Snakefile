@@ -2,105 +2,59 @@ from pathlib import Path
 import os
 import re
 import drop
+from drop.utils import getRuleFromPath
 
 drop.installRPackages()
 configfile: "config.yaml"
-tmpdir, finalFiles = drop.setupTempFiles(config)
+tmp_dir, finalFiles = drop.setupTempFiles(config)
 
+projectDir = Path.cwd().resolve()
 cfg = drop.config.DropConfig(config)
 sa = cfg.sampleAnnotation
 config = cfg.config # legacy
 
+
+METHOD = 'AE' # TODO: remove
 include: drop.utils.getWBuildSnakefile()
-
-# aberrant expression
-subworkflow AE:
-    workdir: drop.getMethodPath("AE", "workdir")
-    snakefile: drop.getMethodPath("AE", "snakefile")
-    configfile: drop.getConfFile()
-
-# aberrant splicing
-subworkflow AS:
-    workdir: drop.getMethodPath("AS", "workdir")
-    snakefile: drop.getMethodPath("AS", "snakefile")
-    configfile: drop.getConfFile()
-
-# monoallelic expression
-subworkflow MAE:
-    workdir: drop.getMethodPath("MAE", "workdir")
-    snakefile: drop.getMethodPath("MAE", "snakefile")
-    configfile: drop.getConfFile()
+include: cfg.AE.getWorkdir() + "/Snakefile"
 
 rule all:
     input: 
-        AE(finalFiles["AE"]),
-        AS(finalFiles["AS"]),
-        MAE(finalFiles["MAE"]),
+        rules.aberrantExpression.input,
         rules.Index.output,
         config["htmlOutputPath"] + "/readme.html",
-        tmpdir / "rulegraphs.done"
+        tmp_dir / "rulegraphs.done"
 
 rule sampleAnnotation:
     input: cfg.getProcessedDataDir() + "/sample_anno/sample_anno.done"
 
-rule getIndexNames:
-    input:
-        AE(finalFiles["AE"]),
-        AS(finalFiles["AS"]),
-        MAE(finalFiles["MAE"])
-    output:
-        indexFile = config["htmlOutputPath"] + "/indexNames.txt"
-    run: 
-        indexList = [x for x in os.listdir(config["htmlOutputPath"]) if re.search("_index.html$",x)]
-        with open(output.indexFile, 'w') as file_handler:
-            for item in indexList:
-                file_handler.write(f"{item}\n")
+#rule getIndexNames:
+#    input:
+#        rules.aberrantExpression.input
+#    output:
+#        indexFile = config["htmlOutputPath"] + "/indexNames.txt"
+#    run: 
+#        indexList = [x for x in os.listdir(config["htmlOutputPath"]) if #re.search("_index.html$",x)]
+#        with open(output.indexFile, 'w') as file_handler:
+#            for item in indexList:
+#                file_handler.write(f"{item}\n")
 
-rule aberrantExpression:
-    input: AE(finalFiles["AE"])
-    output: touch(drop.getTmpDir() + "/AE.done")
-
-rule aberrantSplicing:
-    input: 
-        AS(finalFiles["AS"])
-    output: touch(drop.getTmpDir() + "/AS.done")
-    
-rule mae:
-    input: MAE(finalFiles["MAE"])
-    output: touch(drop.getTmpDir() + "/MAE.done")
-
-rule sampleQC:
-    input: MAE(drop.getTmpDir() + "/sampleQC.done")
+#rule sampleQC:
+#    input: MAE(drop.getTmpDir() + "/sampleQC.done")
 
 rule exportCounts:
     input:
-        AE(cfg.getExportCountFiles("geneCounts")),
-        AS(cfg.getExportCountFiles("splitCounts")),
-        AS(cfg.getExportCountFiles("spliceSiteOverlapCounts")),
+        cfg.getExportCountFiles("geneCounts"),
+        #AS(cfg.getExportCountFiles("splitCounts")),
+        #AS(cfg.getExportCountFiles("spliceSiteOverlapCounts")),
         cfg.getProcessedResultsDir() + "/exported_counts/sample_anno.done"
 
 rule dependencyGraph:
     input:
-        MAE(config["htmlOutputPath"] + "/MAE_rulegraph.svg"),
-        AS(config["htmlOutputPath"] + "/AS_rulegraph.svg"),
-        AE(config["htmlOutputPath"] + "/AE_rulegraph.svg"),
+        rules.aberrantExpression_rulegraph.output
     output:
-        touch(tmpdir / "rulegraphs.done")
+        tmp_dir / "rulegraphs.done"
 
 rule publish_local:
     shell: "rsync -Ort {config[htmlOutputPath]} {config[webDir]}"
-
-rule unlock:
-    input:
-       AE(drop.getMethodPath("AE", "unlock")),
-       AS(drop.getMethodPath("AS", "unlock")),
-       MAE(drop.getMethodPath("MAE", "unlock"))
-    params:
-       finalFiles = " ".join(finalFiles.values())
-    shell: 
-        """
-        snakemake --unlock
-        rm {input}
-        rm -f {params.finalFiles}
-        """
 

@@ -2,8 +2,8 @@ import wbuild
 import drop
 import yaml
 from pathlib import Path
-from shutil import copy
-from distutils.dir_util import copy_tree, remove_tree
+from shutil import copyfile
+from distutils.dir_util import mkpath, copy_tree, remove_tree
 import subprocess
 import click
 import click_log
@@ -21,39 +21,57 @@ def setup_paths():
     templatePath = Path(drop.__file__).parent / "template"
     modulePath = Path(drop.__file__).parent / "modules"
     wbuildPath = Path(wbuild.__file__).parent / ".wBuild"
-    return templatePath, modulePath, wbuildPath
+    projectPath = Path.cwd().resolve()
+    return projectPath, templatePath, modulePath, wbuildPath
 
-def setFiles():
-    templatePath, modulePath, wbuildPath = setup_paths()
-    copy_tree(str(wbuildPath), "./.wBuild")
+def copyModuleCode(projectPath, templatePath, modulePath):
+    # copy code for each submodule
     
-    copy(str(templatePath / "Snakefile"), ".")
+    repo_map = {
+        "aberrant-expression-pipeline": "AberrantExpression",
+        "aberrant-splicing-pipeline": "AberrantSplicingAnalysis",
+        "mae-pipeline": "MAEAnalysis"
+    }
     
-    ### search for a file containing the word readme and .md
-    if not len(list(Path(".").glob("readme*.md"))) > 0:
-        open("readme.md", "a").close()
+    helpers_path = projectPath/".drop"/"helpers"
+    copy_tree(str(modulePath/"helpers"), str(helpers_path))
     
-    # copy config file
-    config_file = Path("config.yaml").resolve()
+    for repo, analysis_dir in repo_map.items():
+        repo_path = modulePath / repo
+        workdir = projectPath / "Scripts" / analysis_dir / "pipeline"
+        if workdir.is_dir():
+            remove_tree(workdir)
+            print(f"overwriting pipeline scripts for {analysis_dir}")
+        copy_tree(str(repo_path), str(workdir))
+
+def removeFile(filePath, warn=True):
+    filePath = Path(filePath)
+    if filePath.is_file():
+        if warn:
+            input(f"The file {str(filePath)} will be overwritten. Press Enter to continue...")
+        filePath.unlink()
+    
+def setFiles(warn=True):
+    projectPath, templatePath, modulePath, wbuildPath = setup_paths()
+    
+    # hidden files
+    copy_tree(str(wbuildPath), ".wBuild")
+    mkpath(".drop")
+    # TODO: put version info there
+    
+    # copy Scripts and pipelines
+    copyfile(templatePath/"Snakefile", projectPath/"Snakefile")
+    copy_tree(str(templatePath/"Scripts"), str(projectPath/"Scripts"))
+    copyModuleCode(projectPath, templatePath, modulePath)
+    
+    # config file
+    config_file = Path("config.yaml")
     if not config_file.is_file():
-        copy(str(templatePath / 'config.yaml'), '.')
+        copyfile(templatePath/"config.yaml", config_file)
     
-    # copy analysis scripts
-    if not Path("Scripts").is_dir():
-        copy_tree(str(templatePath / 'Scripts'), 'Scripts')
-    
-    # copy code for submodules
-    drop_dir = Path(".drop").resolve()
-    if drop_dir.is_dir():
-        remove_tree(drop_dir)
-        print("overwriting module scripts")
-    copy_tree(str(modulePath), str(drop_dir / "modules"))
-    
-    # create symlinks for submodules
-    drop_dir_link = drop_dir / "modules" / ".drop"
-    drop_dir_link.symlink_to(drop_dir, target_is_directory=True)
-    config_link = drop_dir / "config.yaml"
-    config_link.symlink_to(config_file) 
+    # search for a file containing the word readme and .md
+    if not len(list(projectPath.glob("readme*.md"))) > 0:
+        open("readme.md", "a").close()
 
 
 @main.command()
@@ -73,7 +91,10 @@ def update():
 @main.command()
 def demo():
     
+    # TODO: check if previous project gets overwritten
     setFiles()
+    removeFile("config.yaml", warn=False)
+    logger.info("init...done")
     
     # download data
     logger.info("download data")

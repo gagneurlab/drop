@@ -11,6 +11,7 @@
 #'    - datasets: '`sm datasets`'
 #'    - tmpdir: '`sm drop.getTmpDir()`'
 #'    - htmlDir: '`sm config["htmlOutputPath"] + "/AberrantExpression"`'
+#'  input:
 #'    - odsFiles: '`sm expand(cfg.getProcessedResultsDir() +
 #'                  "/aberrant_expression/{annotation}/outrider/{dataset}/ods.Rds",
 #'                  annotation=annotations, dataset=datasets)`'
@@ -18,8 +19,6 @@
 #'                      "/aberrant_expression/{annotation}/outrider/" +
 #'                      "{dataset}/OUTRIDER_results.tsv",
 #'                      annotation=annotations, dataset=datasets)`'
-#'  input:
-#'    - AE: '`sm drop.getTmpDir() + "/AE.done"`'
 #' output:
 #'   html_document:
 #'    code_folding: show
@@ -82,17 +81,17 @@ outrider_links <- sapply(annotations, get_html_path,
 #' ## Files
 #' ### OUTRIDER datasets (ods)
 #' 
-#' `r paste('* ', snakemake@params$odsFiles, collapse = '\n')`
+#' `r paste('* ', snakemake@input$odsFiles, collapse = '\n')`
 #' 
 #' ### Results tables
 #' 
-#'  `r paste('* ', snakemake@params$resultTables, collapse = '\n')`
+#'  `r paste('* ', snakemake@input$resultTables, collapse = '\n')`
 #' 
   
 #' ## Analyze Individual Results
 # Read the first ods object and results table
-ods <- readRDS(snakemake@params$odsFiles[[1]])
-res <- fread(snakemake@params$resultTables[[1]])
+ods <- readRDS(snakemake@input$odsFiles[[1]])
+res <- fread(snakemake@input$resultTables[[1]])
 
 #' Display the results table of the first dataset
 #+ echo=FALSE

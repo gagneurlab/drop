@@ -28,3 +28,13 @@ def getWBuildPath(str_=True):
 def getWBuildSnakefile(str_=True):
     wb_path = getWBuildPath(str_=False)
     return returnPath(wb_path / "wBuild.snakefile", str_=str_)
+
+def getRuleFromPath(path, prefix=False):
+    path = str(path)
+    if not path.startswith("Scripts"):
+        raise ValueError(f"{path} is invalid for wBuild rule")
+    rule = path.replace("/", "_")
+    if prefix:
+        return rule.split(".")[0]
+    else:
+        return rule.replace(".", "_")
