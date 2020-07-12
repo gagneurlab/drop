@@ -1,9 +1,9 @@
 language: python
 dist: xenial
 
-#cache:
-#  - directories:
-#    - $HOME/miniconda
+env:
+  global:
+    - PROJECT_DIR="$HOME/project"
 
 python:
   - "3.7"
@@ -30,6 +30,11 @@ install:
   - conda create -q -n drop drop
   - conda activate drop
 
+before_script:
+  - mkdir -p $PROJECT_DIR
+  - cd $PROJECT_DIR
+  - drop demo
+
 script: 
   - conda list 
   - java -version
@@ -38,3 +43,11 @@ script:
   - bcftools --version
   - drop --version
   - python --version
+
+  # run pipeline
+  - snakemake -n
+  - snakemake aberrantExpression --cores 2
+  - snakemake aberrantSplicing --cores 2
+  - snakemake mae --cores 2
+  - snakemake --cores 2
+  - snakemake exportCounts --cores 2
