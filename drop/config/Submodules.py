@@ -6,6 +6,8 @@ from drop import utils
 class AE:
     
     def __init__(self, config, sampleAnnotation, processedDataDir, processedResultsDir):
+        
+        self.workdir = "AberrantExpression"
         self.processedDataDir = processedDataDir
         self.processedResultsDir = processedResultsDir
         self.sa = sampleAnnotation
@@ -32,7 +34,9 @@ class AE:
         ids = self.sa.getIDsByGroup(group, assay="RNA")
         file_stump = self.processedDataDir / "aberrant_expression" / annotation / "counts"
         return expand(str(file_stump) + "/{sampleID}.Rds", sampleID=ids)
-
+    
+    def getWorkdir(self, str_=True):
+        return utils.returnPath(Path("Scripts") / self.workdir / "pipeline", str_)
         
 class AS:
     

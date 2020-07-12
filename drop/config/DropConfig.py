@@ -18,16 +18,17 @@ class DropConfig:
         config = self.checkConfig(config)
         self.config = self.setDefaults(config)
         
-        self.root = Path(config["root"])
+        self.root = Path(self.get("root"))
         self.processedDataDir = self.root / "processed_data"
         self.processedResultsDir = self.root / "processed_results"
+        self.htmlOutputPath = Path(self.get("htmlOutputPath"))
         utils.createIfMissing(self.root)
         utils.createIfMissing(self.processedDataDir)
         utils.createIfMissing(self.processedResultsDir)
         
-        self.sampleAnnotation = SampleAnnotation(config["sampleAnnotation"], self.root)
-        self.geneAnnotation = self.config["geneAnnotation"]
-        self.genomeAssembly = self.config["genomeAssembly"]
+        self.sampleAnnotation = SampleAnnotation(self.get("sampleAnnotation"), self.root)
+        self.geneAnnotation = self.get("geneAnnotation")
+        self.genomeAssembly = self.get("genomeAssembly")
         
         # setup submodules
         cfg = self.config
@@ -109,6 +110,13 @@ class DropConfig:
     def getProcessedResultsDir(self, str_=True):
         return utils.returnPath(self.processedResultsDir)
     
+    def getHtmlOutputPath(self, str_=True):
+        return utils.returnPath(self.htmlOutputPath)
+    
+    def getHtmlFromScript(self, path):
+        stump = self.htmlOutputPath / utils.getRuleFromPath(path, prefix=True)
+        return str(stump) + ".html"
+    
     def get(self, key):
         if key not in self.config:
             if key not in self.CONFIG_KEYS:
@@ -125,7 +133,6 @@ class DropConfig:
     def getGeneAnnotationFile(self, annotation):
         return self.geneAnnotation[annotation]
     
-    # TODO: other getters
     def getAE(self):
         return self.AE
     
@@ -139,8 +146,8 @@ class DropConfig:
     def getExportGroups(self, modules=["aberrantExpression", "aberrantSplicing"]):
         groups = [] # get all active groups
         for module in modules:
-            groups.extend(self.config[module]["groups"])
-        exclude = self.config["exportCounts"]["excludeGroups"]
+            groups.extend(self.get(module)["groups"])
+        exclude = self.get("exportCounts")["excludeGroups"]
         return set(groups) - set(exclude)
         
     def getExportCountFiles(self, prefix):
@@ -152,8 +159,8 @@ class DropConfig:
             raise ValueError(f"{prefix} not a valid file type for exported counts")
 
         datasets = self.getExportGroups([count_type_map[prefix]])
-        annotations = self.config["exportCounts"]["geneAnnotations"]
-        genomeAssembly = self.config["genomeAssembly"]
+        annotations = self.get("exportCounts")["geneAnnotations"]
+        genomeAssembly = self.get("genomeAssembly")
 
         pattern = self.getProcessedResultsDir() + f"/exported_counts/{{dataset}}--{{genomeAssembly}}--{{annotation}}/{prefix}.tsv.gz"
         return expand(pattern, annotation=annotations, dataset=datasets, genomeAssembly=genomeAssembly)
