@@ -29,8 +29,8 @@ def copyModuleCode(projectPath, templatePath, modulePath):
     
     repo_map = {
         "aberrant-expression-pipeline": "AberrantExpression",
-        "aberrant-splicing-pipeline": "AberrantSplicingAnalysis",
-        "mae-pipeline": "MAEAnalysis"
+        "aberrant-splicing-pipeline": "AberrantSplicing",
+        "mae-pipeline": "MonoallelicExpression"
     }
     
     helpers_path = projectPath/".drop"/"helpers"

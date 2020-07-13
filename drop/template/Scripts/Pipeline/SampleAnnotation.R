@@ -2,8 +2,8 @@
 #' title: Sample Annotation Overview
 #' author:
 #' wb:
+#'  log: '`sm str(tmp_dir)`'
 #'  params:
-#'   - tmpdir: '`sm drop.getTmpDir()`'
 #'   - export_dir: '`sm cfg.getProcessedResultsDir() + "/exported_counts"`'
 #'   - groups: '`sm cfg.getExportGroups()`'
 #'  input: 
@@ -18,8 +18,7 @@
 #'---
 
 #+echo=F
-saveRDS(snakemake, file.path(snakemake@params$tmpdir, "sample_anno_overview.snakemake"))
-# snakemake <- readRDS(".drop/tmp/sample_anno_overview.snakemake")
+saveRDS(snakemake, snakemake@log[[1]])
 
 suppressPackageStartupMessages({
   library(data.table)

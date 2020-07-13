@@ -3,31 +3,39 @@ from snakemake.logging import logger
 from snakemake.io import expand
 from drop import utils
 
-class AE:
+class Submodule:
     
     def __init__(self, config, sampleAnnotation, processedDataDir, processedResultsDir):
-        
-        self.workdir = "AberrantExpression"
+        self.workdir = ""
         self.processedDataDir = processedDataDir
         self.processedResultsDir = processedResultsDir
         self.sa = sampleAnnotation
-        
+    
+    def setDefaultKeys(self, dict_):
+        dict_ = {} if dict_ is None else dict_
+        return dict_
+    
+    def getWorkdir(self, str_=True):
+        return utils.returnPath(Path("Scripts") / self.workdir / "pipeline", str_)
+
+class AE(Submodule):
+    
+    def __init__(self, config, sampleAnnotation, processedDataDir, processedResultsDir):
+        super().__init__(config, sampleAnnotation, processedDataDir, processedResultsDir)
+        self.workdir = "AberrantExpression"
         self.dict_ = self.setDefaultKeys(config["aberrantExpression"])
         self.groups = self.dict_["groups"]
         self.rnaIDs = self.sa.subsetGroups(self.groups, assay="RNA")
-        
     
     def setDefaultKeys(self, dict_):
+        super().setDefaultKeys(dict_)
         setKey = utils.setKey
-        dict_ = {} if dict_ is None else dict_
-        
         setKey(dict_, None, "groups", self.sa.getGroups(assay="RNA"))
         setKey(dict_, None, "fpkmCutoff", 1)
         setKey(dict_, None, "implementation", "autoencoder")
         setKey(dict_, None, "padjCutoff", .05)
         setKey(dict_, None, "zScoreCutoff", 0)
         setKey(dict_, None, "maxTestedDimensionProportion", 3)
-        
         return dict_
 
     def getCountFiles(self, annotation, group):
@@ -35,25 +43,19 @@ class AE:
         file_stump = self.processedDataDir / "aberrant_expression" / annotation / "counts"
         return expand(str(file_stump) + "/{sampleID}.Rds", sampleID=ids)
     
-    def getWorkdir(self, str_=True):
-        return utils.returnPath(Path("Scripts") / self.workdir / "pipeline", str_)
-        
-class AS:
+class AS(Submodule):
     
     def __init__(self, config, sampleAnnotation, processedDataDir, processedResultsDir):
-        self.processedDataDir = processedDataDir
-        self.processedResultsDir = processedResultsDir
-        self.sa = sampleAnnotation
-        
+        super().__init__(config, sampleAnnotation, processedDataDir, processedResultsDir)
+        self.workdir = "AberrantSplicing"
         self.dict_ = self.setDefaultKeys(config["aberrantSplicing"])
         self.groups = self.dict_["groups"]
         self.rnaIDs = self.sa.subsetGroups(self.groups, assay="RNA")
         
     
     def setDefaultKeys(self, dict_):
+        super().setDefaultKeys(dict_)
         setKey = utils.setKey
-        dict_ = {} if dict_ is None else dict_
-        
         setKey(dict_, None, "groups", self.sa.getGroups(assay="RNA"))
         setKey(dict_, None, "recount", False)
         setKey(dict_, None, "longRead", False)
@@ -65,35 +67,28 @@ class AS:
         setKey(dict_, None, "zScoreCutoff", 0.05)
         setKey(dict_, None, "deltaPsiCutoff", 0.05)
         setKey(dict_, None, "maxTestedDimensionProportion", 6)
-        
         return dict_
-        
     
-class MAE:
+class MAE(Submodule):
     
     def __init__(self, config, sampleAnnotation, processedDataDir, processedResultsDir):
-        self.processedDataDir = processedDataDir
-        self.processedResultsDir = processedResultsDir
-        self.sa = sampleAnnotation
-        
+        super().__init__(config, sampleAnnotation, processedDataDir, processedResultsDir)
+        self.workdir = "MonoallelicExpression"
         self.dict_ = self.setDefaultKeys(config["mae"])
         self.groups = self.dict_["groups"]
         self.qcGroups = self.dict_["qcGroups"]
         self.maeIDs = self.createMaeIDS(id_sep='--')
     
     def setDefaultKeys(self, dict_):
+        super().setDefaultKeys(dict_)
         setKey = utils.setKey
-        dict_ = {} if dict_ is None else dict_
-        
         groups = setKey(dict_, None, "groups", self.sa.getGroups(assay="DNA"))
         setKey(dict_, None, "qcGroups", groups)
-        
         setKey(dict_, None, "gatkIgnoreHeaderCheck", True)
         setKey(dict_, None, "padjCutoff", .05)
         setKey(dict_, None, "allelicRatioCutoff", 0.8)
         setKey(dict_, None, "maxAF", .001)
         setKey(dict_, None, "gnomAD", False)
-        
         return dict_
     
     def createMaeIDS(self, id_sep='--'):

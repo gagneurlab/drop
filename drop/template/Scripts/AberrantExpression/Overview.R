@@ -2,23 +2,20 @@
 #' title: Aberrant Expression
 #' author:
 #' wb:
-#'  py:
-#'   - |
-#'    annotations = cfg.getGeneVersions()
-#'    datasets = cfg.AE.groups
+#'  log:
+#'    - snakemake: '`sm str(tmp_dir / "AE" / "Overview.Rds")`'
 #'  params:
-#'    - annotations: '`sm annotations`'
-#'    - datasets: '`sm datasets`'
-#'    - tmpdir: '`sm drop.getTmpDir()`'
+#'    - annotations: '`sm cfg.getGeneVersions()`'
+#'    - datasets: '`sm cfg.AE.groups`'
 #'    - htmlDir: '`sm config["htmlOutputPath"] + "/AberrantExpression"`'
 #'  input:
 #'    - odsFiles: '`sm expand(cfg.getProcessedResultsDir() +
 #'                  "/aberrant_expression/{annotation}/outrider/{dataset}/ods.Rds",
-#'                  annotation=annotations, dataset=datasets)`'
+#'                  annotation=cfg.getGeneVersions(), dataset=cfg.AE.groups)`'
 #'    - resultTables: '`sm expand(cfg.getProcessedResultsDir() +
 #'                      "/aberrant_expression/{annotation}/outrider/" +
 #'                      "{dataset}/OUTRIDER_results.tsv",
-#'                      annotation=annotations, dataset=datasets)`'
+#'                      annotation=cfg.getGeneVersions(), dataset=cfg.AE.groups)`'
 #' output:
 #'   html_document:
 #'    code_folding: show
@@ -26,9 +23,7 @@
 #'---
 
 #+ echo=F
-saveRDS(snakemake, file.path(snakemake@params$tmpdir, 
-                             "AberrantExpression_OUTRIDER.snakemake"))
-# snakemake <- readRDS(".drop/tmp/AberrantExpression_OUTRIDER.snakemake")
+saveRDS(snakemake, snakemake@log$snakemake)
 
 suppressPackageStartupMessages({
     library(OUTRIDER)
