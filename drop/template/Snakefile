@@ -1,5 +1,4 @@
 from pathlib import Path
-import os
 import re
 import drop
 from drop.utils import getRuleFromPath
@@ -13,47 +12,39 @@ cfg = drop.config.DropConfig(config)
 sa = cfg.sampleAnnotation
 config = cfg.config # legacy
 
-
-METHOD = 'AE' # TODO: remove
 include: drop.utils.getWBuildSnakefile()
 include: cfg.AE.getWorkdir() + "/Snakefile"
+include: cfg.AS.getWorkdir() + "/Snakefile"
+include: cfg.MAE.getWorkdir() + "/Snakefile"
 
 rule all:
     input: 
         rules.aberrantExpression.input,
         rules.Index.output,
         config["htmlOutputPath"] + "/readme.html",
-        tmp_dir / "rulegraphs.done"
+        rulegraph = tmp_dir / "rulegraphs.done"
+    shell:
+        """
+        rm {input.rulegraph}
+        """
 
 rule sampleAnnotation:
     input: cfg.getProcessedDataDir() + "/sample_anno/sample_anno.done"
 
-#rule getIndexNames:
-#    input:
-#        rules.aberrantExpression.input
-#    output:
-#        indexFile = config["htmlOutputPath"] + "/indexNames.txt"
-#    run: 
-#        indexList = [x for x in os.listdir(config["htmlOutputPath"]) if #re.search("_index.html$",x)]
-#        with open(output.indexFile, 'w') as file_handler:
-#            for item in indexList:
-#                file_handler.write(f"{item}\n")
-
-#rule sampleQC:
-#    input: MAE(drop.getTmpDir() + "/sampleQC.done")
-
 rule exportCounts:
     input:
         cfg.getExportCountFiles("geneCounts"),
-        #AS(cfg.getExportCountFiles("splitCounts")),
-        #AS(cfg.getExportCountFiles("spliceSiteOverlapCounts")),
+        cfg.getExportCountFiles("splitCounts"),
+        cfg.getExportCountFiles("spliceSiteOverlapCounts"),
         cfg.getProcessedResultsDir() + "/exported_counts/sample_anno.done"
 
 rule dependencyGraph:
     input:
-        rules.aberrantExpression_rulegraph.output
+        rules.aberrantExpression_rulegraph.output,
+        rules.aberrantSplicing_rulegraph.output,
+        rules.mae_rulegraph.output
     output:
-        tmp_dir / "rulegraphs.done"
+        touch(tmp_dir / "rulegraphs.done")
 
 rule publish_local:
     shell: "rsync -Ort {config[htmlOutputPath]} {config[webDir]}"

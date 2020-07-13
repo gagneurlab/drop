@@ -2,13 +2,9 @@
 #' title: Monoallelic Expression
 #' author:
 #' wb:
-#'  py:
-#'    - |
-#'      annotations = cfg.getGeneVersions()
-#'      datasets = cfg.MAE.groups
-#'      qc_groups = cfg.MAE.qcGroups
-#'  params:
-#'    - tmpdir: '`sm drop.getTmpDir()`'
+#'  log:
+#'    - snakemake: '`sm str(tmp_dir / "MAE" / "Overview.Rds")`'
+#'  input:
 #'    - allelic_counts: '`sm expand(cfg.getProcessedDataDir() + 
 #'                          "/mae/allelic_counts/{mae_id}.csv.gz",
 #'                          mae_id=cfg.MAE.getMaeAll())`'
@@ -17,12 +13,9 @@
 #'                       mae_id=cfg.MAE.getMaeAll())`'
 #'    - results_tables: '`sm expand(cfg.getProcessedResultsDir() + 
 #'                       "/mae/{dataset}/MAE_results_{annotation}.tsv", 
-#'                       dataset=cfg.MAE.groups, annotation=annotations)`'
-#'    - html: '`sm config["htmlOutputPath"] + "/Scripts_MAE_Results_Overview.html"`'
+#'                       dataset=cfg.MAE.groups, annotation=cfg.getGeneVersions())`'
 #'    - qc_matrix: '`sm expand(cfg.getProcessedResultsDir() + "/mae/{qc_group}/" +
 #'                  "dna_rna_qc_matrix.Rds", qc_group=cfg.MAE.qcGroups)`'
-#'  input:
-#'    - MAE: '`sm drop.getTmpDir() + "/MAE.done"`'
 #' output:
 #'   html_document:
 #'    code_folding: hide
@@ -30,8 +23,7 @@
 #'---
 
 #+ echo=F
-saveRDS(snakemake, file.path(snakemake@params$tmpdir, "MAE_analysis.snakemake"))
-# snakemake <- readRDS(".drop/tmp/MAE_analysis.snakemake")
+saveRDS(snakemake, snakemake@log$snakemake)
 
 suppressPackageStartupMessages({
   library(tMAE)

@@ -2,19 +2,15 @@
 #' title: Aberrant Splicing
 #' author:
 #' wb:
-#'  py:
-#'    - |
-#'      datasets = cfg.AS.groups
-#'  params:
-#'    - tmpdir: '`sm drop.getTmpDir()`'
+#'  log:
+#'    - snakemake: '`sm str(tmp_dir / "AS" / "Overview.Rds")`'
+#'  input:
 #'    - fds_files: '`sm expand(cfg.getProcessedDataDir() +
 #'                "/aberrant_splicing/datasets/savedObjects/{dataset}/" + 
-#'                "fds-object.RDS", dataset=datasets)`'
+#'                "fds-object.RDS", dataset=cfg.AS.groups)`'
 #'    - result_tables: '`sm expand(cfg.getProcessedDataDir() +
 #'                    "/aberrant_splicing/results/{dataset}_results_per_junction.tsv",
-#'                    dataset=datasets)`'
-#'  input:
-#'    - AS: '`sm drop.getTmpDir() + "/AS.done"`'
+#'                    dataset=cfg.AS.groups)`'
 #' output:
 #'   html_document:
 #'    code_folding: show
@@ -22,9 +18,7 @@
 #'---
 
 #+ echo=F
-saveRDS(snakemake, file.path(snakemake@params$tmpdir, 
-                             "AberrantSplicing_FRASER.snakemake"))
-# snakemake <- readRDS(".drop/tmp/AberrantSplicing_FRASER.snakemake")
+saveRDS(snakemake, snakemake@log$snakemake)
 
 suppressPackageStartupMessages({
   library(FRASER)
