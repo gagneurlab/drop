@@ -65,16 +65,16 @@ fraser_links <- get_html_path(datasets = datasets,
 
 #' ## Files
 #' ### FRASER datasets (fds)
-#' `r paste('* ', snakemake@params$fds_files, collapse = '\n')`  
+#' `r paste('* ', snakemake@input$fds_files, collapse = '\n')`  
 #' 
 #' ### Results tables
-#' `r paste('* ', snakemake@params$result_tables, collapse = '\n')`  
+#' `r paste('* ', snakemake@input$result_tables, collapse = '\n')`  
 
 #'
 #' ## Analyze individual results
 # Read the first fds object and results table
-fds <- loadFraserDataSet(file = snakemake@params$fds_files[[1]])
-res <- fread(snakemake@params$result_tables[[1]])
+fds <- loadFraserDataSet(file = snakemake@input$fds_files[[1]])
+res <- fread(snakemake@input$result_tables[[1]])
 
 #' Display the results table of the first dataset
 #+ echo=FALSE

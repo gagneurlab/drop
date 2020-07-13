@@ -38,7 +38,7 @@ suppressPackageStartupMessages({
 #' Located in `r file.path(snakemake@config$root, 'processed_results/mae/samples/')`
 #' 
 #' ### Aggregated results tables of each group
-#' `r paste('* ', snakemake@params$results_tables, collapse = '\n')`  
+#' `r paste('* ', snakemake@input$results_tables, collapse = '\n')`  
 #'
 #' ### MAE Pipeline Output
 #' [MAE Pipeline Output](`r "./Scripts_MAE_Datasets.html"`)
@@ -46,7 +46,7 @@ suppressPackageStartupMessages({
 
 #' ## Analyze Individual Results
 # Read the first results table
-res_sample <- readRDS(snakemake@params$results_obj[[1]])
+res_sample <- readRDS(snakemake@input$results_obj[[1]])
 
 #+echo=F
 if(is.null(res_sample$rare)){
@@ -68,5 +68,5 @@ g2
 #' [QC Overview](`r "./Scripts_QC_Datasets.html"`)
 #' 
 #' ### DNA-RNA matrix: 
-#' `r paste('* ', snakemake@params$qc_matrix, collapse='\n')`  
+#' `r paste('* ', snakemake@input$qc_matrix, collapse='\n')`  
 
