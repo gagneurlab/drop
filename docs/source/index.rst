@@ -17,20 +17,23 @@ After installing DROP, the user needs to fill in the config file and sample anno
 Quickstart
 -----------
 
-Install via pip
-
-    pip install drop
-
-Initialize the project
+DROP is available on `bioconda <https://anaconda.org/bioconda/drop>`_ for python 3.6 and above.
+We recommend using a dedicated conda environment.
 
 .. code-block:: bash
-    
-    cd <project/path>
-    drop init
 
-Indices and tables
-==================
+    conda install -c bioconda drop
 
-* :ref:`genindex`
-* :ref:`modindex`
-* :ref:`search`
+Initialize project
+
+.. code-block:: bash
+
+    cd <path-to-project>
+    drop demo
+
+Call the pipeline
+
+.. code-block:: bash
+
+    snakemake
+

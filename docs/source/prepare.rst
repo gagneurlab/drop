@@ -165,12 +165,18 @@ S20R    S20G    WGS         /path/to/S20R.BAM    /path/to/multi_sample.vcf.gz
 Advanced options
 ----------------
 
-The user might want to clone drop locally and edit some scripts to personalize
-them. For example, to add new plots to the ``Summary`` scripts, or add 
-columns to the results tables. Also, users might want to modify the threads of
-each script. Finally, other functionalities can be added. 
+A local copy of DROP can be edited and modified for uncovering potential issues or increasing outputs.
+For example, the user might want to add new plots to the ``Summary`` scripts, or add
+additional columns to the results tables.
+Specifically, the number of threads allowed for a computational step can be modified by the user.
 
-The aberrant expression and splicing modules use a denoising autoencoder to 
+.. note::
+
+    DROP needs to be installed from a local directory :ref:`otherversions` using ``pip install -e <path-to-drop-repo>``
+    so that any changes in the code will be available in the next pipeline run.
+    Any changes made to the R code need to be updated with ``drop update`` in the project directory.
+
+The aberrant expression and splicing modules use a denoising autoencoder to
 correct for sample covariation. This process reduces the fitting space to a 
 dimension smaller than the number of samples N. The encoding dimension is optimized.
 We recommend the search space to be at most N/3 for the aberrant expression, 
