@@ -33,7 +33,7 @@ The pipeline can be run using ``snakemake`` commands
     snakemake
 
 Initialize a project
-++++++++++++++++++++
+--------------------
 The demo project can be modified to be used for a new project.
 Alternatively, a new DROP project can be set up using ``drop init``.
 
@@ -53,7 +53,7 @@ Other DROP versions
 
 The developer version of DROP can be found in the `repository <https://github.com/gagneurlab/drop>`_ under the branch
 ``dev``.
-Make sure that the [dependencies](#dependencies) are installed.
+Make sure that the :any:`dependencies` are installed.
 
 .. code-block:: bash
 
@@ -74,26 +74,33 @@ Alternatively, you can also install it directly without cloning
 
     pip install git+https://github.com/gagneurlab/drop.git@dev
 
+.. _dependencies:
+
 Dependencies
 ------------
 The easiest way to ensure that all dependencies are installed is to install the
 `bioconda package <https://anaconda.org/bioconda/drop>`_ into a conda environment.
+
+.. code-block:: bash
+
+    conda install -c bioconda drop
+
 Other versions of drop can be installed after the bioconda package has been installed.
+
 
 Installation without conda
 ++++++++++++++++++++++++++
-Alternatively, DROP can be installed without ``conda``.
-In this case the following dependencies must be met:
+Alternatively, DROP can be installed without ``conda``. In this case the following dependencies must be met:
 
-+ python >= 3.6
-     + pip >= 19.1
-+ `samtools <https://www.htslib.org/download/>`_ >= 1.7
-+ `bcftools <https://github.com/samtools/bcftools>`_ >= 1.7
-+ `tabix <https://www.htslib.org/download/>`_
-+ `GATK <https://software.broadinstitute.org/gatk/>`_
-+ `graphviz <https://www.graphviz.org/>`_
-+ `pandoc <https://pandoc.org/>`_
-+ `R <https://www.r-project.org/>`_ >= 3.5 and corresponding `bioconductor <https://bioconductor.org/install/>`_ version
+* python >= 3.6
+    * pip >= 19.1
+* `samtools <https://www.htslib.org/download/>`_ >= 1.7
+* `bcftools <https://github.com/samtools/bcftools>`_ >= 1.7
+* `tabix <https://www.htslib.org/download/>`_
+* `GATK <https://software.broadinstitute.org/gatk/>`_
+* `graphviz <https://www.graphviz.org/>`_
+* `pandoc <https://pandoc.org/>`_
+* `R <https://www.r-project.org/>`_ >= 3.5 and corresponding `bioconductor <https://bioconductor.org/install/>`_ version
 
 If you are using an already existing R installation, make sure that the R and ``bioconductor`` versions match.
 Otherwise, use the newest versions of R and bioconductor.
