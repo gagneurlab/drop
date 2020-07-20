@@ -3,8 +3,8 @@
 Preparing the Input Data
 ========================
 
-Filling the Config File
------------------------
+Config file
+-----------
 
 The config file is in `YAML <https://docs.ansible.com/ansible/latest/reference_appendices/YAMLSyntax.html>`_ format. It is composed of general and module-specific parameters. In *YAML*, a variable can be of the following types: boolean, string, numeric, list and dictionary. They are declared by writing the variable name followed by a colon, a space, and the value, for example:
 
@@ -57,8 +57,8 @@ tools                dictionary  A key-value list of different commands (key) an
                                                                                                                                                                           ``samtoolsCmd: samtools``
 ===================  ==========  =======================================================================================================================================  ======
 
-exportCounts dictionary
-++++++++++++++++++++++++++++++
+Export counts dictionary
+++++++++++++++++++++++++
 
 ===============  ====  ==========================================================================================================================  ======
 Parameter        Type  Description                                                                                                                 Default/Examples
@@ -123,7 +123,7 @@ qcGroups               list       Same as “groups”, but for the VCF-BAM matc
 =====================  =========  ========================================================================================================================  ======
 
 
-Creating the Sample Annotation Table
+Creating the sample annotation table
 ------------------------------------
 
 For details on how to generate the sample annotation, please refer to the DROP manuscript. 
