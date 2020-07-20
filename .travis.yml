@@ -38,3 +38,6 @@ script:
   - bcftools --version
   - drop --version
   - python --version
+  
+  - snakemake -n
+  - snakemake --jobs 2 --cores 2
