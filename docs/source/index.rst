@@ -1,8 +1,10 @@
 DROP - Detection of RNA Outliers Pipeline
 ==========================================
 
-DROP is intended to help researchers use RNA-Seq data in order to detect genes with aberrant expression, aberrant splicing and mono-allelic expression. It consists of three independent modules for each of those strategies. 
-After installing DROP, the user needs to fill in the config file and sample annotation table (Preparing Input Data). Then, DROP can be executed in multiple ways (Executing the Pipeline).
+DROP is intended to help researchers use RNA-Seq data in order to detect genes with aberrant expression,
+aberrant splicing and mono-allelic expression. It consists of three independent modules for each of those strategies.
+After installing DROP, the user needs to fill in the config file and sample annotation table (:ref:`prepare`).
+Then, DROP can be executed in multiple ways (:ref:`pipeline`).
 
 .. toctree::
    :maxdepth: 2

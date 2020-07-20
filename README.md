@@ -41,12 +41,15 @@ snakemake
 
 Expected runtime: 25 min
 
+For more information on different installation options, check out the 
+[documentation](https://gagneurlab-drop.readthedocs.io/en/latest/installation.html)
+
 ## Set up a custom project
 Install the drop module according to [installation](#installation) and initialize the project in a custom project directory.
 ### Prepare the input data
 Create a sample annotation that contains the sample IDs, file locations and other information necessary for the pipeline.
 Edit the config file to set the correct file path of sample annotation and locations of non-sample specific input files.
-The requirements are described in the [documentation](https://drop-rna.readthedocs.io/en/latest/prepare.html).
+The requirements are described in the [documentation](https://gagneurlab-drop.readthedocs.io/en/latest/prepare.html).
 
 ### Execute the pipeline
 Once these files are set up, you can execute a dry run from your project directory
