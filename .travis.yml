@@ -39,5 +39,8 @@ script:
   - drop --version
   - python --version
   
+  - mkdir drop_demo
+  - cd drop_demo
+  - drop demo
   - snakemake -n
   - snakemake --jobs 2 --cores 2
