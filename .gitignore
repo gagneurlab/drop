@@ -26,11 +26,13 @@ auto
 docs/build/*
 
 # IDE project files
+.idea/
 *.project
 readme.html
 *.Rproj
 .Rproj.user
 .Rhistory
+.RData
 
 # other
 *~
@@ -40,5 +42,3 @@ slurm-*.out
 *_files
 *.cache
 tmp/
-
-.RData

@@ -6,10 +6,11 @@ with open("README.md", "r") as fh:
     long_description = fh.read()
 
 requirements = [
-    'wbuild @ git+https://github.com/gagneurlab/wBuild.git@master#egg=wbuild',
-    #'wbuild',
-    'snakemake==5.5.2',
-    'pandas',
+    'wbuild>=1.7.0',
+    'python-dateutil',
+    'pandoc',
+    'graphviz',
+    'pandas>=0.13',
 ]
 
 extra_files = []

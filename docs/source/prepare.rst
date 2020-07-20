@@ -3,8 +3,8 @@
 Preparing the Input Data
 ========================
 
-Filling the Config File
------------------------
+Config file
+-----------
 
 The config file is in `YAML <https://docs.ansible.com/ansible/latest/reference_appendices/YAMLSyntax.html>`_ format. It is composed of general and module-specific parameters. In *YAML*, a variable can be of the following types: boolean, string, numeric, list and dictionary. They are declared by writing the variable name followed by a colon, a space, and the value, for example:
 
@@ -57,8 +57,8 @@ tools                dictionary  A key-value list of different commands (key) an
                                                                                                                                                                           ``samtoolsCmd: samtools``
 ===================  ==========  =======================================================================================================================================  ======
 
-exportCounts dictionary
-++++++++++++++++++++++++++++++
+Export counts dictionary
+++++++++++++++++++++++++
 
 ===============  ====  ==========================================================================================================================  ======
 Parameter        Type  Description                                                                                                                 Default/Examples
@@ -123,7 +123,7 @@ qcGroups               list       Same as “groups”, but for the VCF-BAM matc
 =====================  =========  ========================================================================================================================  ======
 
 
-Creating the Sample Annotation Table
+Creating the sample annotation table
 ------------------------------------
 
 For details on how to generate the sample annotation, please refer to the DROP manuscript. 
@@ -165,12 +165,18 @@ S20R    S20G    WGS         /path/to/S20R.BAM    /path/to/multi_sample.vcf.gz
 Advanced options
 ----------------
 
-The user might want to clone drop locally and edit some scripts to personalize
-them. For example, to add new plots to the ``Summary`` scripts, or add 
-columns to the results tables. Also, users might want to modify the threads of
-each script. Finally, other functionalities can be added. 
+A local copy of DROP can be edited and modified for uncovering potential issues or increasing outputs.
+For example, the user might want to add new plots to the ``Summary`` scripts, or add
+additional columns to the results tables.
+Specifically, the number of threads allowed for a computational step can be modified by the user.
 
-The aberrant expression and splicing modules use a denoising autoencoder to 
+.. note::
+
+    DROP needs to be installed from a local directory :ref:`otherversions` using ``pip install -e <path-to-drop-repo>``
+    so that any changes in the code will be available in the next pipeline run.
+    Any changes made to the R code need to be updated with ``drop update`` in the project directory.
+
+The aberrant expression and splicing modules use a denoising autoencoder to
 correct for sample covariation. This process reduces the fitting space to a 
 dimension smaller than the number of samples N. The encoding dimension is optimized.
 We recommend the search space to be at most N/3 for the aberrant expression, 
