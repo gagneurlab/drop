@@ -5,9 +5,11 @@ from drop.utils import getRuleFromPath
 
 drop.installRPackages()
 configfile: "config.yaml"
-tmp_dir, finalFiles = drop.setupTempFiles(config)
 
 projectDir = Path.cwd().resolve()
+_, projectPaths = drop.setupPaths(projectDir)
+tmp_dir = projectPaths["tmpDir"]
+
 cfg = drop.config.DropConfig(config)
 sa = cfg.sampleAnnotation
 config = cfg.config # legacy
@@ -48,4 +50,3 @@ rule dependencyGraph:
 
 rule publish_local:
     shell: "rsync -Ort {config[htmlOutputPath]} {config[webDir]}"
-

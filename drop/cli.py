@@ -8,41 +8,33 @@ import subprocess
 import click
 import click_log
 import logging
+
+wbuildPath = Path(wbuild.__file__).parent / ".wBuild"
 logger = logging.getLogger(__name__)
 click_log.basic_config(logger)
 
 @click.group()
 @click_log.simple_verbosity_option(logger)
-@click.version_option('0.9.1',prog_name='drop')
+@click.version_option('0.9.1', prog_name='drop')
 def main():
     pass
 
-def setup_paths():
-    templatePath = Path(drop.__file__).parent / "template"
-    modulePath = Path(drop.__file__).parent / "modules"
-    wbuildPath = Path(wbuild.__file__).parent / ".wBuild"
-    projectPath = Path.cwd().resolve()
-    return projectPath, templatePath, modulePath, wbuildPath
 
-def copyModuleCode(projectPath, templatePath, modulePath):
-    # copy code for each submodule
-    
+def copyModuleCode(repoPaths, projectPaths):
     repo_map = {
         "aberrant-expression-pipeline": "AberrantExpression",
         "aberrant-splicing-pipeline": "AberrantSplicing",
         "mae-pipeline": "MonoallelicExpression"
     }
-    
-    helpers_path = projectPath/".drop"/"helpers"
-    copy_tree(str(modulePath/"helpers"), str(helpers_path))
-    
+
     for repo, analysis_dir in repo_map.items():
-        repo_path = modulePath / repo
-        workdir = projectPath / "Scripts" / analysis_dir / "pipeline"
-        if workdir.is_dir():
-            remove_tree(workdir)
+        module_repo = repoPaths["modules"] / repo
+        module_project = projectPaths["Scripts"] / analysis_dir / "pipeline"
+        if module_project.is_dir():
+            remove_tree(module_project)
             print(f"overwriting pipeline scripts for {analysis_dir}")
-        copy_tree(str(repo_path), str(workdir))
+        copy_tree(str(module_repo), str(module_project))
+
 
 def removeFile(filePath, warn=True):
     filePath = Path(filePath)
@@ -50,27 +42,33 @@ def removeFile(filePath, warn=True):
         if warn:
             input(f"The file {str(filePath)} will be overwritten. Press Enter to continue...")
         filePath.unlink()
-    
+
+
 def setFiles(warn=True):
-    projectPath, templatePath, modulePath, wbuildPath = setup_paths()
-    
+    repoPaths, projectPaths = drop.setupPaths(projectRoot=Path.cwd().resolve())
+
+    # create new directories
+    for path in projectPaths.values():
+        if not path.is_dir():
+            path.mkdir(parents=True)
+            logger.info(f"create {str(path)}")
+
     # hidden files
-    copy_tree(str(wbuildPath), ".wBuild")
-    mkpath(".drop")
+    copy_tree(str(wbuildPath), str(projectPaths["projectDir"] / ".wBuild"))
+    copy_tree(str(repoPaths["modules"] / "helpers"), str(projectPaths["modules"] / "helpers"))
     # TODO: put version info there
-    
+
     # copy Scripts and pipelines
-    copyfile(templatePath/"Snakefile", projectPath/"Snakefile")
-    copy_tree(str(templatePath/"Scripts"), str(projectPath/"Scripts"))
-    copyModuleCode(projectPath, templatePath, modulePath)
-    
-    # config file
-    config_file = Path("config.yaml")
+    copyfile(repoPaths["template"] / "Snakefile", projectPaths["projectDir"] / "Snakefile")
+    copy_tree(str(repoPaths["Scripts"]), str(projectPaths["Scripts"]))
+    copyModuleCode(repoPaths, projectPaths)
+
+    config_file = projectPaths["projectDir"] / "config.yaml"
     if not config_file.is_file():
-        copyfile(templatePath/"config.yaml", config_file)
-    
+        copyfile(repoPaths["template"], config_file)
+
     # search for a file containing the word readme and .md
-    if not len(list(projectPath.glob("readme*.md"))) > 0:
+    if not projectPaths["projectDir"].glob("readme*.md"):
         open("readme.md", "a").close()
 
 
@@ -82,26 +80,27 @@ def init():
         setFiles()
         logger.info("init...done")
 
+
 @main.command()
 def update():
     # TODO: check drop version first
     setFiles()
     logger.info("update...done")
 
+
 @main.command()
 def demo():
-    
     # TODO: check if previous project gets overwritten
     setFiles()
     removeFile("config.yaml", warn=False)
     logger.info("init...done")
-    
+
     # download data
     logger.info("download data")
     download_script = str(Path(drop.__file__).parent / "download_data.sh")
     response = subprocess.run(["bash", download_script], stderr=subprocess.STDOUT)
     response.check_returncode()
-    
+
     # fix config file
     with open("config.yaml", "r") as f:
         config = yaml.load(f, Loader=yaml.Loader)
@@ -110,7 +109,7 @@ def demo():
                  "sampleAnnotation": None,
                  "v29": ["geneAnnotation"],
                  "genome": ["mae"], "qcVcf": ["mae"]}
-    
+
     for key, sub in path_keys.items():
         # iterate to key and entry
         dict_ = config
@@ -119,9 +118,9 @@ def demo():
                 dict_ = dict_[x]
         # set absolute path
         dict_[key] = str(Path(dict_[key]).resolve())
-    
+
     with open("config.yaml", "w") as f:
         yaml.safe_dump(config.copy(), f, default_flow_style=False,
                        sort_keys=False)
-    
+
     logger.info("demo project created")

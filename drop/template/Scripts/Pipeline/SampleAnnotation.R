@@ -2,7 +2,8 @@
 #' title: Sample Annotation Overview
 #' author:
 #' wb:
-#'  log: '`sm str(tmp_dir)`'
+#'  log:
+#'   - snakemake: '`sm str(tmp_dir / "SampleAnnotation.Rds")`'
 #'  params:
 #'   - export_dir: '`sm cfg.getProcessedResultsDir() + "/exported_counts"`'
 #'   - groups: '`sm cfg.getExportGroups()`'
@@ -18,7 +19,7 @@
 #'---
 
 #+echo=F
-saveRDS(snakemake, snakemake@log[[1]])
+saveRDS(snakemake, snakemake@log$snakemake)
 
 suppressPackageStartupMessages({
   library(data.table)

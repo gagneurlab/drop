@@ -143,7 +143,9 @@ class DropConfig:
         return self.MAE
     
     # TODO: wrap in separate class
-    def getExportGroups(self, modules=["aberrantExpression", "aberrantSplicing"]):
+    def getExportGroups(self, modules=None):
+        if modules is None:
+            modules = ["aberrantExpression", "aberrantSplicing"]
         groups = [] # get all active groups
         for module in modules:
             groups.extend(self.get(module)["groups"])
