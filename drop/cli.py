@@ -65,11 +65,11 @@ def setFiles(warn=True):
 
     config_file = projectPaths["projectDir"] / "config.yaml"
     if not config_file.is_file():
-        copyfile(repoPaths["template"], config_file)
+        copyfile(repoPaths["template"] / "config.yaml", config_file)
 
     # search for a file containing the word readme and .md
-    if not projectPaths["projectDir"].glob("readme*.md"):
-        open("readme.md", "a").close()
+    if not list(projectPaths["projectDir"].glob("readme*.md")):
+        copyfile(repoPaths["template"] / "readme.md", projectPaths["projectDir"] / "readme.md")
 
 
 @main.command()
