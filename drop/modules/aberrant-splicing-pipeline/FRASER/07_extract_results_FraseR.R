@@ -5,11 +5,11 @@
 #'  log:
 #'    - snakemake: '`sm str(tmp_dir / "AS" / "{dataset}" / "07_results.Rds")`'
 #'  params:
-#'   - setup: '`sm cfg.AS.getWorkdir() + "/config.R"`'
 #'   - workingDir: '`sm cfg.getProcessedDataDir() + "/aberrant_splicing/datasets/"`'
-#'   - add_HPO_cols: '`sm str(projectDir / ".drop" / "helpers" / "add_HPO_cols.R")`'
 #'  threads: 10
 #'  input:
+#'   - setup: '`sm cfg.AS.getWorkdir() + "/config.R"`'
+#'   - add_HPO_cols: '`sm str(projectDir / ".drop" / "helpers" / "add_HPO_cols.R")`'
 #'   - fdsin: '`sm cfg.getProcessedDataDir() +
 #'                 "/aberrant_splicing/datasets/savedObjects/{dataset}/" +
 #'                 "padjBetaBinomial_psiSite.h5"`'
@@ -22,8 +22,8 @@
 #'---
 
 saveRDS(snakemake, snakemake@log$snakemake)
-source(snakemake@params$setup, echo=FALSE)
-source(snakemake@params$add_HPO_cols)
+source(snakemake@input$setup, echo=FALSE)
+source(snakemake@input$add_HPO_cols)
 
 opts_chunk$set(fig.width=12, fig.height=8)
 

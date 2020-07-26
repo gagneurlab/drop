@@ -55,7 +55,7 @@ def setFiles(warn=True):
 
     # hidden files
     copy_tree(str(wbuildPath), str(projectPaths["projectDir"] / ".wBuild"))
-    copy_tree(str(repoPaths["modules"] / "helpers"), str(projectPaths["modules"] / "helpers"))
+    copy_tree(str(repoPaths["modules"] / "helpers"), str(projectPaths["dropDir"] / "helpers"))
     # TODO: put version info there
 
     # copy Scripts and pipelines
