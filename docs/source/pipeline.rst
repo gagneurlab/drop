@@ -1,3 +1,5 @@
+.. _pipeline:
+
 Pipeline Commands
 =================
 
@@ -39,8 +41,8 @@ DROP's steps are computationally heavy, therefore it is a good idea to run them 
 If the ``--cores`` flag is not specified, snakemake will use a single core by default.
 
 
-Executing parts of the pipeline
--------------------------------
+Executing subworkflows
+----------------------
 
 Every single module can be called independently.
 
@@ -62,7 +64,7 @@ An example for calling the aberrant expression pipeline with 10 cores would be
 
     snakemake aberrantExpression --cores 10
 
-Rerunning the Pipeline
+Rerunning the pipeline
 ----------------------
 
 When DROP is updated or jobs fail, the following commands can be used to rerun and troubleshoot.

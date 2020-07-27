@@ -19,11 +19,11 @@ import sphinx_rtd_theme
 # -- Project information -----------------------------------------------------
 
 project = 'DROP'
-copyright = '2019, Michaela Müller'
+copyright = '2020, Michaela Müller'
 author = 'Michaela Müller'
 
 # The full version, including alpha/beta/rc tags
-release = '0.0.9'
+release = '0.9.1'
 
 
 # -- General configuration ---------------------------------------------------
