@@ -1,17 +1,12 @@
 Installation
 ============
 
-DROP is available on `bioconda <https://anaconda.org/bioconda/drop>`_ for python 3.6 and above.
+DROP is available on `bioconda <https://anaconda.org/bioconda/drop>`_ .
 We recommend using a dedicated conda environment.
 
 .. code-block:: bash
 
-    # create environment
-    conda create -n drop_env python=3.6
-    conda activate drop_env
-
-    # install drop
-    conda install -c bioconda drop
+    conda create -n drop_env -c conda-forge -c bioconda drop
 
 Installation time: ~ 10min
 
@@ -25,12 +20,12 @@ Test whether the pipeline runs through by setting up the demo dataset in an empt
     # demo will download the necessary data and pipeline files
     drop demo
 
-The pipeline can be run using ``snakemake`` commands
+The pipeline can be run using `snakemake <snakemake.readthedocs.io/>`_ commands
 
 .. code-block:: bash
 
     snakemake -n # dryrun
-    snakemake
+    snakemake --cores 1
 
 Initialize a project
 --------------------

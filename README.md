@@ -9,20 +9,15 @@ The manuscript main file, supplementary figures and table can be found in the ma
 <img src="drop_sticker.png" alt="drop logo" width="200" class="center"/>
 
 ## Installation
-DROP is available on [bioconda](https://anaconda.org/bioconda/drop) for python 3.6 and above.
+DROP is available on [bioconda](https://anaconda.org/bioconda/drop).
 We recommend using a dedicated conda environment.
 
 ```
-# create environment
-conda create -n drop_env python=3.6
-conda activate drop_env
-
-# install drop
-conda install -c bioconda drop
+conda create -n drop_env -c conda_forge -c bioconda drop
 ```
 Installation time: ~ 10min
 
-Test whether the pipeline runs through by setting up the demo dataset in an empty directory (e.g. ``~/drop_demo``).
+Test whether the pipeline runs through by setting up the demo dataset in an empty directory (e.g. `~/drop_demo`).
 
 ```
 mkdir ~/drop_demo
@@ -32,11 +27,11 @@ cd ~/drop_demo
 drop demo
 ```
 
-The pipeline can be run using `snakemake` commands
+The pipeline can be run using [snakemake](snakemake.readthedocs.io/) commands
 
 ```
 snakemake -n # dryrun
-snakemake
+snakemake --cores 1
 ```
 
 Expected runtime: 25 min
