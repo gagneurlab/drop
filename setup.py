@@ -1,12 +1,12 @@
 import setuptools
 import os
-import glob
 
 with open("README.md", "r") as fh:
     long_description = fh.read()
 
 requirements = [
-    'wbuild>=1.7.0',
+     'wbuild @ git+https://github.com/mumichae/wBuild.git@subindex#egg=wbuild',
+    #'wbuild>=1.7.0',
     'python-dateutil',
     'pandoc',
     'graphviz',

@@ -11,21 +11,36 @@ warnings.filterwarnings("ignore", 'This pattern has match groups')
 class DropConfig:
     
     FILE_KEYS = ["htmlOutputPath", "root", "geneAnnotation", "sampleAnnotation", "mae"]
-    CONFIG_KEYS = [] # TODO: list all keys
+    CONFIG_KEYS = [
+        # wbuild keys
+        "projectTitle", "htmlOutputPath", "scriptsPath", "indexWithFolderName", "fileRegex", "readmePath",
+        # global parameters
+        "root", "sampleAnnotation", "geneAnnotation", "genomeAssembly", "scanBamParam", "exportCounts", "tools",
+        # modules
+        "aberrantExpression", "aberrantSplicing", "mae"
+    ]
     
-    def __init__(self, config):
-        
-        config = self.checkConfig(config)
+    def __init__(self, wbuildConfig):
+        """
+        Parse wbuild/snakemake config object for DROP-specific content
+
+        :param wbuildConfig: wBuild config object
+        """
+
+        self.wBuildConfig = wbuildConfig
+        config = self.checkConfig(wbuildConfig.getConfig())
         self.config = self.setDefaults(config)
         
         self.root = Path(self.get("root"))
         self.processedDataDir = self.root / "processed_data"
         self.processedResultsDir = self.root / "processed_results"
-        self.htmlOutputPath = Path(self.get("htmlOutputPath"))
         utils.createIfMissing(self.root)
         utils.createIfMissing(self.processedDataDir)
         utils.createIfMissing(self.processedResultsDir)
-        
+
+        self.htmlOutputPath = Path(self.get("htmlOutputPath"))
+        self.readmePath = Path(self.get("readmePath"))
+
         self.sampleAnnotation = SampleAnnotation(self.get("sampleAnnotation"), self.root)
         self.geneAnnotation = self.get("geneAnnotation")
         self.genomeAssembly = self.get("genomeAssembly")
@@ -112,18 +127,21 @@ class DropConfig:
     
     def getHtmlOutputPath(self, str_=True):
         return utils.returnPath(self.htmlOutputPath)
+
+    #def getReadmePath(self, str_=True):
+    #    readme_name = Path(self.readmePath).name
+    #    readme_name = readme_name.replace(".md", ".html")
+    #    return utils.returnPath(self.htmlOutputPath / readme_name, str_=str_)
     
     def getHtmlFromScript(self, path):
         stump = self.htmlOutputPath / utils.getRuleFromPath(path, prefix=True)
         return str(stump) + ".html"
     
     def get(self, key):
-        if key not in self.config:
-            if key not in self.CONFIG_KEYS:
-                raise KeyError(f"{key} not defined for Drop config")
-            raise KeyError(f"{key} missing in config dictionary")
-        return self.config[key]
-    
+        if key not in self.CONFIG_KEYS:
+            raise KeyError(f"{key} not defined for Drop config")
+        return self.wBuildConfig.get(key)
+
     def getGeneAnnotations(self):
         return self.geneAnnotation
         
@@ -132,15 +150,6 @@ class DropConfig:
     
     def getGeneAnnotationFile(self, annotation):
         return self.geneAnnotation[annotation]
-    
-    def getAE(self):
-        return self.AE
-    
-    def getAS(self):
-        return self.AS
-    
-    def getMAE(self):
-        return self.MAE
     
     # TODO: wrap in separate class
     def getExportGroups(self, modules=None):

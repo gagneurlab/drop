@@ -1,7 +1,6 @@
 from pathlib import Path
-import re
 import drop
-from drop.utils import getRuleFromPath
+import wbuild
 
 drop.installRPackages()
 configfile: "config.yaml"
@@ -10,7 +9,7 @@ projectDir = Path.cwd().resolve()
 _, projectPaths = drop.setupPaths(projectDir)
 tmp_dir = projectPaths["tmpDir"]
 
-cfg = drop.config.DropConfig(config)
+cfg = drop.config.DropConfig(wbuild.utils.Config())
 sa = cfg.sampleAnnotation
 config = cfg.config # legacy
 
@@ -22,13 +21,12 @@ include: cfg.MAE.getWorkdir() + "/Snakefile"
 rule all:
     input: 
         rules.aberrantExpression.input,
+        rules.aberrantSplicing.input,
+        rules.mae.input,
         rules.Index.output,
-        config["htmlOutputPath"] + "/readme.html",
-        rulegraph = tmp_dir / "rulegraphs.done"
-    shell:
-        """
-        rm {input.rulegraph}
-        """
+        rules.aberrantExpression_rulegraph.output,
+        rules.aberrantSplicing_rulegraph.output,
+        rules.mae_rulegraph.output
 
 rule sampleAnnotation:
     input: cfg.getProcessedDataDir() + "/sample_anno/sample_anno.done"
@@ -45,8 +43,6 @@ rule dependencyGraph:
         rules.aberrantExpression_rulegraph.output,
         rules.aberrantSplicing_rulegraph.output,
         rules.mae_rulegraph.output
-    output:
-        touch(tmp_dir / "rulegraphs.done")
 
 rule publish_local:
     shell: "rsync -Ort {config[htmlOutputPath]} {config[webDir]}"
