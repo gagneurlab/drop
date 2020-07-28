@@ -66,4 +66,8 @@ The following publicly-available datasets of gene counts can be used as controls
 
 * 119 non-strand specific fibroblasts: [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.3887451.svg)](https://doi.org/10.5281/zenodo.3887451)
 
+* 139 strand specific fibroblasts: [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.3963474.svg)](https://doi.org/10.5281/zenodo.3963474)
+
+* 125 strand specific blood: [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.3963470.svg)](https://doi.org/10.5281/zenodo.3963470)
+
 If you want to contribute with your own count matrices, please contact us: yepez at in.tum.de
