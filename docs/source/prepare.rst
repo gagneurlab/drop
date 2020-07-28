@@ -95,6 +95,7 @@ groups                        list       Same as in aberrant expression.        
 minIds                        numeric    Same as in aberrant expression.                                                               ``1``
 recount                       boolean    If true, it forces samples to be recounted.                                                   ``false``
 longRead                      boolean    Set to true only if counting Nanopore or PacBio long reads.                                   ``false``
+keepNonStandardChrs           boolean    Set to true if non standard chromosomes are to be kept for further analysis.                  ``true``                        
 filter                        boolean    If false, no filter is applied. We recommend filtering.                                       ``true``
 minExpressionInOneSample      numeric    The minimal read count in at least one sample required for an intron to pass the filter.      ``20``
 minDeltaPsi                   numeric    The minimal variation (in delta psi) required for an intron to pass the filter.               ``0.05``
@@ -118,6 +119,7 @@ padjCutoff             numeric    Same as in aberrant expression.               
 allelicRatioCutoff     numeric    A number between [0.5, 1) indicating the maximum allelic ratio allele1/(allele1+allele2) for the test to be significant.  ``0.8``
 addAF                  boolean    Whether or not to add the allele frequencies from gnomAD                                                                  ``true``
 maxAF                  numeric    Maximum allele frequency (of the minor allele) cut-off. Variants with AF equal or below this number are considered rare.  ``0.001``
+maxVarFreqCohort       numeric    Maximum variant frequency among the cohort.                                                                               ``0.05``      
 qcVcf                  character  Full path to the vcf file used for VCF-BAM matching                                                                       ``/path/to/qc_vcf.vcf.gz``
 qcGroups               list       Same as “groups”, but for the VCF-BAM matching                                                                            ``# see aberrant expression example``
 =====================  =========  ========================================================================================================================  ======
@@ -144,22 +146,39 @@ S10R_M  S10G    MUSCLE      /path/to/S10R_M.BAM  /path/to/S10G.vcf.gz
 Example of DNA replicates 
 ++++++++++++++++++++++++++++++++++
 
-======  ======  ==========  ===================  ==
-RNA_ID  DNA_ID  DROP_GROUP  RNA_BAM_FILE         DNA_VCF_FILE
-======  ======  ==========  ===================  ==
-S20R    S20E    WES         /path/to/S20R.BAM    /path/to/S20E.vcf.gz
-S20R    S20G    WGS         /path/to/S20R.BAM    /path/to/S20G.vcf.gz
-======  ======  ==========  ===================  ==
+======  ======  ==========  =================  ==
+RNA_ID  DNA_ID  DROP_GROUP  RNA_BAM_FILE       DNA_VCF_FILE
+======  ======  ==========  =================  ==
+S20R    S20E    WES         /path/to/S20R.BAM  /path/to/S20E.vcf.gz
+S20R    S20G    WGS         /path/to/S20R.BAM  /path/to/S20G.vcf.gz
+======  ======  ==========  =================  ==
 
 Example of a multi-sample vcf file
 ++++++++++++++++++++++++++++++++++
 
-======  ======  ==========  ===================  ==
-RNA_ID  DNA_ID  DROP_GROUP  RNA_BAM_FILE         DNA_VCF_FILE
-======  ======  ==========  ===================  ==
-S10R    S10G    WGS         /path/to/S10R.BAM    /path/to/multi_sample.vcf.gz
-S20R    S20G    WGS         /path/to/S20R.BAM    /path/to/multi_sample.vcf.gz
-======  ======  ==========  ===================  ==
+======  ======  ==========  =================  ==
+RNA_ID  DNA_ID  DROP_GROUP  RNA_BAM_FILE       DNA_VCF_FILE
+======  ======  ==========  =================  ==
+S10R    S10G    WGS         /path/to/S10R.BAM  /path/to/multi_sample.vcf.gz
+S20R    S20G    WGS         /path/to/S20R.BAM  /path/to/multi_sample.vcf.gz
+======  ======  ==========  =================  ==
+
+Example of external count matrices
+++++++++++++++++++++++++++++++++++
+
+In case counts from external matrices are to be integrated into the analysis,
+the file must be specified in the GENE_COUNTS_FILE column. A new row must be
+added for each sample from the count matrix that should be included in the 
+analysis. An RNA_BAM_FILE must not be specified. The DROP_GROUP of the local
+and external samples that are to be analyzed together must be the same.
+
+======  ======  ==========  =================  ==
+RNA_ID  DNA_ID  DROP_GROUP  RNA_BAM_FILE       GENE_COUNTS_FILE
+======  ======  ==========  =================  ==
+S10R    S10G    BLOOD       /path/to/S10R.BAM  
+EXT-1R          BLOOD                          /path/to/externalCounts.tsv.gz
+EXT-2R          BLOOD                          /path/to/externalCounts.tsv.gz
+======  ======  ==========  =================  ==
 
 
 Advanced options
