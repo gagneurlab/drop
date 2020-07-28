@@ -95,6 +95,7 @@ groups                        list       Same as in aberrant expression.        
 minIds                        numeric    Same as in aberrant expression.                                                               ``1``
 recount                       boolean    If true, it forces samples to be recounted.                                                   ``false``
 longRead                      boolean    Set to true only if counting Nanopore or PacBio long reads.                                   ``false``
+keepNonStandardChrs           boolean    Set to true if non standard chromosomes are to be kept for further analysis.                  ``true``                        
 filter                        boolean    If false, no filter is applied. We recommend filtering.                                       ``true``
 minExpressionInOneSample      numeric    The minimal read count in at least one sample required for an intron to pass the filter.      ``20``
 minDeltaPsi                   numeric    The minimal variation (in delta psi) required for an intron to pass the filter.               ``0.05``
