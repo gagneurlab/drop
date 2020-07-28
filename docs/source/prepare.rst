@@ -118,6 +118,7 @@ padjCutoff             numeric    Same as in aberrant expression.               
 allelicRatioCutoff     numeric    A number between [0.5, 1) indicating the maximum allelic ratio allele1/(allele1+allele2) for the test to be significant.  ``0.8``
 addAF                  boolean    Whether or not to add the allele frequencies from gnomAD                                                                  ``true``
 maxAF                  numeric    Maximum allele frequency (of the minor allele) cut-off. Variants with AF equal or below this number are considered rare.  ``0.001``
+maxVarFreqCohort       numeric    Maximum variant frequency among the cohort.                                                                               ``0.05``      
 qcVcf                  character  Full path to the vcf file used for VCF-BAM matching                                                                       ``/path/to/qc_vcf.vcf.gz``
 qcGroups               list       Same as “groups”, but for the VCF-BAM matching                                                                            ``# see aberrant expression example``
 =====================  =========  ========================================================================================================================  ======
