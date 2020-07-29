@@ -17,18 +17,13 @@ install:
   - conda config --set always_yes yes --set changeps1 no
   - conda update -q conda
 
-  - conda config --add channels bioconda
-  - conda config --add channels conda-forge
-
-  # build package with cond
-  - conda install conda-build
-  - conda build conda.recipe --output-folder=$HOME/build
-  - conda config --add channels "file://${HOME}/build"
-
-  # test package
+  # install dependencies
   - source $HOME/miniconda/etc/profile.d/conda.sh
-  - conda create -q -n drop drop
+  - conda create -q -n drop -c conda-forge -c bioconda drop
   - conda activate drop
+
+  # install drop
+  - pip install -e .
 
 script: 
   - conda list 
