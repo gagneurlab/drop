@@ -42,7 +42,13 @@ class AE(Submodule):
         ids = self.sa.getIDsByGroup(group, assay="RNA")
         file_stump = self.processedDataDir / "aberrant_expression" / annotation / "counts"
         return expand(str(file_stump) + "/{sampleID}.Rds", sampleID=ids)
-    
+
+    def getCountParams(self, rnaID):
+        sa_row = self.sa.getRow("RNA_ID", rnaID)
+        count_params = sa_row[["STRAND", "COUNT_MODE", "PAIRED_END", "COUNT_OVERLAPS"]]
+        return count_params.iloc[0].to_dict()
+
+
 class AS(Submodule):
     
     def __init__(self, config, sampleAnnotation, processedDataDir, processedResultsDir):
@@ -115,7 +121,7 @@ class MAE(Submodule):
         Useful for collecting all MAE IDs ungrouped.
         """
         all_ids = []
-        groups = [groups] if isinstance(self.groups, str) else self.groups
-        for group in self.groups:
+        groups = [self.groups] if isinstance(self.groups, str) else self.groups
+        for group in groups:
             all_ids.extend(self.getMaeByGroup(group))
         return all_ids

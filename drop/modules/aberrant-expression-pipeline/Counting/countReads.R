@@ -4,8 +4,10 @@
 #' wb:
 #'  log:
 #'    snakemake: '`sm str(tmp_dir / "AE" / "{annotation}" / "counts" / "{sampleID}.Rds")`'
+#'  params:
+#'   - COUNT_PARAMS: '`sm lambda w: cfg.AE.getCountParams(w.sampleID)`'
 #'  input:
-#'   - sample_bam: '`sm lambda wildcards: sa.getFilePath(wildcards.sampleID, file_type="RNA_BAM_FILE") `'
+#'   - sample_bam: '`sm lambda w: sa.getFilePath(w.sampleID, file_type="RNA_BAM_FILE") `'
 #'   - count_ranges: '`sm cfg.getProcessedDataDir() + "/aberrant_expression/{annotation}/count_ranges.Rds" `'
 #'  output:
 #'   - counts: '`sm cfg.getProcessedDataDir() + "/aberrant_expression/{annotation}/counts/{sampleID,[^/]+}.Rds"`'
@@ -24,13 +26,12 @@ suppressPackageStartupMessages({
 
 # Get strand specific information from sample annotation
 sampleID <- snakemake@wildcards$sampleID
-sample_anno <- fread(snakemake@config$sampleAnnotation)
-sample_anno <- sample_anno[RNA_ID == sampleID][1,]
 
-strand <- tolower(sample_anno$STRAND)
-count_mode <- sample_anno$COUNT_MODE
-paired_end <- as.logical(sample_anno$PAIRED_END)
-overlap <- as.logical(sample_anno$COUNT_OVERLAPS)
+count_params <- snakemake@params$COUNT_PARAMS
+strand <- tolower(count_params$STRAND)
+count_mode <- count_params$COUNT_MODE
+paired_end <- as.logical(count_params$PAIRED_END)
+overlap <- as.logical(count_params$COUNT_OVERLAPS)
 inter_feature <- ! overlap # inter_feature = FALSE does not allow overlaps
 
 # infer preprocessing and strand info
@@ -78,6 +79,7 @@ se <- summarizeOverlaps(
     , preprocess.reads = preprocess_reads
     , BPPARAM = MulticoreParam(snakemake@threads)
 )
+colnames(se) <- sampleID
 saveRDS(se, snakemake@output$counts)
 message("done")
 

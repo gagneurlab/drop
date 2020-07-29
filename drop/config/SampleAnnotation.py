@@ -8,7 +8,7 @@ class SampleAnnotation:
     
     SAMPLE_ANNOTATION_COLUMNS = ["RNA_ID", "RNA_BAM_FILE", "DNA_ID", "DNA_VCF_FILE",
                                  "DROP_GROUP","PAIRED_END", "COUNT_MODE",
-                                 "COUNT_OVERLAPS", "STRAND"]
+                                 "COUNT_OVERLAPS", "STRAND", "GENE_COUNTS_FILE"]
     
     def __init__(self, file, root):
         """
@@ -139,7 +139,16 @@ class SampleAnnotation:
         else:
             sampleIDs = self.getGroupedIDs(file_type)[group]
         return self.getFilePath(sampleIDs, file_type, single_file=False)
-    
+
+    def getRow(self, column, value):
+        sa = self.sa
+        if column not in sa.columns:
+            raise KeyError(f"column {column} not in sample annotation")
+        row = sa[sa[column] == value]
+        if row.shape[0] != 1:
+            raise ValueError(f"sa[sa[{column}] == {value}] should have 1 row")
+        return row
+
     ### DROP Groups ###
     
     def getGroupedIDs(self, assay):
