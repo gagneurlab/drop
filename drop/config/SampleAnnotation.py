@@ -1,7 +1,6 @@
 import pandas as pd
 from pathlib import Path
 from snakemake.logging import logger
-from snakemake.io import expand
 import warnings
 warnings.filterwarnings("ignore", 'This pattern has match groups')
 

@@ -33,9 +33,9 @@ rule sampleAnnotation:
 
 rule exportCounts:
     input:
-        cfg.getExportCountFiles("geneCounts"),
-        cfg.getExportCountFiles("splitCounts"),
-        cfg.getExportCountFiles("spliceSiteOverlapCounts"),
+        cfg.externalCounts.getExportCountFiles("geneCounts"),
+        cfg.externalCounts.getExportCountFiles("splitCounts"),
+        cfg.externalCounts.getExportCountFiles("spliceSiteOverlapCounts"),
         cfg.getProcessedResultsDir() + "/exported_counts/sample_anno.done"
 
 rule dependencyGraph:

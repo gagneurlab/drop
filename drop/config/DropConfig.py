@@ -1,12 +1,8 @@
 from .SampleAnnotation import SampleAnnotation
 from .Submodules import AE, AS, MAE
+from .ExternalCounts import ExternalCounts
 from drop import utils
-import wbuild
 from pathlib import Path
-from snakemake.logging import logger
-from snakemake.io import expand
-import warnings
-warnings.filterwarnings("ignore", 'This pattern has match groups')
 
 class DropConfig:
     
@@ -53,6 +49,9 @@ class DropConfig:
         self.AE = AE(cfg, sa, pd, pr)
         self.AS = AS(cfg, sa, pd, pr)
         self.MAE = MAE(cfg, sa, pd, pr)
+
+        # external counts settings
+        self.externalCounts = ExternalCounts(self)
         
         # legacy
         utils.setKey(self.config, None, "aberrantExpression", self.AE.dict_)
@@ -123,10 +122,10 @@ class DropConfig:
         return utils.returnPath(self.processedDataDir, str_=str_)
     
     def getProcessedResultsDir(self, str_=True):
-        return utils.returnPath(self.processedResultsDir)
+        return utils.returnPath(self.processedResultsDir, str_=str_)
     
     def getHtmlOutputPath(self, str_=True):
-        return utils.returnPath(self.htmlOutputPath)
+        return utils.returnPath(self.htmlOutputPath, str_=str_)
 
     #def getReadmePath(self, str_=True):
     #    readme_name = Path(self.readmePath).name
@@ -150,30 +149,3 @@ class DropConfig:
     
     def getGeneAnnotationFile(self, annotation):
         return self.geneAnnotation[annotation]
-    
-    # TODO: wrap in separate class
-    def getExportGroups(self, modules=None):
-        if modules is None:
-            modules = ["aberrantExpression", "aberrantSplicing"]
-        groups = [] # get all active groups
-        for module in modules:
-            groups.extend(self.get(module)["groups"])
-        exclude = self.get("exportCounts")["excludeGroups"]
-        return set(groups) - set(exclude)
-        
-    def getExportCountFiles(self, prefix):
-
-        count_type_map = {"geneCounts":"aberrantExpression",
-                          "splitCounts":"aberrantSplicing",
-                          "spliceSiteOverlapCounts":"aberrantSplicing"}
-        if prefix not in count_type_map.keys():
-            raise ValueError(f"{prefix} not a valid file type for exported counts")
-
-        datasets = self.getExportGroups([count_type_map[prefix]])
-        annotations = self.get("exportCounts")["geneAnnotations"]
-        genomeAssembly = self.get("genomeAssembly")
-
-        pattern = self.getProcessedResultsDir() + f"/exported_counts/{{dataset}}--{{genomeAssembly}}--{{annotation}}/{prefix}.tsv.gz"
-        return expand(pattern, annotation=annotations, dataset=datasets, genomeAssembly=genomeAssembly)
-    
-
