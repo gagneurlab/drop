@@ -17,7 +17,7 @@ class SampleAnnotation:
         """
         self.root = Path(root)
         self.file = file
-        self.dict_ = self.parse()
+        self.sa = self.parse()
         self.idMapping = self.createIdMapping()
         self.sampleFileMapping = self.createSampleFileMapping()
         
@@ -53,7 +53,7 @@ class SampleAnnotation:
         """
         Get mapping of RNA and DNA IDs
         """
-        return self.dict_[["RNA_ID", "DNA_ID"]].drop_duplicates().dropna()
+        return self.sa[["RNA_ID", "DNA_ID"]].drop_duplicates().dropna()
     
     def createSampleFileMapping(self):
         """
@@ -61,15 +61,15 @@ class SampleAnnotation:
             columns: [ID | ASSAY | FILE_TYPE | FILE_PATH ]
         """
 
-        assay_mapping = {'RNA_ID':'RNA_BAM_FILE', 'DNA_ID':'DNA_VCF_FILE'}                       
+        assay_mapping = {'RNA_ID': ['RNA_BAM_FILE', 'GENE_COUNTS_FILE'], 'DNA_ID': ['DNA_VCF_FILE']}
         assay_subsets = []
-        for id_, file_type in assay_mapping.items():
-            df = self.dict_[[id_, file_type]].drop_duplicates().copy()
-            df.rename(columns={id_:'ID', file_type:'FILE_PATH'}, inplace=True)
-            df['ASSAY'] = id_
-            df['FILE_TYPE'] = file_type
-            assay_subsets.append(df)
-        
+        for id_, file_types in assay_mapping.items():
+            for file_type in file_types:
+                df = self.sa[[id_, file_type]].dropna().drop_duplicates().copy()
+                df.rename(columns={id_: 'ID', file_type: 'FILE_PATH'}, inplace=True)
+                df['ASSAY'] = id_
+                df['FILE_TYPE'] = file_type
+                assay_subsets.append(df)
         file_mapping = pd.concat(assay_subsets)
         
         # cleaning SAMPLE_FILE_MAPPING
@@ -91,7 +91,7 @@ class SampleAnnotation:
             logger.debug(f"missing files: {missing}")
         
         file_mapping.to_csv(self.root / "file_mapping.csv", index=False)
-        
+
         return file_mapping
     
     def subsetFileMapping(self, file_type = None, sample_id = None):
@@ -161,7 +161,7 @@ class SampleAnnotation:
         """
         Create a mapping of DROP groups to sample IDs
         """
-        sa = self.dict_
+        sa = self.sa
         sf = self.sampleFileMapping
 
         assay_id = sf[sf["FILE_TYPE"] == file_type]["ASSAY"].iloc[0]
@@ -208,12 +208,6 @@ class SampleAnnotation:
                 logger.info(f'WARNING: Less than {warn} IDs in DROP_GROUP {group}')
         
         return subset
-    
-    #def getRNAByGroup(self, group):
-    #    return self.getIDsByGroup(group, assay="RNA")
-    
-    #def getDNAByGroup(self, group):
-    #    return self.getIDsByGroup(group, assay="DNA")
     
     def getSampleIDs(self, file_type):
         ids = self.subsetFileMapping(file_type)["ID"]
