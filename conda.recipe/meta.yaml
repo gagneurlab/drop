@@ -19,7 +19,7 @@ requirements:
   host:
     - python >=3.6
     - pip
-    - wbuild >=1.7.0
+    #- wbuild >=1.7.0
 
   run:
     - python >=3.6
