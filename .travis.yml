@@ -23,6 +23,7 @@ install:
   - conda activate drop
 
   # install drop
+  - conda remove wbuild # use github version of wbuild
   - pip install -e .
 
 script: 
