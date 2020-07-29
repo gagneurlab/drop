@@ -23,8 +23,9 @@ install:
   - conda activate drop
 
   # install drop
-  - conda remove wbuild # use github version of wbuild
-  - pip install -e .
+  - pwd
+  - pip install -e . -vv
+  - pip install git+https://github.com/mumichae/wBuild.git@subindex#egg=wbuild
 
 script: 
   - conda list 
