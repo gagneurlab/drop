@@ -28,9 +28,6 @@ register(MulticoreParam(snakemake@threads))
 
 # Read counts
 counts_list <- bplapply(snakemake@input$counts, readRDS)
-names <- snakemake@params$ids
-names(counts_list) <- names
-
 message(paste("read", length(counts_list), 'files'))
 
 # merge counts
@@ -39,7 +36,6 @@ merged_assays <- do.call(cbind, lapply(counts_list, assay, withDimnames=FALSE))
 total_counts <- SummarizedExperiment(assays=list(counts=merged_assays))
 
 # total_counts <- do.call(cbind, counts_list)
-colnames(total_counts) <- names(counts_list)
 rownames(total_counts) <- rownames(counts_list[[1]])
 rowRanges(total_counts) <- rowRanges(counts_list[[1]])
 
