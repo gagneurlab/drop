@@ -37,22 +37,21 @@ class DropConfig:
         self.htmlOutputPath = Path(self.get("htmlOutputPath"))
         self.readmePath = Path(self.get("readmePath"))
 
-        self.sampleAnnotation = SampleAnnotation(self.get("sampleAnnotation"), self.root)
         self.geneAnnotation = self.get("geneAnnotation")
         self.genomeAssembly = self.get("genomeAssembly")
-        
+        self.sampleAnnotation = SampleAnnotation(self.get("sampleAnnotation"), self.root)
+        self.externalCounts = ExternalCounts(self)
+
         # setup submodules
         cfg = self.config
         sa = self.sampleAnnotation
         pd = self.processedDataDir
         pr = self.processedResultsDir
-        self.AE = AE(cfg, sa, pd, pr)
-        self.AS = AS(cfg, sa, pd, pr)
+        ec = self.externalCounts
+        self.AE = AE(cfg, sa, pd, pr, ec)
+        self.AS = AS(cfg, sa, pd, pr, ec)
         self.MAE = MAE(cfg, sa, pd, pr)
 
-        # external counts settings
-        self.externalCounts = ExternalCounts(self)
-        
         # legacy
         utils.setKey(self.config, None, "aberrantExpression", self.AE.dict_)
         utils.setKey(self.config, None, "aberrantSplicing", self.AS.dict_)

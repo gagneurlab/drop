@@ -1,3 +1,4 @@
+from drop import utils
 import pandas as pd
 from pathlib import Path
 from snakemake.logging import logger
@@ -21,10 +22,10 @@ class SampleAnnotation:
         self.idMapping = self.createIdMapping()
         self.sampleFileMapping = self.createSampleFileMapping()
         
-        self.rnaIDs = self.createGroupIds(group_key="DROP_GROUP",
-                                          file_type="RNA_BAM_FILE", sep=',')
-        self.dnaIDs = self.createGroupIds(group_key="DROP_GROUP",
-                                          file_type="DNA_VCF_FILE", sep=',')
+        self.rnaIDs = self.createGroupIds(file_type="RNA_BAM_FILE", sep=',')
+        self.dnaIDs = self.createGroupIds(file_type="DNA_VCF_FILE", sep=',')
+        # external counts
+        self.extGeneCountIDs = self.createGroupIds(file_type="GENE_COUNTS_FILE", sep=',')
         
     def parse(self, sep='\t'):
         """
@@ -94,25 +95,15 @@ class SampleAnnotation:
 
         return file_mapping
     
-    def subsetFileMapping(self, file_type = None, sample_id = None):
+    def subsetFileMapping(self, file_type=None, sample_id=None):
         """
         subset by one or more values of different columns from sample file mapping
             file_type: file type/types, corresponding to 'FILE_TYPE' column
             sample_id: sample ID/IDs
         """
-        
-        def subsetBy(df, values, column):
-            if values is None:
-                return df
-            elif isinstance(values, str):
-                return df[df[column] == values]
-            else:
-                return df[df[column].isin(values)]
-        
         subset = self.sampleFileMapping
-        subset = subsetBy(subset, file_type, "FILE_TYPE")
-        subset = subsetBy(subset, sample_id, "ID")
-        
+        subset = utils.subsetBy(subset, "FILE_TYPE", file_type)
+        subset = utils.subsetBy(subset, "ID", sample_id)
         return subset
     
     def getFilePath(self, sample_id, file_type, single_file=True):
@@ -159,6 +150,10 @@ class SampleAnnotation:
             return self.rnaIDs
         elif "DNA" in assay:
             return self.dnaIDs
+        elif "GENE_COUNT" in assay:
+            return self.extGeneCountIDs
+        else:
+            raise ValueError(f"'{assay}' is not a valid assay name")
         
     def getGroups(self, assay="RNA"):
         return self.getGroupedIDs(assay).keys()
@@ -166,35 +161,38 @@ class SampleAnnotation:
     def getIDsByGroup(self, group, assay="RNA"):
         return self.getGroupedIDs(assay)[group]
     
-    def createGroupIds(self, group_key="DROP_GROUP", file_type="RNA_BAM_FILE", sep=','):
+    def createGroupIds(self, group_key="DROP_GROUP", file_type=None, sep=','):
         """
-        Create a mapping of DROP groups to sample IDs
+        Create a mapping of DROP groups to lists of sample IDs
         """
-        sa = self.sa
-        sf = self.sampleFileMapping
-
-        assay_id = sf[sf["FILE_TYPE"] == file_type]["ASSAY"].iloc[0]
+        if not file_type:
+            file_type = "RNA_BAM_FILE"
+        # infer ID type from file type
+        assay_id = self.subsetFileMapping(file_type)["ASSAY"].iloc[0]
         
-        # Get unique groups
+        # Subset sample annotation to only IDs of specified file_type
         ids = self.getSampleIDs(file_type)
-        df = sa[sa[assay_id].isin(ids)]
+        df = self.sa[self.sa[assay_id].isin(ids)]
+        # mapping of ID to group names
         df = df[[assay_id, group_key]].drop_duplicates().copy()
         
         # get unique group names
         groups = []
-        for s in set(sa[group_key]):
+        for s in set(self.sa[group_key]):
             groups.extend(s.split(sep))
         groups = set(groups)
         
         # collect IDs per group
-        grouped = {gr : df[df[group_key].str.contains(f'(^|{sep}){gr}({sep}|$)')][assay_id].tolist() 
+        grouped = {gr: df[df[group_key].str.contains(f'(^|{sep}){gr}({sep}|$)')][assay_id].tolist()
                         for gr in groups}
         # remove groups labeled as None
-        grouped = {gr : list(set(ids)) for gr, ids in grouped.items() if gr is not None}
+        grouped = {gr: list(set(ids)) for gr, ids in grouped.items() if gr is not None}
         return grouped
     
     def subsetGroups(self, subset_groups, assay="RNA", warn=30, error=10):
         """
+        Subset DROP group to sample IDs mapping by list of groups (`subset_groups`).
+        Give warning or error if subsetting results in too few sample IDs per group.
         warn : number of samples threshold at which to warn about too few samples
         error: number of samples threshold at which to give error
         """

@@ -38,3 +38,18 @@ def getRuleFromPath(path, prefix=False):
         return rule.split(".")[0]
     else:
         return rule.replace(".", "_")
+
+def subsetBy(df, column, values):
+    """
+    Subset by one or more values of different columns from data frame
+    :param df: data frame
+    :param column: column to subset by
+    :param values: values to subset by
+    :return: df subset by values and column
+    """
+    if values is None:
+        return df
+    elif isinstance(values, str):
+        return df[df[column] == values]
+    else:
+        return df[df[column].isin(values)]

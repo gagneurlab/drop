@@ -26,6 +26,7 @@ class AE(Submodule):
         self.dict_ = self.setDefaultKeys(config["aberrantExpression"])
         self.groups = self.dict_["groups"]
         self.rnaIDs = self.sa.subsetGroups(self.groups, assay="RNA")
+        self.extRnaIDs = self.sa.subsetGroups(self.groups, assay="GENE_COUNTS", warn=0, error=0)
     
     def setDefaultKeys(self, dict_):
         super().setDefaultKeys(dict_)
@@ -39,9 +40,15 @@ class AE(Submodule):
         return dict_
 
     def getCountFiles(self, annotation, group):
+        """
+        Get all count files from DROP (counted from BAM file) and external count matrices
+        :param annotation: annotation name from wildcard
+        :param group: DROP group name from wildcard
+        :return: list of files
+        """
         ids = self.sa.getIDsByGroup(group, assay="RNA")
-        file_stump = self.processedDataDir / "aberrant_expression" / annotation / "counts"
-        return expand(str(file_stump) + "/{sampleID}.Rds", sampleID=ids)
+        file_stump = self.processedDataDir / "aberrant_expression" / annotation / "counts" / "{sampleID}.Rds"
+        return expand(str(file_stump), sampleID=ids)
 
     def getCountParams(self, rnaID):
         sa_row = self.sa.getRow("RNA_ID", rnaID)
