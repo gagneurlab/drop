@@ -8,27 +8,21 @@ The manuscript main file, supplementary figures and table can be found in the ma
 
 <img src="drop_sticker.png" alt="drop logo" width="200" class="center"/>
 
-## Installation
+## Quickstart
 DROP is available on [bioconda](https://anaconda.org/bioconda/drop).
-We recommend using a dedicated conda environment.
-
+We recommend using a dedicated conda environment. (installation time: ~ 10min)
 ```
-conda create -n drop_env -c conda_forge -c bioconda drop
+conda install -c conda-forge -c bioconda drop
 ```
-Installation time: ~ 10min
 
-Test whether the pipeline runs through by setting up the demo dataset in an empty directory (e.g. `~/drop_demo`).
-
+Test installation with demo project
 ```
 mkdir ~/drop_demo
 cd ~/drop_demo
-
-# demo will download the necessary data and pipeline files
 drop demo
 ```
 
-The pipeline can be run using [snakemake](snakemake.readthedocs.io/) commands
-
+The pipeline can be run using [snakemake](https://snakemake.readthedocs.io/) commands
 ```
 snakemake -n # dryrun
 snakemake --cores 1
@@ -36,7 +30,7 @@ snakemake --cores 1
 
 Expected runtime: 25 min
 
-For more information on different installation options, check out the 
+For more information on different installation options, refer to the
 [documentation](https://gagneurlab-drop.readthedocs.io/en/latest/installation.html)
 
 ## Set up a custom project

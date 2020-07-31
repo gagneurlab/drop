@@ -1,5 +1,3 @@
-.. _prepare:
-
 Preparing the Input Data
 ========================
 
@@ -174,7 +172,7 @@ Specifically, the number of threads allowed for a computational step can be modi
 
 .. note::
 
-    DROP needs to be installed from a local directory :ref:`otherversions` using ``pip install -e <path-to-drop-repo>``
+    DROP needs to be installed from a local directory :ref:`otherversions` using ``pip install -e <path/to/drop-repo>``
     so that any changes in the code will be available in the next pipeline run.
     Any changes made to the R code need to be updated with ``drop update`` in the project directory.
 
