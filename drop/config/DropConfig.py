@@ -48,8 +48,8 @@ class DropConfig:
         pd = self.processedDataDir
         pr = self.processedResultsDir
         ec = self.externalCounts
-        self.AE = AE(cfg, sa, pd, pr)
-        self.AS = AS(cfg, sa, pd, pr)
+        self.AE = AE(cfg, sa, pd, pr, ec)
+        self.AS = AS(cfg, sa, pd, pr, ec)
         self.MAE = MAE(cfg, sa, pd, pr)
 
         # legacy

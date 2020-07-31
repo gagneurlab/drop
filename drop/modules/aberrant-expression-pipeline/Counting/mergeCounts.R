@@ -5,7 +5,7 @@
 #'  log:
 #'   - snakemake: '`sm str(tmp_dir / "AE" / "{annotation}" / "{dataset}" / "merge.Rds")`'
 #'  params:
-#'    - ids: '`sm lambda w: sa.getIDsByGroup(w.dataset, assay="RNA")`'
+#'    - exCountIDs: '`sm lambda w: sa.getIDsByGroup(w.dataset, assay="GENE_COUNT")`'
 #'  input: 
 #'    - counts: '`sm lambda w: cfg.AE.getCountFiles(w.annotation, w.dataset)`'
 #'  output:
@@ -16,7 +16,7 @@
 #'---
 
 saveRDS(snakemake, snakemake@log$snakemake)
-
+print(snakemake@params$exCountIDs)
 suppressPackageStartupMessages({
     library(data.table)
     library(dplyr)

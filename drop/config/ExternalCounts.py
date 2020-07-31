@@ -4,6 +4,7 @@ class ExternalCounts:
 
     def __init__(self, dropConfig):
         self.cfg = dropConfig
+        self.sa = dropConfig.sampleAnnotation
         self.processedResults = self.cfg.getProcessedResultsDir(str_=False)
         self.COUNT_TYPE_MAP = {
             "geneCounts": "aberrantExpression",
@@ -31,4 +32,15 @@ class ExternalCounts:
 
         pattern = self.processedResults / "exported_counts" / "{dataset}--{genomeAssembly}--{annotation}" / f"{prefix}.tsv.gz"
         return expand(str(pattern), annotation=annotations, dataset=datasets, genomeAssembly=genomeAssembly)
+
+    def getImportCountFiles(self, annotation, group, file_type="GENE_COUNTS_FILE",
+                            annotation_key="ANNOTATION", group_key="DROP_GROUP"):
+        """
+        :param annotation: annotation name as specified in config and ANNOTATION column
+        :param group: a group of the DROP_GROUP column
+        :return: set of unique external count file names
+        """
+        subset = self.sa.subsetSampleAnnotation(annotation_key, annotation)
+        subset = self.sa.subsetSampleAnnotation(group_key, group, subset)
+        return set(subset[file_type].tolist())
 

@@ -7,9 +7,10 @@ warnings.filterwarnings("ignore", 'This pattern has match groups')
 
 class SampleAnnotation:
     
-    SAMPLE_ANNOTATION_COLUMNS = ["RNA_ID", "RNA_BAM_FILE", "DNA_ID", "DNA_VCF_FILE",
-                                 "DROP_GROUP","PAIRED_END", "COUNT_MODE",
-                                 "COUNT_OVERLAPS", "STRAND", "GENE_COUNTS_FILE"]
+    SAMPLE_ANNOTATION_COLUMNS = [
+        "RNA_ID", "RNA_BAM_FILE", "DNA_ID", "DNA_VCF_FILE", "DROP_GROUP", "GENE_COUNTS_FILE", "ANNOTATION",
+        "PAIRED_END", "COUNT_MODE", "COUNT_OVERLAPS", "STRAND"
+    ]
     
     def __init__(self, file, root):
         """
@@ -49,7 +50,20 @@ class SampleAnnotation:
                     lambda x: str(x) if not pd.isnull(x) else x
             )
         return sa
-    
+
+    def checkFileExists(self, sampleID, file_type, verbose=True):
+        """
+        note: we already checked for non-existing files in the init, so we
+        only need to check whether the ID is in the sample_file_mapping here
+        """
+        x = self.sampleFileMapping.query("(FILE_TYPE == @file_type) & (ID == @sampleID)")["FILE"]
+        exists = (len(x) != 0)
+        if (not exists) and verbose:
+            logger.debug(f"FILE NOT FOUND FOR sampleID: {sampleID} and file type {file_type}")
+        return exists
+
+    ##### Construction
+
     def createIdMapping(self):
         """
         Get mapping of RNA and DNA IDs
@@ -94,7 +108,59 @@ class SampleAnnotation:
         file_mapping.to_csv(self.root / "file_mapping.csv", index=False)
 
         return file_mapping
-    
+
+    def createGroupIds(self, group_key="DROP_GROUP", file_type=None, sep=','):
+        """
+        Create a mapping of DROP groups to lists of sample IDs
+        """
+        if not file_type:
+            file_type = "RNA_BAM_FILE"
+        # infer ID type from file type
+        assay_id = self.subsetFileMapping(file_type)["ASSAY"].iloc[0]
+
+        # Subset sample annotation to only IDs of specified file_type
+        ids = self.getSampleIDs(file_type)
+        df = self.sa[self.sa[assay_id].isin(ids)]
+        # mapping of ID to group names
+        df = df[[assay_id, group_key]].drop_duplicates().copy()
+
+        # get unique group names
+        groups = []
+        for s in set(self.sa[group_key]):
+            groups.extend(s.split(sep))
+        groups = set(groups)
+
+        # collect IDs per group
+        grouped = {gr: df[df[group_key].str.contains(f'(^|{sep}){gr}({sep}|$)')][assay_id].tolist()
+                   for gr in groups}
+        # remove groups labeled as None
+        grouped = {gr: list(set(ids)) for gr, ids in grouped.items() if gr is not None}
+        return grouped
+
+    ### Subsetting
+
+    def subsetSampleAnnotation(self, column, values, subset=None):
+        """
+        subset by one or more values of different columns from sample file mapping
+            :param column: valid column in sample annotation
+            :param values: values of column to subset
+            :param subset: subset sample annotation
+        """
+        sa_cols = set(self.SAMPLE_ANNOTATION_COLUMNS)
+        if subset is None:
+            subset = self.sa
+        else:
+            # check type for subset
+            if not isinstance(subset, pd.DataFrame):
+                raise TypeError(f"Is not pandas DataFrame\n {subset}")
+            if not sa_cols <= set(subset.columns): # check if mandatory cols not contained
+                raise ValueError(f"Subset columns not the same as {sa_cols}\ngot: {subset.columns}")
+
+        # check if column is valid
+        if not column in sa_cols:
+            raise KeyError(f"Column '{column}' invalid for sample annotation")
+        return utils.subsetBy(subset, column, values)
+
     def subsetFileMapping(self, file_type=None, sample_id=None):
         """
         subset by one or more values of different columns from sample file mapping
@@ -105,7 +171,36 @@ class SampleAnnotation:
         subset = utils.subsetBy(subset, "FILE_TYPE", file_type)
         subset = utils.subsetBy(subset, "ID", sample_id)
         return subset
-    
+
+    def subsetGroups(self, subset_groups, assay="RNA", warn=30, error=10):
+        """
+        Subset DROP group to sample IDs mapping by list of groups (`subset_groups`).
+        Give warning or error if subsetting results in too few sample IDs per group.
+        warn : number of samples threshold at which to warn about too few samples
+        error: number of samples threshold at which to give error
+        """
+        ids_by_group = self.getGroupedIDs(assay)
+
+        if subset_groups is None:
+            subset = ids_by_group
+        else:
+            subset_groups = [subset_groups] if subset_groups.__class__ == str else subset_groups
+            subset = {gr: ids for gr, ids in
+                      ids_by_group.items() if gr in subset_groups}
+
+        for group in subset_groups:
+            if len(subset[group]) < error:
+                message = f'Too few IDs in DROP_GROUP {group}'
+                message += f', please ensure that it has at least {error} IDs'
+                message += f', groups: {subset[group]}'
+                raise ValueError(message)
+            elif len(subset[group]) < warn:
+                logger.info(f'WARNING: Less than {warn} IDs in DROP_GROUP {group}')
+
+        return subset
+
+    ### Getters
+
     def getFilePath(self, sample_id, file_type, single_file=True):
         """
         Get path to input data file by sample ID
@@ -144,7 +239,8 @@ class SampleAnnotation:
     
     def getGroupedIDs(self, assay):
         """
-        assay: what assay the IDs should be from. Can be file_type or 'RNA'/'DNA'
+        Get group to IDs mapping
+        :param assay: which assay the IDs should be from. Can be file_type or 'RNA'/'DNA'
         """
         if "RNA" in assay:
             return self.rnaIDs
@@ -160,74 +256,7 @@ class SampleAnnotation:
     
     def getIDsByGroup(self, group, assay="RNA"):
         return self.getGroupedIDs(assay)[group]
-    
-    def createGroupIds(self, group_key="DROP_GROUP", file_type=None, sep=','):
-        """
-        Create a mapping of DROP groups to lists of sample IDs
-        """
-        if not file_type:
-            file_type = "RNA_BAM_FILE"
-        # infer ID type from file type
-        assay_id = self.subsetFileMapping(file_type)["ASSAY"].iloc[0]
-        
-        # Subset sample annotation to only IDs of specified file_type
-        ids = self.getSampleIDs(file_type)
-        df = self.sa[self.sa[assay_id].isin(ids)]
-        # mapping of ID to group names
-        df = df[[assay_id, group_key]].drop_duplicates().copy()
-        
-        # get unique group names
-        groups = []
-        for s in set(self.sa[group_key]):
-            groups.extend(s.split(sep))
-        groups = set(groups)
-        
-        # collect IDs per group
-        grouped = {gr: df[df[group_key].str.contains(f'(^|{sep}){gr}({sep}|$)')][assay_id].tolist()
-                        for gr in groups}
-        # remove groups labeled as None
-        grouped = {gr: list(set(ids)) for gr, ids in grouped.items() if gr is not None}
-        return grouped
-    
-    def subsetGroups(self, subset_groups, assay="RNA", warn=30, error=10):
-        """
-        Subset DROP group to sample IDs mapping by list of groups (`subset_groups`).
-        Give warning or error if subsetting results in too few sample IDs per group.
-        warn : number of samples threshold at which to warn about too few samples
-        error: number of samples threshold at which to give error
-        """
-        ids_by_group = self.getGroupedIDs(assay)
-        
-        if subset_groups is None:
-            subset = ids_by_group
-        else:
-            subset_groups = [subset_groups] if subset_groups.__class__ == str else subset_groups
-            subset = {gr:ids for gr, ids in 
-                      ids_by_group.items() if gr in subset_groups}
-        
-        for group in subset_groups:
-            if len(subset[group]) < error:
-                message = f'Too few IDs in DROP_GROUP {group}'
-                message += f', please ensure that it has at least {error} IDs'
-                message += f', groups: {subset[group]}'
-                raise ValueError(message)
-            elif len(subset[group]) < warn:
-                logger.info(f'WARNING: Less than {warn} IDs in DROP_GROUP {group}')
-        
-        return subset
-    
+
     def getSampleIDs(self, file_type):
         ids = self.subsetFileMapping(file_type)["ID"]
         return list(ids)
-    
-    def checkFileExists(self, sampleID, file_type, verbose=True):
-        """
-        note: we already checked for non-existing files in the init, so we
-        only need to check whether the ID is in the sample_file_mapping here
-        """ 
-        x = self.sampleFileMapping.query("(FILE_TYPE == @file_type) & (ID == @sampleID)")["FILE"]
-        exists = (len(x) != 0)
-        if (not exists) and verbose:
-            logger.debug(f"FILE NOT FOUND FOR sampleID: {sampleID} and file type {file_type}")
-        return exists
-    

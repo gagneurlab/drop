@@ -20,11 +20,12 @@ class Submodule:
 
 class AE(Submodule):
     
-    def __init__(self, config, sampleAnnotation, processedDataDir, processedResultsDir):
+    def __init__(self, config, sampleAnnotation, processedDataDir, processedResultsDir, externalCounts):
         super().__init__(config, sampleAnnotation, processedDataDir, processedResultsDir)
         self.workdir = "AberrantExpression"
         self.dict_ = self.setDefaultKeys(config["aberrantExpression"])
         self.groups = self.dict_["groups"]
+        self.extCounts = externalCounts
         self.rnaIDs = self.sa.subsetGroups(self.groups, assay="RNA")
         self.extRnaIDs = self.sa.subsetGroups(self.groups, assay="GENE_COUNTS", warn=0, error=0)
     
@@ -46,9 +47,12 @@ class AE(Submodule):
         :param group: DROP group name from wildcard
         :return: list of files
         """
-        ids = self.sa.getIDsByGroup(group, assay="RNA")
+        bam_IDs = self.sa.getIDsByGroup(group, assay="RNA")
         file_stump = self.processedDataDir / "aberrant_expression" / annotation / "counts" / "{sampleID}.Rds"
-        return expand(str(file_stump), sampleID=ids)
+        count_files = expand(str(file_stump), sampleID=bam_IDs)
+        extCountFiles = self.extCounts.getImportCountFiles(annotation, group, file_type="GENE_COUNTS_FILE")
+        count_files.extend(extCountFiles)
+        return count_files
 
     def getCountParams(self, rnaID):
         sa_row = self.sa.getRow("RNA_ID", rnaID)
@@ -58,11 +62,12 @@ class AE(Submodule):
 
 class AS(Submodule):
     
-    def __init__(self, config, sampleAnnotation, processedDataDir, processedResultsDir):
+    def __init__(self, config, sampleAnnotation, processedDataDir, processedResultsDir, externalCounts):
         super().__init__(config, sampleAnnotation, processedDataDir, processedResultsDir)
         self.workdir = "AberrantSplicing"
         self.dict_ = self.setDefaultKeys(config["aberrantSplicing"])
         self.groups = self.dict_["groups"]
+        self.extCounts = externalCounts
         self.rnaIDs = self.sa.subsetGroups(self.groups, assay="RNA")
         
     
