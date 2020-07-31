@@ -44,16 +44,18 @@ rule aberrantExpression_mergeBamStats:
     input: 
         lambda w: expand(cfg.getProcessedDataDir() +
             "/aberrant_expression/{{annotation}}/coverage/{sampleID}.tsv",
-            sampleID=sa.getIDsByGroup(w.dataset))
+            sampleID=sa.getIDsByGroup(w.dataset), assay="RNA")
     output:
         cfg.getProcessedDataDir() + "/aberrant_expression/{annotation}/outrider/{dataset}/bam_coverage.tsv"
     params:
-        ids = lambda w: sa.getIDsByGroup(w.dataset)
+        exIDs = lambda w: sa.getIDsByGroup(w.dataset, assay="GENE_COUNT")
     run:
         with open(output[0], "w") as bam_stats:
             bam_stats.write("sampleID\trecord_count\n")
             for f in input:
                 bam_stats.write(open(f, "r").read())
+            for eid in params.exIDs:
+                bam_stats.write(f"{eid}\tNA\n")
 
 rulegraph_filename = f'{config["htmlOutputPath"]}/AE_rulegraph'
 

@@ -41,7 +41,7 @@ cnts_mtx <- counts(ods, normalized = F)
 #' 
 #' Compare number of records vs. read counts
 #' 
-bam_coverage <- fread(snakemake@input$bam_cov)
+bam_coverage <- fread(snakemake@input$bam_cov, )
 bam_coverage[, sampleID := as.character(sampleID)]
 coverage_dt <- merge(bam_coverage,
                    data.table(sampleID = colnames(ods),

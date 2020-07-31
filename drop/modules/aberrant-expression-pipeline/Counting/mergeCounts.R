@@ -5,7 +5,7 @@
 #'  log:
 #'   - snakemake: '`sm str(tmp_dir / "AE" / "{annotation}" / "{dataset}" / "merge.Rds")`'
 #'  params:
-#'    - exCountIDs: '`sm lambda w: sa.getIDsByGroup(w.dataset, assay="GENE_COUNT")`'
+#'    - exCountIDs: '`sm lambda w: sa.getIDsByGroup(w.dataset, assay=["GENE_COUNT","RNA"])`'
 #'  input: 
 #'    - counts: '`sm lambda w: cfg.AE.getCountFiles(w.annotation, w.dataset)`'
 #'  output:
@@ -16,7 +16,7 @@
 #'---
 
 saveRDS(snakemake, snakemake@log$snakemake)
-print(snakemake@params$exCountIDs)
+
 suppressPackageStartupMessages({
     library(data.table)
     library(dplyr)
@@ -27,17 +27,26 @@ suppressPackageStartupMessages({
 register(MulticoreParam(snakemake@threads))
 
 # Read counts
-counts_list <- bplapply(snakemake@input$counts, readRDS)
+counts_list <- bplapply(snakemake@input$counts, function(f){
+    if(grepl('Rds$', f))
+        assay(readRDS(f))
+    else
+        as.matrix(fread(f), rownames = "geneID")
+})
 message(paste("read", length(counts_list), 'files'))
 
+# check rownames and proceed only if they are the same
+row_names_objects <- lapply(counts_list, rownames)
+if( length(unique(row_names_objects)) > 1 ){
+  stop('The rows (genes) of the count matrices to be merged are not the same.')
+}
+
 # merge counts
-## more efficient merging matrices instead of complete SE
-merged_assays <- do.call(cbind, lapply(counts_list, assay, withDimnames=FALSE))
+merged_assays <- do.call(cbind, counts_list)
 total_counts <- SummarizedExperiment(assays=list(counts=merged_assays))
 
 # total_counts <- do.call(cbind, counts_list)
 rownames(total_counts) <- rownames(counts_list[[1]])
-rowRanges(total_counts) <- rowRanges(counts_list[[1]])
 
 # Add sample annotation data (colData)
 sample_anno <- fread(snakemake@config$sampleAnnotation)

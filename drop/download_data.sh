@@ -5,8 +5,11 @@ set -e
 resource_url="https://www.cmm.in.tum.de/public/paper/drop_analysis/resource.tar.gz"
 wget -nc $resource_url
 if [ ! -d Data ]; then
+  rm -rf resource
 	tar -zxvf resource.tar.gz
 	mv resource Data
+else
+    echo "Data directory already exists, is not updated"
 fi
 
 # prepare data

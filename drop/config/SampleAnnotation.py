@@ -237,19 +237,23 @@ class SampleAnnotation:
 
     ### DROP Groups ###
     
-    def getGroupedIDs(self, assay):
+    def getGroupedIDs(self, assays):
         """
         Get group to IDs mapping
-        :param assay: which assay the IDs should be from. Can be file_type or 'RNA'/'DNA'
+        :param assays: list of or single assay the IDs should be from. Can be file_type or 'RNA'/'DNA'
         """
-        if "RNA" in assay:
-            return self.rnaIDs
-        elif "DNA" in assay:
-            return self.dnaIDs
-        elif "GENE_COUNT" in assay:
-            return self.extGeneCountIDs
-        else:
-            raise ValueError(f"'{assay}' is not a valid assay name")
+        assays = [assays] if isinstance(assays, str) else assays
+        groupedIDs = dict()
+        for assay in assays:
+            if "RNA" in assay:
+                groupedIDs.update(self.rnaIDs)
+            elif "DNA" in assay:
+                groupedIDs.update(self.dnaIDs)
+            elif "GENE_COUNT" in assay:
+                groupedIDs.update(self.extGeneCountIDs)
+            else:
+                raise ValueError(f"'{assay}' is not a valid assay name")
+        return groupedIDs
         
     def getGroups(self, assay="RNA"):
         return self.getGroupedIDs(assay).keys()
