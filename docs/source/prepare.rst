@@ -146,39 +146,22 @@ S10R_M  S10G    MUSCLE      /path/to/S10R_M.BAM  /path/to/S10G.vcf.gz
 Example of DNA replicates 
 ++++++++++++++++++++++++++++++++++
 
-======  ======  ==========  =================  ==
-RNA_ID  DNA_ID  DROP_GROUP  RNA_BAM_FILE       DNA_VCF_FILE
-======  ======  ==========  =================  ==
-S20R    S20E    WES         /path/to/S20R.BAM  /path/to/S20E.vcf.gz
-S20R    S20G    WGS         /path/to/S20R.BAM  /path/to/S20G.vcf.gz
-======  ======  ==========  =================  ==
+======  ======  ==========  ===================  ==
+RNA_ID  DNA_ID  DROP_GROUP  RNA_BAM_FILE         DNA_VCF_FILE
+======  ======  ==========  ===================  ==
+S20R    S20E    WES         /path/to/S20R.BAM    /path/to/S20E.vcf.gz
+S20R    S20G    WGS         /path/to/S20R.BAM    /path/to/S20G.vcf.gz
+======  ======  ==========  ===================  ==
 
 Example of a multi-sample vcf file
 ++++++++++++++++++++++++++++++++++
 
-======  ======  ==========  =================  ==
-RNA_ID  DNA_ID  DROP_GROUP  RNA_BAM_FILE       DNA_VCF_FILE
-======  ======  ==========  =================  ==
-S10R    S10G    WGS         /path/to/S10R.BAM  /path/to/multi_sample.vcf.gz
-S20R    S20G    WGS         /path/to/S20R.BAM  /path/to/multi_sample.vcf.gz
-======  ======  ==========  =================  ==
-
-Example of external count matrices
-++++++++++++++++++++++++++++++++++
-
-In case counts from external matrices are to be integrated into the analysis,
-the file must be specified in the GENE_COUNTS_FILE column. A new row must be
-added for each sample from the count matrix that should be included in the 
-analysis. An RNA_BAM_FILE must not be specified. The DROP_GROUP of the local
-and external samples that are to be analyzed together must be the same.
-
-======  ======  ==========  =================  ==
-RNA_ID  DNA_ID  DROP_GROUP  RNA_BAM_FILE       GENE_COUNTS_FILE
-======  ======  ==========  =================  ==
-S10R    S10G    BLOOD       /path/to/S10R.BAM  
-EXT-1R          BLOOD                          /path/to/externalCounts.tsv.gz
-EXT-2R          BLOOD                          /path/to/externalCounts.tsv.gz
-======  ======  ==========  =================  ==
+======  ======  ==========  ===================  ==
+RNA_ID  DNA_ID  DROP_GROUP  RNA_BAM_FILE         DNA_VCF_FILE
+======  ======  ==========  ===================  ==
+S10R    S10G    WGS         /path/to/S10R.BAM    /path/to/multi_sample.vcf.gz
+S20R    S20G    WGS         /path/to/S20R.BAM    /path/to/multi_sample.vcf.gz
+======  ======  ==========  ===================  ==
 
 
 Advanced options
