@@ -55,7 +55,7 @@ Other DROP versions
 
 The developer version of DROP can be found in the `repository <https://github.com/gagneurlab/drop>`_ under the branch
 ``dev``.
-Make sure that the :any:`dependencies` are installed, preferably in a conda environment.
+Make sure that the :any:`prerequisites` are installed, preferably in a conda environment.
 Then install DROP from github using ``pip``.
 
 .. code-block:: bash
@@ -83,10 +83,10 @@ Note, that this requires an explicit call to update any existing project (:any:`
     drop update
 
 
-.. _dependencies:
+.. _prerequisites:
 
-Dependencies
-------------
+Prerequisites
+-------------
 
 The easiest way to ensure that all dependencies are installed is to install the bioconda package, as described above.
 Once the environment is set up and installation was successful, other versions of drop can be installed with ``pip``,
@@ -97,23 +97,30 @@ Installation without conda
 ++++++++++++++++++++++++++
 Alternatively, DROP can be installed without ``conda``. In this case the following dependencies must be met:
 
-* python >= 3.6
+* Programming languages:
 
-  * pip >= 19.1
+  * `python <https://www.python.org/>`_ >= 3.6 and `pip <https://pip.pypa.io/en/stable/installing/>`_ >= 19.1
 
-* `samtools <https://www.htslib.org/download/>`_ >= 1.7
+  * `R <https://www.r-project.org/>`_ >= 3.6 and corresponding `bioconductor <https://bioconductor.org/install/>`_ version
 
-* `bcftools <https://github.com/samtools/bcftools>`_ >= 1.7
+* Commandline tools:
 
-* `tabix <https://www.htslib.org/download/>`_
+    * `GNU bc <https://www.gnu.org/software/bc/>`_
 
-* `GATK <https://software.broadinstitute.org/gatk/>`_
+    * `GNU wget <https://www.gnu.org/software/wget/>`_
 
-* `graphviz <https://www.graphviz.org/>`_
+    * `tabix <https://www.htslib.org/download/>`_
 
-* `pandoc <https://pandoc.org/>`_
+    * `samtools <https://www.htslib.org/download/>`_ >= 1.7
 
-* `R <https://www.r-project.org/>`_ >= 3.5 and corresponding `bioconductor <https://bioconductor.org/install/>`_ version
+    * `bcftools <https://github.com/samtools/bcftools>`_ >= 1.7
+
+    * `GATK <https://software.broadinstitute.org/gatk/>`_ >= 4.0.4
+
+    * `graphviz <https://www.graphviz.org/>`_
+
+    * `pandoc <https://pandoc.org/>`_
+
 
 .. note::
 
