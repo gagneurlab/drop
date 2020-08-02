@@ -4,6 +4,9 @@
 #' wb:
 #'  log:
 #'   - snakemake: '`sm str(tmp_dir / "AE" / "{annotation}" / "{dataset}" / "OUTRIDER_results.Rds")`'
+#'  params:
+#'   - padjCutoff: '`sm cfg.AE.get("padjCutoff")`'
+#'   - zScoreCutoff: '`sm cfg.AE.get("zScoreCutoff")`'
 #'  input:
 #'   - add_HPO_cols: '`sm str(projectDir / ".drop" / "helpers" / "add_HPO_cols.R")`'
 #'   - ods: '`sm cfg.getProcessedResultsDir() + "/aberrant_expression/{annotation}/outrider/{dataset}/ods.Rds"`'
@@ -25,8 +28,6 @@ suppressPackageStartupMessages({
     library(OUTRIDER)
 })
 
-ae_params <- snakemake@config$aberrantExpression
-
 ods <- readRDS(snakemake@input$ods)
 res <- results(ods, all = TRUE)
 
@@ -37,8 +38,8 @@ res[, foldChange := round(2^l2fc, 2)]
 saveRDS(res, snakemake@output$results_all)
 
 # Subset to significant results
-res <- res[padjust <= ae_params$padjCutoff & 
-               abs(zScore) > ae_params$zScoreCutoff]
+res <- res[padjust <= snakemake@params$padjCutoff &
+               abs(zScore) > snakemake@params$zScoreCutoff]
 
 gene_annot_dt <- fread(snakemake@input$gene_name_mapping)
 if(!is.null(gene_annot_dt$gene_name)){

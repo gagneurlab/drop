@@ -4,27 +4,37 @@ from snakemake.io import expand
 from drop import utils
 
 class Submodule:
-    
+
     def __init__(self, config, sampleAnnotation, processedDataDir, processedResultsDir):
-        self.workdir = ""
+        self.CONFIG_KEYS = []
+        self.name = "Submodule"
         self.processedDataDir = processedDataDir
         self.processedResultsDir = processedResultsDir
         self.sa = sampleAnnotation
+        self.dict_ = self.setDefaultKeys(config)
+        self.groups = self.dict_["groups"]
     
     def setDefaultKeys(self, dict_):
         dict_ = {} if dict_ is None else dict_
         return dict_
-    
+
+    def get(self, key):
+        if key not in self.CONFIG_KEYS:
+            raise KeyError(f"{key} not defined for {self.name} config")
+        return self.dict_[key]
+
     def getWorkdir(self, str_=True):
-        return utils.returnPath(Path("Scripts") / self.workdir / "pipeline", str_)
+        return utils.returnPath(Path("Scripts") / self.name / "pipeline", str_)
 
 class AE(Submodule):
-    
+
     def __init__(self, config, sampleAnnotation, processedDataDir, processedResultsDir, externalCounts):
         super().__init__(config, sampleAnnotation, processedDataDir, processedResultsDir)
-        self.workdir = "AberrantExpression"
-        self.dict_ = self.setDefaultKeys(config["aberrantExpression"])
-        self.groups = self.dict_["groups"]
+        self.CONFIG_KEYS = [
+            "groups", "fpkmCutoff", "implementation", "padjCutoff", "zScoreCutoff",
+            "maxTestedDimensionProportion"
+        ]
+        self.name = "AberrantExpression"
         self.extCounts = externalCounts
         self.rnaIDs = self.sa.subsetGroups(self.groups, assay="RNA")
         self.extRnaIDs = self.sa.subsetGroups(self.groups, assay="GENE_COUNTS", warn=0, error=0)
@@ -64,9 +74,11 @@ class AS(Submodule):
     
     def __init__(self, config, sampleAnnotation, processedDataDir, processedResultsDir, externalCounts):
         super().__init__(config, sampleAnnotation, processedDataDir, processedResultsDir)
-        self.workdir = "AberrantSplicing"
-        self.dict_ = self.setDefaultKeys(config["aberrantSplicing"])
-        self.groups = self.dict_["groups"]
+        self.CONFIG_KEYS = [
+            "groups", "recount", "longRead", "filter", "minExpressionInOneSample", "minDeltaPsi",
+            "implementation", "padjCutoff", "zScoreCutoff", "deltaPsiCutoff", "maxTestedDimensionProportion"
+        ]
+        self.name = "AberrantSplicing"
         self.extCounts = externalCounts
         self.rnaIDs = self.sa.subsetGroups(self.groups, assay="RNA")
         
@@ -91,15 +103,18 @@ class MAE(Submodule):
     
     def __init__(self, config, sampleAnnotation, processedDataDir, processedResultsDir):
         super().__init__(config, sampleAnnotation, processedDataDir, processedResultsDir)
-        self.workdir = "MonoallelicExpression"
-        self.dict_ = self.setDefaultKeys(config["mae"])
-        self.groups = self.dict_["groups"]
+        self.CONFIG_KEYS = [
+            "groups", "genome", "qcVcf", "qcGroups", "gatkIgnoreHeaderCheck", "padjCutoff",
+            "allelicRatioCutoff", "maxAF", "gnomAD"
+        ]
+        self.name = "MonoallelicExpression"
         self.qcGroups = self.dict_["qcGroups"]
         self.maeIDs = self.createMaeIDS(id_sep='--')
     
     def setDefaultKeys(self, dict_):
         super().setDefaultKeys(dict_)
         setKey = utils.setKey
+        dict_ = utils.checkKeys(dict_, keys=["genome", "qcVcf"], check_files=True)
         groups = setKey(dict_, None, "groups", self.sa.getGroups(assay="DNA"))
         setKey(dict_, None, "qcGroups", groups)
         setKey(dict_, None, "gatkIgnoreHeaderCheck", True)

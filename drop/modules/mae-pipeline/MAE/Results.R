@@ -4,6 +4,9 @@
 #' wb:
 #'  log:
 #'   - snakemake: '`sm str(tmp_dir / "MAE" / "{dataset}" / "{annotation}_results.Rds")`'
+#'  params:
+#'   - allelicRatioCutoff: '`sm cfg.MAE.get("allelicRatioCutoff")`'
+#'   - padjCutoff: '`sm cfg.MAE.get("padjCutoff")`'
 #'  input:
 #'   - mae_res: '`sm lambda w: expand(cfg.getProcessedResultsDir() + 
 #'                "/mae/samples/{id}_res.Rds", id=cfg.MAE.getMaeByGroup({w.dataset}))`'
@@ -30,8 +33,6 @@ suppressPackageStartupMessages({
   library(SummarizedExperiment)
   library(R.utils)
 })
-
-params <- snakemake@config$mae
 
 # Read all MAE results files
 rmae <- lapply(snakemake@input$mae_res, function(m){
@@ -78,8 +79,8 @@ res <- cbind(res[, .(gene_name)], res[, -"gene_name"])
 #' Number of genes: `r uniqueN(res$gene_name)`
 
 # Subset for significant events
-allelicRatioCutoff <- params$allelicRatioCutoff
-res[, MAE := padj <= params$padjCutoff & 
+allelicRatioCutoff <- snakemake@params$allelicRatioCutoff
+res[, MAE := padj <= snakemake@params$padjCutoff &
       (altRatio >= allelicRatioCutoff | altRatio <= (1-allelicRatioCutoff))] 
 res[, MAE_ALT := MAE == TRUE & altRatio >= allelicRatioCutoff]
 
