@@ -5,8 +5,7 @@ from drop import utils
 from pathlib import Path
 
 class DropConfig:
-    
-    FILE_KEYS = ["htmlOutputPath", "root", "geneAnnotation", "sampleAnnotation", "mae"]
+
     CONFIG_KEYS = [
         # wbuild keys
         "projectTitle", "htmlOutputPath", "scriptsPath", "indexWithFolderName", "fileRegex", "readmePath",
@@ -24,15 +23,14 @@ class DropConfig:
         """
 
         self.wBuildConfig = wbuildConfig
-        config = self.checkConfig(wbuildConfig.getConfig())
-        self.config_dict = self.setDefaults(config)
+        self.config_dict = self.setDefaults(wbuildConfig.getConfig())
         
         self.root = Path(self.get("root"))
         self.processedDataDir = self.root / "processed_data"
         self.processedResultsDir = self.root / "processed_results"
-        utils.createIfMissing(self.root)
-        utils.createIfMissing(self.processedDataDir)
-        utils.createIfMissing(self.processedResultsDir)
+        utils.createDir(self.root)
+        utils.createDir(self.processedDataDir)
+        utils.createDir(self.processedResultsDir)
 
         self.htmlOutputPath = Path(self.get("htmlOutputPath"))
         self.readmePath = Path(self.get("readmePath"))
@@ -46,9 +44,9 @@ class DropConfig:
         sa = self.sampleAnnotation
         pd = self.processedDataDir
         pr = self.processedResultsDir
-        self.AE = AE(cfg, sa, pd, pr)
-        self.AS = AS(cfg, sa, pd, pr)
-        self.MAE = MAE(cfg, sa, pd, pr)
+        self.AE = AE(cfg["aberrantExpression"], sa, pd, pr)
+        self.AS = AS(cfg["aberrantSplicing"], sa, pd, pr)
+        self.MAE = MAE(cfg["mae"], sa, pd, pr)
 
         self.exportCounts = ExportCounts(
             self.config_dict, self.processedResultsDir,
@@ -61,51 +59,38 @@ class DropConfig:
         utils.setKey(self.config_dict, None, "aberrantSplicing", self.AS.dict_)
         utils.setKey(self.config_dict, None, "mae", self.MAE.dict_)
 
-        
-    def checkConfig(self, config):
-        # TODO: check if files exists too!
-        self.checkKeys(config, keys=self.FILE_KEYS)
-        self.checkKeys(config["geneAnnotation"], keys=None)
-        self.checkKeys(config["mae"], keys=["genome", "qcVcf"])
-        return config
-    
-    def checkKeys(self, dict_, keys):
-        keys = dict_.keys() if keys is None else keys
-        for key in keys:
-            if key not in dict_.keys():
-                raise KeyError(f"{key} is mandatory but missing")
-            # get real path
-            if isinstance(dict_[key], str):
-                filename = dict_[key]
-                dict_[key] = str(Path(filename).expanduser())
-    
-    def setDefaults(self, config, method=None):
+
+    def setDefaults(self, config_dict):
         """
-        set defaults for config keys
+        Check mandatory keys and set defaults for any missing keys
+        :param config_dict: config dictionary
+        :return: config dictionary with defaults
         """
-        config["indexWithFolderName"] = True
-        config["fileRegex"] = ".*\.R"
-        config["wBuildPath"] =  utils.getWBuildPath()
+        # check mandatory keys
+        config_dict = utils.checkKeys(config_dict, keys=["htmlOutputPath", "root", "sampleAnnotation"], check_files=True)
+        config_dict["geneAnnotation"] = utils.checkKeys(config_dict["geneAnnotation"], keys=None, check_files=True)
+
+        config_dict["indexWithFolderName"] = True
+        config_dict["fileRegex"] = ".*\.R"
+        config_dict["wBuildPath"] = utils.getWBuildPath()
         
         setKey = utils.setKey
-        setKey(config, None, "projectTitle", "DROP: Detection of RNA Outlier Pipeline")
-        
-        setKey(config, None, "genomeAssembly", "hg19")
-        setKey(config, None, "scanBamParam", "null")
+        setKey(config_dict, None, "genomeAssembly", "hg19")
+        setKey(config_dict, None, "scanBamParam", "null")
 
         # set submodule dictionaries
-        setKey(config, None, "aberrantExpression", dict())
-        setKey(config, None, "aberrantSplicing", dict())
-        setKey(config, None, "mae", dict())
-        setKey(config, None, "exportCounts", dict())
+        setKey(config_dict, None, "aberrantExpression", dict())
+        setKey(config_dict, None, "aberrantSplicing", dict())
+        setKey(config_dict, None, "mae", dict())
+        setKey(config_dict, None, "exportCounts", dict())
 
         # commandline tools
-        setKey(config, None, "tools", dict())
-        setKey(config, ["tools"], "samtoolsCmd", "samtools")
-        setKey(config, ["tools"], "bcftoolsCmd", "bcftools")
-        setKey(config, ["tools"], "gatkCmd", "gatk")
+        setKey(config_dict, None, "tools", dict())
+        setKey(config_dict, ["tools"], "samtoolsCmd", "samtools")
+        setKey(config_dict, ["tools"], "bcftoolsCmd", "bcftools")
+        setKey(config_dict, ["tools"], "gatkCmd", "gatk")
         
-        return config
+        return config_dict
     
     def getRoot(self, str_=True):
         return utils.returnPath(self.root, str_=str_)
@@ -119,11 +104,6 @@ class DropConfig:
     def getHtmlOutputPath(self, str_=True):
         return utils.returnPath(self.htmlOutputPath, str_=str_)
 
-    #def getReadmePath(self, str_=True):
-    #    readme_name = Path(self.readmePath).name
-    #    readme_name = readme_name.replace(".md", ".html")
-    #    return utils.returnPath(self.htmlOutputPath / readme_name, str_=str_)
-    
     def getHtmlFromScript(self, path):
         stump = self.htmlOutputPath / utils.getRuleFromPath(path, prefix=True)
         return str(stump) + ".html"

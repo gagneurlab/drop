@@ -36,8 +36,7 @@ class SampleAnnotation:
         sa = pd.read_csv(self.file, sep=sep)
         missing_cols = [x for x in self.SAMPLE_ANNOTATION_COLUMNS if x not in sa.columns.values]
         if len(missing_cols) > 0:
-            raise ValueError("Incorrect columns in sample annotation. Missing:"+
-                             f"\n {missing_cols}\n")
+            raise ValueError(f"Incorrect columns in sample annotation file. Missing:\n{missing_cols}")
         
         # remove unwanted characters
         col = sa["DROP_GROUP"]
@@ -50,17 +49,6 @@ class SampleAnnotation:
                     lambda x: str(x) if not pd.isnull(x) else x
             )
         return sa
-
-    def checkFileExists(self, sampleID, file_type, verbose=True):
-        """
-        note: we already checked for non-existing files in the init, so we
-        only need to check whether the ID is in the sample_file_mapping here
-        """
-        x = self.sampleFileMapping.query("(FILE_TYPE == @file_type) & (ID == @sampleID)")["FILE"]
-        exists = (len(x) != 0)
-        if (not exists) and verbose:
-            logger.debug(f"FILE NOT FOUND FOR sampleID: {sampleID} and file type {file_type}")
-        return exists
 
     ##### Construction
 
@@ -92,21 +80,19 @@ class SampleAnnotation:
         file_mapping.drop_duplicates(inplace = True)
         
         # check for missing files
-        exist = [Path(x).exists() for x in file_mapping["FILE_PATH"]]
-        if sum(exist) == 0:
+        existing = utils.checkFileExists(file_mapping["FILE_PATH"])
+        if len(existing) == 0:
             message = "File mapping is empty. "
             message += "Please check that all files in your sample annotation exist."
-            raise ValueError(message)
-        elif sum(exist) < file_mapping.shape[0]:
-            file_mapping = file_mapping[exist]
-            missing = [x for x in file_mapping["FILE_PATH"] if not Path(x).exists()]
-            info = f"WARNING: {len(missing)} "
-            info += "of the files in the samples annotation do not exist"
-            logger.info(info)
-            logger.debug(f"missing files: {missing}")
-        
-        file_mapping.to_csv(self.root / "file_mapping.csv", index=False)
+            raise FileNotFoundError(message)
+        elif len(existing) < file_mapping.shape[0]:
+            missing = set(file_mapping["FILE_PATH"]) - set(existing)
+            logger.info(f"WARNING: {len(missing)} files missing in samples annotation. Ignoring...")
+            logger.debug(f"Missing files: {missing}")
+            file_mapping = file_mapping[file_mapping["FILE_PATH"].isin(existing)]
 
+        # write file mapping
+        file_mapping.to_csv(self.root / "file_mapping.csv", index=False)
         return file_mapping
 
     def createGroupIds(self, group_key="DROP_GROUP", file_type=None, sep=','):

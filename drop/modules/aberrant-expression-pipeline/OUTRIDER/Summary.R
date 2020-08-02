@@ -4,6 +4,9 @@
 #' wb:
 #'  log:
 #'   - snakemake: '`sm str(tmp_dir / "AE" / "{annotation}" / "{dataset}" / "OUTRIDER_summary.Rds")`'
+#'  params:
+#'   - padjCutoff: '`sm cfg.AE.get("padjCutoff")`'
+#'   - zScoreCutoff: '`sm cfg.AE.get("zScoreCutoff")`'
 #'  input:
 #'   - ods: '`sm cfg.getProcessedResultsDir() +
 #'           "/aberrant_expression/{annotation}/outrider/{dataset}/ods.Rds"`'
@@ -32,8 +35,6 @@ suppressPackageStartupMessages({
     library(ggthemes)
 })
 
-ae_params <- snakemake@config$aberrantExpression
-
 # used for most plots
 dataset_title <- paste("Dataset:", snakemake@wildcards$dataset)
 
@@ -54,8 +55,8 @@ plotEncDimSearch(ods) +
 
 #' ### Aberrantly expressed genes per sample
 plotAberrantPerSample(ods, main = dataset_title, 
-                      padjCutoff = ae_params$padjCutoff,
-                      zScoreCutoff = ae_params$zScoreCutoff)
+                      padjCutoff = snakemake@params$padjCutoff,
+                      zScoreCutoff = snakemake@params$zScoreCutoff)
 
 
 #' ### Batch correction

@@ -6,6 +6,9 @@
 #'    - snakemake: '`sm str(tmp_dir / "AS" / "{dataset}" / "07_results.Rds")`'
 #'  params:
 #'   - workingDir: '`sm cfg.getProcessedDataDir() + "/aberrant_splicing/datasets/"`'
+#'   - padjCutoff: '`sm cfg.AS.get("padjCutoff")`'
+#'   - zScoreCutoff: '`sm cfg.AS.get("zScoreCutoff")`'
+#'   - deltaPsiCutoff: '`sm cfg.AS.get("deltaPsiCutoff")`'
 #'  threads: 10
 #'  input:
 #'   - setup: '`sm cfg.AS.getWorkdir() + "/config.R"`'
@@ -35,8 +38,6 @@ register(MulticoreParam(snakemake@threads))
 # Limit number of threads for DelayedArray operations
 setAutoBPPARAM(MulticoreParam(snakemake@threads))
 
-params <- snakemake@config$aberrantSplicing
-
 # Load data and annotate ranges with gene names
 fds <- loadFraserDataSet(dir=workingDir, name=dataset)
 GRCh <- ifelse(snakemake@config$genomeAssembly == 'hg19', 37, 
@@ -47,9 +48,9 @@ colData(fds)$sampleID <- as.character(colData(fds)$sampleID)
 
 # Extract results per junction
 res_junc <- results(fds,
-                 padjCutoff=params$padjCutoff, 
-                 zScoreCutoff=params$zScoreCutoff,
-                 deltaPsiCutoff=params$deltaPsiCutoff,
+                 padjCutoff=snakemake@params$padjCutoff,
+                 zScoreCutoff=snakemake@params$zScoreCutoff,
+                 deltaPsiCutoff=snakemake@params$deltaPsiCutoff,
                  additionalColumns=c("other_hgnc_symbol"))
 res_junc_dt   <- as.data.table(res_junc)
 print('Results per junction extracted')
