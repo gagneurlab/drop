@@ -5,8 +5,7 @@ from drop import utils
 from pathlib import Path
 
 class DropConfig:
-    
-    FILE_KEYS = ["htmlOutputPath", "root", "geneAnnotation", "sampleAnnotation", "mae"]
+
     CONFIG_KEYS = [
         # wbuild keys
         "projectTitle", "htmlOutputPath", "scriptsPath", "indexWithFolderName", "fileRegex", "readmePath",
@@ -24,15 +23,14 @@ class DropConfig:
         """
 
         self.wBuildConfig = wbuildConfig
-        config = self.checkConfig(wbuildConfig.getConfig())
-        self.config = self.setDefaults(config)
+        self.config = self.setDefaults(wbuildConfig.getConfig())
         
         self.root = Path(self.get("root"))
         self.processedDataDir = self.root / "processed_data"
         self.processedResultsDir = self.root / "processed_results"
-        utils.createIfMissing(self.root)
-        utils.createIfMissing(self.processedDataDir)
-        utils.createIfMissing(self.processedResultsDir)
+        utils.createDir(self.root)
+        utils.createDir(self.processedDataDir)
+        utils.createDir(self.processedResultsDir)
 
         self.htmlOutputPath = Path(self.get("htmlOutputPath"))
         self.readmePath = Path(self.get("readmePath"))
@@ -48,43 +46,31 @@ class DropConfig:
         pd = self.processedDataDir
         pr = self.processedResultsDir
         ec = self.externalCounts
-        self.AE = AE(cfg, sa, pd, pr, ec)
-        self.AS = AS(cfg, sa, pd, pr, ec)
-        self.MAE = MAE(cfg, sa, pd, pr)
+        self.AE = AE(cfg["aberrantExpression"], sa, pd, pr, ec)
+        self.AS = AS(cfg["aberrantSplicing"], sa, pd, pr, ec)
+        self.MAE = MAE(cfg["mae"], sa, pd, pr)
 
         # legacy
         utils.setKey(self.config, None, "aberrantExpression", self.AE.dict_)
         utils.setKey(self.config, None, "aberrantSplicing", self.AS.dict_)
         utils.setKey(self.config, None, "mae", self.MAE.dict_)
-        
-    def checkConfig(self, config):
-        # TODO: check if files exists too!
-        self.checkKeys(config, keys=self.FILE_KEYS)
-        self.checkKeys(config["geneAnnotation"], keys=None)
-        self.checkKeys(config["mae"], keys=["genome", "qcVcf"])
-        return config
-    
-    def checkKeys(self, dict_, keys):
-        keys = dict_.keys() if keys is None else keys
-        for key in keys:
-            if key not in dict_.keys():
-                raise KeyError(f"{key} is mandatory but missing")
-            # get real path
-            if isinstance(dict_[key], str):
-                filename = dict_[key]
-                dict_[key] = str(Path(filename).expanduser())
-    
-    def setDefaults(self, config, method=None):
+
+
+    def setDefaults(self, config):
         """
-        set defaults for config keys
+        Check mandatory keys and set defaults for any missing keys
+        :param config: config dictionary
+        :return: config dictionary with defaults
         """
+        # check mandatory keys
+        config = utils.checkKeys(config, keys=["htmlOutputPath", "root", "sampleAnnotation"], check_files=True)
+        config["geneAnnotation"] = utils.checkKeys(config["geneAnnotation"], keys=None, check_files=True)
+
         config["indexWithFolderName"] = True
         config["fileRegex"] = ".*\.R"
-        config["wBuildPath"] =  utils.getWBuildPath()
+        config["wBuildPath"] = utils.getWBuildPath()
         
         setKey = utils.setKey
-        setKey(config, None, "projectTitle", "DROP: Detection of RNA Outlier Pipeline")
-        
         setKey(config, None, "genomeAssembly", "hg19")
         setKey(config, None, "scanBamParam", "null")
         
