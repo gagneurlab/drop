@@ -226,6 +226,17 @@ class SampleAnnotation:
             sampleIDs = self.getGroupedIDs(file_type)[group]
         return self.getFilePath(sampleIDs, file_type, single_file=False)
 
+    def getImportCountFiles(self, annotation, group, file_type="GENE_COUNTS_FILE",
+                            annotation_key="ANNOTATION", group_key="DROP_GROUP"):
+        """
+        :param annotation: annotation name as specified in config and ANNOTATION column
+        :param group: a group of the DROP_GROUP column
+        :return: set of unique external count file names
+        """
+        subset = self.subsetSampleAnnotation(annotation_key, annotation)
+        subset = self.subsetSampleAnnotation(group_key, group, subset)
+        return set(subset[file_type].tolist())
+
     def getRow(self, column, value):
         sa = self.sa
         if column not in sa.columns:

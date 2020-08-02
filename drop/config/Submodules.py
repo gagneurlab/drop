@@ -20,12 +20,11 @@ class Submodule:
 
 class AE(Submodule):
     
-    def __init__(self, config, sampleAnnotation, processedDataDir, processedResultsDir, externalCounts):
+    def __init__(self, config, sampleAnnotation, processedDataDir, processedResultsDir):
         super().__init__(config, sampleAnnotation, processedDataDir, processedResultsDir)
         self.workdir = "AberrantExpression"
         self.dict_ = self.setDefaultKeys(config["aberrantExpression"])
         self.groups = self.dict_["groups"]
-        self.extCounts = externalCounts
         self.rnaIDs = self.sa.subsetGroups(self.groups, assay="RNA")
         self.extRnaIDs = self.sa.subsetGroups(self.groups, assay="GENE_COUNTS", warn=0, error=0)
     
@@ -50,7 +49,7 @@ class AE(Submodule):
         bam_IDs = self.sa.getIDsByGroup(group, assay="RNA")
         file_stump = self.processedDataDir / "aberrant_expression" / annotation / "counts" / "{sampleID}.Rds"
         count_files = expand(str(file_stump), sampleID=bam_IDs)
-        extCountFiles = self.extCounts.getImportCountFiles(annotation, group, file_type="GENE_COUNTS_FILE")
+        extCountFiles = self.sa.getImportCountFiles(annotation, group, file_type="GENE_COUNTS_FILE")
         count_files.extend(extCountFiles)
         return count_files
 
@@ -62,12 +61,11 @@ class AE(Submodule):
 
 class AS(Submodule):
     
-    def __init__(self, config, sampleAnnotation, processedDataDir, processedResultsDir, externalCounts):
+    def __init__(self, config, sampleAnnotation, processedDataDir, processedResultsDir):
         super().__init__(config, sampleAnnotation, processedDataDir, processedResultsDir)
         self.workdir = "AberrantSplicing"
         self.dict_ = self.setDefaultKeys(config["aberrantSplicing"])
         self.groups = self.dict_["groups"]
-        self.extCounts = externalCounts
         self.rnaIDs = self.sa.subsetGroups(self.groups, assay="RNA")
         
     

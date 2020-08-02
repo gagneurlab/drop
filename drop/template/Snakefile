@@ -11,7 +11,7 @@ tmp_dir = projectPaths["tmpDir"]
 
 cfg = drop.config.DropConfig(wbuild.utils.Config())
 sa = cfg.sampleAnnotation
-config = cfg.config # legacy
+config = cfg.config_dict # legacy
 
 include: drop.utils.getWBuildSnakefile()
 include: cfg.AE.getWorkdir() + "/Snakefile"
@@ -33,10 +33,10 @@ rule sampleAnnotation:
 
 rule exportCounts:
     input:
-        cfg.externalCounts.getExportCountFiles("geneCounts"),
-        cfg.externalCounts.getExportCountFiles("splitCounts"),
-        cfg.externalCounts.getExportCountFiles("spliceSiteOverlapCounts"),
-        cfg.getProcessedResultsDir() + "/exported_counts/sample_anno.done"
+        cfg.exportCounts.getExportCountFiles("geneCounts"),
+         cfg.exportCounts.getExportCountFiles("splitCounts"),
+         cfg.exportCounts.getExportCountFiles("spliceSiteOverlapCounts"),
+         cfg.getProcessedResultsDir() + "/exported_counts/sample_anno.done"
 
 rule dependencyGraph:
     input:

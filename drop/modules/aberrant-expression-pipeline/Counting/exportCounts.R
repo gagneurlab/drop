@@ -8,8 +8,7 @@
 #'    - counts: '`sm cfg.getProcessedDataDir() +
 #'               "/aberrant_expression/{annotation}/outrider/{dataset}/total_counts.Rds"`'
 #'  output:
-#'    - export: '`sm cfg.getProcessedResultsDir() + "/exported_counts/{dataset}--{genomeAssembly}--{annotation}/"
-#'                + "geneCounts.tsv.gz"`'
+#'    - export: '`sm cfg.exportCounts.getFilePattern(str_=False) / "geneCounts.tsv.gz"`'
 #'  type: script
 #'---
 

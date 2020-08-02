@@ -6,7 +6,7 @@
 #'   - snakemake: '`sm str(tmp_dir / "SampleAnnotation.Rds")`'
 #'  params:
 #'   - export_dir: '`sm cfg.getProcessedResultsDir() + "/exported_counts"`'
-#'   - groups: '`sm cfg.externalCounts.getExportGroups()`'
+#'   - groups: '`sm cfg.exportCounts.getExportGroups()`'
 #'  input: 
 #'   - sampleAnnotation: '`sm config["sampleAnnotation"]`'
 #'  output:

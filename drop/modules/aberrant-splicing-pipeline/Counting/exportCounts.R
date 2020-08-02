@@ -15,10 +15,8 @@
 #'   - counting_done: '`sm cfg.getProcessedDataDir() + 
 #'                "/aberrant_splicing/datasets/savedObjects/raw-{dataset}/counting.done" `'
 #'  output:
-#'    - split_counts: '`sm cfg.getProcessedResultsDir() + "/exported_counts/{dataset}--{genomeAssembly}--{annotation}/"
-#'                + "splitCounts.tsv.gz"`'
-#'    - nonsplit_counts: '`sm cfg.getProcessedResultsDir() + "/exported_counts/{dataset}--{genomeAssembly}--{annotation}/"
-#'                + "spliceSiteOverlapCounts.tsv.gz"`'
+#'    - split_counts: '`sm cfg.exportCounts.getFilePattern(str_=False) / "splitCounts.tsv.gz"`'
+#'    - nonsplit_counts: '`sm cfg.exportCounts.getFilePattern(str_=False) / "spliceSiteOverlapCounts.tsv.gz"`'
 #'  type: script
 #'---
 

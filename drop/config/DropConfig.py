@@ -1,6 +1,6 @@
 from .SampleAnnotation import SampleAnnotation
 from .Submodules import AE, AS, MAE
-from .ExternalCounts import ExternalCounts
+from .ExportCounts import ExportCounts
 from drop import utils
 from pathlib import Path
 
@@ -25,7 +25,7 @@ class DropConfig:
 
         self.wBuildConfig = wbuildConfig
         config = self.checkConfig(wbuildConfig.getConfig())
-        self.config = self.setDefaults(config)
+        self.config_dict = self.setDefaults(config)
         
         self.root = Path(self.get("root"))
         self.processedDataDir = self.root / "processed_data"
@@ -40,22 +40,27 @@ class DropConfig:
         self.geneAnnotation = self.get("geneAnnotation")
         self.genomeAssembly = self.get("genomeAssembly")
         self.sampleAnnotation = SampleAnnotation(self.get("sampleAnnotation"), self.root)
-        self.externalCounts = ExternalCounts(self)
 
         # setup submodules
-        cfg = self.config
+        cfg = self.config_dict
         sa = self.sampleAnnotation
         pd = self.processedDataDir
         pr = self.processedResultsDir
-        ec = self.externalCounts
-        self.AE = AE(cfg, sa, pd, pr, ec)
-        self.AS = AS(cfg, sa, pd, pr, ec)
+        self.AE = AE(cfg, sa, pd, pr)
+        self.AS = AS(cfg, sa, pd, pr)
         self.MAE = MAE(cfg, sa, pd, pr)
 
+        self.exportCounts = ExportCounts(
+            self.config_dict, self.processedResultsDir,
+            self.sampleAnnotation, self.getGeneAnnotations(), self.get("genomeAssembly"),
+            aberrantExpression=self.AE, aberrantSplicing=self.AS
+        )
+
         # legacy
-        utils.setKey(self.config, None, "aberrantExpression", self.AE.dict_)
-        utils.setKey(self.config, None, "aberrantSplicing", self.AS.dict_)
-        utils.setKey(self.config, None, "mae", self.MAE.dict_)
+        utils.setKey(self.config_dict, None, "aberrantExpression", self.AE.dict_)
+        utils.setKey(self.config_dict, None, "aberrantSplicing", self.AS.dict_)
+        utils.setKey(self.config_dict, None, "mae", self.MAE.dict_)
+
         
     def checkConfig(self, config):
         # TODO: check if files exists too!
@@ -87,25 +92,13 @@ class DropConfig:
         
         setKey(config, None, "genomeAssembly", "hg19")
         setKey(config, None, "scanBamParam", "null")
-        
-        # export settings
-        setKey(config, None, "exportCounts", dict())
-        gene_annotations = list(config["geneAnnotation"].keys())
-        setKey(config, ["exportCounts"], "geneAnnotation", gene_annotations)
-        setKey(config, ["exportCounts"], "excludeGroups", list())
-        
-        # check consistency of gene annotations
-        anno_incomp = set(config["exportCounts"]["geneAnnotations"]) - set(gene_annotations)
-        if len(anno_incomp) > 0:
-            message = f"{anno_incomp} are not valid annotation version in 'geneAnnotation'"
-            message += "but required in 'exportCounts'.\n Please make sure they match."
-            raise ValueError(message)
-        
+
         # set submodule dictionaries
         setKey(config, None, "aberrantExpression", dict())
         setKey(config, None, "aberrantSplicing", dict())
         setKey(config, None, "mae", dict())
-        
+        setKey(config, None, "exportCounts", dict())
+
         # commandline tools
         setKey(config, None, "tools", dict())
         setKey(config, ["tools"], "samtoolsCmd", "samtools")
