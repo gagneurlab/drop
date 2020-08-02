@@ -40,3 +40,4 @@ script:
   - drop demo
   - snakemake -n
   - snakemake --jobs 2 --cores 2
+  - snakemake exportCounts --cores 2
