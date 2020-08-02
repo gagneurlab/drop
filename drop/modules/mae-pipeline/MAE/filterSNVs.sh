@@ -21,7 +21,8 @@ samtools=$8
 
 tmp=$(mktemp)
 
-$bcftools annotate --force -x INFO ${vcf_file} |\
+# $bcftools annotate --force -x INFO ${vcf_file} |\
+$bcftools view  $vcf_file | grep -vP "^##INFO=" | awk -F'\t' 'BEGIN {OFS = FS} { if($1 ~ /^[^#]/){ $8 = "." }; print $0 }' |\
     $bcftools view -s ${vcf_id} -m2 -M2 -v snps -O z -o $tmp
 $bcftools index -t $tmp
 
