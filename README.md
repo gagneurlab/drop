@@ -8,40 +8,29 @@ The manuscript main file, supplementary figures and table can be found in the ma
 
 <img src="drop_sticker.png" alt="drop logo" width="200" class="center"/>
 
-## Installation
-DROP is available on [bioconda](https://anaconda.org/bioconda/drop) for python 3.6 and above.
-We recommend using a dedicated conda environment.
-
+## Quickstart
+DROP is available on [bioconda](https://anaconda.org/bioconda/drop).
+We recommend using a dedicated conda environment. (installation time: ~ 10min)
 ```
-# create environment
-conda create -n drop_env python=3.6
-conda activate drop_env
-
-# install drop
-conda install -c bioconda drop
+conda install -c conda-forge -c bioconda drop
 ```
-Installation time: ~ 10min
 
-Test whether the pipeline runs through by setting up the demo dataset in an empty directory (e.g. ``~/drop_demo``).
-
+Test installation with demo project
 ```
 mkdir ~/drop_demo
 cd ~/drop_demo
-
-# demo will download the necessary data and pipeline files
 drop demo
 ```
 
-The pipeline can be run using `snakemake` commands
-
+The pipeline can be run using [snakemake](https://snakemake.readthedocs.io/) commands
 ```
 snakemake -n # dryrun
-snakemake
+snakemake --cores 1
 ```
 
 Expected runtime: 25 min
 
-For more information on different installation options, check out the 
+For more information on different installation options, refer to the
 [documentation](https://gagneurlab-drop.readthedocs.io/en/latest/installation.html)
 
 ## Set up a custom project
@@ -65,5 +54,9 @@ snakemake aberrantExpression -n
 The following publicly-available datasets of gene counts can be used as controls:
 
 * 119 non-strand specific fibroblasts: [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.3887451.svg)](https://doi.org/10.5281/zenodo.3887451)
+
+* 139 strand specific fibroblasts: [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.3963474.svg)](https://doi.org/10.5281/zenodo.3963474)
+
+* 125 strand specific blood: [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.3963470.svg)](https://doi.org/10.5281/zenodo.3963470)
 
 If you want to contribute with your own count matrices, please contact us: yepez at in.tum.de
