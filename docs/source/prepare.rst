@@ -1,5 +1,3 @@
-.. _prepare:
-
 Preparing the Input Data
 ========================
 
@@ -95,6 +93,7 @@ groups                        list       Same as in aberrant expression.        
 minIds                        numeric    Same as in aberrant expression.                                                               ``1``
 recount                       boolean    If true, it forces samples to be recounted.                                                   ``false``
 longRead                      boolean    Set to true only if counting Nanopore or PacBio long reads.                                   ``false``
+keepNonStandardChrs           boolean    Set to true if non standard chromosomes are to be kept for further analysis.                  ``true``                        
 filter                        boolean    If false, no filter is applied. We recommend filtering.                                       ``true``
 minExpressionInOneSample      numeric    The minimal read count in at least one sample required for an intron to pass the filter.      ``20``
 minDeltaPsi                   numeric    The minimal variation (in delta psi) required for an intron to pass the filter.               ``0.05``
@@ -118,6 +117,7 @@ padjCutoff             numeric    Same as in aberrant expression.               
 allelicRatioCutoff     numeric    A number between [0.5, 1) indicating the maximum allelic ratio allele1/(allele1+allele2) for the test to be significant.  ``0.8``
 addAF                  boolean    Whether or not to add the allele frequencies from gnomAD                                                                  ``true``
 maxAF                  numeric    Maximum allele frequency (of the minor allele) cut-off. Variants with AF equal or below this number are considered rare.  ``0.001``
+maxVarFreqCohort       numeric    Maximum variant frequency among the cohort.                                                                               ``0.05``      
 qcVcf                  character  Full path to the vcf file used for VCF-BAM matching                                                                       ``/path/to/qc_vcf.vcf.gz``
 qcGroups               list       Same as “groups”, but for the VCF-BAM matching                                                                            ``# see aberrant expression example``
 =====================  =========  ========================================================================================================================  ======
@@ -172,7 +172,7 @@ Specifically, the number of threads allowed for a computational step can be modi
 
 .. note::
 
-    DROP needs to be installed from a local directory :ref:`otherversions` using ``pip install -e <path-to-drop-repo>``
+    DROP needs to be installed from a local directory :ref:`otherversions` using ``pip install -e <path/to/drop-repo>``
     so that any changes in the code will be available in the next pipeline run.
     Any changes made to the R code need to be updated with ``drop update`` in the project directory.
 
