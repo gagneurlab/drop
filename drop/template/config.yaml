@@ -1,4 +1,4 @@
-projectTitle: "DROP: Detection of RNA Outlier Pipeline"
+projectTitle: "DROP: Detection of RNA Outliers Pipeline"
 root:             # root directory of all intermediate output
 htmlOutputPath:   # path for HTML rendered reports
 
