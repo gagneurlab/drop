@@ -34,14 +34,14 @@ spliceSiteCoords <- readRDS(snakemake@input$spliceSites)
 
 # obtain the split counts
 splitCounts <- counts(fds, type="j")
-gr_dt <- as.data.table(splitCounts_gRanges)[, c(1:3,5)]
+gr_dt <- as.data.table(splitCounts_gRanges)
 splitCounts <- cbind(gr_dt, as.matrix(splitCounts))
 fwrite(splitCounts, file = snakemake@output$split_counts,
        quote = FALSE, row.names = FALSE, sep = '\t', compress = 'gzip')
   
 # obtain the non split counts
 nonSplitCounts <- counts(fds, type="ss")
-grns_dt <- as.data.table(spliceSiteCoords)[, c(1:3,5)]
+grns_dt <- as.data.table(spliceSiteCoords)
 nonSplitCounts <- cbind(grns_dt, as.matrix(nonSplitCounts))
 fwrite(nonSplitCounts, file = snakemake@output$nonsplit_counts,
        quote = FALSE, row.names = FALSE, sep = '\t', compress = 'gzip')
