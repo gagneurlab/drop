@@ -126,10 +126,19 @@ qcGroups               list       Same as “groups”, but for the VCF-BAM matc
 Creating the sample annotation table
 ------------------------------------
 
-For details on how to generate the sample annotation, please refer to the DROP manuscript. 
-Here we provide some examples on how to deal with certain situations. For simplicity, we
-do not include the other compulsory columns ``PAIRED_END``, ``COUNT_MODE``,
-``COUNT_OVERLAPS`` and ``STRAND``.
+For a detailed explanation of the columns of the sample annotation, please refer to
+the DROP manuscript. 
+Inside the sample annotation, each row corresponds to a unique pair of RNA and DNA
+samples derived from the same individual. An RNA assay can belong to one or more DNA
+assays, and vice-versa. If so, they must be specified in different rows. The required
+columns are ``RNA_ID``, ``RNA_BAM_FILE`` and ``DROP_GROUP``, plus other module-specific
+ones (see DROP manuscript). In case external counts are included, add a new row for each
+sample from those files (or a subset if not all samples are needed).
+
+The sample annotation file should be saved in the tab-separated values (tsv) format. The 
+column order does not matter. Also, it does not matter where it is stored, as the path is 
+specified in the config file. Here we provide some examples on how to deal with certain
+situations. For simplicity, we do not include all possible columns in the examples.
 
 Example of RNA replicates 
 ++++++++++++++++++++++++++++++++++
@@ -144,22 +153,41 @@ S10R_M  S10G    MUSCLE      /path/to/S10R_M.BAM  /path/to/S10G.vcf.gz
 Example of DNA replicates 
 ++++++++++++++++++++++++++++++++++
 
-======  ======  ==========  ===================  ==
-RNA_ID  DNA_ID  DROP_GROUP  RNA_BAM_FILE         DNA_VCF_FILE
-======  ======  ==========  ===================  ==
-S20R    S20E    WES         /path/to/S20R.BAM    /path/to/S20E.vcf.gz
-S20R    S20G    WGS         /path/to/S20R.BAM    /path/to/S20G.vcf.gz
-======  ======  ==========  ===================  ==
+======  ======  ==========  =================  ==
+RNA_ID  DNA_ID  DROP_GROUP  RNA_BAM_FILE       DNA_VCF_FILE
+======  ======  ==========  =================  ==
+S20R    S20E    WES         /path/to/S20R.BAM  /path/to/S20E.vcf.gz
+S20R    S20G    WGS         /path/to/S20R.BAM  /path/to/S20G.vcf.gz
+======  ======  ==========  =================  ==
 
 Example of a multi-sample vcf file
 ++++++++++++++++++++++++++++++++++
 
-======  ======  ==========  ===================  ==
-RNA_ID  DNA_ID  DROP_GROUP  RNA_BAM_FILE         DNA_VCF_FILE
-======  ======  ==========  ===================  ==
-S10R    S10G    WGS         /path/to/S10R.BAM    /path/to/multi_sample.vcf.gz
-S20R    S20G    WGS         /path/to/S20R.BAM    /path/to/multi_sample.vcf.gz
-======  ======  ==========  ===================  ==
+======  ======  ==========  =================  ==
+RNA_ID  DNA_ID  DROP_GROUP  RNA_BAM_FILE       DNA_VCF_FILE
+======  ======  ==========  =================  ==
+S10R    S10G    WGS         /path/to/S10R.BAM  /path/to/multi_sample.vcf.gz
+S20R    S20G    WGS         /path/to/S20R.BAM  /path/to/multi_sample.vcf.gz
+======  ======  ==========  =================  ==
+
+External count matrices
++++++++++++++++++++++++
+
+In case counts from external matrices are to be integrated into the analysis,
+the file must be specified in the GENE_COUNTS_FILE column. A new row must be
+added for each sample from the count matrix that should be included in the 
+analysis. An RNA_BAM_FILE must not be specified. The DROP_GROUP of the local
+and external samples that are to be analyzed together must be the same.
+Similarly, the GENE_ANNOTATION of the external counts and the key of the `geneAnnotation`
+parameter from the config file must match.
+
+======  ======  ==========  =================  ==
+RNA_ID  DNA_ID  DROP_GROUP  RNA_BAM_FILE       GENE_COUNTS_FILE
+======  ======  ==========  =================  ==
+S10R    S10G    BLOOD       /path/to/S10R.BAM  
+EXT-1R          BLOOD                          /path/to/externalCounts.tsv.gz
+EXT-2R          BLOOD                          /path/to/externalCounts.tsv.gz
+======  ======  ==========  =================  ==
 
 
 Advanced options
