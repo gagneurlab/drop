@@ -57,7 +57,7 @@ fo <- findOverlaps(rmae_ranges, gene_annot_ranges)
 # Add the gene names
 res_annot <- cbind(rmae[from(fo), ],  gene_annot_dt[to(fo), .(gene_name, gene_type)])
 
-# Prioritze protein coding genes
+# Prioritize protein coding genes
 res_annot <- rbind(res_annot[gene_type == 'protein_coding'], 
                    res_annot[gene_type != 'protein_coding'])
 
@@ -102,12 +102,15 @@ res[MAE == TRUE, N_MAE := .N, by = ID]
 res[MAE_ALT == TRUE, N_MAE_ALT := .N, by = ID]
 res[MAE_ALT == TRUE & rare == TRUE, N_MAE_ALT_RARE := .N, by = ID]
 
-rd <- unique(res[,.(ID, N, N_MAE, N_MAE_ALT, N_MAE_ALT_RARE)])
+
+rd <- unique(res[,.(ID, N, N_MAE, N_MAE_REF, N_MAE_ALT, N_MAE_REF_RARE, N_MAE_ALT_RARE)])
 melt_dt <- melt(rd, id.vars = 'ID')
 melt_dt[variable == 'N', variable := '>10 counts']
 melt_dt[variable == 'N_MAE', variable := '+MAE']
-melt_dt[variable == 'N_MAE_ALT', variable := '+MAE for ALT']
-melt_dt[variable == 'N_MAE_ALT_RARE', variable := '+MAE for ALT\n& RARE']
+melt_dt[variable == 'N_MAE_REF', variable := '+MAE for\nREF']
+melt_dt[variable == 'N_MAE_ALT', variable := '+MAE for\nALT']
+melt_dt[variable == 'N_MAE_REF_RARE', variable := '+MAE for REF\n& rare']
+melt_dt[variable == 'N_MAE_ALT_RARE', variable := '+MAE for ALT\n& rare']
 
 #' 
 #' ## Cascade plot 
