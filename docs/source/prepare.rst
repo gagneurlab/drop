@@ -47,7 +47,6 @@ root                 character   Full path of the folder where the subdirectorie
 geneAnnotation       dictionary  A key-value list of the annotation name (key) and the full path to the GTF file (value). More than one annotation file can be provided.  ``anno1: /path/to/gtf1.gtf``
 
                                                                                                                                                                           ``anno2: /path/to/gtf2.gtf``
-scanBamParam         character   Either null or the path to an Rds file containing a scanBamParam object. Refer to the advanced options below.                            ``/path/to/scanBamParam.Rds``
 tools                dictionary  A key-value list of different commands (key) and the command (value) to run them                                                         ``gatkCmd: gatk``
 
                                                                                                                                                                           ``bcftoolsCmd: bcftools``
@@ -210,13 +209,5 @@ dimension smaller than the number of samples N. The encoding dimension is optimi
 We recommend the search space to be at most N/3 for the aberrant expression, 
 and N/6 for the aberrant splicing case. Nevertheless, the user can specify the 
 denominator with the parameter ``maxTestedDimensionProportion``.
-
-In order to influence which fields of the BAM files are imported, the user can 
-provide a ``scanBamParam`` object. This will affect how the files are counted in 
-the aberrant expression and splicing modules. Refer to the function's 
-`documentation <https://www.rdocumentation.org/packages/Rsamtools/versions/1.24.0/topics/ScanBamParam>`_ for details.
-
-
-
 
 

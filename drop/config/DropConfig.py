@@ -10,7 +10,7 @@ class DropConfig:
         # wbuild keys
         "projectTitle", "htmlOutputPath", "scriptsPath", "indexWithFolderName", "fileRegex", "readmePath",
         # global parameters
-        "root", "sampleAnnotation", "geneAnnotation", "genomeAssembly", "scanBamParam", "exportCounts", "tools",
+        "root", "sampleAnnotation", "geneAnnotation", "genomeAssembly", "exportCounts", "tools",
         # modules
         "aberrantExpression", "aberrantSplicing", "mae"
     ]
@@ -76,7 +76,6 @@ class DropConfig:
         
         setKey = utils.setKey
         setKey(config_dict, None, "genomeAssembly", "hg19")
-        setKey(config_dict, None, "scanBamParam", "null")
 
         # set submodule dictionaries
         setKey(config_dict, None, "aberrantExpression", dict())

@@ -14,7 +14,6 @@ geneAnnotation:
     v29:  /path/to/gencode29.gtf.gz # example
 
 genomeAssembly: hg19  # either hg19 or hg38
-scanBamParam: null # or a path to an Rds file containing a scanBamParam object
 exportCounts:
     # specify which gene annotations to include and which 
     # groups to exclude when exporting counts
