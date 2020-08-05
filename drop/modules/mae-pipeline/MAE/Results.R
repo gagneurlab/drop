@@ -99,9 +99,10 @@ fwrite(res[MAE_ALT == TRUE], snakemake@output$res_signif,
 #+echo=F
 res[, N := .N, by = ID]
 res[MAE == TRUE, N_MAE := .N, by = ID]
+res[MAE == TRUE & MAE_ALT == FALSE, N_MAE_REF := .N, by = ID]
 res[MAE_ALT == TRUE, N_MAE_ALT := .N, by = ID]
+res[MAE == TRUE & MAE_ALT == FALSE & rare == TRUE, N_MAE_REF_RARE := .N, by = ID]
 res[MAE_ALT == TRUE & rare == TRUE, N_MAE_ALT_RARE := .N, by = ID]
-
 
 rd <- unique(res[,.(ID, N, N_MAE, N_MAE_REF, N_MAE_ALT, N_MAE_REF_RARE, N_MAE_ALT_RARE)])
 melt_dt <- melt(rd, id.vars = 'ID')
