@@ -9,7 +9,7 @@ class SampleAnnotation:
     
     SAMPLE_ANNOTATION_COLUMNS = [
         "RNA_ID", "RNA_BAM_FILE", "DNA_ID", "DNA_VCF_FILE", "DROP_GROUP", "GENE_COUNTS_FILE", "ANNOTATION",
-        "PAIRED_END", "COUNT_MODE", "COUNT_OVERLAPS", "STRAND"
+        "PAIRED_END", "COUNT_MODE", "COUNT_OVERLAPS", "STRAND","RNA_VARIANT_GROUP"
     ]
     
     def __init__(self, file, root):
@@ -24,6 +24,7 @@ class SampleAnnotation:
         self.sampleFileMapping = self.createSampleFileMapping()
         
         self.rnaIDs = self.createGroupIds(file_type="RNA_BAM_FILE", sep=',')
+        self.rnaIDs_RVC = self.createGroupIds(file_type="RNA_BAM_FILE", sep=',',group_key = "RNA_VARIANT_GROUP")
         self.dnaIDs = self.createGroupIds(file_type="DNA_VCF_FILE", sep=',')
         # external counts
         self.extGeneCountIDs = self.createGroupIds(file_type="GENE_COUNTS_FILE", sep=',')
@@ -166,7 +167,6 @@ class SampleAnnotation:
         error: number of samples threshold at which to give error
         """
         ids_by_group = self.getGroupedIDs(assay)
-
         if subset_groups is None:
             subset = ids_by_group
         else:
@@ -244,6 +244,8 @@ class SampleAnnotation:
         for assay in assays:
             if "RNA" in assay:
                 groupedIDs.update(self.rnaIDs)
+            elif "RVC" in assay:
+                groupedIDs.update(self.rnaIDs_RVC)
             elif "DNA" in assay:
                 groupedIDs.update(self.dnaIDs)
             elif "GENE_COUNT" in assay:

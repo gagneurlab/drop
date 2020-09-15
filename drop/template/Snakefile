@@ -17,16 +17,18 @@ include: drop.utils.getWBuildSnakefile()
 include: cfg.AE.getWorkdir() + "/Snakefile"
 include: cfg.AS.getWorkdir() + "/Snakefile"
 include: cfg.MAE.getWorkdir() + "/Snakefile"
+include: cfg.RVC.getWorkdir() + "/Snakefile"
 
 rule all:
     input: 
         rules.aberrantExpression.input,
         rules.aberrantSplicing.input,
         rules.mae.input,
+        rules.rnaVariantCalling.input,
         rules.Index.output,
         rules.aberrantExpression_rulegraph.output,
         rules.aberrantSplicing_rulegraph.output,
-        rules.mae_rulegraph.output
+        rules.mae_rulegraph.output,
 
 rule sampleAnnotation:
     input: cfg.getProcessedDataDir() + "/sample_anno/sample_anno.done"
@@ -34,15 +36,15 @@ rule sampleAnnotation:
 rule exportCounts:
     input:
         cfg.exportCounts.getExportCountFiles("geneCounts"),
-         cfg.exportCounts.getExportCountFiles("splitCounts"),
-         cfg.exportCounts.getExportCountFiles("spliceSiteOverlapCounts"),
-         cfg.getProcessedResultsDir() + "/exported_counts/sample_anno.done"
+        cfg.exportCounts.getExportCountFiles("splitCounts"),
+        cfg.exportCounts.getExportCountFiles("spliceSiteOverlapCounts"),
+        cfg.getProcessedResultsDir() + "/exported_counts/sample_anno.done"
 
 rule dependencyGraph:
     input:
         rules.aberrantExpression_rulegraph.output,
         rules.aberrantSplicing_rulegraph.output,
-        rules.mae_rulegraph.output
+        rules.mae_rulegraph.output,
 
 rule publish_local:
     shell: "rsync -Ort {config[htmlOutputPath]} {config[webDir]}"

@@ -1,5 +1,5 @@
 from .SampleAnnotation import SampleAnnotation
-from .Submodules import AE, AS, MAE
+from .Submodules import AE, AS, MAE,RVC
 from .ExportCounts import ExportCounts
 from drop import utils
 from pathlib import Path
@@ -12,7 +12,7 @@ class DropConfig:
         # global parameters
         "root", "sampleAnnotation", "geneAnnotation", "genomeAssembly", "exportCounts", "tools",
         # modules
-        "aberrantExpression", "aberrantSplicing", "mae"
+        "aberrantExpression", "aberrantSplicing", "mae","rnaVariantCalling"
     ]
     
     def __init__(self, wbuildConfig):
@@ -47,6 +47,7 @@ class DropConfig:
         self.AE = AE(cfg["aberrantExpression"], sa, pd, pr)
         self.AS = AS(cfg["aberrantSplicing"], sa, pd, pr)
         self.MAE = MAE(cfg["mae"], sa, pd, pr)
+        self.RVC = RVC(cfg["rnaVariantCalling"], sa, pd, pr)
 
         self.exportCounts = ExportCounts(
             self.config_dict, self.processedResultsDir,
@@ -58,6 +59,7 @@ class DropConfig:
         utils.setKey(self.config_dict, None, "aberrantExpression", self.AE.dict_)
         utils.setKey(self.config_dict, None, "aberrantSplicing", self.AS.dict_)
         utils.setKey(self.config_dict, None, "mae", self.MAE.dict_)
+        utils.setKey(self.config_dict, None, "rnaVariantCalling", self.RVC.dict_)
 
 
     def setDefaults(self, config_dict):
@@ -81,6 +83,7 @@ class DropConfig:
         setKey(config_dict, None, "aberrantExpression", dict())
         setKey(config_dict, None, "aberrantSplicing", dict())
         setKey(config_dict, None, "mae", dict())
+        setKey(config_dict, None, "rnaVariantCalling", dict())
         setKey(config_dict, None, "exportCounts", dict())
 
         # commandline tools
