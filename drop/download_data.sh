@@ -2,11 +2,11 @@
 set -e
 
 # get data
-resource_url="https://www.cmm.in.tum.de/public/paper/drop_analysis/resource.tar.gz"
+resource_url="https://www.cmm.in.tum.de/public/paper/drop_analysis/resource_rnaVariantCalling.tar.gz"
 wget -nc $resource_url
 if [ ! -d Data ]; then
   rm -rf resource
-	tar -zxvf resource.tar.gz
+	tar -zxvf resource_rnaVariantCalling.tar.gz
 	mv resource Data
 else
     echo "Data directory already exists, is not updated"
@@ -14,7 +14,7 @@ fi
 
 # prepare data
 cd Data
-cp config_relative.yaml ../config.yaml
+cp config_relative_rnaVariantCalling.yaml ../config.yaml
 python fix_sample_anno.py
 
 # unzip fasta
