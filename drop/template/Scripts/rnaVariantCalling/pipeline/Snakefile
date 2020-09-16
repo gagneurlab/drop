@@ -551,7 +551,7 @@ rule reorderBAM:
             gatk CreateSequenceDictionary -R {params.ref} 
         fi
         echo "ReorderSam"
-        gatk ReorderSam -I {input.bam} -O {output.bam} -R {params.ref} -S true --CREATE_INDEX true
+        gatk ReorderSam -I {input.bam} -O {output.bam} --SEQUENCE_DICTIONARY {params.ref_dict} -S true --CREATE_INDEX true
         echo "mv {params.tmp_bai} {output.bai}"
         mv {params.tmp_bai} {output.bai}
         """
