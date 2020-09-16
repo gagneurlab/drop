@@ -523,7 +523,7 @@ rule reorderBAM:
         cfg.processedDataDir, 
         "rnaVariantCalling/out/bam", 
         "{sample}", 
-        "{sample}_Aligned.sortedByCoord.dupMarked.out.bam")
+        "{sample}_Aligned.sortedByCoord.dupMarked.out.bam"),
     output:
         bam = temp(os.path.join(
             cfg.processedDataDir, 
@@ -542,11 +542,17 @@ rule reorderBAM:
             "rnaVariantCalling/out/bam", 
             "{sample}", 
             "{sample}_Aligned.sortedByCoord.dupMarked.FAorder.out.bai"),
-        ref = getGenome()
+        ref = getGenome(),
+        ref_dict = ".".join(getGenome().strip().split('.')[:-1]) + ".dict"
     shell:
         """
-	echo "ReorderSam"
+        echo "Create Sequence Dictionary"
+        if [ ! -f "{params.ref_dict}" ]; then
+            gatk CreateSequenceDictionary -R {params.ref} 
+        fi
+        echo "ReorderSam"
         gatk ReorderSam -I {input.bam} -O {output.bam} -R {params.ref} -S true --CREATE_INDEX true
         echo "mv {params.tmp_bai} {output.bai}"
         mv {params.tmp_bai} {output.bai}
         """
+
