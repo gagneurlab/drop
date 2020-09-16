@@ -545,7 +545,9 @@ rule reorderBAM:
         ref = getGenome()
     shell:
         """
-        set +e
+	echo "ReorderSam"
         picard ReorderSam I={input.bam} O={output.bam} R={params.ref} S=true CREATE_INDEX=TRUE
+	echo "mv file"
+        echo "mv {params.tmp_bai} {output.bai}"
         mv {params.tmp_bai} {output.bai}
         """
