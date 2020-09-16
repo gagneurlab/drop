@@ -324,7 +324,6 @@ rule haplotypeCaller:
         "rnaVariantCalling/out/sample_haplocaller",
         "{sample}",
         "{sample}.g.vcf.gz")
-    priority: 5
     params:
         ref = getGenome(),
         hcArgs = getHaploCallerArgs(),
@@ -358,7 +357,6 @@ rule applyBQSR:
         "rnaVariantCalling/out/bam",
         "{sample}",
         "{sample}_Aligned.sortedByCoord.dupMarked.split.bqsr.out.bam"))
-    priority: 4
     params:
         ref = getGenome(),
         outDir = str(cfg.processedDataDir) + "/rnaVariantCalling"
@@ -385,7 +383,6 @@ rule bqsr:
         cfg.processedDataDir,
         "rnaVariantCalling/out/bqsr",
         "{sample}_recal.table")
-    priority: 3
     params:
         ref = getGenome(),
         known_sites =  ["--known-sites " + i for i in getKnownVCFs()],
@@ -413,7 +410,6 @@ rule splitNcigar:
         "rnaVariantCalling/out/bam", 
         "{sample}", 
         "{sample}_Aligned.sortedByCoord.dupMarked.split.out.bam"))
-    priority: 2
     params:
         ref = getGenome(),
         outDir = str(cfg.processedDataDir) + "/rnaVariantCalling"
@@ -447,7 +443,6 @@ rule markDuplicates:
         "rnaVariantCalling/out/bam", 
         "{sample}", 
         "{sample}_Aligned.sortedByCoord.dupMarked.out.bam"))
-    priority: 1
     params:
         metrics = os.path.join( cfg.processedDataDir, "rnaVariantCalling/out/picard-tools-marked-dup-metrics.txt"),
         outDir = str(cfg.processedDataDir) + "/rnaVariantCalling"
