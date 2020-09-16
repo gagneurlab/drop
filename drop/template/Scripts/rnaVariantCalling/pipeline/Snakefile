@@ -57,18 +57,17 @@ rule masked_singleVCF_filter:
             "rnaVariantCalling/out/sample_haplocaller",
             "{sample}",
             "{sample}.genotyped.filtered.basic" + getMinAlt() +".vcf.gz.tbi")
-    params:
-        repeat_mask = getRepeatMask(),
-        sample = '{sample}',
-        ref = getGenome(),
-        outDir = str(cfg.processedDataDir) + "/rnaVariantCalling/"
     output:
         os.path.join(
             cfg.processedDataDir,
             "rnaVariantCalling/out/sample_haplocaller",
             "{sample}",
             "{sample}.genotyped.filtered.basic" + getMinAlt() +".masked.vcf.gz")
-
+    params:
+        repeat_mask = getRepeatMask(),
+        sample = '{sample}',
+        ref = getGenome(),
+        outDir = str(cfg.processedDataDir) + "/rnaVariantCalling/"
     log:
         str(cfg.processedDataDir) + "/logs/sample_haplocaller/" + "{sample}" + "_maskedFilterVariants.log"
     shell:
@@ -102,7 +101,6 @@ rule basic_singleVCF_filter:
             "rnaVariantCalling/out/sample_haplocaller",
             "{sample}",
             "{sample}.genotyped.filtered.basic" + getMinAlt() +".vcf.gz.tbi"),
-
     params:
         sample = '{sample}',
         minAlt = getMinAlt(),
@@ -150,7 +148,6 @@ rule split_multiVCF:
             "rnaVariantCalling/out/sample_haplocaller",
             "{sample}",
             "{sample}.genotyped.filtered.vcf.gz.tmp"))
-    
     log:
         str(cfg.processedDataDir) + "/logs/sample_haplocaller/{sample}.single_vcf.log"
     shell:
@@ -172,7 +169,6 @@ rule leftNormalVCF:
             cfg.processedDataDir,
             "rnaVariantCalling/out/all_samples_haplocaller",
             "{dataset}" + "_all_samples.genotyped.filtered.split.vcf.gz")
-
     output:
         os.path.join(
             cfg.processedDataDir,
@@ -180,7 +176,6 @@ rule leftNormalVCF:
             "{dataset}_all_samples.genotyped.filtered_clean.vcf.gz")
     params:
         ref = getGenome()
-
     shell:
         """ 
         bcftools norm -f {params.ref} {input} | bgzip -c > {output}
@@ -205,7 +200,6 @@ rule splitVCF:
                 cfg.processedDataDir,
                 "rnaVariantCalling/tmp/",
                 "{dataset}" + "_DELETE_ME"))
-
     shell: 
         """
         bcftools norm -m-both {input} > {output.toDel} 
@@ -332,7 +326,7 @@ rule haplotypeCaller:
         str(cfg.processedDataDir) + "/logs/all_haplocaller/{sample}.log"
     shell:
         """
-        gatk --java-options "-Xmx10G -XX:MaxDirectMemorySize=32G -Djava.io.tmpdir={params.outDir}/tmp" HaplotypeCaller -R {params.ref} -I {input.bam} \
+        gatk --java-options "-Djava.io.tmpdir={params.outDir}/tmp" HaplotypeCaller -R {params.ref} -I {input.bam} \
         --dont-use-soft-clipped-bases -stand-call-conf 20.0 \
         --output-mode EMIT_ALL_CONFIDENT_SITES \
         -ERC GVCF {params.hcArgs} -O {output} 2> {log}
@@ -364,7 +358,7 @@ rule applyBQSR:
         str(cfg.processedDataDir) + "/logs/applyBQSR/{sample}.log"
     shell:
         """
-        gatk --java-options "-Xmx80G -XX:MaxDirectMemorySize=64G -Djava.io.tmpdir={params.outDir}/tmp" ApplyBQSR  \
+        gatk --java-options "-Djava.io.tmpdir={params.outDir}/tmp" ApplyBQSR  \
         -R {params.ref} -I {input.bam} --bqsr-recal-file {input.table} \
         --add-output-sam-program-record --use-original-qualities -O {output} 2> {log}
         """
@@ -417,7 +411,7 @@ rule splitNcigar:
         str(cfg.processedDataDir) + "/logs/splitNcigar/{sample}.log"
     shell:
         """
-        gatk --java-options "-Xmx32G -XX:MaxDirectMemorySize=40G -Djava.io.tmpdir={params.outDir}/tmp" SplitNCigarReads \
+        gatk --java-options "-Djava.io.tmpdir={params.outDir}/tmp" SplitNCigarReads \
         -R {params.ref} -I {input.bam} -fixNDN \
         -O {output} 2> {log}
         #-RMQT 60 -U ALLOW_N_CIGAR_READS --allow_potentially_misencoded_quality_scores 2> {log}
@@ -451,7 +445,7 @@ rule markDuplicates:
     shell:
         """
         echo {input.bam}
-        gatk --java-options "-Xmx16G -XX:MaxDirectMemorySize=32G" MarkDuplicates -I {input.bam} -O {output} \
+        gatk MarkDuplicates -I {input.bam} -O {output} \
         -M {params.metrics} --CREATE_INDEX true \
         --TMP_DIR "{params.outDir}/tmp" \
         --VALIDATION_STRINGENCY SILENT 2> {log}
