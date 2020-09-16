@@ -1,8 +1,11 @@
 #########
 # Helper Functions
 # #######
-def getGenome():
-    return config["genome"]
+def getGenome(keep_ext = True):
+    if keep_ext:
+        return config["genome"]
+    else:
+        return ".".join(config["genome"].strip().split('.')[:-1])
 
 def getKnownVCFs():
     knownVCFs = []
@@ -543,7 +546,7 @@ rule reorderBAM:
             "{sample}", 
             "{sample}_Aligned.sortedByCoord.dupMarked.FAorder.out.bai"),
         ref = getGenome(),
-        ref_dict = ".".join(getGenome().strip().split('.')[:-1]) + ".dict"
+        ref_dict = getGenome(keep_ext =False) + ".dict" # remove me for gatk 4.0.4.0
     shell:
         """
         echo "Create Sequence Dictionary"
@@ -551,7 +554,8 @@ rule reorderBAM:
             gatk CreateSequenceDictionary -R {params.ref} 
         fi
         echo "ReorderSam"
-        gatk ReorderSam -I {input.bam} -O {output.bam} --SEQUENCE_DICTIONARY {params.ref_dict} -S true --CREATE_INDEX true
+        gatk ReorderSam -I {input.bam} -O {output.bam} --SEQUENCE_DICTIONARY {params.ref_dict} -S true --CREATE_INDEX true # remove me for gatk4.0.4.0
+        #gatk ReorderSam -I {input.bam} -O {output.bam} -R {params.ref} -S true --CREATE_INDEX true #use for gatk 4.0.4.0
         echo "mv {params.tmp_bai} {output.bai}"
         mv {params.tmp_bai} {output.bai}
         """
