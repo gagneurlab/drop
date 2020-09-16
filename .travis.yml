@@ -39,5 +39,9 @@ script:
   - cd drop_demo
   - drop demo
   - snakemake -n
+  - snakemake aberrantExpression --jobs 2 --cores 2
+  - snakemake aberrantSplicing --jobs 2 --cores 2
+  - snakemake mae --jobs 2 --cores 2
+  - snakemake rnaVariantCalling --jobs 2 --cores 2
   - snakemake --jobs 2 --cores 2
   - snakemake exportCounts --cores 2
