@@ -420,105 +420,6 @@ rule splitNcigar:
         #-RMQT 60 -U ALLOW_N_CIGAR_READS --allow_potentially_misencoded_quality_scores 2> {log}
         """
 
-
-#Using GATK markDuplicates attempt to identify reads that are technical duplicates of biological reads. Attempts to eliminate noise introduced by library prep
-rule markDuplicates:
-    input:
-        bam = os.path.join(
-            cfg.processedDataDir, 
-            "rnaVariantCalling/out/bam", 
-            "{sample}", 
-            "{sample}_Aligned.sortedByCoord.out.bam"),
-        bai = os.path.join(
-            cfg.processedDataDir, 
-            "rnaVariantCalling/out/bam", 
-            "{sample}", 
-            "{sample}_Aligned.sortedByCoord.out.bam.bai")
-    output:
-        temp(os.path.join(
-        cfg.processedDataDir, 
-        "rnaVariantCalling/out/bam", 
-        "{sample}", 
-        "{sample}_Aligned.sortedByCoord.dupMarked.out.bam"))
-    params:
-        metrics = os.path.join( cfg.processedDataDir, "rnaVariantCalling/out/picard-tools-marked-dup-metrics.txt"),
-        outDir = str(cfg.processedDataDir) + "/rnaVariantCalling"
-    log:
-        str(cfg.processedDataDir) + "/logs/markDuplicates/{sample}.log"
-    shell:
-        """
-        echo {input.bam}
-        gatk MarkDuplicates -I {input.bam} -O {output} \
-        -M {params.metrics} --CREATE_INDEX true \
-        --TMP_DIR "{params.outDir}/tmp" \
-        --VALIDATION_STRINGENCY SILENT 2> {log}
-        """
-
-
-#Using samtools sort the reads based on their chromosomal coordinates
-rule sortBam:
-    input:
-        bam = str(cfg.processedDataDir) + "/bam_file_links/{sample}.bam",
-        bai = str(cfg.processedDataDir) + "/bam_file_links/{sample}.bam.bai"
-    output:
-        bam = temp(os.path.join(
-            cfg.processedDataDir, 
-            "rnaVariantCalling/out/bam", 
-            "{sample}", 
-            "{sample}_Aligned.sortedByCoord.out.bam")),
-        bai = temp(os.path.join(
-            cfg.processedDataDir, 
-            "rnaVariantCalling/out/bam", 
-            "{sample}", 
-            "{sample}_Aligned.sortedByCoord.out.bam.bai"))
-    log:
-        str(cfg.processedDataDir) + "/logs/sortBam/{sample}.log"
-
-    shell:
-        """
-        samtools sort {input.bam} -O BAM -o {output.bam} &> {log}
-        samtools index -b {output.bam}
-        """
-
-#Using samtools index the bam files if they are not already indexed, and create a soft link to the working directory for easier access
-rule indexReads:
-    input:
-        lambda wildcards: sa.getFilePath(wildcards.sample, "RNA_BAM_FILE")
-    output:
-        bam = str(cfg.processedDataDir) + "/bam_file_links/{sample}.bam",
-        bai = str(cfg.processedDataDir) + "/bam_file_links/{sample}.bam.bai"
-    log:
-        str(cfg.processedDataDir) + "/logs/indexReads/{sample}.log"
-    shell:
-        """
-        if [ ! -f "{input}.bai" ]; then
-            samtools index -b {input} 2> {log}
-        fi
-        ln -s {input} {output.bam}
-        ln -s "{input}.bai" {output.bai}
-        """
-
-
-# MUST UNCOMMENT indexReads
-#rule readGroups:
-#    input:
-#        lambda wildcards: sa.getFilePath(wildcards.sample, "RNA_BAM_FILE")
-#    output:
-#        bam = str(cfg.processedDataDir) + "/bam_file_links/{sample}.bam",
-#        bai = str(cfg.processedDataDir) + "/bam_file_links/{sample}.bam.bai"
-#    params:
-#        sample = "{sample}" ,
-#        tmp_bai = str(cfg.processedDataDir) + "/bam_file_links/{sample}.bai"
-#    log:
-#        str(cfg.processedDataDir) + "/logs/readGroups/{sample}.log"
-#    shell:
-#        """
-#        picard AddOrReplaceReadGroups I={input} O={output.bam} SORT_ORDER=coordinate \
-#            RGID=1 RGLB="BONN" RGPL=unknown RGPU=unit1 RGSM={params.sample} CREATE_INDEX=True &> {log}
-#        mv {params.tmp_bai} {output.bai}
-#        #"""
-
-
 # Using picard ReorderSam the bam files so that they match the reference genome order.
 rule reorderBAM:
     input:
@@ -559,4 +460,174 @@ rule reorderBAM:
         echo "mv {params.tmp_bai} {output.bai}"
         mv {params.tmp_bai} {output.bai}
         """
+
+#Using GATK markDuplicates attempt to identify reads that are technical duplicates of biological reads. Attempts to eliminate noise introduced by library prep
+rule markDuplicates:
+    input:
+        bam = os.path.join(
+            cfg.processedDataDir, 
+            "rnaVariantCalling/out/bam", 
+            "{sample}", 
+            "{sample}_Aligned.sortedByCoord.out.bam"),
+        bai = os.path.join(
+            cfg.processedDataDir, 
+            "rnaVariantCalling/out/bam", 
+            "{sample}", 
+            "{sample}_Aligned.sortedByCoord.out.bam.bai")
+    output:
+        temp(os.path.join(
+        cfg.processedDataDir, 
+        "rnaVariantCalling/out/bam", 
+        "{sample}", 
+        "{sample}_Aligned.sortedByCoord.dupMarked.out.bam"))
+    params:
+        metrics = os.path.join( cfg.processedDataDir, "rnaVariantCalling/out/picard-tools-marked-dup-metrics.txt"),
+        outDir = str(cfg.processedDataDir) + "/rnaVariantCalling"
+    log:
+        str(cfg.processedDataDir) + "/logs/markDuplicates/{sample}.log"
+    shell:
+        """
+        echo {input.bam}
+        gatk MarkDuplicates -I {input.bam} -O {output} \
+        -M {params.metrics} --CREATE_INDEX true \
+        --TMP_DIR "{params.outDir}/tmp" \
+        --VALIDATION_STRINGENCY SILENT 2> {log}
+        """
+
+
+#Using samtools sort the reads based on their chromosomal coordinates
+rule sortBam:
+    input:
+        bam = temp(os.path.join(
+            cfg.processedDataDir, 
+            "rnaVariantCalling/out/bam", 
+            "{sample}", 
+            "{sample}_dropHeader.bam")),
+        bai = temp(os.path.join(
+            cfg.processedDataDir, 
+            "rnaVariantCalling/out/bam", 
+            "{sample}", 
+            "{sample}_dropHeader.bam.bai"))
+    output:
+        bam = temp(os.path.join(
+            cfg.processedDataDir, 
+            "rnaVariantCalling/out/bam", 
+            "{sample}", 
+            "{sample}_Aligned.sortedByCoord.out.bam")),
+        bai = temp(os.path.join(
+            cfg.processedDataDir, 
+            "rnaVariantCalling/out/bam", 
+            "{sample}", 
+            "{sample}_Aligned.sortedByCoord.out.bam.bai"))
+    log:
+        str(cfg.processedDataDir) + "/logs/sortBam/{sample}.log"
+
+    shell:
+        """
+        samtools sort {input.bam} -O BAM -o {output.bam} &> {log}
+        samtools index -b {output.bam}
+        """
+
+
+rule changeHeader:
+    input:
+        bam = str(cfg.processedDataDir) + "/bam_file_links/{sample}.bam",
+        bai = str(cfg.processedDataDir) + "/bam_file_links/{sample}.bam.bai"
+    output:
+        bam = os.path.join(
+            cfg.processedDataDir, 
+            "rnaVariantCalling/out/bam", 
+            "{sample}", 
+            "{sample}_dropHeader.bam"),
+        bai = os.path.join(
+            cfg.processedDataDir, 
+            "rnaVariantCalling/out/bam", 
+            "{sample}", 
+            "{sample}_dropHeader.bam.bai"),
+        newHeader = os.path.join(
+            cfg.processedDataDir, 
+            "rnaVariantCalling/out/bam", 
+            "{sample}", 
+            "{sample}_newDropHeader.txt")
+    params:
+        tab = "\\t",
+        newLine = "\\n",
+        sedRef = "\\2"
+    shell:
+        """
+        samtools view -H {input} |grep "^@RG" |grep SM |head -1|
+        while read header ; do
+            {{ for i in $header; do 
+                 if [[ $i == "SM:"* ]]; then 
+                    internalHeader=${{i:3}};
+                    break
+                else
+                   internalHeader="";
+                fi; 
+            done; }}
+
+            if [[ $internalHeader == {wildcards.sample} ]]; then
+                echo "Internal Header $internalHeader matches {wildcards.sample}"
+		ln -s  {input.bam} {output.bam}
+                ln -s  {input.bai} {output.bai}
+                touch {output.newHeader}
+                echo "Done Linking files"
+            else 
+                echo "WARNING"
+                echo "\tInternal Header is designated: $internalHeader";
+                echo "\tSampleID is {wildcards.sample}"
+                echo "\tForcing $internalHeader to match {wildcards.sample}"
+
+               samtools view -H {input.bam} > {output.newHeader}
+               echo 'sed -E -i "s/(SM:[^{params.tab}|{params.newLine}]*)({params.tab}|{params.newLine}*)/SM:{wildcards.sample}{params.sedRef}/" {output.newHeader}'
+               # sed using regEx in place substitiute 'SM:' followed by any thing that isn't tab or newLine. and then replace it with the sampleID and the delimiter (tab or newLine) that matched in the 1st expression.
+               sed -E -i "s/(SM:[^{params.tab}|{params.newLine}]*)({params.tab}|{params.newLine}*)/SM:{wildcards.sample}{params.sedRef}/" {output.newHeader}
+
+               samtools reheader {output.newHeader} {input.bam} > {output.bam}
+
+               samtools index -b {output.bam}
+
+            fi
+        done;
+        """
+
+
+
+#Using samtools index the bam files if they are not already indexed, and create a soft link to the working directory for easier access
+rule indexReads:
+    input:
+        lambda wildcards: sa.getFilePath(wildcards.sample, "RNA_BAM_FILE")
+    output:
+        bam = str(cfg.processedDataDir) + "/bam_file_links/{sample}.bam",
+        bai = str(cfg.processedDataDir) + "/bam_file_links/{sample}.bam.bai"
+    log:
+        str(cfg.processedDataDir) + "/logs/indexReads/{sample}.log"
+    shell:
+        """
+        if [ ! -f "{input}.bai" ]; then
+            samtools index -b {input} 2> {log}
+        fi
+        ln -s {input} {output.bam}
+        ln -s "{input}.bai" {output.bai}
+        """
+
+# MUST UNCOMMENT indexReads
+#rule readGroups:
+#    input:
+#        lambda wildcards: sa.getFilePath(wildcards.sample, "RNA_BAM_FILE")
+#    output:
+#        bam = str(cfg.processedDataDir) + "/bam_file_links/{sample}.bam",
+#        bai = str(cfg.processedDataDir) + "/bam_file_links/{sample}.bam.bai"
+#    params:
+#        sample = "{sample}" ,
+#        tmp_bai = str(cfg.processedDataDir) + "/bam_file_links/{sample}.bai"
+#    log:
+#        str(cfg.processedDataDir) + "/logs/readGroups/{sample}.log"
+#    shell:
+#        """
+#        picard AddOrReplaceReadGroups I={input} O={output.bam} SORT_ORDER=coordinate \
+#            RGID=1 RGLB="BONN" RGPL=unknown RGPU=unit1 RGSM={params.sample} CREATE_INDEX=True &> {log}
+#        mv {params.tmp_bai} {output.bai}
+#        #"""
+
 
