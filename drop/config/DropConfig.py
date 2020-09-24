@@ -70,11 +70,10 @@ class DropConfig:
         config_dict = utils.checkKeys(config_dict, keys=["htmlOutputPath", "root", "sampleAnnotation"], check_files=True)
         config_dict["geneAnnotation"] = utils.checkKeys(config_dict["geneAnnotation"], keys=None, check_files=True)
 
-        config_dict["indexWithFolderName"] = True
-        config_dict["fileRegex"] = ".*\.R"
         config_dict["wBuildPath"] = utils.getWBuildPath()
         
         setKey = utils.setKey
+        setKey(config_dict, None, "fileRegex", ".*\.(R|md)")
         setKey(config_dict, None, "genomeAssembly", "hg19")
 
         # set submodule dictionaries

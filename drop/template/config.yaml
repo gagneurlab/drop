@@ -1,10 +1,7 @@
 projectTitle: "DROP: Detection of RNA Outliers Pipeline"
 root:             # root directory of all intermediate output
 htmlOutputPath:   # path for HTML rendered reports
-
-# settings for wBuild - do not change
-indexWithFolderName: true
-fileRegex: .*\.R
+indexWithFolderName: true # whether the root base name should be part of the index name
 
 sampleAnnotation: # path to sample annotation (see documenation on how to create it)
 

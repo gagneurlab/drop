@@ -14,7 +14,7 @@ fi
 
 # prepare data
 cd Data
-cp config_relative.yaml ../config.yaml
+cp config_relative_wb1.8.yaml ../config.yaml
 python fix_sample_anno.py
 
 # unzip fasta

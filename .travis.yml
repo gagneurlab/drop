@@ -23,7 +23,7 @@ install:
   - conda activate drop
 
   # install drop
-  - pip uninstall wbuild -y
+  - conda install wbuild=1.7.1
   - pip install -e . -vv
 
 script: 

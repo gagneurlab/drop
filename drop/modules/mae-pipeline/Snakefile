@@ -1,4 +1,20 @@
-WORKDIR = cfg.MAE.getWorkdir(str_=False)
+MAE_WORKDIR = cfg.MAE.getWorkdir(str_=False)
+
+MAE_index_name = "mae-pipeline"
+MAE_index_input, MAE_index_output, MAE_graph_file, _ = createIndexRule(
+    scriptsPath=str(MAE_WORKDIR),
+    index_name=MAE_index_name
+)
+
+rule mae:
+    input: MAE_index_input
+    output: MAE_index_output
+    run: ci(str(MAE_WORKDIR), MAE_index_name)
+
+rule mae_dependency:
+    output: MAE_graph_file
+    shell: "snakemake --rulegraph {MAE_index_output} | dot -Tsvg -Grankdir=TB > {output}"
+
 
 ###### FUNCTIONS ######
 def fasta_dict(fasta_file):
@@ -28,13 +44,8 @@ def getChrMap(WORKDIR , conversion):
         
 ######
 
-rule mae:
-    input:
-        cfg.getHtmlFromScript(WORKDIR / "MAE" / "Datasets.R"),
-        cfg.getHtmlFromScript(WORKDIR / "QC" / "Datasets.R")
-
 rule sampleQC:
-    input: cfg.getHtmlFromScript(WORKDIR / "QC" / "Datasets.R")
+    input: cfg.getHtmlFromScript(MAE_WORKDIR / "QC" / "Datasets.R")
 
 rule create_dict:
     input: config['mae']['genome']
@@ -44,11 +55,11 @@ rule create_dict:
 ## MAE
 rule mae_createSNVs:
     input:
-        ncbi2ucsc = getChrMap(WORKDIR, "ncbi2ucsc"),
-        ucsc2ncbi = getChrMap(WORKDIR, "ucsc2ncbi"),
-        vcf_file  = lambda w: sa.getFilePath(w.vcf, 'DNA_VCF_FILE'),
-        bam_file  = lambda w: sa.getFilePath(w.rna, 'RNA_BAM_FILE'),
-        script    = WORKDIR / "MAE" / "filterSNVs.sh"
+        ncbi2ucsc = getChrMap(MAE_WORKDIR, "ncbi2ucsc"),
+         ucsc2ncbi = getChrMap(MAE_WORKDIR, "ucsc2ncbi"),
+         vcf_file  = lambda w: sa.getFilePath(w.vcf, 'DNA_VCF_FILE'),
+         bam_file  = lambda w: sa.getFilePath(w.rna, 'RNA_BAM_FILE'),
+         script    =MAE_WORKDIR / "MAE" / "filterSNVs.sh"
     output:
         snvs_filename = cfg.processedDataDir / "mae" / "snvs" / "{vcf}--{rna}.vcf.gz",
         snvs_index = cfg.processedDataDir / "mae" / "snvs" / "{vcf}--{rna}.vcf.gz.tbi"
@@ -61,13 +72,13 @@ rule mae_createSNVs:
 
 rule mae_allelicCounts:
     input:
-        ncbi2ucsc = getChrMap(WORKDIR, "ncbi2ucsc"),
-        ucsc2ncbi = getChrMap(WORKDIR, "ucsc2ncbi"),
-        vcf_file  = lambda w: getVcf(w.rna, w.vcf),
-        bam_file  = lambda w: sa.getFilePath(w.rna, 'RNA_BAM_FILE'),
-        fasta     = config['mae']['genome'],
-        dict      = fasta_dict(config['mae']['genome']),
-        script    = WORKDIR / "MAE" / "ASEReadCounter.sh"
+        ncbi2ucsc = getChrMap(MAE_WORKDIR, "ncbi2ucsc"),
+         ucsc2ncbi = getChrMap(MAE_WORKDIR, "ucsc2ncbi"),
+         vcf_file  = lambda w: getVcf(w.rna, w.vcf),
+         bam_file  = lambda w: sa.getFilePath(w.rna, 'RNA_BAM_FILE'),
+         fasta     = config['mae']['genome'],
+         dict      = fasta_dict(config['mae']['genome']),
+         script    =MAE_WORKDIR / "MAE" / "ASEReadCounter.sh"
     output:    
         counted = cfg.processedDataDir / "mae" / "allelic_counts" / "{vcf}--{rna}.csv.gz"
     shell:
@@ -80,8 +91,8 @@ rule mae_allelicCounts:
 ## QC
 rule mae_renameChrQC:
     input:
-        ucsc2ncbi = getChrMap(WORKDIR, "ucsc2ncbi"),
-        ncbi_vcf = getQC(format="UCSC")
+        ucsc2ncbi = getChrMap(MAE_WORKDIR, "ucsc2ncbi"),
+         ncbi_vcf = getQC(format="UCSC")
     output:
         ncbi_vcf = getQC(format="NCBI")
     shell:
@@ -95,15 +106,15 @@ rule mae_renameChrQC:
 
 rule mae_allelicCountsQC:
     input:
-        ncbi2ucsc = getChrMap(WORKDIR, "ncbi2ucsc"),
-        ucsc2ncbi = getChrMap(WORKDIR, "ucsc2ncbi"),
-        vcf_file_ucsc = getQC(format="UCSC"),
-        vcf_file_ncbi = getQC(format="NCBI"),
-        bam_file      = lambda w: sa.getFilePath(w.rna, 'RNA_BAM_FILE'),
-        fasta         = config['mae']['genome'],
-        dict          = fasta_dict(config['mae']['genome']),
-        script_qc = WORKDIR / "QC" / "ASEReadCounter.sh",
-        script_mae = WORKDIR / "MAE" / "ASEReadCounter.sh"
+        ncbi2ucsc = getChrMap(MAE_WORKDIR, "ncbi2ucsc"),
+         ucsc2ncbi = getChrMap(MAE_WORKDIR, "ucsc2ncbi"),
+         vcf_file_ucsc = getQC(format="UCSC"),
+         vcf_file_ncbi = getQC(format="NCBI"),
+         bam_file      = lambda w: sa.getFilePath(w.rna, 'RNA_BAM_FILE'),
+         fasta         = config['mae']['genome'],
+         dict          = fasta_dict(config['mae']['genome']),
+         script_qc =MAE_WORKDIR / "QC" / "ASEReadCounter.sh",
+         script_mae =MAE_WORKDIR / "MAE" / "ASEReadCounter.sh"
     output:    
         counted = cfg.processedDataDir / "mae" / "allelic_counts" / "qc_{rna}.csv.gz"
     shell:
@@ -113,16 +124,4 @@ rule mae_allelicCountsQC:
         {wildcards.rna} {input.fasta} {config[mae][gatkIgnoreHeaderCheck]} \
         {output.counted} {config[tools][bcftoolsCmd]} \
         {config[tools][samtoolsCmd]} {input.script_mae}
-        """
-
-####
-rulegraph_filename = f'{config["htmlOutputPath"]}/MAE_rulegraph'
-rule mae_rulegraph:
-    output:
-        svg = f"{rulegraph_filename}.svg",
-        png = f"{rulegraph_filename}.png"
-    shell:
-        """
-        snakemake mae --rulegraph | dot -Tsvg > {output.svg}
-        snakemake mae --rulegraph | dot -Tpng > {output.png}
         """

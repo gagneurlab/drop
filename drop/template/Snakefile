@@ -1,6 +1,7 @@
 from pathlib import Path
 import drop
 import wbuild
+from wbuild.createIndex import createIndexRule, ci
 
 drop.installRPackages()
 configfile: "config.yaml"
@@ -20,13 +21,15 @@ include: cfg.MAE.getWorkdir() + "/Snakefile"
 
 rule all:
     input: 
-        rules.aberrantExpression.input,
-        rules.aberrantSplicing.input,
-        rules.mae.input,
+        rules.aberrantExpression.output,
+        rules.aberrantSplicing.output,
+        rules.mae.output,
         rules.Index.output,
-        rules.aberrantExpression_rulegraph.output,
-        rules.aberrantSplicing_rulegraph.output,
-        rules.mae_rulegraph.output
+        dep_graph = cfg.get("htmlOutputPath") + "/dependency.done"
+    shell:
+        """
+        rm {input.dep_graph}
+        """
 
 rule sampleAnnotation:
     input: cfg.getProcessedDataDir() + "/sample_anno/sample_anno.done"
@@ -40,9 +43,11 @@ rule exportCounts:
 
 rule dependencyGraph:
     input:
-        rules.aberrantExpression_rulegraph.output,
-        rules.aberrantSplicing_rulegraph.output,
-        rules.mae_rulegraph.output
+        rules.aberrantExpression_dependency.output,
+        rules.aberrantSplicing_dependency.output,
+        rules.mae_dependency.output
+    output: touch(cfg.get("htmlOutputPath") + "/dependency.done")
+    priority: 1
 
 rule publish_local:
     shell: "rsync -Ort {config[htmlOutputPath]} {config[webDir]}"

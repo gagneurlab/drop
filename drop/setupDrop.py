@@ -18,7 +18,6 @@ def setupPaths(projectRoot):
         "projectDir": projectRoot,
         "Scripts": projectRoot / "Scripts",
         "dropDir": projectRoot / ".drop",
-        "modules": projectRoot / ".drop" / "modules",
         "tmpDir": projectRoot / ".drop" / "tmp"
     }
 

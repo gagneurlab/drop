@@ -39,8 +39,7 @@ Parameter            Type        Description                                    
 ===================  ==========  =======================================================================================================================================  ======
 projectTitle         character   Title of the project to be displayed on the rendered HTML output                                                                         ``Project 1``
 htmlOutputPath       character   Full path of the folder where the HTML files are rendered                                                                                ``/data/project1/htmlOutput``
-indexWithFolderName  boolean     variable needed for wBuild, do not edit it                                                                                               ``true``
-fileRegex            character   variable needed for wBuild, do not edit it                                                                                               ``.*\.R``
+indexWithFolderName  boolean     If true, the basename of the project directory will be used as prefix for the index.html file                                            ``true``
 genomeAssembly       character   Either hg19 or hg38, depending on the genome assembly used for mapping                                                                   ``/data/project1``
 sampleAnnotation     character   Full path of the sample annotation table                                                                                                 ``/data/project1/sample_annotation.tsv``
 root                 character   Full path of the folder where the subdirectories processed_data and processed_results will be created containing DROP's output files.    ``/data/project1``
