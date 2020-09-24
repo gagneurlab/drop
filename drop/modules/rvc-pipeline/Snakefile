@@ -91,7 +91,7 @@ rule sortIndexRepeatMask:
         sorted_index = getRepeatMask(sortedName = True) + ".idx"
     shell:
         """
-        bedtools sort -i {input.repeat_mask} > {output.sorted_repeat_mask}
+        sort -k1,2 -V {input.repeat_mask} > {output.sorted_repeat_mask}
         gatk IndexFeatureFile -I {output.sorted_repeat_mask}
         """
 
