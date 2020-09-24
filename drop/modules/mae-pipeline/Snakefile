@@ -37,8 +37,8 @@ rule sampleQC:
     input: cfg.getHtmlFromScript(WORKDIR / "QC" / "Datasets.R")
 
 rule create_dict:
-    input: config['mae']['genome']
-    output: fasta_dict(config['mae']['genome'])
+    input: config['genome']
+    output: fasta_dict(config['genome'])
     shell: "gatk CreateSequenceDictionary --REFERENCE {input[0]}"
         
 ## MAE
@@ -65,8 +65,8 @@ rule mae_allelicCounts:
         ucsc2ncbi = getChrMap(WORKDIR, "ucsc2ncbi"),
         vcf_file  = lambda w: getVcf(w.rna, w.vcf),
         bam_file  = lambda w: sa.getFilePath(w.rna, 'RNA_BAM_FILE'),
-        fasta     = config['mae']['genome'],
-        dict      = fasta_dict(config['mae']['genome']),
+        fasta     = config['genome'],
+        dict      = fasta_dict(config['genome']),
         script    = WORKDIR / "MAE" / "ASEReadCounter.sh"
     output:    
         counted = cfg.processedDataDir / "mae" / "allelic_counts" / "{vcf}--{rna}.csv.gz"
@@ -100,8 +100,8 @@ rule mae_allelicCountsQC:
         vcf_file_ucsc = getQC(format="UCSC"),
         vcf_file_ncbi = getQC(format="NCBI"),
         bam_file      = lambda w: sa.getFilePath(w.rna, 'RNA_BAM_FILE'),
-        fasta         = config['mae']['genome'],
-        dict          = fasta_dict(config['mae']['genome']),
+        fasta         = config['genome'],
+        dict          = fasta_dict(config['genome']),
         script_qc = WORKDIR / "QC" / "ASEReadCounter.sh",
         script_mae = WORKDIR / "MAE" / "ASEReadCounter.sh"
     output:    

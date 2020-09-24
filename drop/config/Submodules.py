@@ -102,7 +102,7 @@ class MAE(Submodule):
     def __init__(self, config, sampleAnnotation, processedDataDir, processedResultsDir):
         super().__init__(config, sampleAnnotation, processedDataDir, processedResultsDir)
         self.CONFIG_KEYS = [
-            "groups", "genome", "qcVcf", "qcGroups", "gatkIgnoreHeaderCheck", "padjCutoff",
+            "groups",  "qcVcf", "qcGroups", "gatkIgnoreHeaderCheck", "padjCutoff",
             "allelicRatioCutoff", "maxAF", "gnomAD"
         ]
         self.name = "MonoallelicExpression"
@@ -112,7 +112,7 @@ class MAE(Submodule):
     def setDefaultKeys(self, dict_):
         super().setDefaultKeys(dict_)
         setKey = utils.setKey
-        dict_ = utils.checkKeys(dict_, keys=["genome", "qcVcf"], check_files=True)
+        dict_ = utils.checkKeys(dict_, keys=["qcVcf"], check_files=True)
         groups = setKey(dict_, None, "groups", self.sa.getGroups(assay="DNA"))
         setKey(dict_, None, "qcGroups", groups)
         setKey(dict_, None, "gatkIgnoreHeaderCheck", True)

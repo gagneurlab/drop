@@ -15,8 +15,12 @@ def getKnownVCFs():
 def getHaploCallerArgs():
     return cfg.config_dict["rnaVariantCalling"]["hcArgs"]
 
-def getRepeatMask():
-    return cfg.config_dict["rnaVariantCalling"]["repeat_mask"]
+def getRepeatMask(sortedName=False):
+    if sortedName:
+        ext = cfg.config_dict["rnaVariantCalling"]["repeat_mask"].strip().split('.')[-1] 
+        return ".".join(cfg.config_dict["rnaVariantCalling"]["repeat_mask"].strip().split('.')[:-1]) + "_sorted." + ext
+    else:
+        return cfg.config_dict["rnaVariantCalling"]["repeat_mask"]
 
 def getMinAlt():
     return str(cfg.config_dict["rnaVariantCalling"]["minAlt"])
@@ -59,7 +63,8 @@ rule masked_singleVCF_filter:
             cfg.processedDataDir,
             "rnaVariantCalling/out/sample_haplocaller",
             "{sample}",
-            "{sample}.genotyped.filtered.basic" + getMinAlt() +".vcf.gz.tbi")
+            "{sample}.genotyped.filtered.basic" + getMinAlt() +".vcf.gz.tbi"),
+        repeat_mask = getRepeatMask(sortedName = True)
     output:
         os.path.join(
             cfg.processedDataDir,
@@ -67,7 +72,6 @@ rule masked_singleVCF_filter:
             "{sample}",
             "{sample}.genotyped.filtered.basic" + getMinAlt() +".masked.vcf.gz")
     params:
-        repeat_mask = getRepeatMask(),
         sample = '{sample}',
         ref = getGenome(),
         outDir = str(cfg.processedDataDir) + "/rnaVariantCalling/"
@@ -76,9 +80,20 @@ rule masked_singleVCF_filter:
     shell:
         """
         gatk --java-options "-Djava.io.tmpdir={params.outDir}/tmp" VariantFiltration -R {params.ref} \
-        -V {input.vcf} --mask {params.repeat_mask} -O {output} 2> {log}
+        -V {input.vcf} --mask {input.repeat_mask} -O {output} 2> {log}
         """
 
+rule sortIndexRepeatMask:
+    input:
+        repeat_mask = getRepeatMask()
+    output:
+        sorted_repeat_mask = getRepeatMask(sortedName = True),
+        sorted_index = getRepeatMask(sortedName = True) + ".idx"
+    shell:
+        """
+        bedtools sort -i {input.repeat_mask} > {output.sorted_repeat_mask}
+        gatk IndexFeatureFile -I {output.sorted_repeat_mask}
+        """
 
 #Use the minAlt value to filter/label variants that do not have a minimum alternative read support
 rule basic_singleVCF_filter:
