@@ -54,6 +54,7 @@ Subworkflow                Description
 ``aberrantExpression``     Aberrant expression pipeline
 ``aberrantSplicing``       Aberrant splicing pipeline
 ``mae``                    Monoalleic expression pipeline
+``rnaVariantCalling``      RNA Variant Calling pipeline
 ========================  =======================================================================
 
 An example for calling the aberrant expression pipeline with 10 cores would be 

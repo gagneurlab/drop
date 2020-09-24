@@ -44,6 +44,7 @@ fileRegex            character   variable needed for wBuild, do not edit it     
 genomeAssembly       character   Either hg19 or hg38, depending on the genome assembly used for mapping                                                                   ``/data/project1``
 sampleAnnotation     character   Full path of the sample annotation table                                                                                                 ``/data/project1/sample_annotation.tsv``
 root                 character   Full path of the folder where the subdirectories processed_data and processed_results will be created containing DROP's output files.    ``/data/project1``
+genome               character   Full path of a human reference genome fasta file                                                                                         ``/path/to/hg19.fa``
 geneAnnotation       dictionary  A key-value list of the annotation name (key) and the full path to the GTF file (value). More than one annotation file can be provided.  ``anno1: /path/to/gtf1.gtf``
 
                                                                                                                                                                           ``anno2: /path/to/gtf2.gtf``
@@ -110,7 +111,6 @@ Mono-allelic expression dictionary
 Parameter              Type       Description                                                                                                               Default/Examples
 =====================  =========  ========================================================================================================================  ======
 groups                 list       Same as in aberrant expression.                                                                                           ``# see aberrant expression example``
-genome                 character  Full path of a human reference genome fasta file                                                                          ``/path/to/hg19.fa``
 gatkIgnoreHeaderCheck  boolean    If true (recommended), it ignores the header warnings of a VCF file when performing the allelic counts                    ``true``
 padjCutoff             numeric    Same as in aberrant expression.                                                                                           ``0.05``
 allelicRatioCutoff     numeric    A number between [0.5, 1) indicating the maximum allelic ratio allele1/(allele1+allele2) for the test to be significant.  ``0.8``
@@ -120,6 +120,27 @@ maxVarFreqCohort       numeric    Maximum variant frequency among the cohort.   
 qcVcf                  character  Full path to the vcf file used for VCF-BAM matching                                                                       ``/path/to/qc_vcf.vcf.gz``
 qcGroups               list       Same as “groups”, but for the VCF-BAM matching                                                                            ``# see aberrant expression example``
 =====================  =========  ========================================================================================================================  ======
+
+
+RNA Variant Calling dictionary
+++++++++++++++++++++++++++++++++++
+The RNA variant calling process uses information from multiple samples (as designated by the ``groups`` variable) to improve the variant calling process. However the larger the group size the more costly the computation is in terms of time and resources. When building the sample annotation table take this into account. For the most accurate variant calls include many samples in each ``RNA_VARIANT_GROUP``, but in order to speed up computation, separate samples into many groups.
+
+=====================  =========  =====================================================================================================================================================================  =========
+Parameter              Type       Description                                                                                                                                                                    Default/Examples
+=====================  =========  =====================================================================================================================================================================  =========
+groups                 list       RNA_VARIANT groups that should be executed in this module. If not specified or ``null`` all groups are used.                                                           ``- group1``
+                                                                                                                                                                                                         ``- group2``
+
+knownVCFs              list       Filepaths where each item in the list is path to a vcf file. Each vcf file describes known variants. We recommend using dbSNP as well as resources described by GATK.  ``- dbSNP.vcf``
+                                                                                                                                                                                                         ``- known_SNPs.vcf``
+                                                                                                                                                                                                         ``- known_indels.vcf``
+
+repeat_mask            character  Location of the RepeatMask .bed file.                                                                                                                                  ``path/to/RepeatMask.bed``
+minAlt                 numeric    Integer describing the minimum required reads that support the alternative allele. We recommend using a minimum of 3 if further filtering on your own. 10 otherwise.   ``3`` 
+hcArgs                 character  String describing additional arguments for GATK haplocaller. For expert tuning.                                                                                        ``""``
+
+=====================  =========  =====================================================================================================================================================================  =========
 
 
 Creating the sample annotation table

@@ -159,7 +159,7 @@ class RVC(Submodule):
             "groups","KGsnps", "millsIndels", "dbSNP","repeat_mask","hcArgs","minAlt"
         ]
         self.name = "rnaVariantCalling"
-        self.rnaIDs = self.sa.subsetGroups(self.groups, assay="RVC",error =2, warn = 10)
+        self.rnaIDs = self.sa.subsetGroups(self.groups, assay="RVC",error =1, warn = 10)
         self.batchIDs = self.setBatchDict()
 
     def setBatchDict(self):

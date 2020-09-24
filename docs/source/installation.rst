@@ -115,7 +115,7 @@ Alternatively, DROP can be installed without ``conda``. In this case the followi
 
     * `bcftools <https://github.com/samtools/bcftools>`_ >= 1.7
 
-    * `GATK <https://software.broadinstitute.org/gatk/>`_ >= 4.0.4
+    * `GATK <https://software.broadinstitute.org/gatk/>`_ >= 4.1.8
 
     * `graphviz <https://www.graphviz.org/>`_
 
