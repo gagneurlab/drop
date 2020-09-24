@@ -130,10 +130,14 @@ The RNA variant calling process uses information from multiple samples (as desig
 Parameter              Type       Description                                                                                                                                                                    Default/Examples
 =====================  =========  =====================================================================================================================================================================  =========
 groups                 list       RNA_VARIANT groups that should be executed in this module. If not specified or ``null`` all groups are used.                                                           ``- group1``
+
+
                                                                                                                                                                                                          ``- group2``
 
 knownVCFs              list       Filepaths where each item in the list is path to a vcf file. Each vcf file describes known variants. We recommend using dbSNP as well as resources described by GATK.  ``- dbSNP.vcf``
+
                                                                                                                                                                                                          ``- known_SNPs.vcf``
+
                                                                                                                                                                                                          ``- known_indels.vcf``
 
 repeat_mask            character  Location of the RepeatMask .bed file.                                                                                                                                  ``path/to/RepeatMask.bed``
