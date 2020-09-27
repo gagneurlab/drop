@@ -13,6 +13,17 @@ requirements = [
     'pandas>=0.13',
 ]
 
+setup_requirements = [
+    'pytest-runner',
+    'pyyaml>=4.2b1'
+]
+
+test_requirements = [
+    'pytest',
+    'pytest-testdirectory',
+    'pytest-icdiff'
+]
+
 extra_files = []
 for (path, directories, filenames) in os.walk('drop/'):
     directories[:] = [d for d in directories if not (d.startswith('.') or d == 'Data')]
@@ -34,7 +45,10 @@ setuptools.setup(
     entry_points={'console_scripts': ['drop=drop.cli:main']},
     package_data={'drop': extra_files},
     include_package_data=True,
-    install_requires=requirements
+    install_requires=requirements,
+    test_suite='tests',
+    tests_require=test_requirements,
+    setup_requires=setup_requirements,
 )
 
 

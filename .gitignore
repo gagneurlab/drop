@@ -9,6 +9,7 @@ Output/
 .ipynb_checkpoints*
 __pycache__*
 *.egg-info*
+.eggs*
 dist/*
 
 # typical latex tmp files
