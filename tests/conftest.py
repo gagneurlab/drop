@@ -12,7 +12,6 @@ def demo_dir(tmpdir_factory):
     """
     run_dir = tmpdir_factory.mktemp("demo_dir")
     print(f"\n create demo dir: {run_dir}")
-    #exit, stdout, stderr, mix = run(["drop", "demo"], run_dir)
     r = run(["drop", "demo"], run_dir)
     assert 'demo project created' in r.stderr
     yield run_dir
