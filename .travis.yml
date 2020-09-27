@@ -24,6 +24,7 @@ install:
 
   # install drop
   - pip uninstall wbuild -y
+  - pip install -r requirements_test.txt
   - pip install -e . -vv
 
 script: 
@@ -36,10 +37,3 @@ script:
   - python --version
 
   - pytest -v
-  
-  - mkdir drop_demo
-  - cd drop_demo
-  - drop demo
-  - snakemake -n
-  - snakemake --jobs 2 --cores 2
-  - snakemake exportCounts --cores 2

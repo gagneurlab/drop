@@ -13,14 +13,13 @@ def test_Help_isShown():
     help_result = runner.invoke(cli.main, ['--help'])
     assert help_result.exit_code == 0
     assert '--help' in help_result.output
-    print(help_result.output)
     assert 'Show this message and exit.' in help_result.output
 
 
 def test_drop_init(tmpdir):
     init_dir = tmpdir.mkdir("init")
     r = run(["drop", "init"], dir_path=init_dir)
-    assert 'init...done\n' == r.stderr
+    assert 'init...done\n' in r.stderr
 
 
 def test_dryrun(demo_dir):
@@ -42,3 +41,7 @@ def test_MAE(demo_dir):
     r = run(["snakemake", "mae", f"-j{cores}"], demo_dir)
     assert "Finished job 0." in r.stderr
 
+
+def test_export(demo_dir):
+    r = run(["snakemake", "exportCounts", f"-j{cores}"], demo_dir)
+    assert "Finished job 0." in r.stderr

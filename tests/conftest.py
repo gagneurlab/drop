@@ -28,7 +28,11 @@ def run(cmd, dir_path, **kwargs):
         universal_newlines=True,
         **kwargs
     )
-    response.check_returncode()
+    try:
+        response.check_returncode()
+    except subprocess.CalledProcessError:
+        print(response.stderr)
+        raise
     return response
 
 
