@@ -1,9 +1,6 @@
-{% set name = "drop" %}
-{% set version = "0.9.1" %}
-
 package:
-  name: "{{ name|lower }}"
-  version: "{{ version }}"
+  name: "drop_travis"
+  version: "0.9.2"
 
 source:
   path: ..
@@ -19,7 +16,7 @@ requirements:
   host:
     - python >=3.6
     - pip
-    - wbuild >=1.7.0
+    - wbuild =1.7.0
 
   run:
     - python >=3.6
@@ -30,7 +27,7 @@ requirements:
 
     # snakemake/wbuild
     - snakemake >=5.5.2
-    - wbuild >=1.7.0
+    - wbuild =1.7.0
     - pandoc
     - graphviz
 

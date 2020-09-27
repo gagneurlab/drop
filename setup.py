@@ -6,7 +6,7 @@ with open("README.md", "r") as fh:
     long_description = fh.read()
 
 requirements = [
-    'wbuild>=1.7.0',
+    'wbuild==1.7.0',
     'python-dateutil',
     'pandoc',
     'graphviz',
@@ -23,7 +23,7 @@ for (path, directories, filenames) in os.walk('drop/'):
 
 setuptools.setup(
     name="drop",
-    version="0.9.1",
+    version="0.9.2",
     author="Michaela Müller, Daniela Andrade Salazar, Vicente Yepez",
     author_email="mumichae@in.tum.de",
     description="Detection of RNA Outlier Pipeline",
