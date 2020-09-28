@@ -34,6 +34,7 @@ script:
   - samtools --version
   - bcftools --version
   - drop --version
+  - wbuild --version
   - python --version
 
-  - pytest -v
+  - pytest -vv -s

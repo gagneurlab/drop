@@ -1,7 +1,9 @@
 import pytest
 import subprocess
 import os
+import logging
 
+LOGGER = logging.getLogger(__name__)
 
 @pytest.yield_fixture(scope="session")
 def demo_dir(tmpdir_factory):
@@ -19,7 +21,7 @@ def demo_dir(tmpdir_factory):
     run_dir.remove()
 
 
-def run(cmd, dir_path, **kwargs):
+def run(cmd, dir_path, report_stdout=True, **kwargs):
     shell = isinstance(cmd, str)
     response = subprocess.run(
         cmd, cwd=dir_path, shell=shell,
@@ -31,10 +33,16 @@ def run(cmd, dir_path, **kwargs):
     try:
         response.check_returncode()
     except subprocess.CalledProcessError:
-        print(response.stderr)
+        if report_stdout:
+            LOGGER.error("Standard out:")
+            LOGGER.error(response.stdout)
+        LOGGER.error(response.stderr)
         raise
     return response
 
+
+def runR(r_cmd, dir_path, report_stdout=False):
+    return run(f"Rscript -e '{r_cmd}'", dir_path, report_stdout=report_stdout)
 
 """
 def run(cmd, dir_path, **kwargs):
