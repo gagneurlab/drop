@@ -7,7 +7,7 @@ AE_index_input, AE_index_output, AE_graph_file, _ = createIndexRule(
 )
 
 rule aberrantExpression:
-    input: AE_index_input
+    input: AE_index_input, AE_graph_file
     output: AE_index_output
     run: ci(str(AE_WORKDIR), AE_index_name)
 

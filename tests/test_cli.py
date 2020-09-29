@@ -18,4 +18,12 @@ def test_drop_init(tmpdir):
     r = run(["drop", "init"], dir_path=init_dir)
     assert 'init...done\n' in r.stderr
 
+
+@pytest.mark.tryfirst
+def test_demo(demo_dir):
+    ls = "\n".join(["config.yaml", "Data", "Output", "readme.md", "resource.tar.gz", "Scripts", "Snakefile\n"])
+    r = run("ls", demo_dir)
+    print(r.stdout)
+    assert ls == r.stdout
+
 # TOOD: test update
