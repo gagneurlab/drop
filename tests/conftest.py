@@ -20,7 +20,6 @@ def demo_dir(tmpdir_factory):
     """
     run_dir = tmpdir_factory.mktemp("demo_dir")
     print(f"\n create demo dir: {run_dir}")
-    run("ln -s /mnt/E4587976587947F6/personal_data/Uni/gagneurlab/test/test/resource.tar.gz .", run_dir)
     run(["drop", "demo"], run_dir, stdout=None)
     yield run_dir
     print("\n remove demo directory")
