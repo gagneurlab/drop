@@ -3,6 +3,7 @@ from snakemake.logging import logger
 from snakemake.io import expand
 from drop import utils
 
+
 class Submodule:
 
     def __init__(self, config, sampleAnnotation, processedDataDir, processedResultsDir):
@@ -13,7 +14,7 @@ class Submodule:
         self.sa = sampleAnnotation
         self.dict_ = self.setDefaultKeys(config)
         self.groups = self.dict_["groups"]
-    
+
     def setDefaultKeys(self, dict_):
         dict_ = {} if dict_ is None else dict_
         return dict_
@@ -26,8 +27,9 @@ class Submodule:
     def getWorkdir(self, str_=True):
         return utils.returnPath(Path("Scripts") / self.name / "pipeline", str_)
 
+
 class AE(Submodule):
-    
+
     def __init__(self, config, sampleAnnotation, processedDataDir, processedResultsDir):
         super().__init__(config, sampleAnnotation, processedDataDir, processedResultsDir)
         self.CONFIG_KEYS = [
@@ -37,7 +39,7 @@ class AE(Submodule):
         self.name = "AberrantExpression"
         self.rnaIDs = self.sa.subsetGroups(self.groups, assay="RNA")
         self.extRnaIDs = self.sa.subsetGroups(self.groups, assay="GENE_COUNTS", warn=0, error=0)
-    
+
     def setDefaultKeys(self, dict_):
         super().setDefaultKeys(dict_)
         setKey = utils.setKey
@@ -70,7 +72,7 @@ class AE(Submodule):
 
 
 class AS(Submodule):
-    
+
     def __init__(self, config, sampleAnnotation, processedDataDir, processedResultsDir):
         super().__init__(config, sampleAnnotation, processedDataDir, processedResultsDir)
         self.CONFIG_KEYS = [
@@ -79,14 +81,14 @@ class AS(Submodule):
         ]
         self.name = "AberrantSplicing"
         self.rnaIDs = self.sa.subsetGroups(self.groups, assay="RNA")
-        
-    
+
     def setDefaultKeys(self, dict_):
         super().setDefaultKeys(dict_)
         setKey = utils.setKey
         setKey(dict_, None, "groups", self.sa.getGroups(assay="RNA"))
         setKey(dict_, None, "recount", False)
         setKey(dict_, None, "longRead", False)
+        setKey(dict_, None, "keepNonStandardChrs", False)
         setKey(dict_, None, "filter", True)
         setKey(dict_, None, "minExpressionInOneSample", 20)
         setKey(dict_, None, "minDeltaPsi", 0)
@@ -96,9 +98,10 @@ class AS(Submodule):
         setKey(dict_, None, "deltaPsiCutoff", 0.05)
         setKey(dict_, None, "maxTestedDimensionProportion", 6)
         return dict_
-    
+
+
 class MAE(Submodule):
-    
+
     def __init__(self, config, sampleAnnotation, processedDataDir, processedResultsDir):
         super().__init__(config, sampleAnnotation, processedDataDir, processedResultsDir)
         self.CONFIG_KEYS = [
@@ -108,7 +111,7 @@ class MAE(Submodule):
         self.name = "MonoallelicExpression"
         self.qcGroups = self.dict_["qcGroups"]
         self.maeIDs = self.createMaeIDS(id_sep='--')
-    
+
     def setDefaultKeys(self, dict_):
         super().setDefaultKeys(dict_)
         setKey = utils.setKey
@@ -119,12 +122,16 @@ class MAE(Submodule):
         setKey(dict_, None, "padjCutoff", .05)
         setKey(dict_, None, "allelicRatioCutoff", 0.8)
         setKey(dict_, None, "maxAF", .001)
+        setKey(dict_, None, "addAF", False)
+        setKey(dict_, None, "maxVarFreqCohort", 0.04)
         setKey(dict_, None, "gnomAD", False)
         return dict_
-    
+
     def createMaeIDS(self, id_sep='--'):
         """
         Create MAE IDs from sample annotation
+        :param id_sep: separator
+        :return: {drop group name : list of MAE IDs per group}
         """
         grouped_rna_ids = self.sa.subsetGroups(self.groups, assay="RNA", warn=1, error=1)
         id_map = self.sa.idMapping
@@ -134,7 +141,7 @@ class MAE(Submodule):
             dna_rna_pairs = zip(subset["DNA_ID"], subset["RNA_ID"])
             mae_ids[gr] = list(map(id_sep.join, dna_rna_pairs))
         return mae_ids
-    
+
     def getMaeByGroup(self, group):
         if not isinstance(group, str):
             group = list(group)[0]

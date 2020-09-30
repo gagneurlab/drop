@@ -7,7 +7,7 @@ MAE_index_input, MAE_index_output, MAE_graph_file, _ = createIndexRule(
 )
 
 rule mae:
-    input: MAE_index_input
+    input: MAE_index_input, MAE_graph_file
     output: MAE_index_output
     run: ci(str(MAE_WORKDIR), MAE_index_name)
 

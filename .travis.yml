@@ -23,7 +23,8 @@ install:
   - conda activate drop
 
   # install drop
-  - conda install wbuild=1.7.1
+  - pip uninstall wbuild -y
+  - pip install -r requirements_test.txt
   - pip install -e . -vv
 
 script: 
@@ -33,11 +34,7 @@ script:
   - samtools --version
   - bcftools --version
   - drop --version
+  - wbuild --version
   - python --version
-  
-  - mkdir drop_demo
-  - cd drop_demo
-  - drop demo
-  - snakemake -n
-  - snakemake --jobs 2 --cores 2
-  - snakemake exportCounts --cores 2
+
+  - pytest -vv -s

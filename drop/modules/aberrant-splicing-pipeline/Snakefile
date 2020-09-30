@@ -7,7 +7,7 @@ AS_index_input, AS_index_output, AS_graph_file, _ = createIndexRule(
 )
 
 rule aberrantSplicing:
-    input: AS_index_input
+    input: AS_index_input, AS_graph_file
     output: AS_index_output
     run: ci(str(AS_WORKDIR), AS_index_name)
 

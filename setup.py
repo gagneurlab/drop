@@ -5,8 +5,8 @@ with open("README.md", "r") as fh:
     long_description = fh.read()
 
 requirements = [
-    #'wbuild @ git+https://github.com/mumichae/wBuild.git@subindex#egg=wbuild',
-    'wbuild>=1.7.1',
+    'wbuild @ git+https://github.com/gagneurlab/wBuild.git',
+    #'wbuild>=1.7.1',
     'python-dateutil',
     'pandoc',
     'graphviz',
@@ -34,7 +34,7 @@ setuptools.setup(
     entry_points={'console_scripts': ['drop=drop.cli:main']},
     package_data={'drop': extra_files},
     include_package_data=True,
-    install_requires=requirements
+    install_requires=requirements,
 )
 
 
