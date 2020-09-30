@@ -1,5 +1,4 @@
 from pathlib import Path
-from snakemake.logging import logger
 from drop import utils
 
 
@@ -25,3 +24,4 @@ class Submodule:
 
     def getWorkdir(self, str_=True):
         return utils.returnPath(Path("Scripts") / self.name / "pipeline", str_)
+

@@ -1,5 +1,5 @@
 from .SampleAnnotation import SampleAnnotation
-from .Submodules import AE, AS, MAE
+from .submodules import AE, AS, MAE
 from .ExportCounts import ExportCounts
 from drop import utils
 from pathlib import Path
