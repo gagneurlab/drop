@@ -77,7 +77,7 @@ class SampleAnnotation:
         
         # cleaning SAMPLE_FILE_MAPPING
         file_mapping.dropna(inplace=True)
-        file_mapping.drop_duplicates(inplace = True)
+        file_mapping.drop_duplicates(inplace=True)
         
         # check for missing files
         existing = utils.checkFileExists(file_mapping["FILE_PATH"])

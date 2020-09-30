@@ -58,6 +58,8 @@ class ExportCounts:
         """
         if modules is None:
             modules = self.modules.keys()
+        elif isinstance(modules, str):
+            modules = [modules]
         groups = []  # get all active groups
         for module in modules:
             groups.extend(self.modules[module].groups)
