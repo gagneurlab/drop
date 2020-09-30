@@ -1,4 +1,3 @@
-import pytest
 from tests.common import *
 
 
@@ -22,6 +21,7 @@ class Test_MAE_Pipeline:
         r = runR(r_cmd, demo_dir)
         assert "[1] 235" in r.stdout
 
+    @pytest.mark.usefixtures("pipeline_run")
     def test_results(self, demo_dir):
         results_file = "Output/processed_results/mae/mae/MAE_results_all_v29.tsv.gz"
         r_cmd = """ 
@@ -30,4 +30,4 @@ class Test_MAE_Pipeline:
                 print(nrow(res))
                 """.format(results_file)
         r = runR(r_cmd, demo_dir)
-        assert "335 " in r.stdout
+        assert "[1] 335" in r.stdout

@@ -8,7 +8,7 @@ def test_dryrun(demo_dir):
 
 
 def test_dependencyGraph(demo_dir):
-    r = run(["snakemake", "dependencyGraph", "-j"], dir_path=demo_dir)
+    r = run(["snakemake", "dependencyGraph", "-Fj"], dir_path=demo_dir)
     assert "aberrantExpression_dependency" in r.stderr
     assert "aberrantSplicing_dependency" in r.stderr
     assert "mae_dependency" in r.stderr
@@ -24,6 +24,7 @@ def test_export(demo_dir):
     assert "Finished job 0." in r.stderr
 
 
+@pytest.mark.trylast
 def test_all(demo_dir):
     r = run(["snakemake", "-j", CORES], demo_dir)
     assert "Finished job 0." in r.stderr

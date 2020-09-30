@@ -1,6 +1,4 @@
-import pytest
 import os
-import logging
 import wbuild
 import drop
 import sys
