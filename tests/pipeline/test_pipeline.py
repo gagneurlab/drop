@@ -1,6 +1,4 @@
-from .aberrantExpression import *
-from .aberrantSplicing import *
-from .mae import *
+from tests.common import *
 
 
 def test_dryrun(demo_dir):
@@ -24,20 +22,6 @@ def test_dependencyGraph(demo_dir):
 def test_export(demo_dir):
     r = run(["snakemake", "exportCounts", "-j", CORES], demo_dir)
     assert "Finished job 0." in r.stderr
-
-
-def test_submodules(demo_dir):
-    test_AE = AE_Pipeline(demo_dir)
-    test_AE.counts()
-    test_AE.results()
-
-    test_AS = AS_Pipeline(demo_dir)
-    test_AS.counts()
-    test_AS.results()
-
-    test_MAE = MAE_Pipeline(demo_dir)
-    test_MAE.counts()
-    test_MAE.results()
 
 
 def test_all(demo_dir):
