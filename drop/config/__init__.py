@@ -1,3 +1,5 @@
 from .DropConfig import DropConfig
 from .SampleAnnotation import SampleAnnotation
-from .submodules import AE, AS, MAE
+from .submodules.MonoallelicExpression import MAE
+from .submodules.AberrantSplicing import AS
+from .submodules.AberrantExpression import AE

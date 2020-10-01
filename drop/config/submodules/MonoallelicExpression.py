@@ -61,28 +61,5 @@ class MAE(Submodule):
             all_ids.extend(self.getMaeByGroup(group))
         return all_ids
 
-    def getVcf(self, rna_id, vcf_id, type_="QC"):
-        """
-        :param rna_id: RNA ID of sample BAM file
-        :param vcf_id: DNA ID of sample VCF file
-        :param type_: type of ID, either "MAE" for normal MAE pipeline or "QC" for QC dataset
-        :return: VCF file for corresponding RNA_BAM_FILE and DNA_VCF_FILE
-        """
-        if type_ == "MAE":
-            return self.processedDataDir / "mae" / "snvs" / f"{vcf_id}--{rna_id}.vcf.gz"
-        elif type_ == "QC":
-            return self.qcVcfFile
-        else:
-            raise ValueError(f"'{type_}' is an invalid option for MAE VCF")
-
-    def getQcVcf(self, format):
-        """
-        :param format: either "UCSC" or "NCBI"
-        :return: QC VCF file
-        """
-        if format == "UCSC":
-            return self.qcVcfFile
-        elif format == "NCBI":
-            return self.processedDataDir / "mae" / "qc_vcf_ncbi.vcf.gz"
-        else:
-            raise ValueError(f"'{format}' is an invalid chromosome format")
+    def getQcVcf(self):
+        return self.qcVcfFile
