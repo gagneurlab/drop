@@ -19,13 +19,15 @@ install:
 
   # install dependencies
   - source $HOME/miniconda/etc/profile.d/conda.sh
-  - conda create -q -n drop -c conda-forge -c bioconda drop
+  - conda create -q -n drop -c conda-forge -c bioconda python=$TRAVIS_PYTHON_VERSION r-base=4.0.2
   - conda activate drop
+  - conda install -c conda-forge -c bioconda drop
+  - conda remove --force drop wbuild
+  - conda install -c conda-forge -c bioconda wbuild=1.7.1
+  - pip install -r requirements_test.txt
 
   # install drop
-  - pip uninstall wbuild -y
-  - pip install -r requirements_test.txt
-  - pip install -e . -vv
+  - pip install . -vv
 
 script: 
   - conda list 
