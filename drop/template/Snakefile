@@ -1,100 +1,53 @@
-import os
-import re
+from pathlib import Path
 import drop
+import wbuild
+from wbuild.createIndex import createIndexRule, ci
 
+drop.installRPackages()
 configfile: "config.yaml"
 
-parser, config = drop.drop(config)
-include: config["wBuildPath"] + "/wBuild.snakefile"
+projectDir = Path.cwd().resolve()
+_, projectPaths = drop.setupPaths(projectDir)
+tmp_dir = projectPaths["tmpDir"]
 
-# aberrant expression
-subworkflow AE:
-    workdir: drop.getMethodPath("AE", "workdir")
-    snakefile: drop.getMethodPath("AE", "snakefile")
-    configfile: drop.getConfFile()
+cfg = drop.config.DropConfig(wbuild.utils.Config())
+sa = cfg.sampleAnnotation
+config = cfg.config_dict # legacy
 
-# aberrant splicing
-subworkflow AS:
-    workdir: drop.getMethodPath("AS", "workdir")
-    snakefile: drop.getMethodPath("AS", "snakefile")
-    configfile: drop.getConfFile()
-
-# monoallelic expression
-subworkflow MAE:
-    workdir: drop.getMethodPath("MAE", "workdir")
-    snakefile: drop.getMethodPath("MAE", "snakefile")
-    configfile: drop.getConfFile()
+include: drop.utils.getWBuildSnakefile()
+include: cfg.AE.getWorkdir() + "/Snakefile"
+include: cfg.AS.getWorkdir() + "/Snakefile"
+include: cfg.MAE.getWorkdir() + "/Snakefile"
 
 rule all:
     input: 
-        AE(config["finalFiles"]["AE"]),
-        AS(config["finalFiles"]["AS"]),
-        MAE(config["finalFiles"]["MAE"]),
+        rules.aberrantExpression.output,
+        rules.aberrantSplicing.output,
+        rules.mae.output,
         rules.Index.output,
-        config["htmlOutputPath"] + "/readme.html",
-        config["tmpdir"] + "/rulegraphs.done"
+        dep_graph = cfg.get("htmlOutputPath") + "/dependency.done"
+    shell:
+        """
+        rm {input.dep_graph}
+        """
 
 rule sampleAnnotation:
-    input: parser.getProcDataDir() + "/sample_anno/sample_anno.done"
-
-rule getIndexNames:
-    input:
-        AE(config["finalFiles"]["AE"]),
-        AS(config["finalFiles"]["AS"]),
-        MAE(config["finalFiles"]["MAE"])
-    output:
-        indexFile = config["htmlOutputPath"] + "/indexNames.txt"
-    run: 
-        indexList = [x for x in os.listdir(config["htmlOutputPath"]) if re.search("_index.html$",x)]
-        with open(output.indexFile, 'w') as file_handler:
-    	    for item in indexList:
-                file_handler.write(f"{item}\n")
-
-rule aberrantExpression:
-    input: AE(config["finalFiles"]["AE"])
-    output: touch(drop.getTmpDir() + "/AE.done")
-
-rule aberrantSplicing:
-    input: 
-        AS(config["finalFiles"]["AS"])
-    output: touch(drop.getTmpDir() + "/AS.done")
-    
-rule mae:
-    input: MAE(config["finalFiles"]["MAE"])
-    output: touch(drop.getTmpDir() + "/MAE.done")
-
-rule sampleQC:
-    input: MAE(drop.getTmpDir() + "/sampleQC.done")
+    input: cfg.getProcessedDataDir() + "/sample_anno/sample_anno.done"
 
 rule exportCounts:
     input:
-        AE(parser.getExportCountFiles("geneCounts")),
-        AS(parser.getExportCountFiles("splitCounts")),
-        AS(parser.getExportCountFiles("spliceSiteOverlapCounts")),
-        parser.getProcResultsDir() + "/exported_counts/sample_anno.done"
+        cfg.exportCounts.getExportCountFiles("geneCounts"),
+         cfg.exportCounts.getExportCountFiles("splitCounts"),
+         cfg.exportCounts.getExportCountFiles("spliceSiteOverlapCounts"),
+         cfg.getProcessedResultsDir() + "/exported_counts/sample_anno.done"
 
 rule dependencyGraph:
     input:
-        MAE(config["htmlOutputPath"] + "/MAE_rulegraph.svg"),
-        AS(config["htmlOutputPath"] + "/AS_rulegraph.svg"),
-        AE(config["htmlOutputPath"] + "/AE_rulegraph.svg"),
-    output:
-        touch(config["tmpdir"] + "/rulegraphs.done")
+        rules.aberrantExpression_dependency.output,
+        rules.aberrantSplicing_dependency.output,
+        rules.mae_dependency.output
+    output: touch(cfg.get("htmlOutputPath") + "/dependency.done")
+    priority: 1
 
 rule publish_local:
     shell: "rsync -Ort {config[htmlOutputPath]} {config[webDir]}"
-
-rule unlock:
-    input:
-       AE(drop.getMethodPath("AE", "unlock")),
-       AS(drop.getMethodPath("AS", "unlock")),
-       MAE(drop.getMethodPath("MAE", "unlock"))
-    params:
-       finalFiles = " ".join(config["finalFiles"].values())
-    shell: 
-        """
-        snakemake --unlock
-        rm {input}
-        rm -f {params.finalFiles}
-        """
-

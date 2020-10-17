@@ -39,15 +39,13 @@ Parameter            Type        Description                                    
 ===================  ==========  =======================================================================================================================================  ======
 projectTitle         character   Title of the project to be displayed on the rendered HTML output                                                                         ``Project 1``
 htmlOutputPath       character   Full path of the folder where the HTML files are rendered                                                                                ``/data/project1/htmlOutput``
-indexWithFolderName  boolean     variable needed for wBuild, do not edit it                                                                                               ``true``
-fileRegex            character   variable needed for wBuild, do not edit it                                                                                               ``.*\.R``
+indexWithFolderName  boolean     If true, the basename of the project directory will be used as prefix for the index.html file                                            ``true``
 genomeAssembly       character   Either hg19 or hg38, depending on the genome assembly used for mapping                                                                   ``/data/project1``
 sampleAnnotation     character   Full path of the sample annotation table                                                                                                 ``/data/project1/sample_annotation.tsv``
 root                 character   Full path of the folder where the subdirectories processed_data and processed_results will be created containing DROP's output files.    ``/data/project1``
 geneAnnotation       dictionary  A key-value list of the annotation name (key) and the full path to the GTF file (value). More than one annotation file can be provided.  ``anno1: /path/to/gtf1.gtf``
 
                                                                                                                                                                           ``anno2: /path/to/gtf2.gtf``
-scanBamParam         character   Either null or the path to an Rds file containing a scanBamParam object. Refer to the advanced options below.                            ``/path/to/scanBamParam.Rds``
 tools                dictionary  A key-value list of different commands (key) and the command (value) to run them                                                         ``gatkCmd: gatk``
 
                                                                                                                                                                           ``bcftoolsCmd: bcftools``
@@ -126,10 +124,19 @@ qcGroups               list       Same as “groups”, but for the VCF-BAM matc
 Creating the sample annotation table
 ------------------------------------
 
-For details on how to generate the sample annotation, please refer to the DROP manuscript. 
-Here we provide some examples on how to deal with certain situations. For simplicity, we
-do not include the other compulsory columns ``PAIRED_END``, ``COUNT_MODE``,
-``COUNT_OVERLAPS`` and ``STRAND``.
+For a detailed explanation of the columns of the sample annotation, please refer to
+the DROP manuscript. 
+Inside the sample annotation, each row corresponds to a unique pair of RNA and DNA
+samples derived from the same individual. An RNA assay can belong to one or more DNA
+assays, and vice-versa. If so, they must be specified in different rows. The required
+columns are ``RNA_ID``, ``RNA_BAM_FILE`` and ``DROP_GROUP``, plus other module-specific
+ones (see DROP manuscript). In case external counts are included, add a new row for each
+sample from those files (or a subset if not all samples are needed).
+
+The sample annotation file should be saved in the tab-separated values (tsv) format. The 
+column order does not matter. Also, it does not matter where it is stored, as the path is 
+specified in the config file. Here we provide some examples on how to deal with certain
+situations. For simplicity, we do not include all possible columns in the examples.
 
 Example of RNA replicates 
 ++++++++++++++++++++++++++++++++++
@@ -144,22 +151,41 @@ S10R_M  S10G    MUSCLE      /path/to/S10R_M.BAM  /path/to/S10G.vcf.gz
 Example of DNA replicates 
 ++++++++++++++++++++++++++++++++++
 
-======  ======  ==========  ===================  ==
-RNA_ID  DNA_ID  DROP_GROUP  RNA_BAM_FILE         DNA_VCF_FILE
-======  ======  ==========  ===================  ==
-S20R    S20E    WES         /path/to/S20R.BAM    /path/to/S20E.vcf.gz
-S20R    S20G    WGS         /path/to/S20R.BAM    /path/to/S20G.vcf.gz
-======  ======  ==========  ===================  ==
+======  ======  ==========  =================  ==
+RNA_ID  DNA_ID  DROP_GROUP  RNA_BAM_FILE       DNA_VCF_FILE
+======  ======  ==========  =================  ==
+S20R    S20E    WES         /path/to/S20R.BAM  /path/to/S20E.vcf.gz
+S20R    S20G    WGS         /path/to/S20R.BAM  /path/to/S20G.vcf.gz
+======  ======  ==========  =================  ==
 
 Example of a multi-sample vcf file
 ++++++++++++++++++++++++++++++++++
 
-======  ======  ==========  ===================  ==
-RNA_ID  DNA_ID  DROP_GROUP  RNA_BAM_FILE         DNA_VCF_FILE
-======  ======  ==========  ===================  ==
-S10R    S10G    WGS         /path/to/S10R.BAM    /path/to/multi_sample.vcf.gz
-S20R    S20G    WGS         /path/to/S20R.BAM    /path/to/multi_sample.vcf.gz
-======  ======  ==========  ===================  ==
+======  ======  ==========  =================  ==
+RNA_ID  DNA_ID  DROP_GROUP  RNA_BAM_FILE       DNA_VCF_FILE
+======  ======  ==========  =================  ==
+S10R    S10G    WGS         /path/to/S10R.BAM  /path/to/multi_sample.vcf.gz
+S20R    S20G    WGS         /path/to/S20R.BAM  /path/to/multi_sample.vcf.gz
+======  ======  ==========  =================  ==
+
+External count matrices
++++++++++++++++++++++++
+
+In case counts from external matrices are to be integrated into the analysis,
+the file must be specified in the GENE_COUNTS_FILE column. A new row must be
+added for each sample from the count matrix that should be included in the 
+analysis. An RNA_BAM_FILE must not be specified. The DROP_GROUP of the local
+and external samples that are to be analyzed together must be the same.
+Similarly, the GENE_ANNOTATION of the external counts and the key of the `geneAnnotation`
+parameter from the config file must match.
+
+======  ======  ==========  =================  ==
+RNA_ID  DNA_ID  DROP_GROUP  RNA_BAM_FILE       GENE_COUNTS_FILE
+======  ======  ==========  =================  ==
+S10R    S10G    BLOOD       /path/to/S10R.BAM  
+EXT-1R          BLOOD                          /path/to/externalCounts.tsv.gz
+EXT-2R          BLOOD                          /path/to/externalCounts.tsv.gz
+======  ======  ==========  =================  ==
 
 
 Advanced options
@@ -182,13 +208,5 @@ dimension smaller than the number of samples N. The encoding dimension is optimi
 We recommend the search space to be at most N/3 for the aberrant expression, 
 and N/6 for the aberrant splicing case. Nevertheless, the user can specify the 
 denominator with the parameter ``maxTestedDimensionProportion``.
-
-In order to influence which fields of the BAM files are imported, the user can 
-provide a ``scanBamParam`` object. This will affect how the files are counted in 
-the aberrant expression and splicing modules. Refer to the function's 
-`documentation <https://www.rdocumentation.org/packages/Rsamtools/versions/1.24.0/topics/ScanBamParam>`_ for details.
-
-
-
 
 

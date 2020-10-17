@@ -1,6 +1,6 @@
 # Detection of RNA Outlier Pipeline
 [![Pipeline status](https://travis-ci.org/gagneurlab/drop.svg?branch=master)](https://travis-ci.org/gagneurlab/drop)
-[![Version](https://img.shields.io/badge/Version-0.9.2-green.svg)](https://github.com/gagneurlab/drop/releases/tag/0.9.2)
+[![Version](https://img.shields.io/github/v/release/gagneurlab/drop?include_prereleases)](https://github.com/gagneurlab/drop/releases)
 [![Version](https://readthedocs.org/projects/gagneurlab-drop/badge/?version=latest)](https://gagneurlab-drop.readthedocs.io/en/latest)
 
 The manuscript main file, supplementary figures and table can be found in the manuscript folder or in 
@@ -51,7 +51,8 @@ snakemake aberrantExpression -n
 ```
 
 ## Datasets
-The following publicly-available datasets of gene counts can be used as controls:
+The following publicly-available datasets of gene counts can be used as controls.
+Please cite as instructed for each dataset.
 
 * 119 non-strand specific fibroblasts: [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.3887451.svg)](https://doi.org/10.5281/zenodo.3887451)
 
