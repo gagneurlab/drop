@@ -1,0 +1,4 @@
+pytest-runner
+pytest
+pytest-testdirectory
+pytest-icdiff

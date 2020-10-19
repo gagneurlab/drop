@@ -17,18 +17,17 @@ install:
   - conda config --set always_yes yes --set changeps1 no
   - conda update -q conda
 
-  - conda config --add channels bioconda
-  - conda config --add channels conda-forge
-
-  # build package with cond
-  - conda install conda-build
-  - conda build conda.recipe --output-folder=$HOME/build
-  - conda config --add channels "file://${HOME}/build"
-
-  # test package
+  # install dependencies
   - source $HOME/miniconda/etc/profile.d/conda.sh
-  - conda create -q -n drop drop
+  - conda create -q -n drop -c conda-forge -c bioconda python=$TRAVIS_PYTHON_VERSION r-base=4.0.2
   - conda activate drop
+  - conda install -c conda-forge -c bioconda drop
+  - conda remove --force drop wbuild
+  - conda install -c conda-forge -c bioconda wbuild=1.7.1
+  - pip install -r requirements_test.txt
+
+  # install drop
+  - pip install . -vv
 
 script: 
   - conda list 
@@ -37,10 +36,7 @@ script:
   - samtools --version
   - bcftools --version
   - drop --version
+  - wbuild --version
   - python --version
-  
-  - mkdir drop_demo
-  - cd drop_demo
-  - drop demo
-  - snakemake -n
-  - snakemake --jobs 2 --cores 2
+
+  - pytest -vv -s

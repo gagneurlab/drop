@@ -1,12 +1,12 @@
 import setuptools
 import os
-import glob
 
 with open("README.md", "r") as fh:
     long_description = fh.read()
 
 requirements = [
-    'wbuild>=1.7.0',
+    #'wbuild @ git+https://github.com/gagneurlab/wBuild.git',
+    'wbuild>=1.7.1',
     'python-dateutil',
     'pandoc',
     'graphviz',
@@ -23,18 +23,18 @@ for (path, directories, filenames) in os.walk('drop/'):
 
 setuptools.setup(
     name="drop",
-    version="0.9.1",
+    version="1.0.0",
     author="Michaela Müller, Daniela Andrade Salazar, Vicente Yepez",
     author_email="mumichae@in.tum.de",
     description="Detection of RNA Outlier Pipeline",
     long_description=long_description,
     long_description_content_type="text/markdown",
     url="https://github.com/gagneurlab/drop",
-    packages=setuptools.find_packages(include=["drop"]),
+    packages=setuptools.find_packages(include=["drop", "drop.*"]),
     entry_points={'console_scripts': ['drop=drop.cli:main']},
     package_data={'drop': extra_files},
     include_package_data=True,
-    install_requires=requirements
+    install_requires=requirements,
 )
 
 

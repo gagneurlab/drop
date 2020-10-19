@@ -1,10 +1,7 @@
-projectTitle: Detection of RNA Outlier Pipeline
+projectTitle: "DROP: Detection of RNA Outliers Pipeline"
 root:             # root directory of all intermediate output
 htmlOutputPath:   # path for HTML rendered reports
-
-# settings for wBuild - do not change
-indexWithFolderName: true
-fileRegex: .*\.R
+indexWithFolderName: true # whether the root base name should be part of the index name
 
 sampleAnnotation: # path to sample annotation (see documenation on how to create it)
 
@@ -14,7 +11,6 @@ geneAnnotation:
     v29:  /path/to/gencode29.gtf.gz # example
 
 genomeAssembly: hg19  # either hg19 or hg38
-scanBamParam: null # or a path to an Rds file containing a scanBamParam object
 exportCounts:
     # specify which gene annotations to include and which 
     # groups to exclude when exporting counts
