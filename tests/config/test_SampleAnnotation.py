@@ -15,8 +15,9 @@ class Test_SampleAnnotation:
         # ID mappings/groups
         assert sampleAnnotation.idMapping.shape == (20, 2)
         assert sampleAnnotation.sampleFileMapping.shape == (32, 4)
-        assert {k: len(v) for k, v in sampleAnnotation.rnaIDs.items()} == {'mae': 2, 'outrider': 10, 'fraser': 10}
-        assert {k: len(v) for k, v in sampleAnnotation.dnaIDs.items()} == {'mae': 2, 'outrider': 10, 'fraser': 10}
+        true_mapping = {'mae': 2, 'import_exp': 8, 'outrider': 10, 'fraser': 10}
+        assert true_mapping == {k: len(v) for k, v in sampleAnnotation.rnaIDs.items()}
+        assert true_mapping == {k: len(v) for k, v in sampleAnnotation.dnaIDs.items()}
 
     @pytest.mark.parametrize(
         "sample_id,file_type,file_name",
@@ -34,7 +35,7 @@ class Test_SampleAnnotation:
     @pytest.mark.parametrize(
         "annotation,group,files",
         [
-            ("v29", "outrider", {'Data/external_geneCounts.tsv.gz'})
+            ("v29", "import_exp", {'Data/external_geneCounts.tsv.gz'})
         ]
     )
     def test_import(self, demo_dir, sampleAnnotation, annotation, group, files):

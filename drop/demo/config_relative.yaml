@@ -13,10 +13,12 @@ exportCounts:
     - v29
   excludeGroups:
     - mae
+    - import_exp
 
 aberrantExpression:
     groups: 
       - outrider
+      - import_exp
     fpkmCutoff: 1
     implementation: autoencoder
     padjCutoff: 1

@@ -166,12 +166,12 @@ class SampleAnnotation:
         subset = utils.subsetBy(subset, "ID", sample_id)
         return subset
 
-    def subsetGroups(self, subset_groups, assay="RNA", warn=30, error=10):
+    def subsetGroups(self, subset_groups, assay="RNA"):
         """
         Subset DROP group to sample IDs mapping by list of groups (`subset_groups`).
-        Give warning or error if subsetting results in too few sample IDs per group.
-        warn : number of samples threshold at which to warn about too few samples
-        error: number of samples threshold at which to give error
+        :param subset_groups: list of groups to include
+        :param assay: name/prefix of assay type
+        :return: dictionary with group names as keys and ID lists as entries
         """
         ids_by_group = self.getGroupedIDs(assay)
 
@@ -181,18 +181,6 @@ class SampleAnnotation:
             subset_groups = [subset_groups] if subset_groups.__class__ == str else subset_groups
             subset = {gr: ids for gr, ids in
                       ids_by_group.items() if gr in subset_groups}
-        if not subset:
-            return subset  # if subset is empty
-
-        for group in subset_groups:
-            if len(subset[group]) < error:
-                message = f'Too few IDs in DROP_GROUP {group}'
-                message += f', please ensure that it has at least {error} IDs'
-                message += f', groups: {subset[group]}'
-                raise ValueError(message)
-            elif len(subset[group]) < warn:
-                logger.info(f'WARNING: Less than {warn} IDs in DROP_GROUP {group}')
-
         return subset
 
     ### Getters

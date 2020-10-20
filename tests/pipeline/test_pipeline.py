@@ -14,17 +14,17 @@ def test_dependencyGraph(demo_dir):
     assert "mae_dependency" in r.stderr
     assert "Finished job 0." in r.stderr
     # clean HTML output
-    r = run(["snakemake", "clean", "-j"], dir_path=demo_dir)
+    r = run(["snakemake", "clean", f"-j{CORES}"], dir_path=demo_dir)
     assert "clean" in r.stderr
     assert "Finished job 0." in r.stderr
 
 
 def test_export(demo_dir):
-    r = run(["snakemake", "exportCounts", "-j", CORES], demo_dir)
+    r = run(["snakemake", "exportCounts", f"-j{CORES}"], demo_dir)
     assert "Finished job 0." in r.stderr
 
 
 @pytest.mark.trylast
 def test_all(demo_dir):
-    r = run(["snakemake", "-j", CORES], demo_dir)
+    r = run(["snakemake", f"-j{CORES}"], demo_dir)
     assert "Finished job 0." in r.stderr
