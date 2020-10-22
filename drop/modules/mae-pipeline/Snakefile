@@ -48,7 +48,7 @@ rule mae_allelicCounts:
     input:
         ncbi2ucsc = MAE_WORKDIR / "resource" / "chr_NCBI_UCSC.txt",
         ucsc2ncbi = MAE_WORKDIR / "resource" / "chr_UCSC_NCBI.txt",
-        vcf_file  = rules.mae_createSNVs.output,
+        vcf_file  = rules.mae_createSNVs.output.snvs_filename,
         bam_file  = lambda w: sa.getFilePath(w.rna, 'RNA_BAM_FILE'),
         fasta     = cfg.getFastaFile(),
         dict      = cfg.getFastaDict(),
@@ -88,7 +88,7 @@ rule mae_allelicCountsQC:
         ncbi2ucsc = MAE_WORKDIR / "resource" / "chr_NCBI_UCSC.txt",
         ucsc2ncbi = MAE_WORKDIR / "resource" / "chr_UCSC_NCBI.txt",
         vcf_file_ucsc = cfg.MAE.getQcVcf(),
-        vcf_file_ncbi = rules.mae_QC_reChrVCF.output,
+        vcf_file_ncbi = rules.mae_QC_reChrVCF.output.ncbi_vcf,
         bam_file      = lambda w: sa.getFilePath(w.rna, 'RNA_BAM_FILE'),
         fasta         = cfg.getFastaFile(),
         dict          = cfg.getFastaDict(),
