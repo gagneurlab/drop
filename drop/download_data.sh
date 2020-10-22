@@ -3,17 +3,20 @@ set -e
 
 # get data
 resource_url="https://www.cmm.in.tum.de/public/paper/drop_analysis/resource.tar.gz"
-wget -nc $resource_url
-if [ ! -d Data ]; then
-  rm -rf resource
-	tar -zxvf resource.tar.gz
+tmpdir="$(dirname "$(tempfile)")"
+wget -nc -P $tmpdir $resource_url
+mkdir -p Data
+if [ -z "$(ls Data)" ]; then
+	tar -zxvf "$tmpdir/resource.tar.gz" -C .
+	rm -rf Data
 	mv resource Data
 else
-    echo "Data directory already exists, is not updated"
+    echo "Data directory not empty, is not updated"
 fi
 
 # prepare data
-cd Data
+cd ./Data
+echo "cp config_relative_wb1.8.yaml ../config.yaml"
 cp config_relative_wb1.8.yaml ../config.yaml
 python fix_sample_anno.py
 
