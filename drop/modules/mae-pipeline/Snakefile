@@ -21,7 +21,9 @@ rule sampleQC:
 rule create_dict:
     input: cfg.getFastaFile()
     output: cfg.getFastaDict()
-    shell: "gatk CreateSequenceDictionary --REFERENCE {input}"
+    params:
+        gatk = cfg.getTool("gatkCmd"),
+    shell: "{params.gatk} CreateSequenceDictionary --REFERENCE {input}"
 
 ## MAE
 rule mae_createSNVs:
@@ -57,13 +59,15 @@ rule mae_allelicCounts:
         counted = cfg.processedDataDir / "mae" / "allelic_counts" / "{vcf}--{rna}.csv.gz"
     params:
         bcftools = cfg.getTool("bcftoolsCmd"),
+        samtools = cfg.getTool("samtoolsCmd"),
+        gatk = cfg.getTool("gatkCmd"),
         gatkIgnoreHeaderCheck = cfg.MAE.get("gatkIgnoreHeaderCheck")
     shell:
         """
         {input.script} {input.ncbi2ucsc} {input.ucsc2ncbi} \
         {input.vcf_file} {input.bam_file} {wildcards.vcf}--{wildcards.rna} \
         {input.fasta} {params.gatkIgnoreHeaderCheck} {output.counted} \
-        {params.bcftools}
+        {params.bcftools} {params.samtools} {params.gatk}
         """
 
 ## QC
@@ -99,11 +103,13 @@ rule mae_allelicCountsQC:
     params:
         bcftools = cfg.getTool("bcftoolsCmd"),
         samtools = cfg.getTool("samtoolsCmd"),
+        gatk = cfg.getTool("gatkCmd"),
         gatkIgnoreHeaderCheck = cfg.MAE.get("gatkIgnoreHeaderCheck")
     shell:
         """
         {input.script_qc} {input.ncbi2ucsc} {input.ucsc2ncbi} \
         {input.vcf_file_ucsc} {input.vcf_file_ncbi} {input.bam_file} \
         {wildcards.rna} {input.fasta} {params.gatkIgnoreHeaderCheck} \
-        {output.counted} {params.bcftools} {params.samtools} {input.script_mae}
+        {output.counted} {params.bcftools} {params.samtools} {params.gatk} \
+        {input.script_mae}
         """
