@@ -27,6 +27,22 @@ class Submodule:
     def getWorkdir(self, str_=True):
         return utils.returnPath(Path("Scripts") / self.name / "pipeline", str_)
 
+    def checkSubset(self, groupSubsets, warn=30, error=10):
+        """
+        Give warning or error if subsetting results in too few sample IDs per group.
+        :param groupSubsets:
+        :param warn: number of samples threshold at which to warn about too few samples
+        :param error: number of samples threshold at which to give error
+        """
+        for group in self.groups:
+            if len(groupSubsets[group]) < error:
+                message = f'Too few IDs in DROP_GROUP {group}'
+                message += f', please ensure that it has at least {error} IDs'
+                message += f', groups: {groupSubsets[group]}'
+                raise ValueError(message)
+            elif len(groupSubsets[group]) < warn:
+                logger.info(f'WARNING: Less than {warn} IDs in DROP_GROUP {group}')
+
 
 class AE(Submodule):
 
@@ -38,7 +54,12 @@ class AE(Submodule):
         ]
         self.name = "AberrantExpression"
         self.rnaIDs = self.sa.subsetGroups(self.groups, assay="RNA")
-        self.extRnaIDs = self.sa.subsetGroups(self.groups, assay="GENE_COUNTS", warn=0, error=0)
+        self.extRnaIDs = self.sa.subsetGroups(self.groups, assay="GENE_COUNTS")
+
+        # check number of IDs per group
+        all_groups = set().union(*[self.rnaIDs, self.extRnaIDs])
+        all_ids = {g : self.rnaIDs[g] + self.extRnaIDs[g] for g in all_groups}
+        self.checkSubset(all_ids)
 
     def setDefaultKeys(self, dict_):
         super().setDefaultKeys(dict_)
@@ -63,6 +84,7 @@ class AE(Submodule):
         count_files = expand(str(file_stump), sampleID=bam_IDs)
         extCountFiles = self.sa.getImportCountFiles(annotation, group, file_type="GENE_COUNTS_FILE")
         count_files.extend(extCountFiles)
+        count_files = list(set(count_files))
         return count_files
 
     def getCountParams(self, rnaID):
@@ -81,6 +103,7 @@ class AS(Submodule):
         ]
         self.name = "AberrantSplicing"
         self.rnaIDs = self.sa.subsetGroups(self.groups, assay="RNA")
+        self.checkSubset(self.rnaIDs)
 
     def setDefaultKeys(self, dict_):
         super().setDefaultKeys(dict_)
@@ -133,7 +156,8 @@ class MAE(Submodule):
         :param id_sep: separator
         :return: {drop group name : list of MAE IDs per group}
         """
-        grouped_rna_ids = self.sa.subsetGroups(self.groups, assay="RNA", warn=1, error=1)
+        grouped_rna_ids = self.sa.subsetGroups(self.groups, assay="RNA")
+        self.checkSubset(grouped_rna_ids, warn=1, error=1)
         id_map = self.sa.idMapping
         mae_ids = {}
         for gr, rna_ids in grouped_rna_ids.items():

@@ -5,7 +5,7 @@
 #'  log:
 #'   - snakemake: '`sm str(tmp_dir / "AE" / "{annotation}" / "{dataset}" / "merge.Rds")`'
 #'  params:
-#'    - exCountIDs: '`sm lambda w: sa.getIDsByGroup(w.dataset, assay=["GENE_COUNT","RNA"])`'
+#'    - exCountIDs: '`sm lambda w: sa.getIDsByGroup(w.dataset, assay="GENE_COUNT")`'
 #'  input: 
 #'    - counts: '`sm lambda w: cfg.AE.getCountFiles(w.annotation, w.dataset)`'
 #'  output:
@@ -30,8 +30,12 @@ register(MulticoreParam(snakemake@threads))
 counts_list <- bplapply(snakemake@input$counts, function(f){
     if(grepl('Rds$', f))
         assay(readRDS(f))
-    else
-        as.matrix(fread(f), rownames = "geneID")
+    else {
+        ex_counts <- as.matrix(fread(f), rownames = "geneID")
+        print(head(ex_counts))
+        stopifnot(! snakemake@params$exCountIDs %in% names(ex_counts))
+        subset(ex_counts, select = snakemake@params$exCountIDs)
+    }
 })
 message(paste("read", length(counts_list), 'files'))
 

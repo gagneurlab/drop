@@ -14,11 +14,6 @@ else
     echo "Data directory not empty, is not updated"
 fi
 
-# prepare data
-cd ./Data
-echo "cp config_relative_wb1.8.yaml ../config.yaml"
-cp config_relative_wb1.8.yaml ../config.yaml
-python fix_sample_anno.py
-
 # unzip fasta
+cd ./Data
 if [ ! -f "chr21.fa" ]; then gunzip chr21.fa.gz; fi

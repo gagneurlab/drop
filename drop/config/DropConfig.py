@@ -35,23 +35,40 @@ class DropConfig:
         self.htmlOutputPath = Path(self.get("htmlOutputPath"))
         self.readmePath = Path(self.get("readmePath"))
 
+        # annotations
         self.geneAnnotation = self.get("geneAnnotation")
         self.genomeAssembly = self.get("genomeAssembly")
         self.sampleAnnotation = SampleAnnotation(self.get("sampleAnnotation"), self.root)
 
-        # setup submodules
-        cfg = self.config_dict
-        sa = self.sampleAnnotation
-        pd = self.processedDataDir
-        pr = self.processedResultsDir
-        self.AE = AE(cfg["aberrantExpression"], sa, pd, pr)
-        self.AS = AS(cfg["aberrantSplicing"], sa, pd, pr)
-        self.MAE = MAE(cfg["mae"], sa, pd, pr)
+        # submodules
+        self.AE = AE(
+            config=self.get("aberrantExpression"),
+            sampleAnnotation=self.sampleAnnotation,
+            processedDataDir=self.processedDataDir,
+            processedResultsDir=self.processedResultsDir
+        )
+        self.AS = AS(
+            config=self.get("aberrantSplicing"),
+            sampleAnnotation=self.sampleAnnotation,
+            processedDataDir=self.processedDataDir,
+            processedResultsDir=self.processedResultsDir
+        )
+        self.MAE = MAE(
+            config=self.get("mae"),
+            sampleAnnotation=self.sampleAnnotation,
+            processedDataDir=self.processedDataDir,
+            processedResultsDir=self.processedResultsDir
+        )
 
+        # counts export
         self.exportCounts = ExportCounts(
-            self.config_dict, self.processedResultsDir,
-            self.sampleAnnotation, self.getGeneAnnotations(), self.get("genomeAssembly"),
-            aberrantExpression=self.AE, aberrantSplicing=self.AS
+            dict_=self.get("exportCounts"),
+            outputRoot=self.processedResultsDir,
+            sampleAnnotation=self.sampleAnnotation,
+            geneAnnotations=self.getGeneAnnotations(),
+            genomeAssembly=self.get("genomeAssembly"),
+            aberrantExpression=self.AE,
+            aberrantSplicing=self.AS
         )
 
         # legacy
