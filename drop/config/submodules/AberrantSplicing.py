@@ -14,6 +14,7 @@ class AS(Submodule):
         ]
         self.name = "AberrantSplicing"
         self.rnaIDs = self.sa.subsetGroups(self.groups, assay="RNA")
+        self.checkSubset(self.rnaIDs)
 
     def setDefaultKeys(self, dict_):
         super().setDefaultKeys(dict_)

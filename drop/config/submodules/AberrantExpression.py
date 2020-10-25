@@ -14,7 +14,12 @@ class AE(Submodule):
         ]
         self.name = "AberrantExpression"
         self.rnaIDs = self.sa.subsetGroups(self.groups, assay="RNA")
-        self.extRnaIDs = self.sa.subsetGroups(self.groups, assay="GENE_COUNTS", warn=0, error=0)
+        self.extRnaIDs = self.sa.subsetGroups(self.groups, assay="GENE_COUNTS")
+
+        # check number of IDs per group
+        all_groups = set().union(*[self.rnaIDs, self.extRnaIDs])
+        all_ids = {g: self.rnaIDs[g] + self.extRnaIDs[g] for g in all_groups}
+        self.checkSubset(all_ids)
 
     def setDefaultKeys(self, dict_):
         super().setDefaultKeys(dict_)

@@ -36,7 +36,8 @@ class MAE(Submodule):
         :param id_sep: separator
         :return: {drop group name : list of MAE IDs per group}
         """
-        grouped_rna_ids = self.sa.subsetGroups(self.groups, assay="RNA", warn=1, error=1)
+        grouped_rna_ids = self.sa.subsetGroups(self.groups, assay="RNA")
+        self.checkSubset(grouped_rna_ids, warn=1, error=1)
         id_map = self.sa.idMapping
         mae_ids = {}
         for gr, rna_ids in grouped_rna_ids.items():
