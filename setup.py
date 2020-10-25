@@ -6,7 +6,6 @@ with open("README.md", "r") as fh:
 
 requirements = [
     'wbuild @ git+https://github.com/gagneurlab/wBuild.git',
-    #'wbuild>=1.7.1',
     'python-dateutil',
     'pandoc',
     'graphviz',

@@ -6,7 +6,7 @@ class Test_AS_Pipeline:
     @pytest.fixture(scope="class")
     def pipeline_run(self, demo_dir):
         LOGGER.info("run aberrant splicing pipeline")
-        pipeline_run = run(["snakemake", "aberrantSplicing", "-j", CORES], demo_dir)
+        pipeline_run = run(["snakemake", "aberrantSplicing", f"-j{CORES}"], demo_dir)
         assert "Finished job 0." in pipeline_run.stderr
         return pipeline_run
 

@@ -1,0 +1,23 @@
+RNA_ID	RNA_BAM_FILE	DNA_VCF_FILE	DNA_ID	DROP_GROUP	PAIRED_END	COUNT_MODE	COUNT_OVERLAPS	STRAND	HPO_TERMS	GENE_COUNTS_FILE	ANNOTATION
+HG00096.1.M_111124_6	Data/rna_bam/HG00096.1.M_111124_6_chr21.bam	Data/dna_vcf/demo_chr21.vcf.gz	HG00096	outrider,mae	TRUE	IntersectionStrict	TRUE	no	HP:0009802,HP:0010896
+HG00103.4.M_120208_3	Data/rna_bam/HG00103.4.M_120208_3_chr21.bam	Data/dna_vcf/demo_chr21.vcf.gz	HG00103	outrider,mae	TRUE	IntersectionStrict	TRUE	no	HP:0004582,HP:0031959
+HG00106.4.M_120208_5	Data/rna_bam/HG00106.4.M_120208_5_chr21.bam	Data/dna_vcf/demo_chr21.vcf.gz	HG00106	outrider,import_exp	TRUE	IntersectionStrict	TRUE	no	HP:0002895,HP:0006731
+HG00111.2.M_111215_4	Data/rna_bam/HG00111.2.M_111215_4_chr21.bam	Data/dna_vcf/demo_chr21.vcf.gz	HG00111	outrider,import_exp	TRUE	IntersectionStrict	TRUE	no	HP:0100491,HP:0100871
+HG00116.2.M_120131_1	Data/rna_bam/HG00116.2.M_120131_1_chr21.bam	Data/dna_vcf/demo_chr21.vcf.gz	HG00116	outrider,import_exp	TRUE	IntersectionStrict	TRUE	no	HP:0030613,HP:0012767
+HG00126.1.M_111124_8	Data/rna_bam/HG00126.1.M_111124_8_chr21.bam	Data/dna_vcf/demo_chr21.vcf.gz	HG00126	outrider,import_exp	TRUE	IntersectionStrict	TRUE	no	HP:0000290,HP:0000293
+HG00132.2.M_111215_4	Data/rna_bam/HG00132.2.M_111215_4_chr21.bam	Data/dna_vcf/demo_chr21.vcf.gz	HG00132	outrider,import_exp	TRUE	IntersectionStrict	TRUE	no	HP:0006489,HP:0006490
+HG00149.1.M_111124_6	Data/rna_bam/HG00149.1.M_111124_6_chr21.bam	Data/dna_vcf/demo_chr21.vcf.gz	HG00149	outrider,import_exp	TRUE	IntersectionStrict	TRUE	no	HP:0000014,HP:0000020,HP:0032663
+HG00150.4.M_120208_7	Data/rna_bam/HG00150.4.M_120208_7_chr21.bam	Data/dna_vcf/demo_chr21.vcf.gz	HG00150	outrider,import_exp	TRUE	IntersectionStrict	TRUE	no	HP:0030809,HP:0006144
+HG00176.4.M_120208_2	Data/rna_bam/HG00176.4.M_120208_2_chr21.bam	Data/dna_vcf/demo_chr21.vcf.gz	HG00176	outrider,import_exp	TRUE	IntersectionStrict	TRUE	no	HP:0005215,HP:0010234
+HG00096.1.M_111124_6_trunc	Data/rna_bam/HG00096.1.M_111124_6_chr21.bam_trunc.bam	Data/dna_vcf/demo_chr21.vcf.gz	HG00096	fraser	TRUE	IntersectionStrict	TRUE	no	HP:0009802,HP:0010896
+HG00103.4.M_120208_3_trunc	Data/rna_bam/HG00103.4.M_120208_3_chr21.bam_trunc.bam	Data/dna_vcf/demo_chr21.vcf.gz	HG00103	fraser	TRUE	IntersectionStrict	TRUE	no	HP:0004582,HP:0031959
+HG00106.4.M_120208_5_trunc	Data/rna_bam/HG00106.4.M_120208_5_chr21.bam_trunc.bam	Data/dna_vcf/demo_chr21.vcf.gz	HG00106	fraser	TRUE	IntersectionStrict	TRUE	no	HP:0002895,HP:0006731
+HG00111.2.M_111215_4_trunc	Data/rna_bam/HG00111.2.M_111215_4_chr21.bam_trunc.bam	Data/dna_vcf/demo_chr21.vcf.gz	HG00111	fraser	TRUE	IntersectionStrict	TRUE	no	HP:0100491,HP:0100871
+HG00116.2.M_120131_1_trunc	Data/rna_bam/HG00116.2.M_120131_1_chr21.bam_trunc.bam	Data/dna_vcf/demo_chr21.vcf.gz	HG00116	fraser	TRUE	IntersectionStrict	TRUE	no	HP:0030613,HP:0012767
+HG00126.1.M_111124_8_trunc	Data/rna_bam/HG00126.1.M_111124_8_chr21.bam_trunc.bam	Data/dna_vcf/demo_chr21.vcf.gz	HG00126	fraser	TRUE	IntersectionStrict	TRUE	no	HP:0000290,HP:0000293
+HG00132.2.M_111215_4_trunc	Data/rna_bam/HG00132.2.M_111215_4_chr21.bam_trunc.bam	Data/dna_vcf/demo_chr21.vcf.gz	HG00132	fraser	TRUE	IntersectionStrict	TRUE	no	HP:0006489,HP:0006490
+HG00149.1.M_111124_6_trunc	Data/rna_bam/HG00149.1.M_111124_6_chr21.bam_trunc.bam	Data/dna_vcf/demo_chr21.vcf.gz	HG00149	fraser	TRUE	IntersectionStrict	TRUE	no	HP:0000014,HP:0000020,HP:0032663
+HG00150.4.M_120208_7_trunc	Data/rna_bam/HG00150.4.M_120208_7_chr21.bam_trunc.bam	Data/dna_vcf/demo_chr21.vcf.gz	HG00150	fraser	TRUE	IntersectionStrict	TRUE	no	HP:0030809,HP:0006144
+HG00176.4.M_120208_2_trunc	Data/rna_bam/HG00176.4.M_120208_2_chr21.bam_trunc.bam	Data/dna_vcf/demo_chr21.vcf.gz	HG00176	fraser	TRUE	IntersectionStrict	TRUE	no	HP:0005215,HP:0010234
+HG00178.4.M_120208_8				import_exp						Data/external_geneCounts.tsv.gz	v29
+HG00181.4.M_120208_4				import_exp						Data/external_geneCounts.tsv.gz	v29
