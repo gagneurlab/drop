@@ -1,5 +1,5 @@
 from .SampleAnnotation import SampleAnnotation
-from .Submodules import AE, AS, MAE
+from .submodules import *
 from .ExportCounts import ExportCounts
 from drop import utils
 from pathlib import Path
@@ -38,6 +38,8 @@ class DropConfig:
         # annotations
         self.geneAnnotation = self.get("geneAnnotation")
         self.genomeAssembly = self.get("genomeAssembly")
+        self.fastaFile = self.get("mae")["genome"] # TODO: move fasta outside of mae
+        self.fastaDict = Path(self.fastaFile).with_suffix(".dict")
         self.sampleAnnotation = SampleAnnotation(self.get("sampleAnnotation"), self.root)
 
         # submodules
@@ -127,8 +129,15 @@ class DropConfig:
 
     def get(self, key):
         if key not in self.CONFIG_KEYS:
-            raise KeyError(f"{key} not defined for Drop config")
+            raise KeyError(f"'{key}' not defined for DROP config")
         return self.wBuildConfig.get(key)
+
+    def getTool(self, tool):
+        try:
+            toolCmd = self.get("tools")[tool]
+        except KeyError:
+            raise KeyError(f"'{toolCmd}' not a defined tool for DROP config")
+        return toolCmd
 
     def getGeneAnnotations(self):
         return self.geneAnnotation
@@ -138,3 +147,9 @@ class DropConfig:
 
     def getGeneAnnotationFile(self, annotation):
         return self.geneAnnotation[annotation]
+
+    def getFastaFile(self, str_=True):
+        return utils.returnPath(self.fastaFile, str_)
+
+    def getFastaDict(self, str_=True):
+        return utils.returnPath(self.fastaDict, str_)
