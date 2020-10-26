@@ -28,11 +28,6 @@ install:
   # install drop
   - pip install . -vv
 
-  # install drop
-  - pip uninstall wbuild -y
-  - pip install -r requirements_test.txt
-  - pip install -e . -vv
-
 script: 
   - conda list 
   - java -version
