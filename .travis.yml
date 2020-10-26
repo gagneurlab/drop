@@ -23,7 +23,7 @@ install:
   - conda activate drop
   - conda install -c conda-forge -c bioconda drop
   - conda remove --force drop
-  - pip install -r requirements_test.txt
+  - pip install -r tests/requirements.txt
 
   # install drop
   - pip install . -vv

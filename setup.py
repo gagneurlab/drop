@@ -5,7 +5,7 @@ with open("README.md", "r") as fh:
     long_description = fh.read()
 
 requirements = [
-    'wbuild @ git+https://github.com/gagneurlab/wBuild.git',
+    'wbuild>=1.8.0',
     'python-dateutil',
     'pandoc',
     'graphviz',
