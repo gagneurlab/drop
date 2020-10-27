@@ -9,8 +9,10 @@
 # 7 {input.fasta}
 # 8 {config[mae][gatkIgnoreHeaderCheck]}
 # 9 {output.counted}
-# 10 {config[tools][bcftoolsCmd]}
-# 11 {config[tools][samtoolsCmd]}
+# 10 {params.bcftools}
+# 11 {params.samtools}
+# 12 {params.gatk}
+# 13 {input.script_mae}
 
 ncbi2ucsc=$1
 ucsc2ncbi=$2
@@ -23,7 +25,8 @@ sanity=$8
 output=$9
 bcftools=${10}
 samtools=${11}
-script=${12}
+gatk=${12}
+script=${13}
 
 # get number of UCSC chromosomes in BAM
 bam_chr=$($samtools idxstats ${bam_file} | grep chr | wc -l)
@@ -37,4 +40,4 @@ else
 fi
 
 bash $script $ncbi2ucsc $ucsc2ncbi $vcf_file $bam_file \
-    "qc--${rna_id}" $fasta $sanity $output $bcftools
+    "qc--${rna_id}" $fasta $sanity $output $bcftools $samtools $gatk
