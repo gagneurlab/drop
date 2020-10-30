@@ -44,8 +44,9 @@ def removeFile(filePath, warn=True):
         filePath.unlink()
 
 
-def setFiles(warn=True):
-    repoPaths, projectPaths = drop.setupPaths(projectRoot=Path.cwd().resolve())
+def setFiles(projectDir=None, warn=True):
+    projectDir = Path.cwd().resolve() if projectDir is None else projectDir
+    repoPaths, projectPaths = drop.setupPaths(projectRoot=projectDir)
 
     # create new directories
     for path in projectPaths.values():
@@ -83,8 +84,7 @@ def init():
 
 @main.command()
 def update():
-    # TODO: check drop version first
-    setFiles()
+    drop.checkDropVersion(Path().cwd().resolve())
     logger.info("update...done")
 
 
