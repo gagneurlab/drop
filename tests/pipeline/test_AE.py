@@ -54,7 +54,8 @@ class Test_AE_Pipeline:
         assert "dim: 438 10" in r.stdout
         assert "res: 4380 15" in r.stdout
 
-    def test_no_import(self, demo_dir):
+    @pytest.fixture()
+    def no_import(self, demo_dir):
         LOGGER.info("dryrun without import counts...")
 
         # remove last 2 lines of sample annotation
@@ -64,15 +65,18 @@ class Test_AE_Pipeline:
         run("sed 's/sample_annotation.tsv/sample_annotation_noimp.tsv/' config.yaml | "
             "sed '/import_exp/d' > config_noimp.yaml", demo_dir)
 
-        merged_counts = f"{demo_dir}/Output/processed_data/aberrant_expression/v29/outrider/outrider/total_counts.Rds"
-        r = run(f"snakemake {merged_counts} --configfile config_noimp.yaml -nqF", demo_dir)
+        yield demo_dir
+
+        # reset changed files back to original
+        run("rm Data/sample_annotation_noimp.tsv", demo_dir)
+        run("rm config_noimp.yaml", demo_dir)
+
+    def test_no_import(self, no_import):
+        merged_counts = f"{no_import}/Output/processed_data/aberrant_expression/v29/outrider/outrider/total_counts.Rds"
+        r = run(f"snakemake {merged_counts} --configfile config_noimp.yaml -nqF", no_import)
         print(r.stdout)
         assert "10\tAberrantExpression_pipeline_Counting_countReads_R" in r.stdout
         assert "1\tAberrantExpression_pipeline_Counting_mergeCounts_R" in r.stdout
 
         # check if pipeline runs through without errors
-        run(f"snakemake {merged_counts} --configfile config_noimp.yaml -j{CORES}", demo_dir)
-
-        # reset changed files back to original
-        run("rm Data/sample_annotation_noimp.tsv", demo_dir)
-        run("rm config_noimp.yaml", demo_dir)
+        run(f"snakemake {merged_counts} --configfile config_noimp.yaml -j{CORES}", no_import)
