@@ -1,4 +1,5 @@
 from snakemake.io import expand
+import numpy as np
 
 from drop import utils
 from .Submodules import Submodule
@@ -49,4 +50,9 @@ class AE(Submodule):
     def getCountParams(self, rnaID):
         sa_row = self.sa.getRow("RNA_ID", rnaID)
         count_params = sa_row[["STRAND", "COUNT_MODE", "PAIRED_END", "COUNT_OVERLAPS"]]
-        return count_params.iloc[0].to_dict()
+        count_params_dict = {
+            k: bool(v) if isinstance(v, np.bool_) else v
+            for k, v in count_params.iloc[0].to_dict().items()
+        }
+        return count_params_dict
+        # count_params.iloc[0].to_dict()
