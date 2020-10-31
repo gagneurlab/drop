@@ -13,7 +13,7 @@ class Test_SampleAnnotation:
 
     def test_mapping(self, sampleAnnotation):
         # ID mappings/groups
-        assert sampleAnnotation.idMapping.shape == (20, 2)
+        assert sampleAnnotation.idMapping.shape == (22, 2)
         assert sampleAnnotation.sampleFileMapping.shape == (32, 4)
         true_mapping = {'mae': 2, 'import_exp': 8, 'outrider': 10, 'fraser': 10}
         assert true_mapping == {k: len(v) for k, v in sampleAnnotation.rnaIDs.items()}
