@@ -40,15 +40,13 @@ class SampleAnnotation:
             "RNA_ID": str, "DNA_ID": str, "DROP_GROUP": str, "ANNOTATION": str,
             "PAIRED_END": bool, "COUNT_MODE": str, "COUNT_OVERLAPS": bool, "STRAND": str
         }
-        sa = pd.read_csv(self.file, sep=sep, converters=data_types)
+        sa = pd.read_csv(self.file, sep=sep, index_col=False, converters=data_types)
         missing_cols = [x for x in self.SAMPLE_ANNOTATION_COLUMNS if x not in sa.columns.values]
         if len(missing_cols) > 0:
             raise ValueError(f"Incorrect columns in sample annotation file. Missing:\n{missing_cols}")
 
         # remove unwanted characters
-        col = sa["DROP_GROUP"]
-        col = col.str.replace(" ", "").str.replace("(|)", "", regex=True)
-        sa["DROP_GROUP"] = col
+        sa["DROP_GROUP"] = sa["DROP_GROUP"].str.replace(" ", "").str.replace("(|)", "", regex=True)
 
         # set ID type as string
         for ID_key in ["RNA_ID", "DNA_ID"]:
