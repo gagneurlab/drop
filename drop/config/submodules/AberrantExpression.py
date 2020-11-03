@@ -18,8 +18,7 @@ class AE(Submodule):
         self.extRnaIDs = self.sa.subsetGroups(self.groups, assay="GENE_COUNTS")
 
         # check number of IDs per group
-        all_groups = set().union(*[self.rnaIDs, self.extRnaIDs])
-        all_ids = {g: self.rnaIDs[g] + self.extRnaIDs[g] for g in all_groups}
+        all_ids = {g: self.rnaIDs[g] + self.extRnaIDs[g] for g in self.groups}
         self.checkSubset(all_ids)
 
     def setDefaultKeys(self, dict_):
