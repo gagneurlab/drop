@@ -1,5 +1,5 @@
 from .SampleAnnotation import SampleAnnotation
-from .Submodules import AE, AS, MAE
+from .submodules import *
 from .ExportCounts import ExportCounts
 from drop import utils
 from pathlib import Path
@@ -35,23 +35,42 @@ class DropConfig:
         self.htmlOutputPath = Path(self.get("htmlOutputPath"))
         self.readmePath = Path(self.get("readmePath"))
 
+        # annotations
         self.geneAnnotation = self.get("geneAnnotation")
         self.genomeAssembly = self.get("genomeAssembly")
+        self.fastaFile = self.get("mae")["genome"] # TODO: move fasta outside of mae
+        self.fastaDict = Path(self.fastaFile).with_suffix(".dict")
         self.sampleAnnotation = SampleAnnotation(self.get("sampleAnnotation"), self.root)
 
-        # setup submodules
-        cfg = self.config_dict
-        sa = self.sampleAnnotation
-        pd = self.processedDataDir
-        pr = self.processedResultsDir
-        self.AE = AE(cfg["aberrantExpression"], sa, pd, pr)
-        self.AS = AS(cfg["aberrantSplicing"], sa, pd, pr)
-        self.MAE = MAE(cfg["mae"], sa, pd, pr)
+        # submodules
+        self.AE = AE(
+            config=self.get("aberrantExpression"),
+            sampleAnnotation=self.sampleAnnotation,
+            processedDataDir=self.processedDataDir,
+            processedResultsDir=self.processedResultsDir
+        )
+        self.AS = AS(
+            config=self.get("aberrantSplicing"),
+            sampleAnnotation=self.sampleAnnotation,
+            processedDataDir=self.processedDataDir,
+            processedResultsDir=self.processedResultsDir
+        )
+        self.MAE = MAE(
+            config=self.get("mae"),
+            sampleAnnotation=self.sampleAnnotation,
+            processedDataDir=self.processedDataDir,
+            processedResultsDir=self.processedResultsDir
+        )
 
+        # counts export
         self.exportCounts = ExportCounts(
-            self.config_dict, self.processedResultsDir,
-            self.sampleAnnotation, self.getGeneAnnotations(), self.get("genomeAssembly"),
-            aberrantExpression=self.AE, aberrantSplicing=self.AS
+            dict_=self.get("exportCounts"),
+            outputRoot=self.processedResultsDir,
+            sampleAnnotation=self.sampleAnnotation,
+            geneAnnotations=self.getGeneAnnotations(),
+            genomeAssembly=self.get("genomeAssembly"),
+            aberrantExpression=self.AE,
+            aberrantSplicing=self.AS
         )
 
         # legacy
@@ -110,8 +129,15 @@ class DropConfig:
 
     def get(self, key):
         if key not in self.CONFIG_KEYS:
-            raise KeyError(f"{key} not defined for Drop config")
+            raise KeyError(f"'{key}' not defined for DROP config")
         return self.wBuildConfig.get(key)
+
+    def getTool(self, tool):
+        try:
+            toolCmd = self.get("tools")[tool]
+        except KeyError:
+            raise KeyError(f"'{toolCmd}' not a defined tool for DROP config")
+        return toolCmd
 
     def getGeneAnnotations(self):
         return self.geneAnnotation
@@ -121,3 +147,9 @@ class DropConfig:
 
     def getGeneAnnotationFile(self, annotation):
         return self.geneAnnotation[annotation]
+
+    def getFastaFile(self, str_=True):
+        return utils.returnPath(self.fastaFile, str_)
+
+    def getFastaDict(self, str_=True):
+        return utils.returnPath(self.fastaDict, str_)

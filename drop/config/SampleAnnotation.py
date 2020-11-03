@@ -3,15 +3,17 @@ import pandas as pd
 from pathlib import Path
 from snakemake.logging import logger
 import warnings
+
 warnings.filterwarnings("ignore", 'This pattern has match groups')
 
+
 class SampleAnnotation:
-    
-    SAMPLE_ANNOTATION_COLUMNS = [
-        "RNA_ID", "RNA_BAM_FILE", "DNA_ID", "DNA_VCF_FILE", "DROP_GROUP", "GENE_COUNTS_FILE", "ANNOTATION",
+    FILE_TYPES = ["RNA_BAM_FILE", "DNA_VCF_FILE", "GENE_COUNTS_FILE"]
+    SAMPLE_ANNOTATION_COLUMNS = FILE_TYPES + [
+        "RNA_ID", "DNA_ID", "DROP_GROUP", "ANNOTATION",
         "PAIRED_END", "COUNT_MODE", "COUNT_OVERLAPS", "STRAND"
     ]
-    
+
     def __init__(self, file, root):
         """
         sa_file: sample annotation file location from config
@@ -22,12 +24,12 @@ class SampleAnnotation:
         self.sa = self.parse()
         self.idMapping = self.createIdMapping()
         self.sampleFileMapping = self.createSampleFileMapping()
-        
+
         self.rnaIDs = self.createGroupIds(file_type="RNA_BAM_FILE", sep=',')
         self.dnaIDs = self.createGroupIds(file_type="DNA_VCF_FILE", sep=',')
         # external counts
         self.extGeneCountIDs = self.createGroupIds(file_type="GENE_COUNTS_FILE", sep=',')
-        
+
     def parse(self, sep='\t'):
         """
         read and check sample annotation for missing columns
@@ -37,16 +39,16 @@ class SampleAnnotation:
         missing_cols = [x for x in self.SAMPLE_ANNOTATION_COLUMNS if x not in sa.columns.values]
         if len(missing_cols) > 0:
             raise ValueError(f"Incorrect columns in sample annotation file. Missing:\n{missing_cols}")
-        
+
         # remove unwanted characters
         col = sa["DROP_GROUP"]
         col = col.str.replace(" ", "").str.replace("(|)", "", regex=True)
         sa["DROP_GROUP"] = col
-        
+
         # set ID type as string
         for ID_key in ["RNA_ID", "DNA_ID"]:
             sa[ID_key] = sa[ID_key].apply(
-                    lambda x: str(x) if not pd.isnull(x) else x
+                lambda x: str(x) if not pd.isnull(x) else x
             )
         return sa
 
@@ -57,7 +59,7 @@ class SampleAnnotation:
         Get mapping of RNA and DNA IDs
         """
         return self.sa[["RNA_ID", "DNA_ID"]].drop_duplicates().dropna()
-    
+
     def createSampleFileMapping(self):
         """
         create a sample file mapping with unique entries of existing files
@@ -74,11 +76,11 @@ class SampleAnnotation:
                 df['FILE_TYPE'] = file_type
                 assay_subsets.append(df)
         file_mapping = pd.concat(assay_subsets)
-        
+
         # cleaning SAMPLE_FILE_MAPPING
         file_mapping.dropna(inplace=True)
         file_mapping.drop_duplicates(inplace=True)
-        
+
         # check for missing files
         existing = utils.checkFileExists(file_mapping["FILE_PATH"])
         if len(existing) == 0:
@@ -102,7 +104,13 @@ class SampleAnnotation:
         if not file_type:
             file_type = "RNA_BAM_FILE"
         # infer ID type from file type
-        assay_id = self.subsetFileMapping(file_type)["ASSAY"].iloc[0]
+        assay_id = self.subsetFileMapping(file_type)["ASSAY"].unique()
+        if len(assay_id) == 0:
+            return {}  # no files, return empty mapping
+        elif len(assay_id) > 1:
+            raise ValueError(f"More than 1 assay entry for file type {file_type}:\n{assay_id}")
+        else:
+            assay_id = assay_id[0]
 
         # Subset sample annotation to only IDs of specified file_type
         ids = self.getSampleIDs(file_type)
@@ -139,7 +147,7 @@ class SampleAnnotation:
             # check type for subset
             if not isinstance(subset, pd.DataFrame):
                 raise TypeError(f"Is not pandas DataFrame\n {subset}")
-            if not sa_cols <= set(subset.columns): # check if mandatory cols not contained
+            if not sa_cols <= set(subset.columns):  # check if mandatory cols not contained
                 raise ValueError(f"Subset columns not the same as {sa_cols}\ngot: {subset.columns}")
 
         # check if column is valid
@@ -158,12 +166,12 @@ class SampleAnnotation:
         subset = utils.subsetBy(subset, "ID", sample_id)
         return subset
 
-    def subsetGroups(self, subset_groups, assay="RNA", warn=30, error=10):
+    def subsetGroups(self, subset_groups, assay="RNA"):
         """
         Subset DROP group to sample IDs mapping by list of groups (`subset_groups`).
-        Give warning or error if subsetting results in too few sample IDs per group.
-        warn : number of samples threshold at which to warn about too few samples
-        error: number of samples threshold at which to give error
+        :param subset_groups: list of groups to include
+        :param assay: name/prefix of assay type
+        :return: dictionary with group names as keys and ID lists as entries
         """
         ids_by_group = self.getGroupedIDs(assay)
 
@@ -173,16 +181,6 @@ class SampleAnnotation:
             subset_groups = [subset_groups] if subset_groups.__class__ == str else subset_groups
             subset = {gr: ids for gr, ids in
                       ids_by_group.items() if gr in subset_groups}
-
-        for group in subset_groups:
-            if len(subset[group]) < error:
-                message = f'Too few IDs in DROP_GROUP {group}'
-                message += f', please ensure that it has at least {error} IDs'
-                message += f', groups: {subset[group]}'
-                raise ValueError(message)
-            elif len(subset[group]) < warn:
-                logger.info(f'WARNING: Less than {warn} IDs in DROP_GROUP {group}')
-
         return subset
 
     ### Getters
@@ -199,7 +197,7 @@ class SampleAnnotation:
                 raise ValueError(message)
             path = path[0]
         return path
-    
+
     def getFilePaths(self, file_type, group=None):
         """
         Get all file paths of a file type
@@ -233,7 +231,7 @@ class SampleAnnotation:
         return row
 
     ### DROP Groups ###
-    
+
     def getGroupedIDs(self, assays):
         """
         Get group to IDs mapping
@@ -251,12 +249,16 @@ class SampleAnnotation:
             else:
                 raise ValueError(f"'{assay}' is not a valid assay name")
         return groupedIDs
-        
+
     def getGroups(self, assay="RNA"):
         return self.getGroupedIDs(assay).keys()
-    
+
     def getIDsByGroup(self, group, assay="RNA"):
-        return self.getGroupedIDs(assay)[group]
+        try:
+            ids = self.getGroupedIDs(assay)[group]
+        except:
+            ids = []
+        return ids
 
     def getSampleIDs(self, file_type):
         ids = self.subsetFileMapping(file_type)["ID"]
