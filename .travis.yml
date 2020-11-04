@@ -38,4 +38,4 @@ script:
   - wbuild --version
   - python --version
 
-  - pytest -vv -s
+  - travis_wait 40 pytest -vv -s
