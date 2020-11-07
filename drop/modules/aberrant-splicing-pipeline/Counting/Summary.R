@@ -34,7 +34,7 @@ fds <- loadFraserDataSet(dir=workingDir, name=paste0("raw-", dataset))
 #' 
 #' Number of introns (psi5 or psi3): `r length(rowRanges(fds, type = "psi5"))`
 #' 
-#' Number of splice sites (psiSite): `r length(rowRanges(fds, type = "psiSite"))`
+#' Number of splice sites (theta): `r length(rowRanges(fds, type = "theta"))`
 #' 
 #' Introns that passed filter
 table(mcols(fds, type="j")[,"passed"])

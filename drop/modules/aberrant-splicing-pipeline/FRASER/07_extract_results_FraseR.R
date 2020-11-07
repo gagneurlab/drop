@@ -15,7 +15,7 @@
 #'   - add_HPO_cols: '`sm str(projectDir / ".drop" / "helpers" / "add_HPO_cols.R")`'
 #'   - fdsin: '`sm cfg.getProcessedDataDir() +
 #'                 "/aberrant_splicing/datasets/savedObjects/{dataset}/" +
-#'                 "padjBetaBinomial_psiSite.h5"`'
+#'                 "padjBetaBinomial_theta.h5"`'
 #'  output:
 #'   - resultTableJunc: '`sm cfg.getProcessedDataDir() + 
 #'                          "/aberrant_splicing/results/{dataset}_results_per_junction.tsv"`'

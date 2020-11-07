@@ -11,11 +11,11 @@
 #'  input:
 #'   - fdsin:  '`sm cfg.getProcessedDataDir() + 
 #'                  "/aberrant_splicing/datasets/savedObjects/{dataset}/" +
-#'                  "predictedMeans_psiSite.h5"`'
+#'                  "predictedMeans_theta.h5"`'
 #'  output:
 #'   - fdsout: '`sm cfg.getProcessedDataDir() + 
 #'                  "/aberrant_splicing/datasets/savedObjects/{dataset}/" +
-#'                  "padjBetaBinomial_psiSite.h5"`'
+#'                  "padjBetaBinomial_theta.h5"`'
 #'  type: script
 #'---
 

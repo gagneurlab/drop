@@ -1,6 +1,6 @@
 package bioconductor version
 OUTRIDER TRUE 
-c-mertes/FRASER TRUE 1.1.1
+c-mertes/FRASER TRUE 1.2.0
 mumichae/tMAE TRUE 
 VariantAnnotation TRUE 
 rmarkdown FALSE 
