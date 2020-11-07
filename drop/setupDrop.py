@@ -33,7 +33,7 @@ def installRPackages():
     response.check_returncode()
 
 
-def checkDropVersion(projectRoot):
+def checkDropVersion(projectRoot, force=False):
     if projectRoot != Path.cwd().resolve():
         raise AssertionError(f"Specified project root '{projectRoot}' not equal to current working directory "
                              f"'{Path.cwd().resolve()}'")
@@ -47,4 +47,6 @@ def checkDropVersion(projectRoot):
         logger.info(f"Update drop version for {projectRoot} to version {drop.__version__}")
         with open(version_file, "w") as f:
             f.write(drop.__version__)
+        drop.cli.setFiles(projectRoot)
+    elif force:
         drop.cli.setFiles(projectRoot)

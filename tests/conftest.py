@@ -15,7 +15,8 @@ def demo_dir(tmpdir_factory):
     """
     run_dir = tmpdir_factory.mktemp("demo_dir")
     LOGGER.info(f"\n create demo dir: {run_dir}")
-    run(["drop", "demo"], run_dir, stdout=None)
+    r = run(["drop", "demo"], run_dir, stdout=subprocess.DEVNULL)
+    assert "demo project created" in r.stderr
     yield run_dir
     LOGGER.info("\n remove demo directory")
     run_dir.remove()

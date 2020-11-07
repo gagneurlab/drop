@@ -48,11 +48,6 @@ class SampleAnnotation:
         # remove unwanted characters
         sa["DROP_GROUP"] = sa["DROP_GROUP"].str.replace(" ", "").str.replace("(|)", "", regex=True)
 
-        # set ID type as string
-        for ID_key in ["RNA_ID", "DNA_ID"]:
-            sa[ID_key] = sa[ID_key].apply(
-                lambda x: str(x) if not pd.isnull(x) else x
-            )
         return sa
 
     ##### Construction

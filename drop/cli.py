@@ -84,7 +84,7 @@ def init():
 
 @main.command()
 def update():
-    drop.checkDropVersion(Path().cwd().resolve())
+    drop.checkDropVersion(Path().cwd().resolve(), force=True)
     logger.info("update...done")
 
 
