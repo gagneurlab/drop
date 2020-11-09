@@ -1,6 +1,7 @@
 from drop import utils
 import pandas as pd
 from pathlib import Path
+from collections import defaultdict
 from snakemake.logging import logger
 import warnings
 
@@ -35,21 +36,18 @@ class SampleAnnotation:
         read and check sample annotation for missing columns
         clean columns and set types
         """
-        sa = pd.read_csv(self.file, sep=sep)
+        data_types = {
+            "RNA_ID": str, "DNA_ID": str, "DROP_GROUP": str, "ANNOTATION": str,
+            "PAIRED_END": bool, "COUNT_MODE": str, "COUNT_OVERLAPS": bool, "STRAND": str
+        }
+        sa = pd.read_csv(self.file, sep=sep, index_col=False, converters=data_types)
         missing_cols = [x for x in self.SAMPLE_ANNOTATION_COLUMNS if x not in sa.columns.values]
         if len(missing_cols) > 0:
             raise ValueError(f"Incorrect columns in sample annotation file. Missing:\n{missing_cols}")
 
         # remove unwanted characters
-        col = sa["DROP_GROUP"]
-        col = col.str.replace(" ", "").str.replace("(|)", "", regex=True)
-        sa["DROP_GROUP"] = col
+        sa["DROP_GROUP"] = sa["DROP_GROUP"].str.replace(" ", "").str.replace("(|)", "", regex=True)
 
-        # set ID type as string
-        for ID_key in ["RNA_ID", "DNA_ID"]:
-            sa[ID_key] = sa[ID_key].apply(
-                lambda x: str(x) if not pd.isnull(x) else x
-            )
         return sa
 
     ##### Construction
@@ -106,7 +104,7 @@ class SampleAnnotation:
         # infer ID type from file type
         assay_id = self.subsetFileMapping(file_type)["ASSAY"].unique()
         if len(assay_id) == 0:
-            return {}  # no files, return empty mapping
+            return defaultdict(list)  # no files, return empty mapping
         elif len(assay_id) > 1:
             raise ValueError(f"More than 1 assay entry for file type {file_type}:\n{assay_id}")
         else:
@@ -181,6 +179,7 @@ class SampleAnnotation:
             subset_groups = [subset_groups] if subset_groups.__class__ == str else subset_groups
             subset = {gr: ids for gr, ids in
                       ids_by_group.items() if gr in subset_groups}
+            subset = defaultdict(list, subset)
         return subset
 
     ### Getters
@@ -238,7 +237,7 @@ class SampleAnnotation:
         :param assays: list of or single assay the IDs should be from. Can be file_type or 'RNA'/'DNA'
         """
         assays = [assays] if isinstance(assays, str) else assays
-        groupedIDs = dict()
+        groupedIDs = defaultdict(list)
         for assay in assays:
             if "RNA" in assay:
                 groupedIDs.update(self.rnaIDs)

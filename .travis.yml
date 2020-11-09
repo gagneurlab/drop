@@ -1,10 +1,6 @@
 language: python
 dist: xenial
 
-#cache:
-#  - directories:
-#    - $HOME/miniconda
-
 python:
   - "3.7"
 
@@ -38,4 +34,4 @@ script:
   - wbuild --version
   - python --version
 
-  - travis_wait 40 pytest -vv -s
+  - travis_wait 40 pytest --durations=10 --durations-min=1.0

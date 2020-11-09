@@ -23,7 +23,7 @@ def createDir(directory):
         directory.mkdir(parents=True)
 
 
-def checkKeys(dict_, keys, check_files=False):
+def checkKeys(dict_, keys=None, check_files=False):
     """
     :param dict_: config dictionary
     :param keys: keys that are expected to be in dict_

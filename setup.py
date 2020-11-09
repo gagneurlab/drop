@@ -22,7 +22,7 @@ for (path, directories, filenames) in os.walk('drop/'):
 
 setuptools.setup(
     name="drop",
-    version="1.0.0",
+    version="1.0.2",
     author="Michaela Müller, Daniela Andrade Salazar, Vicente Yepez",
     author_email="mumichae@in.tum.de",
     description="Detection of RNA Outlier Pipeline",

@@ -92,7 +92,7 @@ class DropConfig:
         config_dict["wBuildPath"] = utils.getWBuildPath()
 
         setKey = utils.setKey
-        setKey(config_dict, None, "fileRegex", ".*\.(R|md)")
+        setKey(config_dict, None, "fileRegex", r".*\.(R|md)")
         setKey(config_dict, None, "genomeAssembly", "hg19")
 
         # set submodule dictionaries
