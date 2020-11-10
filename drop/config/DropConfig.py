@@ -94,6 +94,7 @@ class DropConfig:
         setKey = utils.setKey
         setKey(config_dict, None, "fileRegex", ".*\.(R|md)")
         setKey(config_dict, None, "genomeAssembly", "hg19")
+        setKey(config_dict, None, "hpoFile", NULL)
 
         # set submodule dictionaries
         setKey(config_dict, None, "aberrantExpression", dict())

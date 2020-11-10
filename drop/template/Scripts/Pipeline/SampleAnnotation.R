@@ -7,6 +7,7 @@
 #'  params:
 #'   - export_dir: '`sm cfg.getProcessedResultsDir() + "/exported_counts"`'
 #'   - groups: '`sm cfg.exportCounts.getExportGroups()`'
+#'   - hpoFile: '`sm cfg.get("hpoFile")`'
 #'  input: 
 #'   - sampleAnnotation: '`sm config["sampleAnnotation"]`'
 #'  output:
@@ -81,7 +82,11 @@ unique(sa[,.(RNA_ID, DROP_GROUP)])$DROP_GROUP %>% strsplit(',') %>% unlist %>%
 #+echo=F
 if(!is.null(sa$HPO_TERMS)){
   sa2 <- sa[, .SD[1], by = RNA_ID]
-  hpo_dt <- fread('https://www.cmm.in.tum.de/public/paper/drop_analysis/resource/hpo_genes.tsv.gz')
+  
+  filename <- ifelse(is.null(snakemake@params$hpo_file), 
+                     'https://www.cmm.in.tum.de/public/paper/drop_analysis/resource/hpo_genes.tsv.gz',
+                     hpo_file)
+  hpo_dt <- fread(filename)
   
   sapply(1:nrow(sa2), function(i){
     hpos <- strsplit(sa2[i, HPO_TERMS], split = ',') %>% unlist
