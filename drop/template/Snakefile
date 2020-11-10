@@ -38,9 +38,9 @@ rule sampleAnnotation:
 rule exportCounts:
     input:
         cfg.exportCounts.getExportCountFiles("geneCounts"),
-         cfg.exportCounts.getExportCountFiles("splitCounts"),
-         cfg.exportCounts.getExportCountFiles("spliceSiteOverlapCounts"),
-         cfg.getProcessedResultsDir() + "/exported_counts/sample_anno.done"
+        cfg.exportCounts.getExportCountFiles("splicingCountsN", expandPattern="k_{type}_counts", type=["j", "theta"]),
+        cfg.exportCounts.getExportCountFiles("splicingCountsK", expandPattern="n_{type}_counts", type=["psi5", "psi3", "theta"]),
+        cfg.getProcessedResultsDir() + "/exported_counts/sample_anno.done"
 
 rule dependencyGraph:
     input:

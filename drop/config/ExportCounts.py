@@ -5,8 +5,8 @@ class ExportCounts:
 
     COUNT_TYPE_MAP = {
         "geneCounts": "aberrantExpression",
-        "splitCounts": "aberrantSplicing",
-        "spliceSiteOverlapCounts": "aberrantSplicing"
+        "splicingCountsK": "aberrantSplicing",
+        "splicingCountsN": "aberrantSplicing"
     }
 
     def __init__(self, dict_, outputRoot, sampleAnnotation, geneAnnotations, genomeAssembly,
@@ -47,8 +47,12 @@ class ExportCounts:
             raise KeyError(f"{key} not defined for count export")
         return self.config_dict[key]
 
-    def getFilePattern(self, str_=True):
-        return utils.returnPath(self.pattern, str_=str_)
+    def getFilePattern(self, str_=True, expandStr=False):
+        pattern = self.pattern
+        if expandStr:
+            str_=True
+            pattern = pattern.__str__().replace("{", "{{").replace("}", "}}") 
+        return utils.returnPath(pattern, str_=str_)
 
     def getExportGroups(self, modules=None):
         """
@@ -66,7 +70,7 @@ class ExportCounts:
         export_groups = set(groups) - set(self.get("excludeGroups"))
         return export_groups
 
-    def getExportCountFiles(self, prefix):
+    def getExportCountFiles(self, prefix, expandPattern=None, **kwargs):
         """
         Determine export count files.
         :param prefix: name of file
@@ -76,8 +80,11 @@ class ExportCounts:
             raise ValueError(f"{prefix} not a valid file type for exported counts")
 
         datasets = self.getExportGroups([self.COUNT_TYPE_MAP[prefix]])
-        file_pattern = str(self.pattern / f"{prefix}.tsv.gz")
+        if expandPattern is None:
+            file_pattern = str(self.pattern / f"{prefix}.tsv.gz")
+        else:
+            file_pattern = str(self.pattern / f"{expandPattern}.tsv.gz")
         count_files = expand(file_pattern, annotation=self.get("geneAnnotations"),
-                             dataset=datasets, genomeAssembly=self.genomeAssembly)
+                             dataset=datasets, genomeAssembly=self.genomeAssembly, **kwargs)
         return count_files
 
