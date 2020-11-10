@@ -20,7 +20,6 @@
 
 saveRDS(snakemake, snakemake@log$snakemake)
 source(snakemake@params$setup, echo=FALSE)
-library(BSgenome.Hsapiens.UCSC.hg19)
 
 dataset    <- snakemake@wildcards$dataset
 workingDir <- snakemake@params$workingDir
@@ -38,8 +37,10 @@ genome <- NULL
 
 if(strandSpecific(fds) == 0){
   if(snakemake@config$genomeAssembly == 'hg19'){
+    library(BSgenome.Hsapiens.UCSC.hg19)
     genome <- BSgenome.Hsapiens.UCSC.hg19
   } else if(snakemake@config$genomeAssembly == 'hg38'){
+    library(BSgenome.Hsapiens.UCSC.hg38)
     genome <- BSgenome.Hsapiens.UCSC.hg38
   }
 }
