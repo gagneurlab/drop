@@ -41,7 +41,7 @@ fds_known <- fds[unique(to(findOverlaps(introns, rowRanges(fds, type="j"), type=
 
 # save k/n counts
 for(i in c(out_k_files, out_n_files)){
-  ctsType <- upper(strsplit(basename(i), "_")[[1]][1])
+  ctsType <- toupper(strsplit(basename(i), "_")[[1]][1])
   psiType <- strsplit(basename(i), "_")[[1]][2]
   cts <- as.data.table(K(fds_known, type=psiType))
   anno <- as.data.table(rowRanges(fds_known, type=psiType))
