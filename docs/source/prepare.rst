@@ -195,15 +195,14 @@ Files to download
 
 Two different files can be downloaded from our `public repository <https://www.cmm.in.tum.de/public/paper/drop_analysis/resource/>`_. 
 
-1) VCF file containing different positions to be used to match DNA with RNA files.
+1. VCF file containing different positions to be used to match DNA with RNA files.
 The file name is ``qc_vcf_1000G_{genome_build}.vcf.gz``. One file is available for each 
 genome build (hg19 and hg38). Download it together with the corresponding .tbi file. 
 Indicate the full path to the vcf file in the ``qcVcf`` key in the mono-allelic expression dictionary.
-This file is only needed for the MAE module. Otherwise, write ``null`` in the 
-``qcVcf``key.
+This file is only needed for the MAE module. Otherwise, write ``null`` in the ``qcVcf`` key.
 
-2) Text file containing the relations between genes and phenotypes encoded as HPO terms. 
-The file name is ``hpo_genes.tsv.gz``
+2. Text file containing the relations between genes and phenotypes encoded as HPO terms. 
+The file name is ``hpo_genes.tsv.gz``.
 Download it and indicate the full path to it in the ``hpoFile`` key.
 The file is only needed in case HPO terms are specified in the sample annotation.
 Otherwise, write ``null`` in the ``hpoFile`` key.
