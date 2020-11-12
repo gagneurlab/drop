@@ -81,6 +81,7 @@ unique(sa[,.(RNA_ID, DROP_GROUP)])$DROP_GROUP %>% strsplit(',') %>% unlist %>%
 # Obtain genes that overlap with HPO terms
 #+echo=F
 if(!is.null(sa$HPO_TERMS)){
+  if(!all(is.na(sa$HPO_TERMS)) & ! all(sa$HPO_TERMS == '')){
   sa2 <- sa[, .SD[1], by = RNA_ID]
   
   filename <- ifelse(is.null(snakemake@params$hpo_file), 
@@ -99,8 +100,8 @@ if(!is.null(sa$HPO_TERMS)){
          file.path(snakemake@config$root, 
                    'processed_data/sample_anno/genes_overlapping_HPO_terms.tsv'), 
          na = NA, sep = "\t", row.names = F, quote = F)
+  }
 }
-
 sa[, DROP_GROUP := gsub(' ', '', DROP_GROUP)]
 if(!is.null(sa$ICD_10))
   sa[, ICD_10 := toupper(ICD_10)]
