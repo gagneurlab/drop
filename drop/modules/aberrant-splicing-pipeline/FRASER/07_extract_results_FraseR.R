@@ -9,6 +9,7 @@
 #'   - padjCutoff: '`sm cfg.AS.get("padjCutoff")`'
 #'   - zScoreCutoff: '`sm cfg.AS.get("zScoreCutoff")`'
 #'   - deltaPsiCutoff: '`sm cfg.AS.get("deltaPsiCutoff")`'
+#'   - hpoFile: '`sm cfg.get("hpoFile")`'
 #'  threads: 10
 #'  input:
 #'   - setup: '`sm cfg.AS.getWorkdir() + "/config.R"`'
@@ -92,7 +93,7 @@ if(length(res_junc) > 0){
   sa <- fread(snakemake@config$sampleAnnotation)
   if(!is.null(sa$HPO_TERMS)){
     if(!all(is.na(sa$HPO_TERMS))){
-      res_genes_dt <- add_HPO_cols(res_genes_dt)
+      res_genes_dt <- add_HPO_cols(res_genes_dt, hpo_file = snakemake@params$hpoFile)
     }
   }
 } else res_genes_dt <- data.table()

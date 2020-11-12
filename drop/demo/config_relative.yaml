@@ -7,7 +7,8 @@ sampleAnnotation: Data/sample_annotation.tsv
 geneAnnotation:
     v29: Data/gencode_annotation_trunc.gtf
 genomeAssembly: hg19
-scanBamParam: null
+hpoFile: null
+
 exportCounts:
   geneAnnotations:
     - v29
