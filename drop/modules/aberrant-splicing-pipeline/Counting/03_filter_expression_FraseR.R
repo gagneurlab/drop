@@ -8,8 +8,8 @@
 #'   - setup: '`sm cfg.AS.getWorkdir() + "/config.R"`'
 #'   - workingDir: '`sm cfg.getProcessedDataDir() + "/aberrant_splicing/datasets/"`'
 #'  input:
-#'   - psiSS:  '`sm cfg.getProcessedDataDir()+ 
-#'                  "/aberrant_splicing/datasets/savedObjects/raw-{dataset}/psiSite.h5"`'
+#'   - theta:  '`sm cfg.getProcessedDataDir()+
+#'                  "/aberrant_splicing/datasets/savedObjects/raw-{dataset}/theta.h5"`'
 #'  output:
 #'   - fds: '`sm cfg.getProcessedDataDir() +
 #'                "/aberrant_splicing/datasets/savedObjects/{dataset}/fds-object.RDS"`'
