@@ -18,6 +18,7 @@
 
 saveRDS(snakemake, snakemake@log$snakemake)
 source(snakemake@params$setup, echo=FALSE)
+library(AnnotationDbi)
 
 # 
 # input
