@@ -5,8 +5,7 @@ class ExportCounts:
 
     COUNT_TYPE_MAP = {
         "geneCounts": "aberrantExpression",
-        "splicingCountsK": "aberrantSplicing",
-        "splicingCountsN": "aberrantSplicing"
+        "splicingCounts": "aberrantSplicing",
     }
 
     def __init__(self, dict_, outputRoot, sampleAnnotation, geneAnnotations, genomeAssembly,
