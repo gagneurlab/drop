@@ -42,10 +42,13 @@ if (!"gene_name" %in% colnames(gtf_dt)) {
 }
 gtf_dt <- gtf_dt[type == 'gene']
 
+if('gene_biotype' %in% colnames(gtf_dt))
+  setnames(gtf_dt, 'gene_biotype', 'gene_type')
+
 # Subset to the following columns only
 columns <- c('seqnames', 'start', 'end', 'strand', 'gene_id', 'gene_name', 'gene_type', 'gene_status')
 columns <- intersect(columns, colnames(gtf_dt))
-gtf_dt <- gtf_dt[, columns, with = F]
+gtf_dt <- gtf_dt[, columns, with = FALSE]
 
 # make gene_names unique
 gtf_dt[, N := 1:.N, by = gene_name] # warning message
