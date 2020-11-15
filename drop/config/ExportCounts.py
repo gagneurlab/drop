@@ -20,14 +20,15 @@ class ExportCounts:
         """
         self.CONFIG_KEYS = ["geneAnnotations", "excludeGroups"]
         self.config_dict = self.setDefaults(dict_, geneAnnotations)
-        self.outputRoot = outputRoot
+        self.outputRoot = outputRoot / "exported_counts"
         self.sa = sampleAnnotation
         self.genomeAssembly = genomeAssembly
+        self.geneAnnotations = self.get("geneAnnotations")
         self.modules = {
             "aberrantExpression": aberrantExpression,
             "aberrantSplicing": aberrantSplicing
         }
-        self.pattern = self.outputRoot / "exported_counts" / "{dataset}--{genomeAssembly}--{annotation}"
+        self.pattern = self.outputRoot / "{dataset}--{genomeAssembly}--{annotation}"
 
     def setDefaults(self, config_dict, gene_annotations):
         utils.setKey(config_dict, None, "geneAnnotations", gene_annotations)
@@ -64,20 +65,33 @@ class ExportCounts:
         for module in modules:
             groups.extend(self.modules[module].groups)
         export_groups = set(groups) - set(self.get("excludeGroups"))
-        return export_groups
+        return sorted(list(export_groups))
 
-    def getExportCountFiles(self, prefix):
+    def getFiles(self, filename, datasets=None):
         """
         Determine export count files.
-        :param prefix: name of file
-        :return: list of files to
+        :param filename: name of file
+        :return: list of export files
+        """
+        if datasets is None:
+            datasets = self.getExportGroups()
+        file_pattern = str(self.pattern / f"{filename}")
+        return expand(
+            file_pattern,
+            dataset=datasets,
+            annotation=self.geneAnnotations,
+            genomeAssembly=self.genomeAssembly
+        )
+
+    def getExportCountFiles(self, prefix, suffix="tsv.gz"):
+        """
+        Determine export count files.
+        :param prefix: name of file without file suffix
+        :param suffix: file type suffix (without dot)
+        :return: list of export count files
         """
         if prefix not in self.COUNT_TYPE_MAP.keys():
-            raise ValueError(f"{prefix} not a valid file type for exported counts")
-
+            raise ValueError(f"'{prefix}' not a valid file type for exported counts")
         datasets = self.getExportGroups([self.COUNT_TYPE_MAP[prefix]])
-        file_pattern = str(self.pattern / f"{prefix}.tsv.gz")
-        count_files = expand(file_pattern, annotation=self.get("geneAnnotations"),
-                             dataset=datasets, genomeAssembly=self.genomeAssembly)
-        return count_files
+        return self.getFiles(f"{prefix}.{suffix}", datasets)
 

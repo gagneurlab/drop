@@ -33,14 +33,20 @@ rule all:
         """
 
 rule sampleAnnotation:
-    input: cfg.getProcessedDataDir() + "/sample_anno/sample_anno.done"
+    input: rules.Pipeline_SampleAnnotation_R.output
 
 rule exportCounts:
     input:
         cfg.exportCounts.getExportCountFiles("geneCounts"),
-         cfg.exportCounts.getExportCountFiles("splitCounts"),
-         cfg.exportCounts.getExportCountFiles("spliceSiteOverlapCounts"),
-         cfg.getProcessedResultsDir() + "/exported_counts/sample_anno.done"
+        #cfg.exportCounts.getExportCountFiles("splitCounts"),
+        #cfg.exportCounts.getExportCountFiles("spliceSiteOverlapCounts")
+    output:
+        sampleAnnotations = cfg.exportCounts.getFiles("sampleAnnotation.tsv"),
+        descriptions = cfg.exportCounts.getFiles("DESCRIPTION.txt"),
+    params:
+        dropConfig = cfg,
+        sampleAnnotation = sa
+    script: "Scripts/Pipeline/exportCountsMeta.py"
 
 rule dependencyGraph:
     input:

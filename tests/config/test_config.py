@@ -17,9 +17,9 @@ def test_DropConfigPaths(demo_dir, dropConfig):
 @pytest.mark.parametrize(
         "modules,groups",
         [
-            ("aberrantExpression", {"outrider"}),
-            ("aberrantSplicing", {"fraser"}),
-            (["aberrantExpression", "aberrantSplicing"], {"outrider", "fraser"})
+            ("aberrantExpression", ["outrider"]),
+            ("aberrantSplicing", ["fraser"]),
+            (["aberrantExpression", "aberrantSplicing"], ["fraser", "outrider"])
         ]
     )
 def test_cfgExportGroups(dropConfig, modules, groups):
