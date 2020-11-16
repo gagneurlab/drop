@@ -1,5 +1,5 @@
 options(repos=structure(c(CRAN="https://cloud.r-project.org")))
-library(data.table)
+suppressPackageStartupMessages(library(data.table))
 
 if (!requireNamespace('BiocManager', quietly = TRUE)) {
     install.packages('BiocManager')
