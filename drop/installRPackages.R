@@ -1,4 +1,4 @@
-options(repos=structure(c(CRAN="https://cloud.r-project.org")))
+options(repos=structure(c(CRAN="https://cloud.r-project.org")), warn = -1)
 suppressPackageStartupMessages(library(data.table))
 
 if (!requireNamespace('BiocManager', quietly = TRUE)) {
@@ -33,3 +33,5 @@ for (pckg_name in packages$package) {
         message(paste("installed", package))
     }
 }
+
+options(warn = 0)
