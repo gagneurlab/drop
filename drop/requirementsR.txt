@@ -13,6 +13,3 @@ dplyr FALSE
 tidyr FALSE 
 magrittr FALSE 
 devtools FALSE 
-BSgenome.Hsapiens.UCSC.hg19 TRUE 
-#MafDb.gnomAD.r2.1.hs37d5 TRUE 
-#MafDb.gnomAD.r2.1.GRCh38 TRUE 
