@@ -48,8 +48,8 @@ def installRPackages(config: DropConfig = None):
             if config.mae.addAF:
                 pkg_mafdb_name = "MafDb.gnomAD.r2.1.GRCh38"
 
-        if pkg_name is not None:
-            response = subprocess.run(["Rscript", script, pkg_name], stderr=subprocess.STDOUT)
+        if pkg_assembly_name is not None:
+            response = subprocess.run(["Rscript", script, pkg_assembly_name], stderr=subprocess.STDOUT)
             response.check_returncode()
 
         if pkg_mafdb_name is not None:
