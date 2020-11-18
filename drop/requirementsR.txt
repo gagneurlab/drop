@@ -1,15 +1,15 @@
-package bioconductor version
-OUTRIDER TRUE 
-c-mertes/FRASER TRUE 1.2.0
-mumichae/tMAE TRUE 
-VariantAnnotation TRUE 
-rmarkdown FALSE 
-knitr FALSE 
-ggplot2 FALSE 
-ggthemes FALSE 
-cowplot FALSE 
-data.table FALSE  
-dplyr FALSE 
-tidyr FALSE 
-magrittr FALSE 
-devtools FALSE 
+package	version
+gagneurlab/OUTRIDER	1.6.0
+c-mertes/FRASER	1.2.0
+mumichae/tMAE	
+VariantAnnotation	
+rmarkdown	
+knitr	
+ggplot2	
+ggthemes	
+cowplot	
+data.table	
+dplyr	
+tidyr	
+magrittr	
+devtools	
