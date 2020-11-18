@@ -1,5 +1,6 @@
 import pytest
-
+import os
+import re
 
 def test_DropConfigKeys(dropConfig):
     for key in dropConfig.CONFIG_KEYS:
@@ -30,11 +31,19 @@ def test_cfgExportGroups(dropConfig, modules, groups):
         "prefix,files",
         [
             ("geneCounts", ['Output/processed_results/exported_counts/outrider--hg19--v29/geneCounts.tsv.gz']),
-            ("splitCounts", ['Output/processed_results/exported_counts/fraser--hg19--v29/splitCounts.tsv.gz']),
-            ("spliceSiteOverlapCounts", ['Output/processed_results/exported_counts/fraser--hg19--v29/spliceSiteOverlapCounts.tsv.gz'])
+            ("splicingCounts", ['Output/processed_results/exported_counts/fraser--hg19--v29/k_j_counts.tsv.gz']),
+            ("splicingCounts", ['Output/processed_results/exported_counts/fraser--hg19--v29/k_theta_counts.tsv.gz']),
+            ("splicingCounts", ['Output/processed_results/exported_counts/fraser--hg19--v29/n_psi5_counts.tsv.gz']),
+            ("splicingCounts", ['Output/processed_results/exported_counts/fraser--hg19--v29/n_theta_counts.tsv.gz'])
         ]
     )
 def test_cfgExportCountFiles(demo_dir, dropConfig, prefix, files):
-    true_path = [f"{demo_dir}/{file}" for file in files]
-    test_path = dropConfig.exportCounts.getExportCountFiles(prefix)
+    curFile = files[0]
+    true_path = [f"{demo_dir}/{curFile}"]
+    if prefix == "geneCounts":
+        test_path = dropConfig.exportCounts.getExportCountFiles(prefix)
+    else:
+        filePattern=os.path.basename(curFile).split(".")[0]
+        test_path = dropConfig.exportCounts.getExportCountFiles(prefix, type=[filePattern.split("_")[1]],
+                expandPattern=re.sub("_.*_", "_{type}_", filePattern))
     assert true_path == test_path

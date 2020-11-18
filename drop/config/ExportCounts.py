@@ -5,8 +5,7 @@ class ExportCounts:
 
     COUNT_TYPE_MAP = {
         "geneCounts": "aberrantExpression",
-        "splitCounts": "aberrantSplicing",
-        "spliceSiteOverlapCounts": "aberrantSplicing"
+        "splicingCounts": "aberrantSplicing",
     }
 
     def __init__(self, dict_, outputRoot, sampleAnnotation, geneAnnotations, genomeAssembly,
@@ -48,8 +47,11 @@ class ExportCounts:
             raise KeyError(f"{key} not defined for count export")
         return self.config_dict[key]
 
-    def getFilePattern(self, str_=True):
-        return utils.returnPath(self.pattern, str_=str_)
+    def getFilePattern(self, str_=True, expandStr=False):
+        pattern = self.pattern
+        if expandStr:
+            pattern = pattern.__str__().replace("{", "{{").replace("}", "}}") 
+        return utils.returnPath(pattern, str_=str_)
 
     def getExportGroups(self, modules=None):
         """
@@ -67,9 +69,9 @@ class ExportCounts:
         export_groups = set(groups) - set(self.get("excludeGroups"))
         return sorted(list(export_groups))
 
-    def getFiles(self, filename, datasets=None):
+    def getFiles(self, filename, datasets=None, **kwargs):
         """
-        Determine export count files.
+        Determine files for export count groups.
         :param filename: name of file
         :return: list of export files
         """
@@ -80,18 +82,20 @@ class ExportCounts:
             file_pattern,
             dataset=datasets,
             annotation=self.geneAnnotations,
-            genomeAssembly=self.genomeAssembly
+            genomeAssembly=self.genomeAssembly,
+            **kwargs
         )
 
-    def getExportCountFiles(self, prefix, suffix="tsv.gz"):
+    def getExportCountFiles(self, count_type, suffix="tsv.gz", expandPattern=None, **kwargs):
         """
         Determine export count files.
-        :param prefix: name of file without file suffix
+        :param count_type: count type for mapping the submodule
         :param suffix: file type suffix (without dot)
         :return: list of export count files
         """
-        if prefix not in self.COUNT_TYPE_MAP.keys():
-            raise ValueError(f"'{prefix}' not a valid file type for exported counts")
-        datasets = self.getExportGroups([self.COUNT_TYPE_MAP[prefix]])
-        return self.getFiles(f"{prefix}.{suffix}", datasets)
+        if count_type not in self.COUNT_TYPE_MAP.keys():
+            raise ValueError(f"'{count_type}' not a valid file type for exported counts")
+        datasets = self.getExportGroups([self.COUNT_TYPE_MAP[count_type]])
+        expandPattern = count_type if expandPattern is None else expandPattern
+        return self.getFiles(f"{expandPattern}.{suffix}", datasets, **kwargs)
 

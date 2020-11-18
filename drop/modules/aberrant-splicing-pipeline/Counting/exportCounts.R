@@ -1,47 +1,55 @@
 #'---
 #' title: Collect all counts from FRASER Object
-#' author: mumichae, vyepez
+#' author: mumichae, vyepez, c-mertes
 #' wb:
 #'  log:
 #'    - snakemake: '`sm str(tmp_dir / "AS" / "{dataset}" / "{genomeAssembly}--{annotation}_export.Rds")`'
 #'  params:
 #'   - setup: '`sm cfg.AS.getWorkdir() + "/config.R"`'
-#'   - workingDir: '`sm cfg.getProcessedDataDir() + "/aberrant_splicing/datasets"`'
 #'  input:
-#'   - gRangesSplitCounts: '`sm cfg.getProcessedDataDir() + 
-#'                          "/aberrant_splicing/datasets/cache/raw-{dataset}/gRanges_splitCounts.rds"`'
-#'   - spliceSites: '`sm cfg.getProcessedDataDir() + 
-#'                   "/aberrant_splicing/datasets/cache/raw-{dataset}/spliceSites_splitCounts.rds"`'
-#'   - counting_done: '`sm cfg.getProcessedDataDir() + 
-#'                "/aberrant_splicing/datasets/savedObjects/raw-{dataset}/counting.done" `'
+#'   - annotation: '`sm cfg.getProcessedDataDir() + "/aberrant_expression/{annotation}/txdb.db"`'
+#'   - fds_theta: '`sm cfg.getProcessedDataDir() + 
+#'                    "/aberrant_splicing/datasets/savedObjects/raw-{dataset}/theta.h5"`'
 #'  output:
-#'    - split_counts: '`sm cfg.exportCounts.getFilePattern(str_=False) / "splitCounts.tsv.gz"`'
-#'    - nonsplit_counts: '`sm cfg.exportCounts.getFilePattern(str_=False) / "spliceSiteOverlapCounts.tsv.gz"`'
+#'    - k_counts: '`sm expand(cfg.exportCounts.getFilePattern(str_=True, expandStr=True) + "/k_{metric}_counts.tsv.gz", metric=["j", "theta"])`'
+#'    - n_counts: '`sm expand(cfg.exportCounts.getFilePattern(str_=True, expandStr=True) + "/n_{metric}_counts.tsv.gz", metric=["psi5", "psi3", "theta"])`'
 #'  type: script
 #'---
 
 saveRDS(snakemake, snakemake@log$snakemake)
 source(snakemake@params$setup, echo=FALSE)
+library(AnnotationDbi)
 
+# 
+# input
+#
+annotation_file <- snakemake@input$annotation
+fds_file   <- snakemake@input$fds_theta
 dataset    <- snakemake@wildcards$dataset
-workingDir <- snakemake@params$workingDir
 
+out_k_files <- snakemake@output$k_counts
+out_n_files <- snakemake@output$n_counts
 
-# Read FRASER object
-fds <- loadFraserDataSet(dir=workingDir, name=paste0("raw-", dataset))
-splitCounts_gRanges <- readRDS(snakemake@input$gRangesSplitCounts)
-spliceSiteCoords <- readRDS(snakemake@input$spliceSites)
+# Read annotation and extract known junctions
+txdb <- loadDb(annotation_file)
+introns <- unique(unlist(intronsByTranscript(txdb)))
+length(introns)
 
-# obtain the split counts
-splitCounts <- counts(fds, type="j")
-gr_dt <- as.data.table(splitCounts_gRanges)
-splitCounts <- cbind(gr_dt, as.matrix(splitCounts))
-fwrite(splitCounts, file = snakemake@output$split_counts,
-       quote = FALSE, row.names = FALSE, sep = '\t', compress = 'gzip')
-  
-# obtain the non split counts
-nonSplitCounts <- counts(fds, type="ss")
-grns_dt <- as.data.table(spliceSiteCoords)
-nonSplitCounts <- cbind(grns_dt, as.matrix(nonSplitCounts))
-fwrite(nonSplitCounts, file = snakemake@output$nonsplit_counts,
-       quote = FALSE, row.names = FALSE, sep = '\t', compress = 'gzip')
+# Read FRASER object and subset to known junctions
+fds <- loadFraserDataSet(file=fds_file)
+fds_known <- fds[unique(to(findOverlaps(introns, rowRanges(fds, type="j"), type="equal"))),]
+
+# save k/n counts
+for(i in c(out_k_files, out_n_files)){
+  ctsType <- toupper(strsplit(basename(i), "_")[[1]][1])
+  psiType <- strsplit(basename(i), "_")[[1]][2]
+
+  cts <- as.data.table(get(ctsType)(fds_known, type=psiType))
+  grAnno <- rowRanges(fds_known, type=psiType)
+  seqlevelsStyle(grAnno) <- seqlevelsStyle(txdb)[1]
+  anno <- as.data.table(grAnno)
+  anno <- anno[,.(seqnames, start, end, strand)]
+
+  fwrite(cbind(anno, cts), file=i, quote=FALSE, row.names=FALSE, sep="\t", compress="gzip")
+}
+

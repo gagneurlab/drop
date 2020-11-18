@@ -38,8 +38,8 @@ rule sampleAnnotation:
 rule exportCounts:
     input:
         cfg.exportCounts.getExportCountFiles("geneCounts"),
-        #cfg.exportCounts.getExportCountFiles("splitCounts"),
-        #cfg.exportCounts.getExportCountFiles("spliceSiteOverlapCounts")
+        cfg.exportCounts.getExportCountFiles("splicingCounts", expandPattern="k_{type}_counts", type=["j", "theta"]),
+        cfg.exportCounts.getExportCountFiles("splicingCounts", expandPattern="n_{type}_counts", type=["psi5", "psi3", "theta"]),
     output:
         sampleAnnotations = cfg.exportCounts.getFiles("sampleAnnotation.tsv"),
         descriptions = cfg.exportCounts.getFiles("DESCRIPTION.txt"),
