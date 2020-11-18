@@ -1,4 +1,5 @@
 import drop
+from drop.config.DropConfig import DropConfig
 import subprocess
 from pathlib import Path
 from snakemake.logging import logger
@@ -24,13 +25,36 @@ def setupPaths(projectRoot):
     return repoPaths, projectPaths
 
 
-def installRPackages():
+def installRPackages(config: DropConfig = None):
     logger.info("check for missing R packages")
     script = Path(drop.__file__).parent / "installRPackages.R"
     requirements = Path(drop.__file__).parent / 'requirementsR.txt'
 
+    # install main packages
     response = subprocess.run(["Rscript", script, requirements], stderr=subprocess.STDOUT)
     response.check_returncode()
+
+    # install pipeline depending packages
+    if config is not None:
+        pkg_assembly_name = None
+        pkg_mafdb_name = None
+
+        if config.genomeAssembly in ['hg19']:
+            pkg_assembly_name = "BSgenome.Hsapiens.UCSC.hg19"
+            if config.mae.addAF:
+                pkg_mafdb_name = "MafDb.gnomAD.r2.1.hs37d5"
+        else if config.genomeAssembly in ['hg38']
+            pkg_assembly_name = "BSgenome.Hsapiens.UCSC.hg38"
+            if config.mae.addAF:
+                pkg_mafdb_name = "MafDb.gnomAD.r2.1.GRCh38"
+
+        if pkg_name is not None:
+            response = subprocess.run(["Rscript", script, pkg_name], stderr=subprocess.STDOUT)
+            response.check_returncode()
+
+        if pkg_mafdb_name is not None:
+            response = subprocess.run(["Rscript", script, pkg_mafdb_name], stderr=subprocess.STDOUT)
+            response.check_returncode()
 
 
 def checkDropVersion(projectRoot, force=False):

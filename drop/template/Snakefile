@@ -6,12 +6,12 @@ from wbuild.createIndex import createIndexRule, ci
 configfile: "config.yaml"
 
 projectDir = Path.cwd().resolve()
-drop.installRPackages()
 drop.checkDropVersion(projectDir)
 _, projectPaths = drop.setupPaths(projectDir)
 tmp_dir = projectPaths["tmpDir"]
 
 cfg = drop.config.DropConfig(wbuild.utils.Config())
+drop.installRPackages(cfg)
 sa = cfg.sampleAnnotation
 config = cfg.config_dict # legacy
 
