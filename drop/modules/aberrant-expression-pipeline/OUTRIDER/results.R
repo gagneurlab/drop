@@ -7,6 +7,7 @@
 #'  params:
 #'   - padjCutoff: '`sm cfg.AE.get("padjCutoff")`'
 #'   - zScoreCutoff: '`sm cfg.AE.get("zScoreCutoff")`'
+#'   - hpoFile: '`sm cfg.get("hpoFile")`'
 #'  input:
 #'   - add_HPO_cols: '`sm str(projectDir / ".drop" / "helpers" / "add_HPO_cols.R")`'
 #'   - ods: '`sm cfg.getProcessedResultsDir() + "/aberrant_expression/{annotation}/outrider/{dataset}/ods.Rds"`'
@@ -51,13 +52,14 @@ if(!is.null(gene_annot_dt$gene_name)){
   }
 }
 
-# Add HPO terms
+# Add HPO terms, requires online connection and for there to be annotated HPO terms
 sa <- fread(snakemake@config$sampleAnnotation)
 if(!is.null(sa$HPO_TERMS) & nrow(res) > 0){
-  if(!all(is.na(sa$HPO_TERMS))){
-    res <- add_HPO_cols(res)
+  if(!all(is.na(sa$HPO_TERMS)) & ! all(sa$HPO_TERMS == '')){
+    res <- add_HPO_cols(res, hpo_file = snakemake@params$hpoFile)
   }
 }
+
 
 # Save results 
 fwrite(res, snakemake@output$results, sep = "\t", quote = F)

@@ -12,8 +12,8 @@
 #'   - counting_done: '`sm cfg.getProcessedDataDir() + 
 #'                "/aberrant_splicing/datasets/savedObjects/raw-{dataset}/counting.done" `'
 #'  output:
-#'  - psiSS:     '`sm cfg.getProcessedDataDir() + 
-#'                    "/aberrant_splicing/datasets/savedObjects/raw-{dataset}/psiSite.h5"`'
+#'  - theta:     '`sm cfg.getProcessedDataDir() +
+#'                    "/aberrant_splicing/datasets/savedObjects/raw-{dataset}/theta.h5"`'
 #'  type: script
 #'--- 
 

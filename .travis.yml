@@ -1,10 +1,6 @@
 language: python
 dist: xenial
 
-#cache:
-#  - directories:
-#    - $HOME/miniconda
-
 python:
   - "3.7"
 
@@ -19,10 +15,9 @@ install:
 
   # install dependencies
   - source $HOME/miniconda/etc/profile.d/conda.sh
-  - conda create -q -n drop -c conda-forge -c bioconda python=$TRAVIS_PYTHON_VERSION r-base=4.0.2
+  - conda create -q -n drop -c conda-forge -c bioconda "python>=${TRAVIS_PYTHON_VERSION}" "r-base>=4.0.3" "drop>=1.0.1" "wbuild>=1.8" "bioconductor-fraser>=1.2.0"
+  - conda remove -n drop --force drop
   - conda activate drop
-  - conda install -c conda-forge -c bioconda drop
-  - conda remove --force drop
   - pip install -r tests/requirements.txt
 
   # install drop
@@ -38,4 +33,4 @@ script:
   - wbuild --version
   - python --version
 
-  - pytest -vv -s
+  - travis_wait 50 pytest --durations=10 --durations-min=1.0

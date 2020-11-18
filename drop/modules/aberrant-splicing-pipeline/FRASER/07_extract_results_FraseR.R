@@ -9,13 +9,14 @@
 #'   - padjCutoff: '`sm cfg.AS.get("padjCutoff")`'
 #'   - zScoreCutoff: '`sm cfg.AS.get("zScoreCutoff")`'
 #'   - deltaPsiCutoff: '`sm cfg.AS.get("deltaPsiCutoff")`'
+#'   - hpoFile: '`sm cfg.get("hpoFile")`'
 #'  threads: 10
 #'  input:
 #'   - setup: '`sm cfg.AS.getWorkdir() + "/config.R"`'
 #'   - add_HPO_cols: '`sm str(projectDir / ".drop" / "helpers" / "add_HPO_cols.R")`'
 #'   - fdsin: '`sm cfg.getProcessedDataDir() +
 #'                 "/aberrant_splicing/datasets/savedObjects/{dataset}/" +
-#'                 "padjBetaBinomial_psiSite.h5"`'
+#'                 "padjBetaBinomial_theta.h5"`'
 #'  output:
 #'   - resultTableJunc: '`sm cfg.getProcessedDataDir() + 
 #'                          "/aberrant_splicing/results/{dataset}_results_per_junction.tsv"`'
@@ -91,8 +92,8 @@ if(length(res_junc) > 0){
   # add HPO overlap information
   sa <- fread(snakemake@config$sampleAnnotation)
   if(!is.null(sa$HPO_TERMS)){
-    if(!all(is.na(sa$HPO_TERMS))){
-      res_genes_dt <- add_HPO_cols(res_genes_dt)
+    if(!all(is.na(sa$HPO_TERMS)) & ! all(sa$HPO_TERMS == '')){
+      res_genes_dt <- add_HPO_cols(res_genes_dt, hpo_file = snakemake@params$hpoFile)
     }
   }
 } else res_genes_dt <- data.table()

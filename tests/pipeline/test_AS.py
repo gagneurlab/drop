@@ -27,6 +27,6 @@ class Test_AS_Pipeline:
     def test_results(self, demo_dir):
         results_dir = "Output/processed_data/aberrant_splicing/results"
         r = run(f"wc -l {results_dir}/fraser_results_per_junction.tsv", demo_dir)
-        assert "88 " in r.stdout
+        assert "87 " in r.stdout
         r = run(f"wc -l {results_dir}/fraser_results.tsv", demo_dir)
         assert "1 " in r.stdout

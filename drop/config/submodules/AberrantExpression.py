@@ -1,4 +1,5 @@
 from snakemake.io import expand
+import numpy as np
 
 from drop import utils
 from .Submodules import Submodule
@@ -17,8 +18,7 @@ class AE(Submodule):
         self.extRnaIDs = self.sa.subsetGroups(self.groups, assay="GENE_COUNTS")
 
         # check number of IDs per group
-        all_groups = set().union(*[self.rnaIDs, self.extRnaIDs])
-        all_ids = {g: self.rnaIDs[g] + self.extRnaIDs[g] for g in all_groups}
+        all_ids = {g: self.rnaIDs[g] + self.extRnaIDs[g] for g in self.groups}
         self.checkSubset(all_ids)
 
     def setDefaultKeys(self, dict_):
@@ -49,4 +49,9 @@ class AE(Submodule):
     def getCountParams(self, rnaID):
         sa_row = self.sa.getRow("RNA_ID", rnaID)
         count_params = sa_row[["STRAND", "COUNT_MODE", "PAIRED_END", "COUNT_OVERLAPS"]]
-        return count_params.iloc[0].to_dict()
+        count_params_dict = {
+            k: bool(v) if isinstance(v, np.bool_) else v
+            for k, v in count_params.iloc[0].to_dict().items()
+        }
+        return count_params_dict
+        # count_params.iloc[0].to_dict()
