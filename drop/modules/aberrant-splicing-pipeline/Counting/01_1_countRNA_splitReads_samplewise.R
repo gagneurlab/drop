@@ -25,7 +25,7 @@ library(BSgenome)
 dataset    <- snakemake@wildcards$dataset
 workingDir <- snakemake@params$workingDir
 params <- snakemake@config$aberrantSplicing
-
+genomeAssembly <- snakemake@config$genomeAssembly
 
 # Read FRASER object
 fds <- loadFraserDataSet(dir=workingDir, name=paste0("raw-", dataset))
@@ -36,7 +36,7 @@ sample_id <- snakemake@wildcards[["sample_id"]]
 # If data is not strand specific, add genome info
 genome <- NULL
 if(strandSpecific(fds) == 0){
-  genome <- getBSgenome(genome)
+  genome <- getBSgenome(genomeAssembly)
 }
 
 # Count splitReads for a given sample id
