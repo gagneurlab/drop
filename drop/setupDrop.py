@@ -38,22 +38,23 @@ def installRPackages(config: DropConfig = None):
     if config is not None:
         pkg_assembly_name = None
         pkg_mafdb_name = None
+        assemblyID = config.get("genomeAssembly")
 
-        if config.genomeassembly in ['hg19']:
+        if assemblyID in ['hg19']:
             pkg_assembly_name = "BSgenome.Hsapiens.UCSC.hg19"
-        elif config.genomeassembly in ['hs37d5']:
+        elif assemblyID in ['hs37d5']:
             pkg_assembly_name = "BSgenome.Hsapiens.1000genomes.hs37d5"
-        elif config.genomeAssembly in ['hg38']:
+        elif assemblyID in ['hg38']:
             pkg_assembly_name = "BSgenome.Hsapiens.UCSC.hg38"
-        elif config.genomeAssembly in ['GRCh38']:
+        elif assemblyID in ['GRCh38']:
             pkg_assembly_name = "BSgenome.Hsapiens.NCBI.GRCh38"
         else:
-            raise ValueError("Provided genome assembly not known: " + config.genomeassembly)
+            raise ValueError("Provided genome assembly not known: " + assemblyID)
 
         if config.get("mae").get("addaf"):
-            if config.genomeassembly in ["hg19", "hs37d5"]:
+            if assemblyID in ["hg19", "hs37d5"]:
                 pkg_mafdb_name = "mafdb.gnomad.r2.1.hs37d5"
-            elif config.genomeassembly in ["hg38", "GRCh38"]:
+            elif assemblyID in ["hg38", "GRCh38"]:
                 pkg_mafdb_name = "MafDb.gnomAD.r2.1.GRCh38"
 
 
