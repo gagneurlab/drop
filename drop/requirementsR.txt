@@ -1,5 +1,5 @@
 package	version
-gagneurlab/OUTRIDER	1.6.0
+gagneurlab/OUTRIDER	1.6.1
 c-mertes/FRASER	1.2.0
 mumichae/tMAE	
 VariantAnnotation	

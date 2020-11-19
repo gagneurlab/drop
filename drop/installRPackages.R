@@ -17,7 +17,7 @@ if (file.exists(args[1])){
     packages <- data.table(
         package=gsub("=.*", "", unlist(args)),
         version=gsub(".*=", "", unlist(args)))
-    packages[package == version, version:=""]
+    packages[package == version, version:=NA]
 }
 installed <- as.data.table(installed.packages())
 
@@ -26,7 +26,7 @@ for (pckg_name in packages$package) {
     pckg_name <- gsub(".*/", "", pckg_name)
     version <- package_dt$version
     
-    if (!pckg_name %in% installed$Package |  (version != "" & compareVersion(
+    if (!pckg_name %in% installed$Package || (!is.na(version) && compareVersion(
             installed[Package == pckg_name, Version], version) < 0)) {
         
         package <- package_dt$package
