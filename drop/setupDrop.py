@@ -39,14 +39,23 @@ def installRPackages(config: DropConfig = None):
         pkg_assembly_name = None
         pkg_mafdb_name = None
 
-        if config.genomeAssembly in ['hg19']:
+        if config.genomeassembly in ['hg19']:
             pkg_assembly_name = "BSgenome.Hsapiens.UCSC.hg19"
-            if config.get("mae").get("addAF"):
-                pkg_mafdb_name = "MafDb.gnomAD.r2.1.hs37d5"
+        elif config.genomeassembly in ['hs37d5']:
+            pkg_assembly_name = "BSgenome.Hsapiens.1000genomes.hs37d5"
         elif config.genomeAssembly in ['hg38']:
             pkg_assembly_name = "BSgenome.Hsapiens.UCSC.hg38"
-            if config.get("mae").get("addAF"):
+        elif config.genomeAssembly in ['GRCh38']:
+            pkg_assembly_name = "BSgenome.Hsapiens.NCBI.GRCh38"
+        else:
+            raise ValueError("Provided genome assembly not known: " + config.genomeassembly)
+
+        if config.get("mae").get("addaf"):
+            if config.genomeassembly in ["hg19", "hs37d5"]:
+                pkg_mafdb_name = "mafdb.gnomad.r2.1.hs37d5"
+            elif config.genomeassembly in ["hg38", "GRCh38"]:
                 pkg_mafdb_name = "MafDb.gnomAD.r2.1.GRCh38"
+
 
         if pkg_assembly_name is not None:
             response = subprocess.run(["Rscript", script, pkg_assembly_name], stderr=subprocess.STDOUT)

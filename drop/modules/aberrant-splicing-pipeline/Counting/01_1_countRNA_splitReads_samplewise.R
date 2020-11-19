@@ -35,16 +35,8 @@ sample_id <- snakemake@wildcards[["sample_id"]]
 
 # If data is not strand specific, add genome info
 genome <- NULL
-
 if(strandSpecific(fds) == 0){
-  if(snakemake@config$genomeAssembly == 'hg19'){
-    genome <- "BSgenome.Hsapiens.UCSC.hg19"
-  } else if(snakemake@config$genomeAssembly == 'hg38'){
-    genome <- "BSgenome.Hsapiens.UCSC.hg38" 
-  }
-  if(!is.null(genome)){
-    genome <- getBSgenome(genome)
-  }
+  genome <- getBSgenome(genome)
 }
 
 # Count splitReads for a given sample id

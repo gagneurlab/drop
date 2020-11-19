@@ -41,9 +41,7 @@ setAutoBPPARAM(MulticoreParam(snakemake@threads))
 
 # Load data and annotate ranges with gene names
 fds <- loadFraserDataSet(dir=workingDir, name=dataset)
-GRCh <- ifelse(snakemake@config$genomeAssembly == 'hg19', 37, 
-               ifelse(snakemake@config$genomeAssembly == 'hg38', 38,
-                      error('Genome assembly must be either hg19 or hg38')))
+GRCh <- ifelse(snakemake@config$genomeAssembly %in% c('hg19', 'hs37d5'), 37, 38)
 fds <- annotateRanges(fds, GRCh = GRCh)
 colData(fds)$sampleID <- as.character(colData(fds)$sampleID)
 

@@ -40,9 +40,9 @@ if (snakemake@config$mae$addAF == TRUE) {
   # obtain the assembly from the config
   gene_assembly <- snakemake@config$genomeAssembly
   
-  if(gene_assembly == 'hg19'){
+  if(gene_assembly %in% c('hg19', 'hs37d5')){
     suppressPackageStartupMessages(library(MafDb.gnomAD.r2.1.hs37d5))
-  } else if(gene_assembly == 'hg38'){
+  } else if(gene_assembly %in% c('hg38', 'GRCh38')){
     suppressPackageStartupMessages(library(MafDb.gnomAD.r2.1.GRCh38))
   }
   
