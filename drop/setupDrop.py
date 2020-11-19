@@ -41,11 +41,11 @@ def installRPackages(config: DropConfig = None):
 
         if config.genomeAssembly in ['hg19']:
             pkg_assembly_name = "BSgenome.Hsapiens.UCSC.hg19"
-            if config.mae.addAF:
+            if config.get("mae").get("addAF"):
                 pkg_mafdb_name = "MafDb.gnomAD.r2.1.hs37d5"
         elif config.genomeAssembly in ['hg38']:
             pkg_assembly_name = "BSgenome.Hsapiens.UCSC.hg38"
-            if config.mae.addAF:
+            if config.get("mae").get("addAF"):
                 pkg_mafdb_name = "MafDb.gnomAD.r2.1.GRCh38"
 
         if pkg_assembly_name is not None:
