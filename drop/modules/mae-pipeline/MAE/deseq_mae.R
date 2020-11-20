@@ -35,19 +35,12 @@ rmae <- DESeq4MAE(mae_counts) ## build test for counting REF and ALT in MAE
 
 ### Add AF information from gnomAD
 if (snakemake@config$mae$addAF == TRUE) {
-  print("Adding gnomAD allele frequencies...")
+    print("Adding gnomAD allele frequencies...")
   
-  # obtain the assembly from the config
-  gene_assembly <- snakemake@config$genomeAssembly
-  
-  if(gene_assembly %in% c('hg19', 'hs37d5')){
-    suppressPackageStartupMessages(library(MafDb.gnomAD.r2.1.hs37d5))
-  } else if(gene_assembly %in% c('hg38', 'GRCh38')){
-    suppressPackageStartupMessages(library(MafDb.gnomAD.r2.1.GRCh38))
-  }
-  
-  rmae <- add_gnomAD_AF(rmae, gene_assembly = gene_assembly,
-                          max_af_cutoff = snakemake@config$mae$maxAF)
+    # obtain the assembly from the config
+    genome_assembly <- snakemake@config$genomeAssembly
+    rmae <- add_gnomAD_AF(rmae, genome_assembly = genome_assembly,
+        max_af_cutoff = snakemake@config$mae$maxAF)
 } else {
     rmae[, rare := NA]
 }

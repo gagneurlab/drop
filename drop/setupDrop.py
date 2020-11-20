@@ -36,32 +36,11 @@ def installRPackages(config: DropConfig = None):
 
     # install pipeline depending packages
     if config is not None:
-        pkg_assembly_name = None
-        pkg_mafdb_name = None
-        assemblyID = config.get("genomeAssembly")
+        pkg_assembly_name = config.getBSGenomeName()
+        response = subprocess.run(["Rscript", script, pkg_assembly_name], stderr=subprocess.STDOUT)
+        response.check_returncode()
 
-        if assemblyID in ['hg19']:
-            pkg_assembly_name = "BSgenome.Hsapiens.UCSC.hg19"
-        elif assemblyID in ['hs37d5']:
-            pkg_assembly_name = "BSgenome.Hsapiens.1000genomes.hs37d5"
-        elif assemblyID in ['hg38']:
-            pkg_assembly_name = "BSgenome.Hsapiens.UCSC.hg38"
-        elif assemblyID in ['GRCh38']:
-            pkg_assembly_name = "BSgenome.Hsapiens.NCBI.GRCh38"
-        else:
-            raise ValueError("Provided genome assembly not known: " + assemblyID)
-
-        if config.get("mae").get("addaf"):
-            if assemblyID in ["hg19", "hs37d5"]:
-                pkg_mafdb_name = "mafdb.gnomad.r2.1.hs37d5"
-            elif assemblyID in ["hg38", "GRCh38"]:
-                pkg_mafdb_name = "MafDb.gnomAD.r2.1.GRCh38"
-
-
-        if pkg_assembly_name is not None:
-            response = subprocess.run(["Rscript", script, pkg_assembly_name], stderr=subprocess.STDOUT)
-            response.check_returncode()
-
+        pkg_mafdb_name = config.getMafDb()
         if pkg_mafdb_name is not None:
             response = subprocess.run(["Rscript", script, pkg_mafdb_name], stderr=subprocess.STDOUT)
             response.check_returncode()
