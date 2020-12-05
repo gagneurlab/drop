@@ -40,7 +40,7 @@ def installRPackages(config: DropConfig = None):
         response = subprocess.run(["Rscript", script, pkg_assembly_name], stderr=subprocess.STDOUT)
         response.check_returncode()
 
-        pkg_mafdb_name = config.getMafDb()
+        pkg_mafdb_name = config.getMafDbName()
         if pkg_mafdb_name is not None:
             response = subprocess.run(["Rscript", script, pkg_mafdb_name], stderr=subprocess.STDOUT)
             response.check_returncode()
