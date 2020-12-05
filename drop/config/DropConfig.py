@@ -179,7 +179,7 @@ class DropConfig:
         
         raise ValueError("Provided genome assembly not known: " + assemblyID)
 
-   def getMafDbName(self):
+    def getMafDbName(self):
         assemblyID = self.get("genomeAssembly")
 
         if assemblyID in ['hg19', 'hs37d5']:
