@@ -10,6 +10,9 @@ if (!requireNamespace('data.table', quietly = TRUE)) {
 
 suppressPackageStartupMessages(library(data.table))
 
+# do not turn wanrings into errors. E.g. "Package XXX build for R 4.0.X"
+Sys.setenv(R_REMOTES_NO_ERRORS_FROM_WARNINGS="true")
+
 args <- commandArgs(trailingOnly=TRUE)
 if (file.exists(args[1])){
     packages <- fread(args[1], fill = TRUE)
