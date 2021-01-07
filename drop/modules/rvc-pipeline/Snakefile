@@ -513,16 +513,16 @@ rule markDuplicates:
 #Using samtools sort the reads based on their chromosomal coordinates
 rule sortBam:
     input:
-        bam = temp(os.path.join(
+        bam = os.path.join(
             cfg.processedDataDir, 
             "rnaVariantCalling/out/bam", 
             "{sample}", 
-            "{sample}_dropHeader.bam")),
-        bai = temp(os.path.join(
+            "{sample}_dropHeader.bam"),
+        bai = os.path.join(
             cfg.processedDataDir, 
             "rnaVariantCalling/out/bam", 
             "{sample}", 
-            "{sample}_dropHeader.bam.bai"))
+            "{sample}_dropHeader.bam.bai")
     output:
         bam = temp(os.path.join(
             cfg.processedDataDir, 
