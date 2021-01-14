@@ -94,7 +94,8 @@ class DropConfig:
         setKey = utils.setKey
         setKey(config_dict, None, "fileRegex", r".*\.(R|md)")
         setKey(config_dict, None, "genomeAssembly", "hg19")
-        setKey(config_dict, None, "hpoFile", None)
+        hpo_url = 'https://www.cmm.in.tum.de/public/paper/drop_analysis/resource/hpo_genes.tsv.gz'
+        setKey(config_dict, None, "hpoFile", hpo_url)
 
         # set submodule dictionaries
         setKey(config_dict, None, "aberrantExpression", dict())

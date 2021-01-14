@@ -14,9 +14,8 @@ requirements = [
 
 extra_files = []
 for (path, directories, filenames) in os.walk('drop/'):
-    directories[:] = [d for d in directories if not (d.startswith('.') or d == 'Data')]
-    filenames[:] = [f for f in filenames if 
-                    not (f.startswith('.') or f.endswith('.Rproj') or f.endswith('.py'))]
+    directories[:] = [d for d in directories if not d.startswith('.')]
+    filenames[:] = [f for f in filenames if not f.startswith('.') and not f.endswith('.Rproj')]
     for filename in filenames:
         extra_files.append(os.path.join('..', path, filename))
 

@@ -27,8 +27,8 @@ $bcftools view  $vcf_file | grep -vP "^##INFO=" | awk -F'\t' 'BEGIN {OFS = FS} {
 $bcftools index -t $tmp
 
 # compare and correct chromosome format mismatch
-bam_chr=$($samtools idxstats ${bam_file} | grep chr | wc -l)
-vcf_chr=$($bcftools view $tmp | cut -f1 | grep -v '#' | grep chr | wc -l)
+bam_chr=$($samtools idxstats ${bam_file} | cut -f1 | grep "^chr" | wc -l)
+vcf_chr=$($bcftools index --stats $tmp   | cut -f1 | grep "^chr" | wc -l)
 
 if [ ${vcf_chr} -eq 0  ] && [ ${bam_chr} -ne 0 ]
 then
