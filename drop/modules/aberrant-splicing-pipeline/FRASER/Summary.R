@@ -3,19 +3,18 @@
 #' author: mumichae, vyepez, ischeller
 #' wb:
 #'  log:
-#'    - snakemake: '`sm str(tmp_dir / "AS" / "{dataset}" / "FRASER_summary.Rds")`'
+#'    - snakemake: '`sm str(tmp_dir / "AS" / "{dataset}-{annotation}" / "FRASER_summary.Rds")`'
 #'  params:
 #'   - setup: '`sm cfg.AS.getWorkdir() + "/config.R"`'
 #'   - workingDir: '`sm cfg.getProcessedDataDir() + "/aberrant_splicing/datasets/"`'
 #'  input:
 #'   - fdsin: '`sm cfg.getProcessedDataDir() + 
-#'                 "/aberrant_splicing/datasets/savedObjects/{dataset}/" + 
-#'                 "padjBetaBinomial_theta.h5"`'
+#'                 "/aberrant_splicing/datasets/savedObjects/{dataset}--{annotation}/fds-object.RDS"`'
 #'   - results: '`sm cfg.getProcessedDataDir() + 
-#'                   "/aberrant_splicing/results/{dataset}_results.tsv"`'
+#'                   "/aberrant_splicing/results/{dataset}--{annotation}_results.tsv"`'
 #'  output:
 #'   - wBhtml: '`sm config["htmlOutputPath"] +
-#'               "/AberrantSplicing/{dataset}_summary.html"`'
+#'               "/AberrantSplicing/{dataset}--{annotation}_summary.html"`'
 #'  type: noindex
 #'---
 
@@ -28,9 +27,10 @@ suppressPackageStartupMessages({
 
 #+ input
 dataset    <- snakemake@wildcards$dataset
+annotation <- snakemake@wildcards$annotation
 workingDir <- snakemake@params$workingDir
 
-fds <- loadFraserDataSet(dir=workingDir, name=dataset)
+fds <- loadFraserDataSet(dir=workingDir, name=paste(dataset, annotation, sep = '--'))
 
 #' Number of samples: `r nrow(colData(fds))`
 #' 
@@ -44,55 +44,55 @@ dataset_title <- paste("Dataset:", dataset)
 
 #' ## Hyperparameter optimization
 for(type in psiTypes){
-    g <- plotEncDimSearch(fds, type=type) 
-    if (!is.null(g)) {
-        g <- g + theme_cowplot(font_size = 16) + 
-          ggtitle(paste0("Q estimation, ", type))
-        print(g)
-    }
+  g <- plotEncDimSearch(fds, type=type) 
+  if (!is.null(g)) {
+    g <- g + theme_cowplot(font_size = 16) + 
+      ggtitle(paste0("Q estimation, ", type))
+    print(g)
+  }
 }
 
 #' ## Aberrantly spliced genes per sample
 plotAberrantPerSample(fds, aggregate=TRUE, main=dataset_title) + 
-    theme_cowplot(font_size = 16) +
-    theme(legend.position = "top")
+  theme_cowplot(font_size = 16) +
+  theme(legend.position = "top")
 
 #' ## Batch Correlation: Samples x samples
 topN <- 30000
 topJ <- 10000
 for(type in psiTypes){
-    before <- plotCountCorHeatmap(
-        fds,
-        type = type,
-        logit = TRUE,
-        topN = topN,
-        topJ = topJ,
-        plotType = "sampleCorrelation",
-        normalized = FALSE,
-        annotation_col = NA,
-        annotation_row = NA,
-        sampleCluster = NA,
-        plotMeanPsi=FALSE,
-        plotCov = FALSE,
-        annotation_legend = TRUE
-    )
-    before
-    after <- plotCountCorHeatmap(
-        fds,
-        type = type,
-        logit = TRUE,
-        topN = topN,
-        topJ = topJ,
-        plotType = "sampleCorrelation",
-        normalized = TRUE,
-        annotation_col = NA,
-        annotation_row = NA,
-        sampleCluster = NA,
-        plotMeanPsi=FALSE,
-        plotCov = FALSE,
-        annotation_legend = TRUE
-    )
-    after
+  before <- plotCountCorHeatmap(
+    fds,
+    type = type,
+    logit = TRUE,
+    topN = topN,
+    topJ = topJ,
+    plotType = "sampleCorrelation",
+    normalized = FALSE,
+    annotation_col = NA,
+    annotation_row = NA,
+    sampleCluster = NA,
+    plotMeanPsi=FALSE,
+    plotCov = FALSE,
+    annotation_legend = TRUE
+  )
+  before
+  after <- plotCountCorHeatmap(
+    fds,
+    type = type,
+    logit = TRUE,
+    topN = topN,
+    topJ = topJ,
+    plotType = "sampleCorrelation",
+    normalized = TRUE,
+    annotation_col = NA,
+    annotation_row = NA,
+    sampleCluster = NA,
+    plotMeanPsi=FALSE,
+    plotCov = FALSE,
+    annotation_legend = TRUE
+  )
+  after
 }
 
 #' # Results
