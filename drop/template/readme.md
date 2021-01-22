@@ -16,6 +16,6 @@ the following links to see the pipelines results.
 
 **Code**: available to download for free in our [github](https://www.github.com/gagneurlab/drop)
 
-**Manuscript**: preprint in [protocol exchange](https://protocolexchange.researchsquare.com/article/pex-787/v1)
+**Manuscript**: available in [Nature Protocols](https://www.nature.com/articles/s41596-020-00462-5)
 
 **Data**: subset of 100 samples from the GEUVADIS [dataset](https://www.ebi.ac.uk/Tools/geuvadis-das/)
