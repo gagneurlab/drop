@@ -62,5 +62,7 @@ class MAE(Submodule):
             all_ids.extend(self.getMaeByGroup(group))
         return all_ids
 
-    def getQcVcf(self):
-        return self.qcVcfFile
+    def getVcf(self, id):
+        if id == 'QC':
+            return self.qcVcfFile
+        return self.sa.getFilePath(id, 'DNA_VCF_FILE')
