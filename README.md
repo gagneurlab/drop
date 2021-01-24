@@ -3,8 +3,7 @@
 [![Version](https://img.shields.io/github/v/release/gagneurlab/drop?include_prereleases)](https://github.com/gagneurlab/drop/releases)
 [![Version](https://readthedocs.org/projects/gagneurlab-drop/badge/?version=latest)](https://gagneurlab-drop.readthedocs.io/en/latest)
 
-The manuscript is now available in  
-[Nature Protocols](https://www.nature.com/articles/s41596-020-00462-5).
+The manuscript is now available in [Nature Protocols](https://www.nature.com/articles/s41596-020-00462-5).
 
 <img src="drop_sticker.png" alt="drop logo" width="200" class="center"/>
 
