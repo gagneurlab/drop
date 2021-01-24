@@ -26,19 +26,19 @@
 saveRDS(snakemake, snakemake@log$snakemake)
 
 suppressPackageStartupMessages({
-    library(OUTRIDER)
+  library(OUTRIDER)
 })
 
 # define functions
 get_html_path <- function(annotationVersion, datasets, htmlDir, fileName) {
-    file_paths <- file.path(htmlDir, annotationVersion, fileName)
-    file_link <- paste0('\n* [', datasets ,'](', file_paths, 
-                        '){target="_blank"}\n', collapse = ' ')
-    file_link
+  file_paths <- file.path(htmlDir, annotationVersion, fileName)
+  file_link <- paste0('\n* [', datasets ,'](', file_paths, 
+                      '){target="_blank"}\n', collapse = ' ')
+  file_link
 }
 
 display_text <- function(caption, links) {
-    paste0('**', caption, '**', names(links), '\n', links, collapse = '\n')
+  paste0('**', caption, '**', names(links), '\n', links, collapse = '\n')
 }
 
 # get parameters
@@ -67,9 +67,9 @@ count_links <- sapply(annotations, get_html_path,
 #' ### OUTRIDER summary
 #+ echo=FALSE
 outrider_links <- sapply(annotations, get_html_path, 
-                      datasets = datasets,
-                      htmlDir = file.path(htmlDir, "Outrider"), 
-                      fileName = paste0('Summary_', datasets, '.html'))
+                         datasets = datasets,
+                         htmlDir = file.path(htmlDir, "Outrider"), 
+                         fileName = paste0('Summary_', datasets, '.html'))
 #' 
 #' `r display_text(caption = 'Gene annotation version ', outrider_links)`
 #' 
@@ -82,10 +82,11 @@ outrider_links <- sapply(annotations, get_html_path,
 #' 
 #'  `r paste('* ', snakemake@input$resultTables, collapse = '\n')`
 #' 
-  
+
 #' ## Analyze Individual Results
 # Read the first ods object and results table
 ods <- readRDS(snakemake@input$odsFiles[[1]])
+normalizationFactors(ods) <- normalizationFactors(ods) 
 res <- fread(snakemake@input$resultTables[[1]])
 
 #' Display the results table of the first dataset

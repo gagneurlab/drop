@@ -1,5 +1,5 @@
 #'---
-#' title: "FRASER Summary: `r gsub('_', ' ', snakemake@wildcards$dataset)`"
+#' title: "FRASER Summary: `r paste(snakemake@wildcards$dataset, snakemake@wildcards$annotation, sep = '--')`"
 #' author: mumichae, vyepez, ischeller
 #' wb:
 #'  log:
@@ -39,7 +39,7 @@ fds <- loadFraserDataSet(dir=workingDir, name=paste(dataset, annotation, sep = '
 #' Number of splice sites (theta): `r length(rowRanges(fds, type = "theta"))`
 
 # used for most plots
-dataset_title <- paste("Dataset:", dataset)
+dataset_title <- paste0("Dataset: ", dataset, "--", annotation)
 
 
 #' ## Hyperparameter optimization

@@ -23,11 +23,11 @@ datasets <- snakemake@config$aberrantExpression$groups
 #+ echo=FALSE, results="asis"
 devNull <- sapply(datasets, function(name){
   sapply(gene_annotation_names, function(version){
-  cat(paste0(
-    "<h1>Dataset: ", name, "</h1>",
-    "<p>",
-    "</br>", "<a href='AberrantExpression/Counting/", version, "/Summary_", name, ".html'   >Count Summary</a>",
-    "</br>", "</p>"
-  ))
+    cat(paste0(
+      "<h1>Dataset: ", name, ", annotation ", version, "</h1>",
+      "<p>",
+      "</br>", "<a href='AberrantExpression/Counting/", version, "/Summary_", name, ".html'   >Count Summary</a>",
+      "</br>", "</p>"
+    ))
   })
 })
