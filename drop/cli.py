@@ -15,7 +15,7 @@ click_log.basic_config(logger)
 
 @click.group()
 @click_log.simple_verbosity_option(logger)
-@click.version_option('0.9.1', prog_name='drop')
+@click.version_option('1.0.2',prog_name='drop')
 def main():
     pass
 
@@ -45,8 +45,9 @@ def removeFile(filePath, warn=True):
         filePath.unlink()
 
 
-def setFiles(warn=True):
-    repoPaths, projectPaths = drop.setupPaths(projectRoot=Path.cwd().resolve())
+def setFiles(projectDir=None, warn=True):
+    projectDir = Path.cwd().resolve() if projectDir is None else projectDir
+    repoPaths, projectPaths = drop.setupPaths(projectRoot=projectDir)
 
     # create new directories
     for path in projectPaths.values():
@@ -84,8 +85,7 @@ def init():
 
 @main.command()
 def update():
-    # TODO: check drop version first
-    setFiles()
+    drop.checkDropVersion(Path().cwd().resolve(), force=True)
     logger.info("update...done")
 
 
@@ -102,27 +102,11 @@ def demo():
     response = subprocess.run(["bash", download_script], stderr=subprocess.STDOUT)
     response.check_returncode()
 
-    # fix config file
-    with open("config.yaml", "r") as f:
-        config = yaml.load(f, Loader=yaml.Loader)
-    path_keys = {"root": None,
-                 "htmlOutputPath": None,
-                 "sampleAnnotation": None,
-                 "v29": ["geneAnnotation"],
-                 "genome": None,
-                 "qcVcf": ["mae"]}
-
-    for key, sub in path_keys.items():
-        # iterate to key and entry
-        dict_ = config
-        if sub is not None:
-            for x in sub:
-                dict_ = dict_[x]
-        # set absolute path
-        dict_[key] = str(Path(dict_[key]).resolve())
-
     with open("config.yaml", "w") as f:
-        yaml.safe_dump(config.copy(), f, default_flow_style=False,
-                       sort_keys=False)
+    # copy sample annotation and config files with absolute paths
+    demo_repo = Path(drop.__file__).parent / "demo"
+    drop.demo.fixSampleAnnotation(demo_repo / "sample_annotation_relative.tsv",
+                                  Path.cwd() / "Data" / "sample_annotation.tsv")
+    drop.demo.fixConfig(demo_repo / "config_relative.yaml", Path.cwd() / "config.yaml")
 
     logger.info("demo project created")

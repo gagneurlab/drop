@@ -101,7 +101,7 @@ Alternatively, DROP can be installed without ``conda``. In this case the followi
 
   * `python <https://www.python.org/>`_ >= 3.6 and `pip <https://pip.pypa.io/en/stable/installing/>`_ >= 19.1
 
-  * `R <https://www.r-project.org/>`_ >= 3.6 and corresponding `bioconductor <https://bioconductor.org/install/>`_ version
+  * `R <https://www.r-project.org/>`_ >= 3.6, <=4.0.2 and corresponding `bioconductor <https://bioconductor.org/install/>`_ version
 
 * Commandline tools:
 

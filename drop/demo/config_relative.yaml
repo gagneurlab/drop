@@ -1,0 +1,66 @@
+projectTitle: Detection of RNA Outlier Pipeline
+htmlOutputPath: Output/html
+indexWithFolderName: true
+
+root: Output
+sampleAnnotation: Data/sample_annotation.tsv
+geneAnnotation:
+    v29: Data/gencode_annotation_trunc.gtf
+genomeAssembly: hg19
+hpoFile: null
+
+exportCounts:
+  geneAnnotations:
+    - v29
+  excludeGroups:
+    - mae
+    - import_exp
+
+aberrantExpression:
+    groups: 
+      - outrider
+      - import_exp
+    fpkmCutoff: 1
+    implementation: autoencoder
+    padjCutoff: 1
+    zScoreCutoff: 0
+    maxTestedDimensionProportion: 3
+    dassie:
+        tssWindow: 500
+        pasWindow: 1000
+
+aberrantSplicing:
+    groups: 
+      - fraser
+    recount: true
+    longRead: false
+    keepNonStandardChrs: true
+    filter: false
+    minExpressionInOneSample: 20
+    minDeltaPsi: 0.05
+    implementation: PCA
+    padjCutoff: 1
+    zScoreCutoff: 0
+    deltaPsiCutoff : 0.05
+    maxTestedDimensionProportion: 6
+
+mae:
+    groups:
+      - mae
+    genome: Data/chr21.fa
+    gatkIgnoreHeaderCheck: true
+    padjCutoff: .05
+    allelicRatioCutoff: 0.8
+    addAF: false
+    maxAF: .001
+    maxVarFreqCohort: .04
+    # VCF-BAM matching
+    qcVcf: Data/qc_vcf_1000G.vcf.gz
+    qcGroups:
+      - mae
+
+tools:
+    gatkCmd: gatk
+    bcftoolsCmd: bcftools
+    samtoolsCmd: samtools
+

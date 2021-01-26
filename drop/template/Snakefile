@@ -1,11 +1,14 @@
 from pathlib import Path
 import drop
 import wbuild
+from wbuild.createIndex import createIndexRule, ci
 
 drop.installRPackages()
 configfile: "config.yaml"
 
 projectDir = Path.cwd().resolve()
+drop.installRPackages()
+drop.checkDropVersion(projectDir)
 _, projectPaths = drop.setupPaths(projectDir)
 tmp_dir = projectPaths["tmpDir"]
 
@@ -21,14 +24,16 @@ include: cfg.RVC.getWorkdir() + "/Snakefile"
 
 rule all:
     input: 
-        rules.aberrantExpression.input,
-        rules.aberrantSplicing.input,
-        rules.mae.input,
-        rules.rnaVariantCalling.input,
+        rules.aberrantExpression.output,
+        rules.aberrantSplicing.output,
+        rules.mae.output,
+        rules.rnaVariantCalling.output,
         rules.Index.output,
-        rules.aberrantExpression_rulegraph.output,
-        rules.aberrantSplicing_rulegraph.output,
-        rules.mae_rulegraph.output,
+        dep_graph = cfg.get("htmlOutputPath") + "/dependency.done"
+    shell:
+        """
+        rm {input.dep_graph}
+        """
 
 rule sampleAnnotation:
     input: cfg.getProcessedDataDir() + "/sample_anno/sample_anno.done"
@@ -36,15 +41,17 @@ rule sampleAnnotation:
 rule exportCounts:
     input:
         cfg.exportCounts.getExportCountFiles("geneCounts"),
-        cfg.exportCounts.getExportCountFiles("splitCounts"),
-        cfg.exportCounts.getExportCountFiles("spliceSiteOverlapCounts"),
+        cfg.exportCounts.getExportCountFiles("splicingCounts", expandPattern="k_{type}_counts", type=["j", "theta"]),
+        cfg.exportCounts.getExportCountFiles("splicingCounts", expandPattern="n_{type}_counts", type=["psi5", "psi3", "theta"]),
         cfg.getProcessedResultsDir() + "/exported_counts/sample_anno.done"
 
 rule dependencyGraph:
     input:
-        rules.aberrantExpression_rulegraph.output,
-        rules.aberrantSplicing_rulegraph.output,
-        rules.mae_rulegraph.output,
+        rules.aberrantExpression_dependency.output,
+        rules.aberrantSplicing_dependency.output,
+        rules.mae_dependency.output
+    output: touch(cfg.get("htmlOutputPath") + "/dependency.done")
+    priority: 1
 
 rule publish_local:
     shell: "rsync -Ort {config[htmlOutputPath]} {config[webDir]}"

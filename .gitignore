@@ -9,6 +9,7 @@ Output/
 .ipynb_checkpoints*
 __pycache__*
 *.egg-info*
+.eggs*
 dist/*
 
 # typical latex tmp files
@@ -35,6 +36,7 @@ readme.html
 .RData
 
 # other
+.*.swp
 *~
 slurm-*.out
 ~$

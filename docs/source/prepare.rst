@@ -39,8 +39,7 @@ Parameter            Type        Description                                    
 ===================  ==========  =======================================================================================================================================  ======
 projectTitle         character   Title of the project to be displayed on the rendered HTML output                                                                         ``Project 1``
 htmlOutputPath       character   Full path of the folder where the HTML files are rendered                                                                                ``/data/project1/htmlOutput``
-indexWithFolderName  boolean     variable needed for wBuild, do not edit it                                                                                               ``true``
-fileRegex            character   variable needed for wBuild, do not edit it                                                                                               ``.*\.R``
+indexWithFolderName  boolean     If true, the basename of the project directory will be used as prefix for the index.html file                                            ``true``
 genomeAssembly       character   Either hg19 or hg38, depending on the genome assembly used for mapping                                                                   ``/data/project1``
 sampleAnnotation     character   Full path of the sample annotation table                                                                                                 ``/data/project1/sample_annotation.tsv``
 root                 character   Full path of the folder where the subdirectories processed_data and processed_results will be created containing DROP's output files.    ``/data/project1``
@@ -48,6 +47,7 @@ genome               character   Full path of a human reference genome fasta fil
 geneAnnotation       dictionary  A key-value list of the annotation name (key) and the full path to the GTF file (value). More than one annotation file can be provided.  ``anno1: /path/to/gtf1.gtf``
 
                                                                                                                                                                           ``anno2: /path/to/gtf2.gtf``
+hpoFile              character   Full path of the file containing HPO terms. If ``null`` (default), it reads it from our webserver. Refer to :ref:`filesdownload`.        ``/path/to/hpo_file.tsv``                                           
 tools                dictionary  A key-value list of different commands (key) and the command (value) to run them                                                         ``gatkCmd: gatk``
 
                                                                                                                                                                           ``bcftoolsCmd: bcftools``
@@ -61,7 +61,7 @@ Export counts dictionary
 ===============  ====  ==========================================================================================================================  ======
 Parameter        Type  Description                                                                                                                 Default/Examples
 ===============  ====  ==========================================================================================================================  ======
-geneAnnotations  list  key(s) from the ``geneAnnotation`` parameter, whose counts should be exported                                               ``- v34``
+geneAnnotations  list  key(s) from the ``geneAnnotation`` parameter, whose counts should be exported                                               ``- gencode34``
 excludeGroups    list  aberrant expression and aberrant splicing groups whose counts should not be exported. If ``null`` all groups are exported.  ``- group1``
 ===============  ====  ==========================================================================================================================  ======
 
@@ -69,19 +69,19 @@ excludeGroups    list  aberrant expression and aberrant splicing groups whose co
 Aberrant expression dictionary
 ++++++++++++++++++++++++++++++
 
-============================  =========  =====================================================================================================================================  ======
-Parameter                     Type       Description                                                                                                                            Default/Examples
-============================  =========  =====================================================================================================================================  ======
-groups                        list       DROP groups that should be executed in this module. If not specified or ``null`` all groups are used.                                  ``- group1``
+============================  =========  =================================================================================================================================  ======
+Parameter                     Type       Description                                                                                                                        Default/Examples
+============================  =========  =================================================================================================================================  ======
+groups                        list       DROP groups that should be executed in this module. If not specified or ``null`` all groups are used.                              ``- group1``
 
-                                                                                                                                                                                ``- group2``
-minIds                        numeric    A non-negative number indicating the minimum number of samples that a group needs in order to be analyzed. We recommend at least 50.   ``1``
-fpkmCutoff                    numeric    A non-negative number indicating the minimum FPKM 5% of the samples per gene should have. If a gene has less it will be filtered out.  ``1 # suggested by OUTRIDER``
-implementation                character  Either 'autoencoder', 'pca' or 'peer'. Methods to remove sample covariation in OUTRIDER.                                               ``autoencoder``
-zScoreCutoff                  numeric    A non-negative number. Z scores (in absolute value) greater than this cutoff are considered as outliers.                               ``0``
-padjCutoff                    numeric    A number between (0, 1] indicating the maximum FDR an event can have in order to be considered an outlier.                             ``0.05``
-maxTestedDimensionProportion  numeric    An integer that controls the maximum value that the encoding dimension can take. Refer to the advanced options below.                  ``3``
-============================  =========  =====================================================================================================================================  ======
+                                                                                                                                                                            ``- group2``
+minIds                        numeric    A positive number indicating the minimum number of samples that a group needs in order to be analyzed. We recommend at least 50.   ``1``
+fpkmCutoff                    numeric    A positive number indicating the minimum FPKM 5% of the samples per gene should have. If a gene has less it will be filtered out.  ``1 # suggested by OUTRIDER``
+implementation                character  Either 'autoencoder', 'pca' or 'peer'. Methods to remove sample covariation in OUTRIDER.                                           ``autoencoder``
+zScoreCutoff                  numeric    A non-negative number. Z scores (in absolute value) greater than this cutoff are considered as outliers.                           ``0``
+padjCutoff                    numeric    A number between (0, 1] indicating the maximum FDR an event can have in order to be considered an outlier.                         ``0.05``
+maxTestedDimensionProportion  numeric    An integer that controls the maximum value that the encoding dimension can take. Refer to :ref:`advancedoptions`.                  ``3``
+============================  =========  =================================================================================================================================  ======
 
 Aberrant splicing dictionary
 ++++++++++++++++++++++++++++
@@ -117,7 +117,7 @@ allelicRatioCutoff     numeric    A number between [0.5, 1) indicating the maxim
 addAF                  boolean    Whether or not to add the allele frequencies from gnomAD                                                                  ``true``
 maxAF                  numeric    Maximum allele frequency (of the minor allele) cut-off. Variants with AF equal or below this number are considered rare.  ``0.001``
 maxVarFreqCohort       numeric    Maximum variant frequency among the cohort.                                                                               ``0.05``      
-qcVcf                  character  Full path to the vcf file used for VCF-BAM matching                                                                       ``/path/to/qc_vcf.vcf.gz``
+qcVcf                  character  Full path to the vcf file used for VCF-BAM matching. Refer to :ref:`filesdownload`.                                       ``/path/to/qc_vcf.vcf.gz``
 qcGroups               list       Same as “groups”, but for the VCF-BAM matching                                                                            ``# see aberrant expression example``
 =====================  =========  ========================================================================================================================  ======
 
@@ -205,14 +205,34 @@ and external samples that are to be analyzed together must be the same.
 Similarly, the GENE_ANNOTATION of the external counts and the key of the `geneAnnotation`
 parameter from the config file must match.
 
-======  ======  ==========  =================  ==
-RNA_ID  DNA_ID  DROP_GROUP  RNA_BAM_FILE       GENE_COUNTS_FILE
-======  ======  ==========  =================  ==
+======  ======  ==========  =================  ==============================  ==
+RNA_ID  DNA_ID  DROP_GROUP  RNA_BAM_FILE       GENE_COUNTS_FILE                GENE_ANNOTATION
+======  ======  ==========  =================  ==============================  ==
 S10R    S10G    BLOOD       /path/to/S10R.BAM  
-EXT-1R          BLOOD                          /path/to/externalCounts.tsv.gz
-EXT-2R          BLOOD                          /path/to/externalCounts.tsv.gz
-======  ======  ==========  =================  ==
+EXT-1R          BLOOD                          /path/to/externalCounts.tsv.gz  gencode34
+EXT-2R          BLOOD                          /path/to/externalCounts.tsv.gz  gencode34
+======  ======  ==========  =================  ==============================  ==
 
+.. _filesdownload:
+
+Files to download
+-----------------
+
+Two different files can be downloaded from our `public repository <https://www.cmm.in.tum.de/public/paper/drop_analysis/resource/>`_. 
+
+1. VCF file containing different positions to be used to match DNA with RNA files.
+The file name is ``qc_vcf_1000G_{genome_build}.vcf.gz``. One file is available for each 
+genome build (hg19 and hg38). Download it together with the corresponding .tbi file. 
+Indicate the full path to the vcf file in the ``qcVcf`` key in the mono-allelic expression dictionary.
+This file is only needed for the MAE module. Otherwise, write ``null`` in the ``qcVcf`` key.
+
+2. Text file containing the relations between genes and phenotypes encoded as HPO terms. 
+The file name is ``hpo_genes.tsv.gz``.
+Download it and indicate the full path to it in the ``hpoFile`` key.
+The file is only needed in case HPO terms are specified in the sample annotation.
+Otherwise, write ``null`` in the ``hpoFile`` key.
+
+.. _advancedoptions:
 
 Advanced options
 ----------------

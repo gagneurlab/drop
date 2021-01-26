@@ -2,12 +2,6 @@
 #' title: Merge Split Counts
 #' author: Luise Schuller
 #' wb:
-#'  py:
-#'  - |
-#'   def getSplitCountFiles(dataset):
-#'       ids = sa.getIDsByGroup(dataset, assay="RNA")
-#'       file_stump = cfg.getProcessedDataDir() + f"/aberrant_splicing/datasets/cache/raw-{dataset}/sample_tmp/splitCounts/"
-#'       return expand(file_stump + "sample_{sample_id}.done", sample_id=ids) 
 #'  log:
 #'    - snakemake: '`sm str(tmp_dir / "AS" / "{dataset}" / "01_2_splitReadsMerge.Rds")`'
 #'  params:
@@ -15,7 +9,7 @@
 #'   - workingDir: '`sm cfg.getProcessedDataDir() + "/aberrant_splicing/datasets"`'
 #'  threads: 20
 #'  input:
-#'   - sample_counts: '`sm lambda w: getSplitCountFiles(w.dataset)`'
+#'   - sample_counts: '`sm lambda w: cfg.AS.getSplitCountFiles(w.dataset)`'
 #'  output:
 #'   - countsJ: '`sm cfg.getProcessedDataDir() +
 #'                   "/aberrant_splicing/datasets/savedObjects/raw-{dataset}/rawCountsJ.h5"`'

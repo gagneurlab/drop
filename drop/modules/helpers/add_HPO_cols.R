@@ -1,10 +1,14 @@
 
 # Function to add HPO terms to results table
 
-add_HPO_cols <- function(RES, sample_id_col = 'sampleID', gene_name_col = 'hgncSymbol'){
+add_HPO_cols <- function(RES, sample_id_col = 'sampleID', 
+                         gene_name_col = 'hgncSymbol', hpo_file = NULL){
   require(data.table)
   
-  filename <- 'https://www.cmm.in.tum.de/public/paper/drop_analysis/resource/hpo_genes.tsv.gz'
+  filename <- ifelse(is.null(hpo_file), 
+                 'https://www.cmm.in.tum.de/public/paper/drop_analysis/resource/hpo_genes.tsv.gz',
+                 hpo_file)
+  
   hpo_dt <- fread(filename)
   
   # change column names

@@ -24,6 +24,7 @@ suppressPackageStartupMessages({
     library(data.table)
     library(dplyr)
     library(magrittr)
+    library(tools)
 })
 
 ods <- readRDS(snakemake@input$ods)
@@ -55,7 +56,7 @@ message("outrider fitting finished")
 
 # Save the new ods with a date stamp
 op <- snakemake@output$ods
-op_date <- paste0(strsplit(op, "\\.")[[1]][1], "-", format(Sys.time(), "%Y%m%d") , ".Rds")
+op_date <- paste0(file_path_sans_ext(op), "-", format(Sys.time(), "%Y%m%d") , ".Rds")
 saveRDS(ods, op_date)
 
 # Create a link to the previous file

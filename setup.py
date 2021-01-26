@@ -5,8 +5,8 @@ with open("README.md", "r") as fh:
     long_description = fh.read()
 
 requirements = [
-     'wbuild @ git+https://github.com/mumichae/wBuild.git@subindex#egg=wbuild',
-    #'wbuild>=1.7.0',
+    #'wbuild @ git+https://github.com/mumichae/wBuild.git@subindex#egg=wbuild',
+    'wbuild>=1.8.0',
     'python-dateutil',
     'pandoc',
     'graphviz',
@@ -23,7 +23,7 @@ for (path, directories, filenames) in os.walk('drop/'):
 
 setuptools.setup(
     name="drop",
-    version="0.9.1",
+    version="1.0.2",
     author="Michaela Müller, Daniela Andrade Salazar, Vicente Yepez",
     author_email="mumichae@in.tum.de",
     description="Detection of RNA Outlier Pipeline",
@@ -34,7 +34,7 @@ setuptools.setup(
     entry_points={'console_scripts': ['drop=drop.cli:main']},
     package_data={'drop': extra_files},
     include_package_data=True,
-    install_requires=requirements
+    install_requires=requirements,
 )
 
 

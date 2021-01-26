@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 WORKDIR = cfg.AS.getWorkdir(str_=False)
 
 rule aberrantSplicing:
@@ -21,3 +22,21 @@ rule aberrantSplicing_rulegraph:
         snakemake aberrantSplicing --rulegraph | dot -Tsvg > {output.svg}
         snakemake aberrantSplicing --rulegraph | dot -Tpng > {output.png}
         """
+=======
+AS_WORKDIR = cfg.AS.getWorkdir(str_=False)
+
+AS_index_name = "aberrant-splicing-pipeline"
+AS_index_input, AS_index_output, AS_graph_file, _ = createIndexRule(
+    scriptsPath=str(AS_WORKDIR),
+    index_name=AS_index_name
+)
+
+rule aberrantSplicing:
+    input: AS_index_input, AS_graph_file
+    output: AS_index_output
+    run: ci(str(AS_WORKDIR), AS_index_name)
+
+rule aberrantSplicing_dependency:
+    output: AS_graph_file
+    shell: "snakemake --rulegraph {AS_index_output} | dot -Tsvg -Grankdir=TB > {output}"
+>>>>>>> d4afeacf63d6b713a61eae8bee9267ea40b9486a

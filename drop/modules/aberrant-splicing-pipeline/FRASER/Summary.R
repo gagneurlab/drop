@@ -10,7 +10,11 @@
 #'  input:
 #'   - fdsin: '`sm cfg.getProcessedDataDir() + 
 #'                 "/aberrant_splicing/datasets/savedObjects/{dataset}/" + 
+<<<<<<< HEAD:drop/modules/aberrant-splicing-pipeline/FRASER/Summary.R
 #'                 "padjBetaBinomial_psiSite.h5"`'
+=======
+#'                 "padjBetaBinomial_theta.h5"`'
+>>>>>>> d4afeacf63d6b713a61eae8bee9267ea40b9486a:drop/modules/aberrant-splicing-pipeline/FRASER/Summary.R
 #'   - results: '`sm cfg.getProcessedDataDir() + 
 #'                   "/aberrant_splicing/results/{dataset}_results.tsv"`'
 #'  output:
@@ -36,7 +40,7 @@ fds <- loadFraserDataSet(dir=workingDir, name=dataset)
 #' 
 #' Number of introns (psi5 or psi3): `r length(rowRanges(fds, type = "psi5"))`
 #' 
-#' Number of splice sites (psiSite): `r length(rowRanges(fds, type = "psiSite"))`
+#' Number of splice sites (theta): `r length(rowRanges(fds, type = "theta"))`
 
 # used for most plots
 dataset_title <- paste("Dataset:", dataset)
@@ -62,7 +66,7 @@ topN <- 30000
 topJ <- 10000
 for(type in psiTypes){
     before <- plotCountCorHeatmap(
-        fds = fds,
+        fds,
         type = type,
         logit = TRUE,
         topN = topN,
@@ -78,7 +82,7 @@ for(type in psiTypes){
     )
     before
     after <- plotCountCorHeatmap(
-        fds = fds,
+        fds,
         type = type,
         logit = TRUE,
         topN = topN,

@@ -1,24 +1,24 @@
-WORKDIR = cfg.AE.getWorkdir(str_=False)
+AE_WORKDIR = cfg.AE.getWorkdir(str_=False)
+
+AE_index_name = "aberrant-expression-pipeline"
+AE_index_input, AE_index_output, AE_graph_file, _ = createIndexRule(
+    scriptsPath=str(AE_WORKDIR),
+    index_name=AE_index_name
+)
 
 rule aberrantExpression:
-    input:
-        expand(
-            cfg.getHtmlFromScript(WORKDIR / "Counting" / "Datasets.R"),
-            annotation=cfg.getGeneVersions()
-        ),
-        expand(
-            cfg.getProcessedResultsDir() + "/aberrant_expression/{annotation}/outrider/{dataset}/OUTRIDER_results.tsv",
-                annotation=cfg.getGeneVersions(), dataset=cfg.AE.groups
-        ),
-        expand(
-            cfg.getHtmlFromScript(WORKDIR / "OUTRIDER" / "Datasets.R"),
-            annotation=cfg.getGeneVersions()
-        )
+    input: AE_index_input, AE_graph_file
+    output: AE_index_output
+    run: ci(str(AE_WORKDIR), AE_index_name)
+
+rule aberrantExpression_dependency:
+    output: AE_graph_file
+    shell: "snakemake --rulegraph {AE_index_output} | dot -Tsvg -Grankdir=TB > {output}"
 
 rule aberrantExpression_bamStats:
     input: 
         bam = lambda wildcards: sa.getFilePath(wildcards.sampleID, "RNA_BAM_FILE"),
-        ucsc2ncbi = WORKDIR / "resource" / "chr_UCSC_NCBI.txt"
+        ucsc2ncbi =AE_WORKDIR / "resource" / "chr_UCSC_NCBI.txt"
     output:
         cfg.processedDataDir / "aberrant_expression" / "{annotation}" / "coverage" / "{sampleID}.tsv"
     params:
@@ -56,15 +56,3 @@ rule aberrantExpression_mergeBamStats:
                 bam_stats.write(open(f, "r").read())
             for eid in params.exIDs:
                 bam_stats.write(f"{eid}\tNA\n")
-
-rulegraph_filename = f'{config["htmlOutputPath"]}/AE_rulegraph'
-
-rule aberrantExpression_rulegraph:
-    output:
-        svg = f"{rulegraph_filename}.svg",
-        png = f"{rulegraph_filename}.png"
-    shell:
-        """
-        snakemake aberrantExpression --rulegraph | dot -Tsvg > {output.svg}
-        snakemake aberrantExpression --rulegraph | dot -Tpng > {output.png}
-        """

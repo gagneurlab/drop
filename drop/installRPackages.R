@@ -1,5 +1,5 @@
-options(repos=structure(c(CRAN="https://cloud.r-project.org")))
-
+options(repos=structure(c(CRAN="https://cloud.r-project.org")), warn = -1)
+suppressPackageStartupMessages(library(data.table))
 
 if (!requireNamespace('BiocManager', quietly = TRUE)) {
     install.packages('BiocManager')
@@ -8,25 +8,30 @@ if (!requireNamespace('BiocManager', quietly = TRUE)) {
 
 
 args <- commandArgs(trailingOnly=TRUE)
-packages <- read.csv(args[1], stringsAsFactors = FALSE,
-                     header = TRUE, sep = " ", comment.char = "#")
-installed <- rownames(installed.packages())
-for (i in 1:nrow(packages)) {
+packages <- fread(args[1], fill = TRUE)
+packages <- packages[!startsWith(package, "#")]
+installed <- as.data.table(installed.packages())
+
+for (pckg_name in packages$package) {
+    package_dt <- packages[package == pckg_name]
+    pckg_name <- tail(unlist(strsplit(pckg_name, split = "/")), n = 1)
+    version <- package_dt$version
     
-    pckg_name = tail(unlist(strsplit(packages[i,1], split = "/")), n = 1)
-    
-    if (pckg_name %in% installed) {
+    if (pckg_name %in% installed$Package &
+      (version == "" || installed[Package == pckg_name, Version] == version)
+    ) {
         #message(paste(pckg_name, "already installed"))
     } else {
-        if (packages[i,2] == TRUE) {
+        if (package_dt$bioconductor == TRUE) {
             INSTALL <- BiocManager::install
         } else {
             INSTALL <- install.packages
         }
-        package <- packages[i,1]
+        package <- package_dt$package
         message(paste("install", package))
-        INSTALL(packages[i,1])
+        INSTALL(package)
         message(paste("installed", package))
     }
 }
 
+options(warn = 0)
