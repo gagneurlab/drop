@@ -13,6 +13,7 @@ class SampleAnnotation:
     SAMPLE_ANNOTATION_COLUMNS = FILE_TYPES + [
         "RNA_ID", "DNA_ID", "DROP_GROUP", "ANNOTATION",
         "PAIRED_END", "COUNT_MODE", "COUNT_OVERLAPS", "STRAND","RNA_VARIANT_GROUP"
+
     ]
 
     def __init__(self, file, root):
@@ -40,6 +41,7 @@ class SampleAnnotation:
         data_types = {
             "RNA_ID": str, "DNA_ID": str, "DROP_GROUP": str, "ANNOTATION": str,
             "PAIRED_END": bool, "COUNT_MODE": str, "COUNT_OVERLAPS": bool, "STRAND": str,"RNA_VARIANT_GROUP":str
+
         }
         sa = pd.read_csv(self.file, sep=sep, index_col=False, converters=data_types)
         missing_cols = [x for x in self.SAMPLE_ANNOTATION_COLUMNS if x not in sa.columns.values]
@@ -90,7 +92,8 @@ class SampleAnnotation:
             missing = set(file_mapping["FILE_PATH"]) - set(existing)
             logger.info(f"WARNING: {len(missing)} files missing in samples annotation. Ignoring...")
             logger.debug(f"Missing files: {missing}")
-            #file_mapping = file_mapping[file_mapping["FILE_PATH"].isin(existing)] #in demo last 2 files are missing putting import_exp below 10 file threshold
+
+            file_mapping = file_mapping[file_mapping["FILE_PATH"].isin(existing)]
 
         # write file mapping
         file_mapping.to_csv(self.root / "file_mapping.csv", index=False)
@@ -98,7 +101,11 @@ class SampleAnnotation:
 
     def createGroupIds(self, group_key="DROP_GROUP", file_type=None, sep=','):
         """
-        Create a mapping of DROP groups to lists of sample IDs
+
+        :param group_key: name of group column in sample annotation
+        :param file_type: name of file column e.g. "RNA_BAM_FILE", "DNA_VCF_FILE"
+        :param sep: separator of multiple groups in group column
+        :return: mapping of drop group and ID
         """
         if not file_type:
             file_type = "RNA_BAM_FILE"
@@ -231,6 +238,7 @@ class SampleAnnotation:
         return row
 
     ### DROP Groups ###
+
     def getGroupedIDs(self, assays):
         """
         Get group to IDs mapping

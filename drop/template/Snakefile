@@ -22,12 +22,14 @@ include: cfg.AS.getWorkdir() + "/Snakefile"
 include: cfg.MAE.getWorkdir() + "/Snakefile"
 include: cfg.RVC.getWorkdir() + "/Snakefile"
 
+
 rule all:
     input: 
         rules.aberrantExpression.output,
         rules.aberrantSplicing.output,
         rules.mae.output,
         rules.rnaVariantCalling.output,
+
         rules.Index.output,
         dep_graph = cfg.get("htmlOutputPath") + "/dependency.done"
     shell:
@@ -36,14 +38,20 @@ rule all:
         """
 
 rule sampleAnnotation:
-    input: cfg.getProcessedDataDir() + "/sample_anno/sample_anno.done"
+    input: rules.Pipeline_SampleAnnotation_R.output
 
 rule exportCounts:
     input:
         cfg.exportCounts.getExportCountFiles("geneCounts"),
         cfg.exportCounts.getExportCountFiles("splicingCounts", expandPattern="k_{type}_counts", type=["j", "theta"]),
         cfg.exportCounts.getExportCountFiles("splicingCounts", expandPattern="n_{type}_counts", type=["psi5", "psi3", "theta"]),
-        cfg.getProcessedResultsDir() + "/exported_counts/sample_anno.done"
+    output:
+        sampleAnnotations = cfg.exportCounts.getFiles("sampleAnnotation.tsv"),
+        descriptions = cfg.exportCounts.getFiles("DESCRIPTION.txt"),
+    params:
+        dropConfig = cfg,
+        sampleAnnotation = sa
+    script: "Scripts/Pipeline/exportCountsMeta.py"
 
 rule dependencyGraph:
     input:

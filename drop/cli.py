@@ -26,6 +26,7 @@ def copyModuleCode(repoPaths, projectPaths):
         "aberrant-splicing-pipeline": "AberrantSplicing",
         "mae-pipeline": "MonoallelicExpression",
         "rvc-pipeline": "rnaVariantCalling"
+
     }
 
     for repo, analysis_dir in repo_map.items():

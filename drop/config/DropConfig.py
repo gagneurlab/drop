@@ -1,8 +1,9 @@
 from .SampleAnnotation import SampleAnnotation
-from pathlib import Path
+
 from .submodules import *
 from .ExportCounts import ExportCounts
 from drop import utils
+from pathlib import Path
 import wbuild
 
 
@@ -14,6 +15,7 @@ class DropConfig:
         "root", "sampleAnnotation", "geneAnnotation", "genomeAssembly", "exportCounts", "tools", "hpoFile",
         # modules
         "aberrantExpression", "aberrantSplicing", "mae","rnaVariantCalling"
+
     ]
 
     def __init__(self, wbuildConfig):
@@ -24,6 +26,7 @@ class DropConfig:
 
         self.wBuildConfig = wbuildConfig
         self.config_dict = self.setDefaults(wbuildConfig.getConfig())
+
         self.root = Path(self.get("root"))
         self.processedDataDir = self.root / "processed_data"
         self.processedResultsDir = self.root / "processed_results"
@@ -67,6 +70,7 @@ class DropConfig:
             processedResultsDir=self.processedResultsDir
         )
 
+
         # counts export
         self.exportCounts = ExportCounts(
             dict_=self.get("exportCounts"),
@@ -85,6 +89,7 @@ class DropConfig:
         utils.setKey(self.config_dict, None, "rnaVariantCalling", self.RVC.dict_)
 
 
+
     def setDefaults(self, config_dict):
         """
         Check mandatory keys and set defaults for any missing keys
@@ -101,13 +106,16 @@ class DropConfig:
         setKey = utils.setKey
         setKey(config_dict, None, "fileRegex", r".*\.(R|md)")
         setKey(config_dict, None, "genomeAssembly", "hg19")
-        setKey(config_dict, None, "hpoFile", None)
+
+        hpo_url = 'https://www.cmm.in.tum.de/public/paper/drop_analysis/resource/hpo_genes.tsv.gz'
+        setKey(config_dict, None, "hpoFile", hpo_url)
 
         # set submodule dictionaries
         setKey(config_dict, None, "aberrantExpression", dict())
         setKey(config_dict, None, "aberrantSplicing", dict())
         setKey(config_dict, None, "mae", dict())
         setKey(config_dict, None, "rnaVariantCalling", dict())
+
         setKey(config_dict, None, "exportCounts", dict())
 
         # commandline tools

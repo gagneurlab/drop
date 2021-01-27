@@ -15,6 +15,7 @@ def checkFileExists(files):
     files = [files] if isinstance(files, str) else files
     return [f for f in files if Path(f).exists()]
 
+
 def createDir(directory):
     directory = Path(directory)
     if not directory.exists():
@@ -62,6 +63,7 @@ def getWBuildPath(str_=True):
 def getWBuildSnakefile(str_=True):
     wb_path = getWBuildPath(str_=False)
     return returnPath(wb_path / "wBuild.snakefile", str_=str_)
+
 
 def subsetBy(df, column, values):
     """

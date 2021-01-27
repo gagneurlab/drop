@@ -8,6 +8,7 @@ geneAnnotation:
     v29: Data/gencode_annotation_trunc.gtf
 genomeAssembly: hg19
 genome: Data/chr21.fa
+
 hpoFile: null
 
 exportCounts:
@@ -70,6 +71,7 @@ rnaVariantCalling:
   repeat_mask: Data/repeat_mask_chr21_test.bed
   hcArgs: 
   minAlt: 10
+
 
 tools:
     gatkCmd: gatk

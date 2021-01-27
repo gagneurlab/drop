@@ -21,3 +21,4 @@ HG00150.4.M_120208_7_trunc	Data/rna_bam/HG00150.4.M_120208_7_chr21.bam_trunc.bam
 HG00176.4.M_120208_2_trunc	Data/rna_bam/HG00176.4.M_120208_2_chr21.bam_trunc.bam	Data/dna_vcf/demo_chr21.vcf.gz	HG00176	fraser	TRUE	IntersectionStrict	TRUE	no	HP:0005215,HP:0010234	""	""	batch_6
 HG00178.4.M_120208_8	""	""	""	import_exp	""	""	""	""	""	Data/external_geneCounts.tsv.gz	v29	batch_6
 HG00181.4.M_120208_4	""	""	""	import_exp	""	""	""	""	""	Data/external_geneCounts.tsv.gz	v29	batch_6
+

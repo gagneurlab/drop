@@ -2,20 +2,19 @@
 set -e
 
 # get data
+
 resource_url="https://www.cmm.in.tum.de/public/paper/drop_analysis/resource_rnaVariantCalling.tar.gz"
-wget -nc $resource_url
-if [ ! -d Data ]; then
-  rm -rf resource
-	tar -zxvf resource_rnaVariantCalling.tar.gz
+tmpdir="$(dirname "$(tempfile)")"
+wget -nc -P $tmpdir $resource_url
+mkdir -p Data
+if [ -z "$(ls Data)" ]; then
+	tar -zxvf "$tmpdir/resource_rnaVariantCalling.tar.gz" -C .
+	rm -rf Data
 	mv resource Data
 else
-    echo "Data directory already exists, is not updated"
+    echo "Data directory not empty, is not updated"
 fi
 
-# prepare data
-cd Data
-cp config_relative_rnaVariantCalling.yaml ../config.yaml
-python fix_sample_anno.py
-
 # unzip fasta
+cd ./Data
 if [ ! -f "chr21.fa" ]; then gunzip chr21.fa.gz; fi
