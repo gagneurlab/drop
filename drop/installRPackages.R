@@ -18,7 +18,7 @@ for (pckg_name in packages$package) {
     version <- package_dt$version
     
     if (pckg_name %in% installed$Package &
-      (version == "" || installed[Package == pckg_name, Version] >= version)
+      (version == "" || installed[Package == pckg_name, Version] == version)
     ) {
         #message(paste(pckg_name, "already installed"))
     } else {
