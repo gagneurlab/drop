@@ -1,28 +1,3 @@
-<<<<<<< HEAD
-WORKDIR = cfg.AS.getWorkdir(str_=False)
-
-rule aberrantSplicing:
-    input:
-        expand(
-            cfg.getHtmlFromScript(WORKDIR / "Counting" / "DatasetsF.R"),
-            annotation=cfg.getGeneVersions()
-        ),
-        expand(
-            cfg.getHtmlFromScript(WORKDIR / "FRASER" / "Datasets.R"),
-            annotation=cfg.getGeneVersions()
-        )
-
-rulegraph_filename = f'{config["htmlOutputPath"]}/AS_rulegraph'
-rule aberrantSplicing_rulegraph:
-    output:
-        svg = f"{rulegraph_filename}.svg",
-        png = f"{rulegraph_filename}.png"
-    shell:
-        """
-        snakemake aberrantSplicing --rulegraph | dot -Tsvg > {output.svg}
-        snakemake aberrantSplicing --rulegraph | dot -Tpng > {output.png}
-        """
-=======
 AS_WORKDIR = cfg.AS.getWorkdir(str_=False)
 
 AS_index_name = "aberrant-splicing-pipeline"
@@ -39,4 +14,3 @@ rule aberrantSplicing:
 rule aberrantSplicing_dependency:
     output: AS_graph_file
     shell: "snakemake --rulegraph {AS_index_output} | dot -Tsvg -Grankdir=TB > {output}"
->>>>>>> d4afeacf63d6b713a61eae8bee9267ea40b9486a

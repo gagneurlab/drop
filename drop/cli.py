@@ -102,7 +102,6 @@ def demo():
     response = subprocess.run(["bash", download_script], stderr=subprocess.STDOUT)
     response.check_returncode()
 
-    with open("config.yaml", "w") as f:
     # copy sample annotation and config files with absolute paths
     demo_repo = Path(drop.__file__).parent / "demo"
     drop.demo.fixSampleAnnotation(demo_repo / "sample_annotation_relative.tsv",
