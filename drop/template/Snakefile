@@ -3,7 +3,6 @@ import drop
 import wbuild
 from wbuild.createIndex import createIndexRule, ci
 
-drop.installRPackages()
 configfile: "config.yaml"
 
 projectDir = Path.cwd().resolve()
