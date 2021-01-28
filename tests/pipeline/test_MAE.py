@@ -7,6 +7,7 @@ class Test_MAE_Pipeline:
     def pipeline_run(self, demo_dir):
         LOGGER.info("run MAE pipeline")
         pipeline_run = run(["snakemake", "mae", f"-j{CORES}"], demo_dir)
+        tmp = run(["snakemake", "--unlock"], demo_dir)
         assert "Finished job 0." in pipeline_run.stderr
         return pipeline_run
 

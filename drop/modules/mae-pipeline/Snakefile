@@ -13,7 +13,7 @@ rule mae:
 
 rule mae_dependency:
     output: MAE_graph_file
-    shell: "snakemake --rulegraph {MAE_index_output} | dot -Tsvg -Grankdir=TB > {output}"
+    shell: "snakemake --nolock --rulegraph {MAE_index_output} | dot -Tsvg -Grankdir=TB > {output}"
 
 rule sampleQC:
     input: cfg.getHtmlFromScript(MAE_WORKDIR / "QC" / "Datasets.R")
