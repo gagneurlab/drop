@@ -1,5 +1,5 @@
 # Detection of RNA Outlier Pipeline
-[![Pipeline status](https://travis-ci.org/gagneurlab/drop.svg?branch=master)](https://travis-ci.org/gagneurlab/drop)
+[![DROP pipeline status](https://github.com/gagneurlab/drop/workflows/Build/badge.svg?branch=bsgenome)](https://github.com/gagneurlab/drop/actions?query=workflow%3ABuild)
 [![Version](https://img.shields.io/github/v/release/gagneurlab/drop?include_prereleases)](https://github.com/gagneurlab/drop/releases)
 [![Version](https://readthedocs.org/projects/gagneurlab-drop/badge/?version=latest)](https://gagneurlab-drop.readthedocs.io/en/latest)
 

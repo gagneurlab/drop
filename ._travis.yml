@@ -16,7 +16,8 @@ install:
   # install dependencies
   - source $HOME/miniconda/etc/profile.d/conda.sh
   - conda create -q -n drop -c conda-forge -c bioconda "python>=${TRAVIS_PYTHON_VERSION}" "r-base>=4.0.3" "drop>=1.0.1" "wbuild>=1.8" "bioconductor-fraser>=1.2.0"
-  - conda remove -n drop --force drop
+  # remove FRASER to check installation routine
+  - conda remove -n drop --force drop bioconductor-fraser
   - conda activate drop
   - pip install -r tests/requirements.txt
 

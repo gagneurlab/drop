@@ -7,6 +7,7 @@ class Test_AE_Pipeline:
     def pipeline_run(self, demo_dir):
         LOGGER.info("run aberrant expression pipeline...")
         pipeline_run = run(["snakemake", "aberrantExpression", f"-j{CORES}"], demo_dir)
+        tmp = run(["snakemake", "--unlock"], demo_dir)
         assert "Finished job 0." in pipeline_run.stderr
         return pipeline_run
 
@@ -74,6 +75,8 @@ class Test_AE_Pipeline:
     def test_no_import(self, no_import):
         merged_counts = f"{no_import}/Output/processed_data/aberrant_expression/v29/outrider/outrider/total_counts.Rds"
         r = run(f"snakemake {merged_counts} --configfile config_noimp.yaml -nqF", no_import)
+        tmp = run(["snakemake", "--unlock"], no_import)
+        
         print(r.stdout)
         assert "10\tAberrantExpression_pipeline_Counting_countReads_R" in r.stdout
         assert "1\tAberrantExpression_pipeline_Counting_mergeCounts_R" in r.stdout

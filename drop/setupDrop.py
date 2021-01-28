@@ -1,4 +1,5 @@
 import drop
+from drop.config.DropConfig import DropConfig
 import subprocess
 from pathlib import Path
 from snakemake.logging import logger
@@ -24,13 +25,25 @@ def setupPaths(projectRoot):
     return repoPaths, projectPaths
 
 
-def installRPackages():
+def installRPackages(config: DropConfig = None):
     logger.info("check for missing R packages")
     script = Path(drop.__file__).parent / "installRPackages.R"
     requirements = Path(drop.__file__).parent / 'requirementsR.txt'
 
+    # install main packages
     response = subprocess.run(["Rscript", script, requirements], stderr=subprocess.STDOUT)
     response.check_returncode()
+
+    # install pipeline depending packages
+    if config is not None:
+        pkg_assembly_name = config.getBSGenomeName()
+        response = subprocess.run(["Rscript", script, pkg_assembly_name], stderr=subprocess.STDOUT)
+        response.check_returncode()
+
+        pkg_mafdb_name = config.getMafDbName()
+        if pkg_mafdb_name is not None and config.get("mae").get('addAF') is True:
+            response = subprocess.run(["Rscript", script, pkg_mafdb_name], stderr=subprocess.STDOUT)
+            response.check_returncode()
 
 
 def checkDropVersion(projectRoot, force=False):

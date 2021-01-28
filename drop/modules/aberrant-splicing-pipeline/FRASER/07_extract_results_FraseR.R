@@ -10,6 +10,7 @@
 #'   - zScoreCutoff: '`sm cfg.AS.get("zScoreCutoff")`'
 #'   - deltaPsiCutoff: '`sm cfg.AS.get("deltaPsiCutoff")`'
 #'   - hpoFile: '`sm cfg.get("hpoFile")`'
+#'   - assemblyVersion: '`sm cfg.getBSGenomeVersion()`'
 #'  threads: 10
 #'  input:
 #'   - setup: '`sm cfg.AS.getWorkdir() + "/config.R"`'
@@ -34,6 +35,7 @@ opts_chunk$set(fig.width=12, fig.height=8)
 dataset    <- snakemake@wildcards$dataset
 fdsFile    <- snakemake@input$fdsin
 workingDir <- snakemake@params$workingDir
+assemblyVersion <- snakemake@params$assemblyVersion
 
 register(MulticoreParam(snakemake@threads))
 # Limit number of threads for DelayedArray operations
@@ -41,10 +43,7 @@ setAutoBPPARAM(MulticoreParam(snakemake@threads))
 
 # Load data and annotate ranges with gene names
 fds <- loadFraserDataSet(dir=workingDir, name=dataset)
-GRCh <- ifelse(snakemake@config$genomeAssembly == 'hg19', 37, 
-               ifelse(snakemake@config$genomeAssembly == 'hg38', 38,
-                      error('Genome assembly must be either hg19 or hg38')))
-fds <- annotateRanges(fds, GRCh = GRCh)
+fds <- annotateRanges(fds, GRCh = assemblyVersion)
 colData(fds)$sampleID <- as.character(colData(fds)$sampleID)
 
 # Extract results per junction
