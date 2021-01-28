@@ -548,8 +548,8 @@ rule sortBam:
 
 rule changeHeader:
     input:
-        bam = str(cfg.processedDataDir) + "/bam_file_links/{sample}.bam",
-        bai = str(cfg.processedDataDir) + "/bam_file_links/{sample}.bam.bai"
+        bam = str(cfg.processedDataDir) + "/rnaVariantCalling/bam_file_links/{sample}.bam",
+        bai = str(cfg.processedDataDir) + "/rnaVariantCalling/bam_file_links/{sample}.bam.bai"
     output:
         bam = os.path.join(
             cfg.processedDataDir, 
@@ -615,8 +615,8 @@ rule indexReads:
     input:
         lambda wildcards: sa.getFilePath(wildcards.sample, "RNA_BAM_FILE")
     output:
-        bam = str(cfg.processedDataDir) + "/bam_file_links/{sample}.bam",
-        bai = str(cfg.processedDataDir) + "/bam_file_links/{sample}.bam.bai"
+        bam = str(cfg.processedDataDir) + "/rnaVariantCalling/bam_file_links/{sample}.bam",
+        bai = str(cfg.processedDataDir) + "/rnaVariantCalling/bam_file_links/{sample}.bam.bai"
     log:
         str(cfg.processedDataDir) + "/logs/indexReads/{sample}.log"
     shell:
@@ -633,11 +633,11 @@ rule indexReads:
 #    input:
 #        lambda wildcards: sa.getFilePath(wildcards.sample, "RNA_BAM_FILE")
 #    output:
-#        bam = str(cfg.processedDataDir) + "/bam_file_links/{sample}.bam",
-#        bai = str(cfg.processedDataDir) + "/bam_file_links/{sample}.bam.bai"
+#        bam = str(cfg.processedDataDir) + "/rnaVariantCalling/bam_file_links/{sample}.bam",
+#        bai = str(cfg.processedDataDir) + "/rnaVariantCalling/bam_file_links/{sample}.bam.bai"
 #    params:
 #        sample = "{sample}" ,
-#        tmp_bai = str(cfg.processedDataDir) + "/bam_file_links/{sample}.bai"
+#        tmp_bai = str(cfg.processedDataDir) + "/rnaVariantCalling/bam_file_links/{sample}.bai"
 #    log:
 #        str(cfg.processedDataDir) + "/logs/readGroups/{sample}.log"
 #    shell:
