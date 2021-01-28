@@ -33,6 +33,8 @@ def getMinAlt():
 rule rnaVariantCalling:
     input:
         expand(os.path.join(cfg.RVC.getWorkdir(),"{dataset}_alt{minAlt}_done.txt"),dataset = cfg.RVC.groups,minAlt = getMinAlt())
+    output:
+        expand(os.path.join(cfg.RVC.getWorkdir(),"{dataset}_alt{minAlt}_done.txt"),dataset = cfg.RVC.groups,minAlt = getMinAlt())
 
 
 #Define the {sample} variable
