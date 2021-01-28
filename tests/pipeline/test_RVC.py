@@ -46,8 +46,9 @@ class Test_RVC_Pipeline:
                 nrow_masked <- nrow(masked_filter)
 
                 print(nrow_basic)
-                print(sum(basic_filter[7] == "PASS"))
-                print(sum(masked_filter[7] == "PASS"))
+                print(nrow_basic == nrow_masked)
+                print(sum(basic_filter[,7] == "PASS"))
+                print(sum(masked_filter[,7] == "PASS"))
                 """.format(result_dir,result_dir)
         r = runR(r_cmd, demo_dir)
         assert "[1] 3006" in r.stdout
