@@ -1,4 +1,5 @@
 options(repos=structure(c(CRAN="https://cloud.r-project.org")), warn = -1)
+Sys.setenv("R_REMOTES_NO_ERRORS_FROM_WARNINGS" = "true")
 suppressPackageStartupMessages(library(data.table))
 
 if (!requireNamespace('BiocManager', quietly = TRUE)) {
