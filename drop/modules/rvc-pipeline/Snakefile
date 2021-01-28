@@ -35,6 +35,10 @@ rule rnaVariantCalling:
         expand(os.path.join(cfg.RVC.getWorkdir(),"{dataset}_alt{minAlt}_done.txt"),dataset = cfg.RVC.groups,minAlt = getMinAlt())
     output:
         expand(os.path.join(cfg.RVC.getWorkdir(),"{dataset}_alt{minAlt}_done.txt"),dataset = cfg.RVC.groups,minAlt = getMinAlt())
+    shell:
+        """
+        touch {output}
+        """
 
 
 #Define the {sample} variable
