@@ -39,8 +39,8 @@ class Test_RVC_Pipeline:
         result_dir = "Output/processed_data/rnaVariantCalling/out/sample_haplocaller/HG00096.1.M_111124_6"
         r_cmd = """ 
                 library(data.table)
-                basic_filter <- fread(file.path("{}", "HG00096.1.M_111124_6.genotyped.filtered.basic10.vcf.gz")
-                masked_filter <- fread(file.path("{}", "HG00096.1.M_111124_6.genotyped.filtered.basic10.masked.vcf.gz")
+                basic_filter <- fread(file.path("{}", "HG00096.1.M_111124_6.genotyped.filtered.basic10.vcf.gz"))
+                masked_filter <- fread(file.path("{}", "HG00096.1.M_111124_6.genotyped.filtered.basic10.masked.vcf.gz"))
 
                 nrow_basic <- nrow(basic_filter)
                 nrow_masked <- nrow(masked_filter)
