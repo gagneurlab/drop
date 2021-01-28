@@ -24,7 +24,7 @@ gene_annotation_names <- names(snakemake@config$geneAnnotation)
 devNull <- sapply(datasets, function(name){
   sapply(gene_annotation_names, function(version){
     cat(paste0(
-      "<h1>Dataset: ", name, "</h1>",
+      "<h1>Dataset: ", name, ", annotation ", version, "</h1>",
       "<p>",
       "</br>", "<a href='AberrantExpression/Outrider/", version, "/Summary_", name, ".html'   >OUTRIDER Summary</a>",
       "</br>", "</p>"
