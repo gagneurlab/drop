@@ -13,7 +13,7 @@ class Test_RVC_Pipeline:
     @pytest.mark.usefixtures("pipeline_run")
     # count the number of variant calls in batch0 before splitting
     def test_variants_joint(self, demo_dir):
-        vcf_file <- "Output/processed_data/rnaVariantCalling/out/all_samples_haplocaller/batch_0_all_samples.genotyped.vcf.gz"
+        vcf_file = "Output/processed_data/rnaVariantCalling/out/all_samples_haplocaller/batch_0_all_samples.genotyped.vcf.gz"
         r_cmd = """ 
                 library(data.table)
                 vcf  <- read.table("{}", stringsAsFactors = FALSE) 
@@ -25,7 +25,7 @@ class Test_RVC_Pipeline:
     @pytest.mark.usefixtures("pipeline_run")
     # count the number of variant calls in batch0 before splitting
     def test_variants_single_line_multi(self, demo_dir):
-        vcf_file <- "Output/processed_data/rnaVariantCalling/out/all_samples_haplocaller/batch_0_all_samples.genotyped.filtered_clean.vcf.gz"
+        vcf_file = "Output/processed_data/rnaVariantCalling/out/all_samples_haplocaller/batch_0_all_samples.genotyped.filtered_clean.vcf.gz"
         r_cmd = """ 
                 library(data.table)
                 vcf  <- read.table("{}", stringsAsFactors = FALSE) 
@@ -48,7 +48,7 @@ class Test_RVC_Pipeline:
                 print(nrow_basic)
                 print(sum(basic_filter[7] == "PASS"))
                 print(sum(masked_filter[7] == "PASS"))
-                """.format(results_dir,results_dir)
+                """.format(result_dir,result_dir)
         r = runR(r_cmd, demo_dir)
         assert "[1] 3006" in r.stdout
         assert "[1] TRUE" in r.stdout
