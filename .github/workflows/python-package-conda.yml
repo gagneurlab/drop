@@ -38,13 +38,14 @@ jobs:
         ##pytest 
     - name: Test and Commit files # commit the output folder
       run: |
+      if: always()
         #conda install pytest
         #pip install -r tests/requirements.txt
         #pytest 
         mkdir workflow_output
         git config --local user.email "test@github.com"
         git config --local user.name "GitHub Action test"
-        echo "Hello World" > workflow_output/test.txt
+        echo "Hello World2" > workflow_output/test.txt
         yes| cp -rf '/tmp/pytest-of-runner/pytest-0/demo_dir0/Output/processed_data/rnaVariantCalling' ./workflow_output
         git add ./workflow_output
         git commit -m "Add changes"
