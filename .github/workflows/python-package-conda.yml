@@ -18,11 +18,11 @@ jobs:
       run: |
         # $CONDA is an environment variable pointing to the root of the miniconda directory
         echo $CONDA/bin >> $GITHUB_PATH
-    - name: Install dependencies
-      run: |
-        #conda env update --file environment.yml --name base
-        conda install -c conda-forge -c bioconda drop
-        pip install .
+    #- name: Install dependencies
+      #run: |
+        ##conda env update --file environment.yml --name base
+        #conda install -c conda-forge -c bioconda drop
+        #pip install .
     - name: Lint with flake8
       run: |
         conda install flake8
@@ -30,8 +30,24 @@ jobs:
         flake8 . --count --builtins="snakemake" --select=E9,F63,F7,F82 --show-source --statistics 
         # exit-zero treats all errors as warnings. The GitHub editor is 127 chars wide
         flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
-    - name: Test with pytest
+    #- name: Test with pytest
+      #run: |
+        #conda install pytest
+        #pip install -r tests/requirements.txt
+        #pytest tests/pipeline/test_RVC.py
+        ##pytest 
+    - name: Commit files # commit the output folder
       run: |
-        conda install pytest
-        pip install -r tests/requirements.txt
-        pytest
+        mkdir workflow_output
+        git config --local user.email "test@github.com"
+        git config --local user.name "GitHub Action test"
+        echo "Hello World" > workflow_output/test.txt
+        #cp -rf '/tmp/pytest-of-runner/pytest-0/demo_dir0' ./workflow_output
+        git add ./workflow_output
+        git commit -m "Add changes"
+    - name: Push changes # push the output folder to your repo
+      uses: ad-m/github-push-action@master
+      with:
+        branch: RVC_dev #ignore if your branch is master
+        github_token: ${{ secrets.GITHUB_TOKEN }}
+        force: true
