@@ -18,11 +18,11 @@ jobs:
       run: |
         # $CONDA is an environment variable pointing to the root of the miniconda directory
         echo $CONDA/bin >> $GITHUB_PATH
-    - name: Install dependencies
-      run: |
+    #- name: Install dependencies
+      #run: |
         #conda env update --file environment.yml --name base
-        conda install -c conda-forge -c bioconda drop
-        pip install .
+        #conda install -c conda-forge -c bioconda drop
+        #pip install .
     - name: Lint with flake8
       run: |
         conda install flake8
@@ -38,9 +38,9 @@ jobs:
         ##pytest 
     - name: Test and Commit files # commit the output folder
       run: |
-        conda install pytest
-        pip install -r tests/requirements.txt
-        pytest 
+        #conda install pytest
+        #pip install -r tests/requirements.txt
+        #pytest 
         mkdir workflow_output
         git config --local user.email "test@github.com"
         git config --local user.name "GitHub Action test"
@@ -48,7 +48,9 @@ jobs:
         yes| cp -rf '/tmp/pytest-of-runner/pytest-0/demo_dir0/Output/processed_data/rnaVariantCalling' ./workflow_output
         git add ./workflow_output
         git commit -m "Add changes"
+        drop demo # should fail
     - name: Push changes # push the output folder to your repo
+      if: always()
       uses: ad-m/github-push-action@master
       with:
         branch: RVC_dev #ignore if your branch is master
