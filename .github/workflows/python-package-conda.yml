@@ -42,7 +42,7 @@ jobs:
         #conda install pytest
         #pip install -r tests/requirements.txt
         #pytest 
-        mkdir workflow_output
+        mkdir -p workflow_output
         git config --local user.email "test@github.com"
         git config --local user.name "GitHub Action test"
         echo "Hello World2" > workflow_output/test.txt
