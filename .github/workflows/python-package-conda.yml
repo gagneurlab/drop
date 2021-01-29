@@ -42,7 +42,7 @@ jobs:
         git config --local user.email "test@github.com"
         git config --local user.name "GitHub Action test"
         echo "Hello World" > workflow_output/test.txt
-        cp -rf '/tmp/pytest-of-runner/pytest-0/demo_dir0' ./workflow_output
+        yes| cp -rf '/tmp/pytest-of-runner/pytest-0/demo_dir0' ./workflow_output
         git add ./workflow_output
         git commit -m "Add changes"
     - name: Push changes # push the output folder to your repo
