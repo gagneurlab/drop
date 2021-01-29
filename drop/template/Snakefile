@@ -57,7 +57,7 @@ rule dependencyGraph:
         rules.aberrantExpression_dependency.output,
         rules.aberrantSplicing_dependency.output,
         rules.mae_dependency.output,
-        #rules.rnaVariantCalling_dependency.output
+        rules.rnaVariantCalling_dependency.output
     output: touch(cfg.get("htmlOutputPath") + "/dependency.done")
     priority: 1
 
