@@ -38,11 +38,11 @@ jobs:
         ##pytest 
     - name: Test and Commit files # commit the output folder
       if: always()
-      continue-on-error: true
       run: |
-        #conda install pytest
-        #pip install -r tests/requirements.txt
+        conda install pytest
+        pip install -r tests/requirements.txt
         #pytest 
+        pytest tests/pipeline/test_RVC.py
         mkdir -p workflow_output
         git config --local user.email "test@github.com"
         git config --local user.name "GitHub Action test"
