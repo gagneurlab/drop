@@ -38,6 +38,7 @@ jobs:
         ##pytest 
     - name: Test and Commit files # commit the output folder
       if: always()
+      continue-on-error: true
       run: |
         #conda install pytest
         #pip install -r tests/requirements.txt
