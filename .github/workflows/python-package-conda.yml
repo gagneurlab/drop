@@ -30,19 +30,22 @@ jobs:
         flake8 . --count --builtins="snakemake" --select=E9,F63,F7,F82 --show-source --statistics 
         # exit-zero treats all errors as warnings. The GitHub editor is 127 chars wide
         flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
-    - name: Test with pytest
+    #- name: Test with pytest
+      #run: |
+        #conda install pytest
+        #pip install -r tests/requirements.txt
+        #pytest tests/pipeline/test_RVC.py
+        ##pytest 
+    - name: Test and Commit files # commit the output folder
       run: |
         conda install pytest
         pip install -r tests/requirements.txt
-        pytest tests/pipeline/test_RVC.py
-        #pytest 
-    - name: Commit files # commit the output folder
-      run: |
+        pytest 
         mkdir workflow_output
         git config --local user.email "test@github.com"
         git config --local user.name "GitHub Action test"
         echo "Hello World" > workflow_output/test.txt
-        yes| cp -rf '/tmp/pytest-of-runner/pytest-0/demo_dir0' ./workflow_output
+        yes| cp -rf '/tmp/pytest-of-runner/pytest-0/demo_dir0/Output/processed_data/rnaVariantCalling' ./workflow_output
         git add ./workflow_output
         git commit -m "Add changes"
     - name: Push changes # push the output folder to your repo

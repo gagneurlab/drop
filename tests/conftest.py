@@ -19,7 +19,7 @@ def demo_dir(tmpdir_factory):
     assert "demo project created" in r.stderr
     yield run_dir
     LOGGER.info("\n remove demo directory")
-    #run_dir.remove()
+    run_dir.remove()
 
 
 @pytest.fixture(scope="session", autouse=True)

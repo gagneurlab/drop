@@ -10,31 +10,31 @@ class Test_RVC_Pipeline:
         assert "Finished job 0." in pipeline_run.stderr
         return pipeline_run
 
-    @pytest.mark.usefixtures("pipeline_run")
+    #@pytest.mark.usefixtures("pipeline_run")
     # count the number of variant calls in batch0 before splitting
-    def test_variants_joint(self, demo_dir):
-        vcf_file = "Output/processed_data/rnaVariantCalling/out/all_samples_haplocaller/batch_0_all_samples.genotyped.vcf.gz"
-        r_cmd = """ 
-                library(data.table)
-                vcf  <- fread("{}")
-                num_variants <- nrow(vcf)
-                print(num_variants)
-                """.format(vcf_file)
-        r = runR(r_cmd, demo_dir)
-        assert "[1] 4965" in r.stdout
-
-    @pytest.mark.usefixtures("pipeline_run")
-    # count the number of variant calls in batch0 before splitting
-    def test_variants_single_line_multi(self, demo_dir):
-        vcf_file = "Output/processed_data/rnaVariantCalling/out/all_samples_haplocaller/batch_0_all_samples.genotyped.filtered_clean.vcf.gz"
-        r_cmd = """ 
-                library(data.table)
-                vcf  <- fread("{}")
-                num_variants <- nrow(vcf)
-                print(num_variants)
-                """.format(vcf_file)
-        r = runR(r_cmd, demo_dir)
-        assert "[1] 5005" in r.stdout
+    #def test_variants_joint(self, demo_dir):
+        #vcf_file = "Output/processed_data/rnaVariantCalling/out/all_samples_haplocaller/batch_0_all_samples.genotyped.vcf.gz"
+        #r_cmd = """ 
+                #library(data.table)
+                #vcf  <- fread("{}")
+                #num_variants <- nrow(vcf)
+                #print(num_variants)
+                #""".format(vcf_file)
+        #r = runR(r_cmd, demo_dir)
+        #assert "[1] 4965" in r.stdout
+#
+    #@pytest.mark.usefixtures("pipeline_run")
+    ## count the number of variant calls in batch0 before splitting
+    #def test_variants_single_line_multi(self, demo_dir):
+        #vcf_file = "Output/processed_data/rnaVariantCalling/out/all_samples_haplocaller/batch_0_all_samples.genotyped.filtered_clean.vcf.gz"
+        #r_cmd = """ 
+                #library(data.table)
+                #vcf  <- fread("{}")
+                #num_variants <- nrow(vcf)
+                #print(num_variants)
+                #""".format(vcf_file)
+        #r = runR(r_cmd, demo_dir)
+        #assert "[1] 5005" in r.stdout
 
     @pytest.mark.usefixtures("pipeline_run")
     def test_single_sample_variants(self, demo_dir):
