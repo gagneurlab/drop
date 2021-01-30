@@ -3,7 +3,7 @@
 #' author: Christian Mertes
 #' wb:
 #'  log:
-#'    - snakemake: '`sm str(tmp_dir / "AS" / "{dataset}-{annotation}" / "07_results.Rds")`'
+#'    - snakemake: '`sm str(tmp_dir / "AS" / "{dataset}--{annotation}" / "07_results.Rds")`'
 #'  params:
 #'   - workingDir: '`sm cfg.getProcessedDataDir() + "/aberrant_splicing/datasets/"`'
 #'   - padjCutoff: '`sm cfg.AS.get("padjCutoff")`'
