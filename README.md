@@ -3,7 +3,7 @@
 [![Version](https://img.shields.io/github/v/release/gagneurlab/drop?include_prereleases)](https://github.com/gagneurlab/drop/releases)
 [![Version](https://readthedocs.org/projects/gagneurlab-drop/badge/?version=latest)](https://gagneurlab-drop.readthedocs.io/en/latest)
 
-The manuscript is now available in [Nature Protocols](https://www.nature.com/articles/s41596-020-00462-5).
+The manuscript is now available in [Nature Protocols](https://www.nature.com/articles/s41596-020-00462-5). [SharedIt link.](https://rdcu.be/cdMmF)
 
 <img src="drop_sticker.png" alt="drop logo" width="200" class="center"/>
 
@@ -44,19 +44,19 @@ Once these files are set up, you can execute a dry run from your project directo
 ```
 snakemake -n
 ```
-This shows you the rules of all subworkflows. Omit `-n` if you are sure that you want you execute all printed rules. You can also invoke single workflows explicitly e.g. for aberrant splicing with 
+This shows you the rules of all subworkflows. Omit `-n` and specify the number of cores with `--cores ` if you are sure that you want you execute all printed rules. You can also invoke single workflows explicitly e.g. for aberrant expression with:
 ```
-snakemake aberrantExpression -n
+snakemake aberrantExpression --cores 10
 ```
 
 ## Datasets
 The following publicly-available datasets of gene counts can be used as controls.
 Please cite as instructed for each dataset.
 
-* 119 non-strand specific fibroblasts: [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.3887451.svg)](https://doi.org/10.5281/zenodo.3887451)
+* 119 non-strand specific fibroblasts: [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.3887450.svg)](https://doi.org/10.5281/zenodo.3887450)
 
-* 139 strand specific fibroblasts: [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.3963474.svg)](https://doi.org/10.5281/zenodo.3963474)
+* 139 strand specific fibroblasts: [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.3963473.svg)](https://doi.org/10.5281/zenodo.3963473)
 
-* 125 strand specific blood: [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.3963470.svg)](https://doi.org/10.5281/zenodo.3963470)
+* 125 strand specific blood: [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.3963469.svg)](https://doi.org/10.5281/zenodo.3963469)
 
 If you want to contribute with your own count matrices, please contact us: yepez at in.tum.de
