@@ -1,65 +1,78 @@
-projectTitle: "DROP: Detection of RNA Outliers Pipeline"
-root:             # root directory of all intermediate output
-htmlOutputPath:   # path for HTML rendered reports
-indexWithFolderName: true # whether the root base name should be part of the index name
+projectTitle: Detection of RNA Outlier Pipeline
+htmlOutputPath: Output/html
+indexWithFolderName: true
 
-hpoFile: null  # if null, downloads it from webserver 
-sampleAnnotation: # path to sample annotation (see documenation on how to create it)
-
+root: Output
+sampleAnnotation: Data/sample_annotation.tsv
 geneAnnotation:
-    # multiple annotations with custom names are possible
-    # <annotation_name> : <path to gencode v29 annotation>
-    v29:  /path/to/gencode29.gtf.gz # example
+    v29: Data/gencode_annotation_trunc.gtf
+genomeAssembly: hg19
+genome: Data/chr21.fa
 
-genomeAssembly: hg19  # either hg19/hs37d5 or hg38/GRCh38
+hpoFile: null
+random_seed: true  # just for demo data, remove for proper analysis
+
 exportCounts:
-    # specify which gene annotations to include and which 
-    # groups to exclude when exporting counts
-    geneAnnotations:
-      - v29
-    excludeGroups:
-      - group1
+  geneAnnotations:
+    - v29
+  excludeGroups:
+    - mae
+    - import_exp
 
 aberrantExpression:
     groups: 
-        - group1
-        - group2
+      - outrider
+      - import_exp
     fpkmCutoff: 1
     implementation: autoencoder
-    padjCutoff: 0.05
+    padjCutoff: 1
     zScoreCutoff: 0
     maxTestedDimensionProportion: 3
+    dassie:
+        tssWindow: 500
+        pasWindow: 1000
 
 aberrantSplicing:
     groups:
-        - group1
-    recount: false
+      - fraser
+    recount: true
     longRead: false
     keepNonStandardChrs: true
-    filter: true
+    filter: false
     minExpressionInOneSample: 20
     minDeltaPsi: 0.05
     implementation: PCA
-    padjCutoff: 0.05
+    padjCutoff: 1
     zScoreCutoff: 0
-    deltaPsiCutoff: 0.3
+    deltaPsiCutoff : 0.05
     maxTestedDimensionProportion: 6
 
 mae:
     groups:
-        - group1
-        - group2
-        - group3
-    genome:       # path to genome sequence in fasta format
+      - mae
+    genome: Data/chr21.fa
     gatkIgnoreHeaderCheck: true
     padjCutoff: .05
     allelicRatioCutoff: 0.8
     addAF: false
     maxAF: .001
-    maxVarFreqCohort: .05
+    maxVarFreqCohort: .04
     # VCF-BAM matching
-    qcVcf:        # path to common variant file e.g. qc_vcf_1000G.vcf.gz
-    qcGroups: mae
+    qcVcf: Data/qc_vcf_1000G.vcf.gz
+    qcGroups:
+      - mae
+
+rnaVariantCalling:
+  groups:
+  - batch_0
+  knownVCFs:
+  - Data/high_confidence_snps_test.vcf.gz
+  - Data/high_confidence_indels_test.vcf.gz
+  - Data/dbSNP_chr21_test.vcf.gz
+  repeat_mask: Data/repeat_mask_chr21_test.bed
+  hcArgs: 
+  minAlt: 10
+
 
 tools:
     gatkCmd: gatk
