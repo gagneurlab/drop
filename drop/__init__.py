@@ -1,21 +1,7 @@
-from .setupDrop import setupDrop as drop
-from .configHelper import ConfigHelper as config
-from .submodules import *
+from .setupDrop import *
+from . import cli
+from . import config
+from . import utils
+from . import demo
 
-def init():
-    wbuild.cli.init()
-    # compy our template
-
-def update():
-    wbuild.cli.update()
-
-if __name__ == '__main__':
-    import sys
-    import wbuild
-    
-    arg = sys.args[1]
-    if arg == 'init':
-        init()
-    elif arg == 'update':
-        update()
-
+__version__ = "1.0.3"

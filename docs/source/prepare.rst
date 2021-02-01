@@ -39,15 +39,15 @@ Parameter            Type        Description                                    
 ===================  ==========  =======================================================================================================================================  ======
 projectTitle         character   Title of the project to be displayed on the rendered HTML output                                                                         ``Project 1``
 htmlOutputPath       character   Full path of the folder where the HTML files are rendered                                                                                ``/data/project1/htmlOutput``
-indexWithFolderName  boolean     variable needed for wBuild, do not edit it                                                                                               ``true``
-fileRegex            character   variable needed for wBuild, do not edit it                                                                                               ``.*\.R``
-genomeAssembly       character   Either hg19 or hg38, depending on the genome assembly used for mapping                                                                   ``/data/project1``
+indexWithFolderName  boolean     If true, the basename of the project directory will be used as prefix for the index.html file                                            ``true``
+genomeAssembly       character   Either hg19/hs37d5 or hg38/GRCh38, depending on the genome assembly used for mapping                                                     ``/data/project1``
 sampleAnnotation     character   Full path of the sample annotation table                                                                                                 ``/data/project1/sample_annotation.tsv``
 root                 character   Full path of the folder where the subdirectories processed_data and processed_results will be created containing DROP's output files.    ``/data/project1``
+genome               character   Full path of a human reference genome fasta file                                                                                         ``/path/to/hg19.fa``
 geneAnnotation       dictionary  A key-value list of the annotation name (key) and the full path to the GTF file (value). More than one annotation file can be provided.  ``anno1: /path/to/gtf1.gtf``
 
                                                                                                                                                                           ``anno2: /path/to/gtf2.gtf``
-scanBamParam         character   Either null or the path to an Rds file containing a scanBamParam object. Refer to the advanced options below.                            ``/path/to/scanBamParam.Rds``
+hpoFile              character   Full path of the file containing HPO terms. If ``null`` (default), it reads it from our webserver. Refer to :ref:`filesdownload`.        ``/path/to/hpo_file.tsv``                                           
 tools                dictionary  A key-value list of different commands (key) and the command (value) to run them                                                         ``gatkCmd: gatk``
 
                                                                                                                                                                           ``bcftoolsCmd: bcftools``
@@ -61,7 +61,7 @@ Export counts dictionary
 ===============  ====  ==========================================================================================================================  ======
 Parameter        Type  Description                                                                                                                 Default/Examples
 ===============  ====  ==========================================================================================================================  ======
-geneAnnotations  list  key(s) from the ``geneAnnotation`` parameter, whose counts should be exported                                               ``- v34``
+geneAnnotations  list  key(s) from the ``geneAnnotation`` parameter, whose counts should be exported                                               ``- gencode34``
 excludeGroups    list  aberrant expression and aberrant splicing groups whose counts should not be exported. If ``null`` all groups are exported.  ``- group1``
 ===============  ====  ==========================================================================================================================  ======
 
@@ -69,19 +69,19 @@ excludeGroups    list  aberrant expression and aberrant splicing groups whose co
 Aberrant expression dictionary
 ++++++++++++++++++++++++++++++
 
-============================  =========  =====================================================================================================================================  ======
-Parameter                     Type       Description                                                                                                                            Default/Examples
-============================  =========  =====================================================================================================================================  ======
-groups                        list       DROP groups that should be executed in this module. If not specified or ``null`` all groups are used.                                  ``- group1``
+============================  =========  =================================================================================================================================  ======
+Parameter                     Type       Description                                                                                                                        Default/Examples
+============================  =========  =================================================================================================================================  ======
+groups                        list       DROP groups that should be executed in this module. If not specified or ``null`` all groups are used.                              ``- group1``
 
-                                                                                                                                                                                ``- group2``
-minIds                        numeric    A non-negative number indicating the minimum number of samples that a group needs in order to be analyzed. We recommend at least 50.   ``1``
-fpkmCutoff                    numeric    A non-negative number indicating the minimum FPKM 5% of the samples per gene should have. If a gene has less it will be filtered out.  ``1 # suggested by OUTRIDER``
-implementation                character  Either 'autoencoder', 'pca' or 'peer'. Methods to remove sample covariation in OUTRIDER.                                               ``autoencoder``
-zScoreCutoff                  numeric    A non-negative number. Z scores (in absolute value) greater than this cutoff are considered as outliers.                               ``0``
-padjCutoff                    numeric    A number between (0, 1] indicating the maximum FDR an event can have in order to be considered an outlier.                             ``0.05``
-maxTestedDimensionProportion  numeric    An integer that controls the maximum value that the encoding dimension can take. Refer to the advanced options below.                  ``3``
-============================  =========  =====================================================================================================================================  ======
+                                                                                                                                                                            ``- group2``
+minIds                        numeric    A positive number indicating the minimum number of samples that a group needs in order to be analyzed. We recommend at least 50.   ``1``
+fpkmCutoff                    numeric    A positive number indicating the minimum FPKM 5% of the samples per gene should have. If a gene has less it will be filtered out.  ``1 # suggested by OUTRIDER``
+implementation                character  Either 'autoencoder', 'pca' or 'peer'. Methods to remove sample covariation in OUTRIDER.                                           ``autoencoder``
+zScoreCutoff                  numeric    A non-negative number. Z scores (in absolute value) greater than this cutoff are considered as outliers.                           ``0``
+padjCutoff                    numeric    A number between (0, 1] indicating the maximum FDR an event can have in order to be considered an outlier.                         ``0.05``
+maxTestedDimensionProportion  numeric    An integer that controls the maximum value that the encoding dimension can take. Refer to :ref:`advancedoptions`.                  ``3``
+============================  =========  =================================================================================================================================  ======
 
 Aberrant splicing dictionary
 ++++++++++++++++++++++++++++
@@ -111,25 +111,58 @@ Mono-allelic expression dictionary
 Parameter              Type       Description                                                                                                               Default/Examples
 =====================  =========  ========================================================================================================================  ======
 groups                 list       Same as in aberrant expression.                                                                                           ``# see aberrant expression example``
-genome                 character  Full path of a human reference genome fasta file                                                                          ``/path/to/hg19.fa``
 gatkIgnoreHeaderCheck  boolean    If true (recommended), it ignores the header warnings of a VCF file when performing the allelic counts                    ``true``
 padjCutoff             numeric    Same as in aberrant expression.                                                                                           ``0.05``
 allelicRatioCutoff     numeric    A number between [0.5, 1) indicating the maximum allelic ratio allele1/(allele1+allele2) for the test to be significant.  ``0.8``
 addAF                  boolean    Whether or not to add the allele frequencies from gnomAD                                                                  ``true``
 maxAF                  numeric    Maximum allele frequency (of the minor allele) cut-off. Variants with AF equal or below this number are considered rare.  ``0.001``
 maxVarFreqCohort       numeric    Maximum variant frequency among the cohort.                                                                               ``0.05``      
-qcVcf                  character  Full path to the vcf file used for VCF-BAM matching                                                                       ``/path/to/qc_vcf.vcf.gz``
+qcVcf                  character  Full path to the vcf file used for VCF-BAM matching. Refer to :ref:`filesdownload`.                                       ``/path/to/qc_vcf.vcf.gz``
 qcGroups               list       Same as “groups”, but for the VCF-BAM matching                                                                            ``# see aberrant expression example``
 =====================  =========  ========================================================================================================================  ======
+
+
+RNA Variant Calling dictionary
+++++++++++++++++++++++++++++++++++
+The RNA variant calling process uses information from multiple samples (as designated by the ``groups`` variable) to improve the variant calling process. However the larger the group size the more costly the computation is in terms of time and resources. When building the sample annotation table take this into account. For the most accurate variant calls include many samples in each ``RNA_VARIANT_GROUP``, but in order to speed up computation, separate samples into many groups.
+
+=====================  =========  =====================================================================================================================================================================  =========
+Parameter              Type       Description                                                                                                                                                                    Default/Examples
+=====================  =========  =====================================================================================================================================================================  =========
+groups                 list       RNA_VARIANT groups that should be executed in this module. If not specified or ``null`` all groups are used.                                                           ``- group1``
+
+
+                                                                                                                                                                                                         ``- group2``
+
+knownVCFs              list       Filepaths where each item in the list is path to a vcf file. Each vcf file describes known variants. We recommend using dbSNP as well as resources described by GATK.  ``- dbSNP.vcf``
+
+                                                                                                                                                                                                         ``- known_SNPs.vcf``
+
+                                                                                                                                                                                                         ``- known_indels.vcf``
+
+repeat_mask            character  Location of the RepeatMask .bed file.                                                                                                                                  ``path/to/RepeatMask.bed``
+minAlt                 numeric    Integer describing the minimum required reads that support the alternative allele. We recommend using a minimum of 3 if further filtering on your own. 10 otherwise.   ``3`` 
+hcArgs                 character  String describing additional arguments for GATK haplocaller. For expert tuning.                                                                                        ``""``
+
+=====================  =========  =====================================================================================================================================================================  =========
 
 
 Creating the sample annotation table
 ------------------------------------
 
-For details on how to generate the sample annotation, please refer to the DROP manuscript. 
-Here we provide some examples on how to deal with certain situations. For simplicity, we
-do not include the other compulsory columns ``PAIRED_END``, ``COUNT_MODE``,
-``COUNT_OVERLAPS`` and ``STRAND``.
+For a detailed explanation of the columns of the sample annotation, please refer to
+the DROP manuscript. 
+Inside the sample annotation, each row corresponds to a unique pair of RNA and DNA
+samples derived from the same individual. An RNA assay can belong to one or more DNA
+assays, and vice-versa. If so, they must be specified in different rows. The required
+columns are ``RNA_ID``, ``RNA_BAM_FILE`` and ``DROP_GROUP``, plus other module-specific
+ones (see DROP manuscript). In case external counts are included, add a new row for each
+sample from those files (or a subset if not all samples are needed).
+
+The sample annotation file should be saved in the tab-separated values (tsv) format. The 
+column order does not matter. Also, it does not matter where it is stored, as the path is 
+specified in the config file. Here we provide some examples on how to deal with certain
+situations. For simplicity, we do not include all possible columns in the examples.
 
 Example of RNA replicates 
 ++++++++++++++++++++++++++++++++++
@@ -144,23 +177,62 @@ S10R_M  S10G    MUSCLE      /path/to/S10R_M.BAM  /path/to/S10G.vcf.gz
 Example of DNA replicates 
 ++++++++++++++++++++++++++++++++++
 
-======  ======  ==========  ===================  ==
-RNA_ID  DNA_ID  DROP_GROUP  RNA_BAM_FILE         DNA_VCF_FILE
-======  ======  ==========  ===================  ==
-S20R    S20E    WES         /path/to/S20R.BAM    /path/to/S20E.vcf.gz
-S20R    S20G    WGS         /path/to/S20R.BAM    /path/to/S20G.vcf.gz
-======  ======  ==========  ===================  ==
+======  ======  ==========  =================  ==
+RNA_ID  DNA_ID  DROP_GROUP  RNA_BAM_FILE       DNA_VCF_FILE
+======  ======  ==========  =================  ==
+S20R    S20E    WES         /path/to/S20R.BAM  /path/to/S20E.vcf.gz
+S20R    S20G    WGS         /path/to/S20R.BAM  /path/to/S20G.vcf.gz
+======  ======  ==========  =================  ==
 
 Example of a multi-sample vcf file
 ++++++++++++++++++++++++++++++++++
 
-======  ======  ==========  ===================  ==
-RNA_ID  DNA_ID  DROP_GROUP  RNA_BAM_FILE         DNA_VCF_FILE
-======  ======  ==========  ===================  ==
-S10R    S10G    WGS         /path/to/S10R.BAM    /path/to/multi_sample.vcf.gz
-S20R    S20G    WGS         /path/to/S20R.BAM    /path/to/multi_sample.vcf.gz
-======  ======  ==========  ===================  ==
+======  ======  ==========  =================  ==
+RNA_ID  DNA_ID  DROP_GROUP  RNA_BAM_FILE       DNA_VCF_FILE
+======  ======  ==========  =================  ==
+S10R    S10G    WGS         /path/to/S10R.BAM  /path/to/multi_sample.vcf.gz
+S20R    S20G    WGS         /path/to/S20R.BAM  /path/to/multi_sample.vcf.gz
+======  ======  ==========  =================  ==
 
+External count matrices
++++++++++++++++++++++++
+
+In case counts from external matrices are to be integrated into the analysis,
+the file must be specified in the GENE_COUNTS_FILE column. A new row must be
+added for each sample from the count matrix that should be included in the 
+analysis. An RNA_BAM_FILE must not be specified. The DROP_GROUP of the local
+and external samples that are to be analyzed together must be the same.
+Similarly, the GENE_ANNOTATION of the external counts and the key of the `geneAnnotation`
+parameter from the config file must match.
+
+======  ======  ==========  =================  ==============================  ==
+RNA_ID  DNA_ID  DROP_GROUP  RNA_BAM_FILE       GENE_COUNTS_FILE                GENE_ANNOTATION
+======  ======  ==========  =================  ==============================  ==
+S10R    S10G    BLOOD       /path/to/S10R.BAM  
+EXT-1R          BLOOD                          /path/to/externalCounts.tsv.gz  gencode34
+EXT-2R          BLOOD                          /path/to/externalCounts.tsv.gz  gencode34
+======  ======  ==========  =================  ==============================  ==
+
+.. _filesdownload:
+
+Files to download
+-----------------
+
+Two different files can be downloaded from our `public repository <https://www.cmm.in.tum.de/public/paper/drop_analysis/resource/>`_. 
+
+1. VCF file containing different positions to be used to match DNA with RNA files.
+The file name is ``qc_vcf_1000G_{genome_build}.vcf.gz``. One file is available for each 
+genome build (hg19/hs37d5 and hg38/GRCh38). Download it together with the corresponding .tbi file. 
+Indicate the full path to the vcf file in the ``qcVcf`` key in the mono-allelic expression dictionary.
+This file is only needed for the MAE module. Otherwise, write ``null`` in the ``qcVcf`` key.
+
+2. Text file containing the relations between genes and phenotypes encoded as HPO terms. 
+The file name is ``hpo_genes.tsv.gz``.
+Download it and indicate the full path to it in the ``hpoFile`` key.
+The file is only needed in case HPO terms are specified in the sample annotation.
+Otherwise, write ``null`` in the ``hpoFile`` key.
+
+.. _advancedoptions:
 
 Advanced options
 ----------------
@@ -182,13 +254,5 @@ dimension smaller than the number of samples N. The encoding dimension is optimi
 We recommend the search space to be at most N/3 for the aberrant expression, 
 and N/6 for the aberrant splicing case. Nevertheless, the user can specify the 
 denominator with the parameter ``maxTestedDimensionProportion``.
-
-In order to influence which fields of the BAM files are imported, the user can 
-provide a ``scanBamParam`` object. This will affect how the files are counted in 
-the aberrant expression and splicing modules. Refer to the function's 
-`documentation <https://www.rdocumentation.org/packages/Rsamtools/versions/1.24.0/topics/ScanBamParam>`_ for details.
-
-
-
 
 

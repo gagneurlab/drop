@@ -2,16 +2,19 @@
 set -e
 
 # get data
-resource_url="https://www.cmm.in.tum.de/public/paper/drop_analysis/resource.tar.gz"
-wget -Nc $resource_url
-tar -zxvf resource.tar.gz
-rm -rf Data
-mv resource Data
 
-# prepare data
-cd Data
-python fix_sample_anno.py
-gunzip chr21.fa.gz
+resource_url="https://www.cmm.in.tum.de/public/paper/drop_analysis/resource_rnaVariantCalling.tar.gz"
+tmpdir="$(dirname "$(tempfile)")"
+wget -nc -P $tmpdir $resource_url
+mkdir -p Data
+if [ -z "$(ls Data)" ]; then
+	tar -zxvf "$tmpdir/resource_rnaVariantCalling.tar.gz" -C .
+	rm -rf Data
+	mv resource Data
+else
+    echo "Data directory not empty, is not updated"
+fi
 
-# copy config
-cp config_relative.yaml ../config.yaml
+# unzip fasta
+cd ./Data
+if [ ! -f "chr21.fa" ]; then gunzip chr21.fa.gz; fi

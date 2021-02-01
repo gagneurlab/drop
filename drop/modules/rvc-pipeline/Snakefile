@@ -1,0 +1,658 @@
+RVC_WORKDIR = cfg.RVC.getWorkdir(str_=False)
+
+RVC_index_name = "rvc-pipeline"
+RVC_index_input, RVC_index_output, RVC_graph_file, _ = createIndexRule(
+    scriptsPath=str(RVC_WORKDIR),
+    index_name=RVC_index_name
+)
+
+#########
+# Helper Functions
+# #######
+def getGenome(keep_ext = True):
+    if keep_ext:
+        return config["genome"]
+    else:
+        return ".".join(config["genome"].strip().split('.')[:-1])
+
+def getKnownVCFs():
+    knownVCFs = []
+    for i in cfg.config_dict["rnaVariantCalling"]["knownVCFs"]:
+        knownVCFs.append(i)
+    return knownVCFs
+def getHaploCallerArgs():
+    return cfg.config_dict["rnaVariantCalling"]["hcArgs"]
+
+def getRepeatMask(sortedName=False):
+    if sortedName:
+        ext = cfg.config_dict["rnaVariantCalling"]["repeat_mask"].strip().split('.')[-1] 
+        return ".".join(cfg.config_dict["rnaVariantCalling"]["repeat_mask"].strip().split('.')[:-1]) + "_sorted." + ext
+    else:
+        return cfg.config_dict["rnaVariantCalling"]["repeat_mask"]
+
+def getMinAlt():
+    return str(cfg.config_dict["rnaVariantCalling"]["minAlt"])
+
+#################################
+
+
+#Define the {dataset} variable
+#make sure all of the different {datasets} are processed. As defined by the sample annotation table RNA_VARIANT_GROUPS
+rule rnaVariantCalling:
+    input:
+        expand(os.path.join(str(cfg.processedDataDir) + "/rnaVariantCalling/{dataset}_alt{minAlt}_done.txt"),dataset = cfg.RVC.groups,minAlt = getMinAlt())
+
+
+#Define the {sample} variable
+#create the empty output file of the form: {dataset}_alt{minAlt}_done.txt
+rule allVariants:
+    input:
+        lambda wildcards: expand(os.path.join(
+            cfg.processedDataDir,
+            "rnaVariantCalling/out/sample_haplocaller", "{sample}",
+            "{sample}.genotyped.filtered.basic" + getMinAlt() +".masked.vcf.gz"),
+            sample = sa.getIDsByGroup(wildcards.dataset,assay = "RVC"))
+    output:
+        os.path.join(str(cfg.processedDataDir) + "/rnaVariantCalling/{dataset}_alt{minAlt}_done.txt")
+    shell:
+        """
+        touch {output}
+        """
+
+#Use the repeat_mask bedfile to filter/label variants in repeat regions
+rule masked_singleVCF_filter:
+    input: 
+        vcf = os.path.join(
+            cfg.processedDataDir,
+            "rnaVariantCalling/out/sample_haplocaller",
+            "{sample}",
+            "{sample}.genotyped.filtered.basic" + getMinAlt() +".vcf.gz"),
+        vcf_tabix = os.path.join(
+            cfg.processedDataDir,
+            "rnaVariantCalling/out/sample_haplocaller",
+            "{sample}",
+            "{sample}.genotyped.filtered.basic" + getMinAlt() +".vcf.gz.tbi"),
+        repeat_mask = getRepeatMask(sortedName = True)
+    output:
+        os.path.join(
+            cfg.processedDataDir,
+            "rnaVariantCalling/out/sample_haplocaller",
+            "{sample}",
+            "{sample}.genotyped.filtered.basic" + getMinAlt() +".masked.vcf.gz")
+    params:
+        sample = '{sample}',
+        ref = getGenome(),
+        outDir = str(cfg.processedDataDir) + "/rnaVariantCalling/"
+    log:
+        str(cfg.processedDataDir) + "/logs/sample_haplocaller/" + "{sample}" + "_maskedFilterVariants.log"
+    shell:
+        """
+        gatk --java-options "-Djava.io.tmpdir={params.outDir}/tmp" VariantFiltration -R {params.ref} \
+        -V {input.vcf} --mask {input.repeat_mask} -O {output} 2> {log}
+        """
+
+rule sortIndexRepeatMask:
+    input:
+        repeat_mask = getRepeatMask()
+    output:
+        sorted_repeat_mask = getRepeatMask(sortedName = True),
+        sorted_index = getRepeatMask(sortedName = True) + ".idx"
+    shell:
+        """
+        sort -k1,2 -V {input.repeat_mask} > {output.sorted_repeat_mask}
+        gatk IndexFeatureFile -I {output.sorted_repeat_mask}
+        """
+
+#Use the minAlt value to filter/label variants that do not have a minimum alternative read support
+rule basic_singleVCF_filter:
+    input: 
+        vcf = os.path.join(
+            cfg.processedDataDir,
+            "rnaVariantCalling/out/sample_haplocaller",
+            "{sample}",
+            "{sample}.genotyped.filtered.vcf.gz"),
+        vcf_tabix = os.path.join(
+            cfg.processedDataDir,
+            "rnaVariantCalling/out/sample_haplocaller",
+            "{sample}",
+            "{sample}.genotyped.filtered.vcf.gz.tbi")
+    output:
+        vcf = os.path.join(
+            cfg.processedDataDir,
+            "rnaVariantCalling/out/sample_haplocaller",
+            "{sample}",
+            "{sample}.genotyped.filtered.basic" + getMinAlt() +".vcf.gz"),
+        vcf_tbi = os.path.join(
+            cfg.processedDataDir,
+            "rnaVariantCalling/out/sample_haplocaller",
+            "{sample}",
+            "{sample}.genotyped.filtered.basic" + getMinAlt() +".vcf.gz.tbi"),
+    params:
+        sample = '{sample}',
+        minAlt = getMinAlt(),
+        ref = getGenome(),
+        outDir = str(cfg.processedDataDir) + "/rnaVariantCalling"
+    log:
+        str(cfg.processedDataDir) + "/logs/sample_haplocaller/" + "{sample}" + "_basicFilterVariants.log"
+    shell:
+        """
+        gatk --java-options "-Djava.io.tmpdir={params.outDir}/tmp" VariantFiltration -R {params.ref} \
+        -V {input.vcf} --filter-name minAlt --filter-expression "vc.getGenotype('{params.sample}').getAD().1 < {params.minAlt}" -O {output.vcf} 2> {log}
+        """
+
+
+#Use bcftools to split the multi-sample VCF file into a VCF file for the corresponding sample. Normalize the variants to remove artifacts
+rule split_multiVCF:
+    input:
+        lambda wildcards: os.path.join(
+            cfg.processedDataDir,
+            "rnaVariantCalling/out/all_samples_haplocaller",
+            cfg.RVC.batchIDs[wildcards.sample] + "_all_samples.genotyped.filtered_clean.vcf.gz")
+    params:
+        ref = getGenome(),
+        sampleID = "{sample}",
+
+    output:
+        vcf = temp(os.path.join(
+            cfg.processedDataDir,
+            "rnaVariantCalling/out/sample_haplocaller",
+            "{sample}",
+            "{sample}.genotyped.filtered.vcf.gz")),
+
+        vcf_tabix = temp(os.path.join(
+            cfg.processedDataDir,
+            "rnaVariantCalling/out/sample_haplocaller",
+            "{sample}",
+            "{sample}.genotyped.filtered.vcf.gz.tbi")),
+        toDel_split = temp(os.path.join(
+            cfg.processedDataDir,
+            "rnaVariantCalling/out/sample_haplocaller",
+            "{sample}",
+            "{sample}.genotyped.filtered.vcf.gz.split")),
+        toDel_tmp = temp(os.path.join(
+            cfg.processedDataDir,
+            "rnaVariantCalling/out/sample_haplocaller",
+            "{sample}",
+            "{sample}.genotyped.filtered.vcf.gz.tmp"))
+    log:
+        str(cfg.processedDataDir) + "/logs/sample_haplocaller/{sample}.single_vcf.log"
+    shell:
+        """
+        echo "reading multi-sample vcf into single sample vcf"
+        bcftools view -c1 -Oz -s {params.sampleID} -o {output.toDel_tmp} {input}
+        echo "split multi-line variants into single lines. Remove those that are artifacts"
+        bcftools norm -m-both {output.toDel_tmp} > {output.toDel_split}
+        echo "remove redundant variant info AAAG>AC == AAG>C and remove empty variant calls"
+        bcftools norm -f {params.ref}  {output.toDel_split} |grep -w -v "*"|grep -w -v "0/0" |bgzip -c > {output.vcf}
+        tabix -p vcf {output.vcf}
+        """
+
+
+#Use bcftools to left normalize variants. Variants labeled AAAG>AC can be shortened to AAG>C 
+rule leftNormalVCF:
+    input:
+        os.path.join(
+            cfg.processedDataDir,
+            "rnaVariantCalling/out/all_samples_haplocaller",
+            "{dataset}" + "_all_samples.genotyped.filtered.split.vcf.gz")
+    output:
+        os.path.join(
+            cfg.processedDataDir,
+            "rnaVariantCalling/out/all_samples_haplocaller",
+            "{dataset}_all_samples.genotyped.filtered_clean.vcf.gz")
+    params:
+        ref = getGenome()
+    shell:
+        """ 
+        bcftools norm -f {params.ref} {input} | bgzip -c > {output}
+        tabix -p vcf {output}
+         """
+
+
+#Use bcftools to split VCF with multiple variants on a single line into a VCF with a single variant per line. G>A,C into 2 lines G>A and G>C
+rule splitVCF:
+    input:
+        ancient(os.path.join(
+            cfg.processedDataDir,
+            "rnaVariantCalling/out/all_samples_haplocaller",
+            "{dataset}_all_samples.genotyped.filtered.vcf.gz"))
+    output:
+        split_vcf = temp(os.path.join(
+            cfg.processedDataDir,
+            "rnaVariantCalling/out/all_samples_haplocaller",
+            "{dataset}" + "_all_samples.genotyped.filtered.split.vcf.gz"
+            )),
+        toDel = temp(os.path.join(
+                cfg.processedDataDir,
+                "rnaVariantCalling/tmp/",
+                "{dataset}" + "_DELETE_ME"))
+    shell: 
+        """
+        bcftools norm -m-both {input} > {output.toDel} 
+        grep -v -w "*" {output.toDel} |bgzip -c > {output.split_vcf}
+        """
+
+
+#Use GATK to filter variants based on the quality scores and variant frequency based on the GATK-best practices
+rule filterVCF:
+    input:
+        os.path.join(
+        cfg.processedDataDir,
+        "rnaVariantCalling/out/all_samples_haplocaller",
+        "{dataset}_all_samples.genotyped.vcf.gz")
+    output:
+        filt_vcf = temp(os.path.join(
+        cfg.processedDataDir,
+        "rnaVariantCalling/out/all_samples_haplocaller",
+        "{dataset}_all_samples.genotyped.filtered.vcf.gz"
+        )),
+        filt_vcf_tbi = temp(os.path.join(
+        cfg.processedDataDir,
+        "rnaVariantCalling/out/all_samples_haplocaller",
+        "{dataset}_all_samples.genotyped.filtered.vcf.gz.tbi"))
+    params:
+        ref = getGenome(),
+        outDir = str(cfg.processedDataDir) + "/rnaVariantCalling"
+    log:
+        str(cfg.processedDataDir) + "/logs/all_haplocaller/{dataset}_filterVariants.log"
+    shell:
+        """
+        gatk --java-options "-Djava.io.tmpdir={params.outDir}/tmp" VariantFiltration -R {params.ref} -V {input} \
+        -window 35 -cluster 3 --filter-name FS --filter-expression "FS > 30.0" \
+        --filter-name QD --filter-expression "QD < 2.0" -O {output.filt_vcf} 2> {log}
+        """
+
+
+#Using GATK GenotypeGVCFs to make the variant calls from the combined g.vcf files
+rule genotypeGVCFs:
+    input:
+        gvcf = os.path.join(
+            cfg.processedDataDir,
+            "rnaVariantCalling/out/all_samples_haplocaller",
+            "{dataset}_all_samples.g.vcf.gz"),
+
+        gvcf_tbi = os.path.join(
+            cfg.processedDataDir,
+            "rnaVariantCalling/out/all_samples_haplocaller",
+            "{dataset}_all_samples.g.vcf.gz.tbi")
+    output:
+        os.path.join( cfg.processedDataDir,
+            "rnaVariantCalling/out/all_samples_haplocaller",
+            "{dataset}_all_samples.genotyped.vcf.gz")
+    params:
+        ref = getGenome(),
+        outDir = str(cfg.processedDataDir) + "/rnaVariantCalling"
+    log:
+        str(cfg.processedDataDir) + "/logs/all_haplocaller/{dataset}_genotypeGVCFs.log"
+    shell:
+        """
+        gatk --java-options "-Djava.io.tmpdir={params.outDir}/tmp" GenotypeGVCFs -R {params.ref} \
+        --variant {input.gvcf} -O {output} 2> {log}
+        """
+
+
+#Using GATK combine the vcfs from each sample within a {dataset} into a multi-sample vcf file to improve genotyping and variant calls
+rule combineGVCFs:
+    input:
+        lambda wildcards: expand(
+            os.path.join(
+            cfg.processedDataDir,
+            "rnaVariantCalling/out/sample_haplocaller",
+            "{sample}",
+            "{sample}.g.vcf.gz" 
+            ), sample = sa.getIDsByGroup(wildcards.dataset,assay = "RVC"))
+    output:
+        gvcf = temp(os.path.join(
+        cfg.processedDataDir,
+        "rnaVariantCalling/out/all_samples_haplocaller",
+        "{dataset}_all_samples.g.vcf.gz"
+        )),
+
+        gvcf_tbi = temp(os.path.join(
+        cfg.processedDataDir,
+        "rnaVariantCalling/out/all_samples_haplocaller",
+        "{dataset}_all_samples.g.vcf.gz.tbi"))
+    params:
+        ref = getGenome(),
+        outDir = str(cfg.processedDataDir) + "/rnaVariantCalling",
+        variant_list = lambda wildcards: ["--variant " + i for i in expand(
+                os.path.join(
+                cfg.processedDataDir,
+                "rnaVariantCalling/out/sample_haplocaller",
+                "{sample}",
+                "{sample}.g.vcf.gz" ), sample = sa.getIDsByGroup(wildcards.dataset,assay = "RVC"))]
+    log:
+        str(cfg.processedDataDir) + "/logs/all_haplocaller/{dataset}_combineGVCF.log"
+    shell:
+        """
+        gatk --java-options "-Djava.io.tmpdir={params.outDir}/tmp" CombineGVCFs -R {params.ref} \
+        {params.variant_list} -O {output.gvcf} 2> {log}
+        """
+
+
+#Using GATK HaplotypeCaller take the cleaned and recalibrated BAM file as input for the variant calling.
+rule haplotypeCaller:
+    input:
+        bam = os.path.join(
+        cfg.processedDataDir,
+        "rnaVariantCalling/out/bam",
+        "{sample}",
+        "{sample}_Aligned.sortedByCoord.dupMarked.split.bqsr.out.bam")
+    output:
+        os.path.join(
+        cfg.processedDataDir,
+        "rnaVariantCalling/out/sample_haplocaller",
+        "{sample}",
+        "{sample}.g.vcf.gz")
+    params:
+        ref = getGenome(),
+        hcArgs = getHaploCallerArgs(),
+        outDir = str(cfg.processedDataDir) + "/rnaVariantCalling"
+    log:
+        str(cfg.processedDataDir) + "/logs/all_haplocaller/{sample}.log"
+    shell:
+        """
+        gatk --java-options "-Djava.io.tmpdir={params.outDir}/tmp" HaplotypeCaller -R {params.ref} -I {input.bam} \
+        --dont-use-soft-clipped-bases -stand-call-conf 20.0 \
+        --output-mode EMIT_ALL_CONFIDENT_SITES \
+        -ERC GVCF {params.hcArgs} -O {output} 2> {log}
+        """
+
+
+#Using GATK ApplyBQSR takes the frequency table and confidence scores generated by BQSR and recalculates the BAM quality scores
+rule applyBQSR:
+    input:
+        bam = os.path.join(
+        cfg.processedDataDir, 
+        "rnaVariantCalling/out/bam", 
+        "{sample}", 
+        "{sample}_Aligned.sortedByCoord.dupMarked.split.out.bam"
+        ),
+        table = os.path.join(
+        cfg.processedDataDir,
+        "rnaVariantCalling/out/bqsr/{sample}_recal.table")
+    output:
+        temp(os.path.join(
+        cfg.processedDataDir,
+        "rnaVariantCalling/out/bam",
+        "{sample}",
+        "{sample}_Aligned.sortedByCoord.dupMarked.split.bqsr.out.bam"))
+    params:
+        ref = getGenome(),
+        outDir = str(cfg.processedDataDir) + "/rnaVariantCalling"
+    log:
+        str(cfg.processedDataDir) + "/logs/applyBQSR/{sample}.log"
+    shell:
+        """
+        gatk --java-options "-Djava.io.tmpdir={params.outDir}/tmp" ApplyBQSR  \
+        -R {params.ref} -I {input.bam} --bqsr-recal-file {input.table} \
+        --add-output-sam-program-record --use-original-qualities -O {output} 2> {log}
+        """
+
+
+#Using GATK BaseRecalibrator (BQSR) use the known sites (dbSNP + others) to improve read scoring
+rule bqsr:
+    input:
+        os.path.join(
+        cfg.processedDataDir, 
+        "rnaVariantCalling/out/bam", 
+        "{sample}", 
+        "{sample}_Aligned.sortedByCoord.dupMarked.split.out.bam")
+    output:
+        os.path.join(
+        cfg.processedDataDir,
+        "rnaVariantCalling/out/bqsr",
+        "{sample}_recal.table")
+    params:
+        ref = getGenome(),
+        known_sites =  ["--known-sites " + i for i in getKnownVCFs()],
+        outDir = str(cfg.processedDataDir) + "/rnaVariantCalling"
+    log:
+        str(cfg.processedDataDir) + "/logs/bqsr/{sample}.log"
+    shell:
+        """
+        gatk --java-options "-Djava.io.tmpdir={params.outDir}/tmp" BaseRecalibrator -I {input} -R {params.ref} \
+        {params.known_sites} -O {output} 2> {log}
+        """
+
+
+#Using GATK splitNCigarReads make use of the RNA splicing characteristic by mapping reads with large gaps to the reference. Split the RNAseq reads into subsections that will have better local alignments
+rule splitNcigar:
+    input:
+        bam = os.path.join(
+        cfg.processedDataDir, 
+        "rnaVariantCalling/out/bam", 
+        "{sample}", 
+        "{sample}_Aligned.sortedByCoord.dupMarked.FAorder.out.bam")
+    output:
+        temp(os.path.join(
+        cfg.processedDataDir, 
+        "rnaVariantCalling/out/bam", 
+        "{sample}", 
+        "{sample}_Aligned.sortedByCoord.dupMarked.split.out.bam"))
+    params:
+        ref = getGenome(),
+        outDir = str(cfg.processedDataDir) + "/rnaVariantCalling"
+    log:
+        str(cfg.processedDataDir) + "/logs/splitNcigar/{sample}.log"
+    shell:
+        """
+        gatk --java-options "-Djava.io.tmpdir={params.outDir}/tmp" SplitNCigarReads \
+        -R {params.ref} -I {input.bam} -fixNDN \
+        -O {output} 2> {log}
+        #-RMQT 60 -U ALLOW_N_CIGAR_READS --allow_potentially_misencoded_quality_scores 2> {log}
+        """
+
+# Using picard ReorderSam the bam files so that they match the reference genome order.
+rule reorderBAM:
+    input:
+        bam = os.path.join(
+        cfg.processedDataDir, 
+        "rnaVariantCalling/out/bam", 
+        "{sample}", 
+        "{sample}_Aligned.sortedByCoord.dupMarked.out.bam"),
+    output:
+        bam = temp(os.path.join(
+            cfg.processedDataDir, 
+            "rnaVariantCalling/out/bam", 
+            "{sample}", 
+            "{sample}_Aligned.sortedByCoord.dupMarked.FAorder.out.bam"
+            )),
+        bai = temp(os.path.join(
+            cfg.processedDataDir, 
+            "rnaVariantCalling/out/bam", 
+            "{sample}", 
+            "{sample}_Aligned.sortedByCoord.dupMarked.FAorder.out.bam.bai"))
+    params:
+        tmp_bai = os.path.join(
+            cfg.processedDataDir, 
+            "rnaVariantCalling/out/bam", 
+            "{sample}", 
+            "{sample}_Aligned.sortedByCoord.dupMarked.FAorder.out.bai"),
+        ref = getGenome(),
+        ref_dict = getGenome(keep_ext =False) + ".dict" # remove me for gatk 4.0.4.0
+    shell:
+        """
+        echo "Create Sequence Dictionary"
+        if [ ! -f "{params.ref_dict}" ]; then
+            gatk CreateSequenceDictionary -R {params.ref} 
+        fi
+        echo "ReorderSam"
+        gatk ReorderSam -I {input.bam} -O {output.bam} --SEQUENCE_DICTIONARY {params.ref_dict} -S true --CREATE_INDEX true # remove me for gatk4.0.4.0
+        #gatk ReorderSam -I {input.bam} -O {output.bam} -R {params.ref} -S true --CREATE_INDEX true #use for gatk 4.0.4.0
+        echo "mv {params.tmp_bai} {output.bai}"
+        mv {params.tmp_bai} {output.bai}
+        """
+
+#Using GATK markDuplicates attempt to identify reads that are technical duplicates of biological reads. Attempts to eliminate noise introduced by library prep
+rule markDuplicates:
+    input:
+        bam = os.path.join(
+            cfg.processedDataDir, 
+            "rnaVariantCalling/out/bam", 
+            "{sample}", 
+            "{sample}_Aligned.sortedByCoord.out.bam"),
+        bai = os.path.join(
+            cfg.processedDataDir, 
+            "rnaVariantCalling/out/bam", 
+            "{sample}", 
+            "{sample}_Aligned.sortedByCoord.out.bam.bai")
+    output:
+        temp(os.path.join(
+        cfg.processedDataDir, 
+        "rnaVariantCalling/out/bam", 
+        "{sample}", 
+        "{sample}_Aligned.sortedByCoord.dupMarked.out.bam"))
+    params:
+        metrics = os.path.join( cfg.processedDataDir, "rnaVariantCalling/out/picard-tools-marked-dup-metrics.txt"),
+        outDir = str(cfg.processedDataDir) + "/rnaVariantCalling"
+    log:
+        str(cfg.processedDataDir) + "/logs/markDuplicates/{sample}.log"
+    shell:
+        """
+        echo {input.bam}
+        gatk MarkDuplicates -I {input.bam} -O {output} \
+        -M {params.metrics} --CREATE_INDEX true \
+        --TMP_DIR "{params.outDir}/tmp" \
+        --VALIDATION_STRINGENCY SILENT 2> {log}
+        """
+
+
+#Using samtools sort the reads based on their chromosomal coordinates
+rule sortBam:
+    input:
+        bam = os.path.join(
+            cfg.processedDataDir, 
+            "rnaVariantCalling/out/bam", 
+            "{sample}", 
+            "{sample}_dropHeader.bam"),
+        bai = os.path.join(
+            cfg.processedDataDir, 
+            "rnaVariantCalling/out/bam", 
+            "{sample}", 
+            "{sample}_dropHeader.bam.bai")
+    output:
+        bam = temp(os.path.join(
+            cfg.processedDataDir, 
+            "rnaVariantCalling/out/bam", 
+            "{sample}", 
+            "{sample}_Aligned.sortedByCoord.out.bam")),
+        bai = temp(os.path.join(
+            cfg.processedDataDir, 
+            "rnaVariantCalling/out/bam", 
+            "{sample}", 
+            "{sample}_Aligned.sortedByCoord.out.bam.bai"))
+    log:
+        str(cfg.processedDataDir) + "/logs/sortBam/{sample}.log"
+
+    shell:
+        """
+        samtools sort {input.bam} -O BAM -o {output.bam} &> {log}
+        samtools index -b {output.bam}
+        """
+
+
+rule changeHeader:
+    input:
+        bam = str(cfg.processedDataDir) + "/rnaVariantCalling/bam_file_links/{sample}.bam",
+        bai = str(cfg.processedDataDir) + "/rnaVariantCalling/bam_file_links/{sample}.bam.bai"
+    output:
+        bam = os.path.join(
+            cfg.processedDataDir, 
+            "rnaVariantCalling/out/bam", 
+            "{sample}", 
+            "{sample}_dropHeader.bam"),
+        bai = os.path.join(
+            cfg.processedDataDir, 
+            "rnaVariantCalling/out/bam", 
+            "{sample}", 
+            "{sample}_dropHeader.bam.bai"),
+        newHeader = os.path.join(
+            cfg.processedDataDir, 
+            "rnaVariantCalling/out/bam", 
+            "{sample}", 
+            "{sample}_newDropHeader.txt")
+    params:
+        tab = "\\t",
+        newLine = "\\n",
+        sedRef = "\\2"
+    shell:
+        """
+        samtools view -H {input} |grep "^@RG" |grep SM |head -1|
+        while read header ; do
+            {{ for i in $header; do 
+                 if [[ $i == "SM:"* ]]; then 
+                    internalHeader=${{i:3}};
+                    break
+                else
+                   internalHeader="";
+                fi; 
+            done; }}
+
+            if [[ $internalHeader == {wildcards.sample} ]]; then
+                echo "Internal Header $internalHeader matches {wildcards.sample}"
+		ln -s  {input.bam} {output.bam}
+                ln -s  {input.bai} {output.bai}
+                touch {output.newHeader}
+                echo "Done Linking files"
+            else 
+                echo "WARNING"
+                echo "\tInternal Header is designated: $internalHeader";
+                echo "\tSampleID is {wildcards.sample}"
+                echo "\tForcing $internalHeader to match {wildcards.sample}"
+
+               samtools view -H {input.bam} > {output.newHeader}
+               echo 'sed -E -i "s/(SM:[^{params.tab}|{params.newLine}]*)({params.tab}|{params.newLine}*)/SM:{wildcards.sample}{params.sedRef}/" {output.newHeader}'
+               # sed using regEx in place substitiute 'SM:' followed by any thing that isn't tab or newLine. and then replace it with the sampleID and the delimiter (tab or newLine) that matched in the 1st expression.
+               sed -E -i "s/(SM:[^{params.tab}|{params.newLine}]*)({params.tab}|{params.newLine}*)/SM:{wildcards.sample}{params.sedRef}/" {output.newHeader}
+
+               samtools reheader {output.newHeader} {input.bam} > {output.bam}
+
+               samtools index -b {output.bam}
+
+            fi
+        done;
+        """
+
+
+
+#Using samtools index the bam files if they are not already indexed, and create a soft link to the working directory for easier access
+rule indexReads:
+    input:
+        lambda wildcards: sa.getFilePath(wildcards.sample, "RNA_BAM_FILE")
+    output:
+        bam = str(cfg.processedDataDir) + "/rnaVariantCalling/bam_file_links/{sample}.bam",
+        bai = str(cfg.processedDataDir) + "/rnaVariantCalling/bam_file_links/{sample}.bam.bai"
+    log:
+        str(cfg.processedDataDir) + "/logs/indexReads/{sample}.log"
+    shell:
+        """
+        if [ ! -f "{input}.bai" ]; then
+            samtools index -b {input} 2> {log}
+        fi
+        ln -s {input} {output.bam}
+        ln -s "{input}.bai" {output.bai}
+        """
+
+# MUST UNCOMMENT indexReads
+#rule readGroups:
+#    input:
+#        lambda wildcards: sa.getFilePath(wildcards.sample, "RNA_BAM_FILE")
+#    output:
+#        bam = str(cfg.processedDataDir) + "/rnaVariantCalling/bam_file_links/{sample}.bam",
+#        bai = str(cfg.processedDataDir) + "/rnaVariantCalling/bam_file_links/{sample}.bam.bai"
+#    params:
+#        sample = "{sample}" ,
+#        tmp_bai = str(cfg.processedDataDir) + "/rnaVariantCalling/bam_file_links/{sample}.bai"
+#    log:
+#        str(cfg.processedDataDir) + "/logs/readGroups/{sample}.log"
+#    shell:
+#        """
+#        picard AddOrReplaceReadGroups I={input} O={output.bam} SORT_ORDER=coordinate \
+#            RGID=1 RGLB="BONN" RGPL=unknown RGPU=unit1 RGSM={params.sample} CREATE_INDEX=True &> {log}
+#        mv {params.tmp_bai} {output.bai}
+#        #"""
+
+rule rnaVariantCalling_dependency:
+    output: RVC_graph_file
+    shell: "snakemake --rulegraph rnaVariantCalling | dot -Tsvg -Grankdir=TB > {output}"
