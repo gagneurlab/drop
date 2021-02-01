@@ -17,4 +17,4 @@ biological coefficient of variation; and tables containing aberrant samples and
 results table.
 
 Expression outliers are computed using [OUTRIDER](https://www.cell.com/ajhg/fulltext/S0002-9297(18)30401-4) 
-(Brechtmann et al., AJHG, 2018).
+(Brechtmann, Mertes et al., AJHG, 2018).

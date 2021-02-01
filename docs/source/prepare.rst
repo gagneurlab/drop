@@ -40,7 +40,7 @@ Parameter            Type        Description                                    
 projectTitle         character   Title of the project to be displayed on the rendered HTML output                                                                         ``Project 1``
 htmlOutputPath       character   Full path of the folder where the HTML files are rendered                                                                                ``/data/project1/htmlOutput``
 indexWithFolderName  boolean     If true, the basename of the project directory will be used as prefix for the index.html file                                            ``true``
-genomeAssembly       character   Either hg19 or hg38, depending on the genome assembly used for mapping                                                                   ``/data/project1``
+genomeAssembly       character   Either hg19/hs37d5 or hg38/GRCh38, depending on the genome assembly used for mapping                                                     ``/data/project1``
 sampleAnnotation     character   Full path of the sample annotation table                                                                                                 ``/data/project1/sample_annotation.tsv``
 root                 character   Full path of the folder where the subdirectories processed_data and processed_results will be created containing DROP's output files.    ``/data/project1``
 genome               character   Full path of a human reference genome fasta file                                                                                         ``/path/to/hg19.fa``
@@ -222,7 +222,7 @@ Two different files can be downloaded from our `public repository <https://www.c
 
 1. VCF file containing different positions to be used to match DNA with RNA files.
 The file name is ``qc_vcf_1000G_{genome_build}.vcf.gz``. One file is available for each 
-genome build (hg19 and hg38). Download it together with the corresponding .tbi file. 
+genome build (hg19/hs37d5 and hg38/GRCh38). Download it together with the corresponding .tbi file. 
 Indicate the full path to the vcf file in the ``qcVcf`` key in the mono-allelic expression dictionary.
 This file is only needed for the MAE module. Otherwise, write ``null`` in the ``qcVcf`` key.
 

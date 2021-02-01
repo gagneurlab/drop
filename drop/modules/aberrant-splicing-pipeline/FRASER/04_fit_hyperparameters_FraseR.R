@@ -20,6 +20,9 @@
 saveRDS(snakemake, snakemake@log$snakemake)
 source(snakemake@params$setup, echo=FALSE)
 
+if ("random_seed" %in% names(snakemake@config) && isTRUE(snakemake@config$random_seed))
+  set.seed(42)
+
 #+ input
 dataset    <- snakemake@wildcards$dataset
 workingDir <- snakemake@params$workingDir

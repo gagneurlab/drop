@@ -7,6 +7,7 @@ class Test_AS_Pipeline:
     def pipeline_run(self, demo_dir):
         LOGGER.info("run aberrant splicing pipeline")
         pipeline_run = run(["snakemake", "aberrantSplicing", f"-j{CORES}"], demo_dir)
+        tmp = run(["snakemake", "--unlock"], demo_dir)
         assert "Finished job 0." in pipeline_run.stderr
         return pipeline_run
 
@@ -26,7 +27,7 @@ class Test_AS_Pipeline:
     @pytest.mark.usefixtures("pipeline_run")
     def test_results(self, demo_dir):
         results_dir = "Output/processed_data/aberrant_splicing/results"
-        r = run(f"wc -l {results_dir}/fraser_results_per_junction.tsv", demo_dir)
+        r = run(f"wc -l {results_dir}/fraser--v29_results_per_junction.tsv", demo_dir)
         assert "87 " in r.stdout
-        r = run(f"wc -l {results_dir}/fraser_results.tsv", demo_dir)
+        r = run(f"wc -l {results_dir}/fraser--v29_results.tsv", demo_dir)
         assert "1 " in r.stdout

@@ -10,6 +10,7 @@ genomeAssembly: hg19
 genome: Data/chr21.fa
 
 hpoFile: null
+random_seed: true  # just for demo data, remove for proper analysis
 
 exportCounts:
   geneAnnotations:
@@ -32,7 +33,7 @@ aberrantExpression:
         pasWindow: 1000
 
 aberrantSplicing:
-    groups: 
+    groups:
       - fraser
     recount: true
     longRead: false

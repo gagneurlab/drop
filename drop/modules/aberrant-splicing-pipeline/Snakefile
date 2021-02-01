@@ -6,6 +6,9 @@ AS_index_input, AS_index_output, AS_graph_file, _ = createIndexRule(
     index_name=AS_index_name
 )
 
+wildcard_constraints:
+    dataset="[^--]+"
+    
 rule aberrantSplicing:
     input: AS_index_input, AS_graph_file
     output: AS_index_output
@@ -13,4 +16,6 @@ rule aberrantSplicing:
 
 rule aberrantSplicing_dependency:
     output: AS_graph_file
-    shell: "snakemake --rulegraph {AS_index_output} | dot -Tsvg -Grankdir=TB > {output}"
+
+    shell: "snakemake --nolock --rulegraph {AS_index_output} | dot -Tsvg -Grankdir=TB > {output}"
+
