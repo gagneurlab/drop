@@ -56,7 +56,7 @@ jobs:
           conda install pytest
           pip install -r tests/requirements.txt
       - name: Setup fixtures
-          run: pytest --durations 0 tests/config
+        run: pytest --durations 0 tests/config
 
   test-pipeline:
     needs: setup-pytest
