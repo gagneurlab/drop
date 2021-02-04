@@ -4,13 +4,9 @@ import os
 with open("README.md", "r") as fh:
     long_description = fh.read()
 
-requirements = [
-    'wbuild>=1.8.0',
-    'python-dateutil',
-    'pandoc',
-    'graphviz',
-    'pandas>=0.13',
-]
+with open("requirements.txt", "r") as f:
+    requirements = f.read().splitlines()
+    requirements = [x for x in requirements if not x.startswith("#") and x != ""]
 
 extra_files = []
 for (path, directories, filenames) in os.walk('drop/'):

@@ -1,0 +1,8 @@
+pandas>=0.13
+Click>=7.0
+click-log
+python-dateutil
+snakemake>=5.5.2
+wbuild>=1.8.0
+pandoc
+graphviz
