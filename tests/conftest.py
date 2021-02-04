@@ -6,7 +6,7 @@ from unittest.mock import patch
 from .common import *
 
 
-@pytest.yield_fixture(scope="session", autouse=True)
+@pytest.fixture(scope="session", autouse=True)
 def demo_dir(tmpdir_factory):
     """
     Directory containing files downloaded from Gagneurlab ready to run the demo pipeline
