@@ -1,5 +1,5 @@
 #'---
-#' title: "Counts Summary: `r gsub('_', ' ', snakemake@wildcards$dataset)`"
+#' title: "Counts Summary: `r paste(snakemake@wildcards$dataset, snakemake@wildcards$annotation, sep = '--')`"
 #' author: 
 #' wb:
 #'  log:
@@ -44,9 +44,9 @@ cnts_mtx <- counts(ods, normalized = F)
 bam_coverage <- fread(snakemake@input$bam_cov)
 bam_coverage[, sampleID := as.character(sampleID)]
 coverage_dt <- merge(bam_coverage,
-                   data.table(sampleID = colnames(ods),
-                              read_count = colSums(cnts_mtx)),
-                   by = "sampleID", sort = FALSE)
+                     data.table(sampleID = colnames(ods),
+                                read_count = colSums(cnts_mtx)),
+                     by = "sampleID", sort = FALSE)
 # read count
 setorder(coverage_dt, read_count)
 coverage_dt[, count_rank := .I]
@@ -62,19 +62,19 @@ setorder(coverage_dt, size_factors)
 coverage_dt[, sf_rank := 1:.N]
 
 p_depth <- ggplot(coverage_dt, aes(count_rank, read_count)) +
-    geom_point() +
-    theme_cowplot() +
-    background_grid() +
-    labs(title = "Obtained Read Counts", x="Sample Rank", y = "Reads Counted") +
-    ylim(c(0,NA))
+  geom_point() +
+  theme_cowplot() +
+  background_grid() +
+  labs(title = "Obtained Read Counts", x="Sample Rank", y = "Reads Counted") +
+  ylim(c(0,NA))
 
 p_frac <- ggplot(coverage_dt, aes(frac_rank, counted_frac)) +
-    geom_point() +
-    theme_cowplot() +
-    background_grid() +
-    labs(title = "Obtained Read Count Ratio", x = "Sample Rank", 
+  geom_point() +
+  theme_cowplot() +
+  background_grid() +
+  labs(title = "Obtained Read Count Ratio", x = "Sample Rank", 
        y = "Percent Reads Counted") +
-   ylim(c(0,NA))
+  ylim(c(0,NA))
 
 #+ QC, fig.height=6, fig.width=12
 plot_grid(p_depth, p_frac)
@@ -82,17 +82,17 @@ plot_grid(p_depth, p_frac)
 p_sf <- ggplot(coverage_dt, aes(sf_rank, size_factors)) +
   geom_point() +
   ylim(c(0,NA)) +
-    theme_cowplot() +
+  theme_cowplot() +
   background_grid() +
   labs(title = 'Size Factors', x = 'Sample Rank', y = 'Size Factors')
 
 p_sf_cov <- ggplot(coverage_dt, aes(read_count, size_factors)) +
-    geom_point() +
-    ylim(c(0,NA)) +
-    theme_cowplot() +
-    background_grid() +
-    labs(title = 'Size Factors vs. Read Count Ratio',
-         x = 'Read Count Ratio', y = 'Size Factors')
+  geom_point() +
+  ylim(c(0,NA)) +
+  theme_cowplot() +
+  background_grid() +
+  labs(title = 'Size Factors vs. Read Count Ratio',
+       x = 'Read Count Ratio', y = 'Size Factors')
 
 #+ sizeFactors, fig.height=6, fig.width=12
 plot_grid(p_sf, p_sf_cov)
@@ -131,7 +131,7 @@ p_dens <- ggplot(filter_dt, aes(x = median_counts, col = filter)) +
   theme_cowplot() +
   theme(legend.position = "top",
         legend.justification="center",
-       legend.background = element_rect(color = NA))
+        legend.background = element_rect(color = NA))
 
 #+ meanCounts, fig.height=6, fig.width=12
 plot_grid(p_hist, p_dens)
@@ -143,8 +143,8 @@ plotExpressedGenes(ods) +
 
 expressed_genes <- as.data.table(colData(ods))
 expressed_genes <- expressed_genes[, .(expressedGenes, unionExpressedGenes,
-                    intersectionExpressedGenes, passedFilterGenes,
-                    expressedGenesRank)]
+                                       intersectionExpressedGenes, passedFilterGenes,
+                                       expressedGenesRank)]
 
 #+echo=F
 rank_1 <- expressed_genes[expressedGenesRank == 1]

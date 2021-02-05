@@ -8,6 +8,7 @@ geneAnnotation:
     v29: Data/gencode_annotation_trunc.gtf
 genomeAssembly: hg19
 hpoFile: null
+random_seed: true  # use this to fully gain reproducible data in debug mode
 
 exportCounts:
   geneAnnotations:
@@ -30,7 +31,7 @@ aberrantExpression:
         pasWindow: 1000
 
 aberrantSplicing:
-    groups: 
+    groups:
       - fraser
     recount: true
     longRead: false
@@ -63,4 +64,3 @@ tools:
     gatkCmd: gatk
     bcftoolsCmd: bcftools
     samtoolsCmd: samtools
-

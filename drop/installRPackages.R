@@ -30,7 +30,7 @@ for (pckg_name in packages$package) {
     version <- package_dt$version
     
     if (!pckg_name %in% installed$Package || (!is.na(version) && compareVersion(
-            installed[Package == pckg_name, Version], version) < 0)) {
+        installed[Package == pckg_name, Version], version) < 0)) {
         
         package <- package_dt$package
         message(paste("install", package))
