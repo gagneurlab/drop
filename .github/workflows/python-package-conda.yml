@@ -35,31 +35,15 @@ jobs:
           conda install -c conda-forge -c bioconda drop
           # reinstall DROP from source
           pip install .
-
-  setup-pytest:
-    needs: build-linux
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v2
-      - uses: actions/cache@v2
-        with:
-          path: |
-            /usr/share/miniconda
-            /tmp/resource.tar.gz
-          key: ${{ runner.os }}-${{ hashFiles('**/requirements*.txt') }}
-      - name: Set conda path
-        run: |
-          echo $CONDA/bin >> $GITHUB_PATH
-          cat $GITHUB_PATH
-      - name: Install dependencies
+      - name: Install test dependencies
         run: |
           conda install pytest
           pip install -r tests/requirements.txt
-      - name: Setup fixtures
+      - name: Test config
         run: pytest --durations 0 tests/config
 
   test-pipeline:
-    needs: setup-pytest
+    needs: build-linux
     strategy:
       matrix:
         pipeline: [ AE, AS, MAE, pipeline ]
