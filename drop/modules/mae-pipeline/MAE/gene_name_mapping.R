@@ -24,6 +24,8 @@ gtf_dt <- import(snakemake@input$gtf) %>% as.data.table
 if (!"gene_name" %in% colnames(gtf_dt)) {
   gtf_dt[gene_name := gene_id]
 }
+if('gene_biotype' %in% colnames(gtf_dt))
+   setnames(gtf_dt, 'gene_biotype', 'gene_type')
 gtf_dt <- gtf_dt[type == "gene", .(seqnames, start, end, strand, gene_id, gene_name, gene_type)]
 
 # make gene_names unique

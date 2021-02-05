@@ -14,16 +14,15 @@ requirements = [
 
 extra_files = []
 for (path, directories, filenames) in os.walk('drop/'):
-    directories[:] = [d for d in directories if not (d.startswith('.') or d == 'Data')]
-    filenames[:] = [f for f in filenames if 
-                    not (f.startswith('.') or f.endswith('.Rproj') or f.endswith('.py'))]
+    directories[:] = [d for d in directories if not d.startswith('.')]
+    filenames[:] = [f for f in filenames if not f.startswith('.') and not f.endswith('.Rproj')]
     for filename in filenames:
         extra_files.append(os.path.join('..', path, filename))
 
 setuptools.setup(
     name="drop",
-    version="1.0.2",
-    author="Michaela Müller, Daniela Andrade Salazar, Vicente Yepez",
+    version="1.0.3",
+    author="Michaela Müller, Daniela Klaproth-Andrade, Vicente Yépez, Christian Mertes",
     author_email="mumichae@in.tum.de",
     description="Detection of RNA Outlier Pipeline",
     long_description=long_description,
@@ -35,5 +34,4 @@ setuptools.setup(
     include_package_data=True,
     install_requires=requirements,
 )
-
 

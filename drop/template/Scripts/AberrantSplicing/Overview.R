@@ -4,13 +4,17 @@
 #' wb:
 #'  log:
 #'    - snakemake: '`sm str(tmp_dir / "AS" / "Overview.Rds")`'
+#'  params:
+#'    - annotations: '`sm cfg.getGeneVersions()`'
+#'    - datasets: '`sm cfg.AS.groups`'
+#'    - htmlDir: '`sm config["htmlOutputPath"] + "/AberrantSplicing"`'
 #'  input:
 #'    - fds_files: '`sm expand(cfg.getProcessedDataDir() +
-#'                "/aberrant_splicing/datasets/savedObjects/{dataset}/" + 
-#'                "fds-object.RDS", dataset=cfg.AS.groups)`'
+#'                "/aberrant_splicing/datasets/savedObjects/{dataset}--{annotation}/" + 
+#'                "fds-object.RDS", dataset=cfg.AS.groups, annotation=cfg.getGeneVersions())`'
 #'    - result_tables: '`sm expand(cfg.getProcessedDataDir() +
-#'                    "/aberrant_splicing/results/{dataset}_results_per_junction.tsv",
-#'                    dataset=cfg.AS.groups)`'
+#'                    "/aberrant_splicing/results/{dataset}--{annotation}_results_per_junction.tsv",
+#'                    dataset=cfg.AS.groups, annotation=cfg.getGeneVersions())`'
 #' output:
 #'   html_document:
 #'    code_folding: show
@@ -38,17 +42,21 @@ display_text <- function(links) {
 }
 
 # get parameters
-datasets <- sort(snakemake@config$aberrantSplicing$groups)
+datasets <- sort(snakemake@params$datasets)
+annotations <- snakemake@params$annotations
+htmlDir <- snakemake@params$htmlDir
 
 ## start html
 
 #'
 #' **Datasets:** `r paste(datasets, collapse = ', ')`
 #'
+#' **Gene annotations:** `r paste(annotations, collapse = ', ')`
+#'
 #' ## Summaries
 #' ### Counts summary
 #+ echo=FALSE
-htmlDir <- './AberrantSplicing'
+# htmlDir <- './AberrantSplicing'
 count_links <- get_html_path(datasets = datasets,
                              htmlDir = htmlDir, 
                              fileName = paste0(datasets, '_countSummary.html'))
@@ -57,9 +65,10 @@ count_links <- get_html_path(datasets = datasets,
 #' 
 #' ### FRASER summary
 #+ echo=FALSE
-fraser_links <- get_html_path(datasets = datasets,
+datasets_annotations <- as.character(outer(datasets, annotations, FUN = paste, sep = '--'))
+fraser_links <- get_html_path(datasets = datasets_annotations,
                               htmlDir = htmlDir, 
-                              fileName = paste0(datasets, '_summary.html'))
+                              fileName = paste0(datasets_annotations, '_summary.html'))
 #' 
 #' `r display_text(fraser_links)`
 
@@ -86,14 +95,12 @@ sample <- res[1, sampleID]
 siteIndex <- 4
 
 #' ### Volcano plot
-#' setting basePlot = FALSE creates an interactive plot
-#' that allows finding the junction(s) of interest
+# set basePlot to FALSE to create an interactive plot
 FRASER::plotVolcano(fds, sample, type = 'psi3', basePlot = TRUE)
 
 #' ### Expression plot
 FRASER::plotExpression(fds, type = 'psi3', site = siteIndex, basePlot = TRUE)
 
-#' ### Expected vs observed PSI
+#' ### Expected vs observed PSI (or theta)
 FRASER::plotExpectedVsObservedPsi(fds, type = 'psi3', 
                                   idx = siteIndex, basePlot = TRUE)
-

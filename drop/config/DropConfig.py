@@ -94,7 +94,8 @@ class DropConfig:
         setKey = utils.setKey
         setKey(config_dict, None, "fileRegex", r".*\.(R|md)")
         setKey(config_dict, None, "genomeAssembly", "hg19")
-        setKey(config_dict, None, "hpoFile", None)
+        hpo_url = 'https://www.cmm.in.tum.de/public/paper/drop_analysis/resource/hpo_genes.tsv.gz'
+        setKey(config_dict, None, "hpoFile", hpo_url)
 
         # set submodule dictionaries
         setKey(config_dict, None, "aberrantExpression", dict())
@@ -154,3 +155,39 @@ class DropConfig:
 
     def getFastaDict(self, str_=True):
         return utils.returnPath(self.fastaDict, str_)
+
+    def getBSGenomeName(self):
+        assemblyID = self.get("genomeAssembly")
+
+        if assemblyID == 'hg19':
+            return "BSgenome.Hsapiens.UCSC.hg19"
+        if assemblyID == 'hs37d5':
+            return "BSgenome.Hsapiens.1000genomes.hs37d5"
+        if assemblyID == 'hg38':
+            return "BSgenome.Hsapiens.UCSC.hg38"
+        if assemblyID == 'GRCh38':
+            return "BSgenome.Hsapiens.NCBI.GRCh38"
+        
+        raise ValueError("Provided genome assembly not known: " + assemblyID)
+ 
+    def getBSGenomeVersion(self):
+        assemblyID = self.get("genomeAssembly")
+
+        if assemblyID in ['hg19', 'hs37d5']:
+            return 37
+        if assemblyID in ['hg38', 'GRCh38']:
+            return 38
+        
+        raise ValueError("Provided genome assembly not known: " + assemblyID)
+
+    def getMafDbName(self):
+        assemblyID = self.get("genomeAssembly")
+
+        if assemblyID in ['hg19', 'hs37d5']:
+            return "MafDb.gnomAD.r2.1.hs37d5"
+        if assemblyID in ['hg38', 'GRCh38']:
+            return "MafDb.gnomAD.r2.1.GRCh38"
+
+        raise ValueError("Provided genome assembly not known: " + assemblyID)
+ 
+ 

@@ -97,7 +97,10 @@ class SampleAnnotation:
 
     def createGroupIds(self, group_key="DROP_GROUP", file_type=None, sep=','):
         """
-        Create a mapping of DROP groups to lists of sample IDs
+        :param group_key: name of group column in sample annotation
+        :param file_type: name of file column e.g. "RNA_BAM_FILE", "DNA_VCF_FILE"
+        :param sep: separator of multiple groups in group column
+        :return: mapping of drop group and ID
         """
         if not file_type:
             file_type = "RNA_BAM_FILE"
