@@ -1,6 +1,6 @@
 package	version
 gagneurlab/OUTRIDER	1.6.1
-c-mertes/FRASER	1.3.0
+c-mertes/FRASER	1.2.1
 mumichae/tMAE	1.0.0
 VariantAnnotation	
 rmarkdown	
