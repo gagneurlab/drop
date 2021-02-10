@@ -62,7 +62,7 @@ topN <- 30000
 topJ <- 10000
 for(type in psiTypes){
   before <- plotCountCorHeatmap(
-    fds,
+    object=fds,
     type = type,
     logit = TRUE,
     topN = topN,
@@ -78,7 +78,7 @@ for(type in psiTypes){
   )
   before
   after <- plotCountCorHeatmap(
-    fds,
+    object=fds,
     type = type,
     logit = TRUE,
     topN = topN,
