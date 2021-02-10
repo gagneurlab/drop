@@ -9,7 +9,7 @@ warnings.filterwarnings("ignore", 'This pattern has match groups')
 
 
 class SampleAnnotation:
-    FILE_TYPES = ["RNA_BAM_FILE", "DNA_VCF_FILE", "GENE_COUNTS_FILE"]
+    FILE_TYPES = ["RNA_BAM_FILE", "DNA_VCF_FILE", "GENE_COUNTS_FILE", "SPLICE_COUNTS_DIR"]
     SAMPLE_ANNOTATION_COLUMNS = FILE_TYPES + [
         "RNA_ID", "DNA_ID", "DROP_GROUP", "GENE_ANNOTATION",
         "PAIRED_END", "COUNT_MODE", "COUNT_OVERLAPS", "STRAND", "GENOME"
@@ -32,6 +32,7 @@ class SampleAnnotation:
         self.dnaIDs = self.createGroupIds(file_type="DNA_VCF_FILE", sep=',')
         # external counts
         self.extGeneCountIDs = self.createGroupIds(file_type="GENE_COUNTS_FILE", sep=',')
+        self.extSpliceCountIDs = self.createGroupIds(file_type="SPLICE_COUNTS_DIR", sep=',')
 
     def parse(self, sep='\t'):
         """
@@ -80,10 +81,12 @@ class SampleAnnotation:
             columns: [ID | ASSAY | FILE_TYPE | FILE_PATH ]
         """
 
-        assay_mapping = {'RNA_ID': ['RNA_BAM_FILE', 'GENE_COUNTS_FILE'], 'DNA_ID': ['DNA_VCF_FILE']}
+        assay_mapping = {'RNA_ID': ['RNA_BAM_FILE', 'GENE_COUNTS_FILE', 'SPLICE_COUNTS_DIR'], 'DNA_ID': ['DNA_VCF_FILE']}
         assay_subsets = []
         for id_, file_types in assay_mapping.items():
             for file_type in file_types:
+                if file_type not in self.sa.columns:
+                    continue
                 df = self.annotationTable[[id_, file_type]].dropna().drop_duplicates().copy()
                 df.rename(columns={id_: 'ID', file_type: 'FILE_PATH'}, inplace=True)
                 df['ASSAY'] = id_
@@ -249,17 +252,22 @@ class SampleAnnotation:
 
         return {sample_id: value for sample_id in subset[file_type].tolist()}
 
-    def getImportCountFiles(self, annotation, group, file_type="GENE_COUNTS_FILE",
-                            annotation_key="GENE_ANNOTATION", group_key="DROP_GROUP",exact_match = True):
+    def getImportCountFiles(self, annotation, group, file_type: str = "GENE_COUNTS_FILE",
+                            annotation_key: str = "ANNOTATION", group_key: str = "DROP_GROUP", 
+                            asSet: bool = True):
         """
-        :param annotation: annotation name as specified in config and GENE_ANNOTATION column
-        :param group: a group of the DROP_GROUP column. exact match is passed to subsetter, false allows for substring matching
+        :param annotation: annotation name as specified in config and ANNOTATION column. Can be None
+        :param group: a group of the DROP_GROUP column
         :return: set of unique external count file names
         """
         #subset for the annotation_key in the annotation group and the group_key in the group
-        subset = self.subsetSampleAnnotation(annotation_key, annotation,exact_match=exact_match)
-        subset = self.subsetSampleAnnotation(group_key, group, subset,exact_match=exact_match)
-        return set(subset[file_type].tolist())
+        subset = self.subsetSampleAnnotation(annotation_key, annotation, exact_match=exact_match)
+        subset = self.subsetSampleAnnotation(group_key, group, subset, exact_match=exact_match)
+            
+        ans = subset[file_type].tolist()
+        if asSet:
+            ans = set(ans)
+        return ans
 
     def getRow(self, column, value):
         sa = self.annotationTable
@@ -277,7 +285,8 @@ class SampleAnnotation:
         Get group to IDs mapping
         :param assays: list of or single assay the IDs should be from. Can be file_type or 'RNA'/'DNA'
         """
-        assays = [assays] if isinstance(assays, str) else assays
+        if isinstance(assays, str):
+            assays = [assays]
         groupedIDs = defaultdict(list)
         for assay in assays:
             if "RNA" in assay:
@@ -286,6 +295,8 @@ class SampleAnnotation:
                 groupedIDs.update(self.dnaIDs)
             elif "GENE_COUNT" in assay:
                 groupedIDs.update(self.extGeneCountIDs)
+            elif "SPLICE_COUNT" in assay:
+                groupedIDs.update(self.extSpliceCountIDs)
             else:
                 raise ValueError(f"'{assay}' is not a valid assay name")
         return groupedIDs

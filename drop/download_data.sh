@@ -2,7 +2,7 @@
 set -e
 
 # get data
-resource_url="https://www.cmm.in.tum.de/public/paper/drop_analysis/resource.tar.gz"
+resource_url="https://www.cmm.in.tum.de/public/paper/drop_analysis/resource_splice_merge.tar.gz"
 tmpdir="$(dirname "$(mktemp)")"
 wget -nc -P $tmpdir $resource_url
 mkdir -p Data

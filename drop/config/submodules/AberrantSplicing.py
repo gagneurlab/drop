@@ -1,3 +1,6 @@
+import numpy as np
+import pandas as pd
+
 from snakemake.io import expand
 
 from drop import utils
@@ -59,3 +62,21 @@ class AS(Submodule):
                      "sample_tmp" / "nonSplitCounts"
         done_files = str(file_stump / "sample_{sample_id}.done")
         return expand(done_files, sample_id=ids)
+
+
+    def getExternalCounts(self, group: str, fileType: str = "k_j_counts"):
+        """
+        Get externally provided splice count data dir based on the given group.
+        If a file type is given the corresponding file within the folder is returned. 
+        :param group: DROP group name from wildcard
+        :param fileType: name of the file without extension which is to be returned
+        :return: list of directories or files
+        """
+        ids = self.sa.getIDsByGroup(group, assay="SPLICE_COUNT")
+        extCountFiles = self.sa.getImportCountFiles(annotation=None, group=group, 
+                file_type="SPLICE_COUNTS_DIR", asSet=False)
+        if fileType is not None:
+            extCountFiles = np.asarray(extCountFiles)[pd.isna(extCountFiles) == False].tolist()
+            extCountFiles = [x + "/" + fileType + ".tsv.gz" for x in extCountFiles]
+        return extCountFiles
+    
