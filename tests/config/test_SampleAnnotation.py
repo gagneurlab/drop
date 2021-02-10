@@ -25,7 +25,7 @@ class Test_SampleAnnotation:
             ("HG00096.1.M_111124_6", "RNA_BAM_FILE", "Data/rna_bam/HG00096.1.M_111124_6_chr21.bam"),
             ("HG00178.4.M_120208_8", "GENE_COUNTS_FILE", "Data/external_count_data/geneCounts.tsv.gz"),
             ("HG00096", "DNA_VCF_FILE", "Data/dna_vcf/demo_chr21.vcf.gz"),
-            ("HG00201.1.M_120208_6", "SPLICE_COUNT_DIR" "Data/external_count_data")
+            ("HG00201.1.M_120208_6", "SPLICE_COUNTS_DIR", "Data/external_count_data")
         ]
     )
     def test_filePaths(self, demo_dir, sampleAnnotation, sample_id, file_type, file_name):
