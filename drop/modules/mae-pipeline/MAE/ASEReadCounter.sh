@@ -45,7 +45,6 @@ chr_subset=$(comm -12 <(cut -f1 -d" " ${canonical} | sort -u) <(echo ${vcf_chr} 
 chr_subset=$(comm -12 <(echo ${bam_chr} | xargs -n1) <(echo ${chr_subset} | xargs -n1) | uniq)
 
 for chr in $chr_subset; do
-  echo $chr
   $gatk ASEReadCounter \
     -R ${fasta} \
     -I ${bam_file} \
@@ -57,10 +56,19 @@ for chr in $chr_subset; do
     tail -n+2 >>$tmp
 done
 
-echo $mae_id
 cat $tmp | awk -v id="${mae_id}" \
   -F $'\t' 'BEGIN {OFS = FS} NR==1{print $0, "ID"} NR>1{print $0, id}' |
   bgzip >${output}
 rm ${tmp}
 
 zcat ${output} | head
+
+num_out=$(zcat "${output}" | wc -l )
+if [ "${num_out}" -lt 2 ]
+then
+  echo 'ERROR: No allele-specific counts'
+  echo "MAE ID: ${mae_id}"
+  echo "VCF file: ${vcf_file}"
+  echo "BAM file: ${bam_file}"
+  exit 1
+fi

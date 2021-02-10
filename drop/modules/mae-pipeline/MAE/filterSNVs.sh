@@ -51,5 +51,15 @@ else  # VCF and BAM have same chromosome format
     rm ${tmp}.tbi
 fi
 
+num_out=$(zcat "${output}" | grep -vc '#' )
+if [ "${num_out}" -eq 0 ]
+then
+  echo "ERROR: no entries after filtering for SNVs"
+  echo "VCF ID: ${vcf_id}"
+  echo "VCF file: ${vcf_file}"
+  echo "BAM file: ${bam_file}"
+  exit 1
+fi
+
 $bcftools index -t ${output}
 
