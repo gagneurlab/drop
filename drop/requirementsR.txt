@@ -11,5 +11,5 @@ cowplot
 data.table	
 dplyr	
 tidyr	
-magrittr
+magrittr	
 devtools
