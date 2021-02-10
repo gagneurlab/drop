@@ -9,7 +9,7 @@ warnings.filterwarnings("ignore", 'This pattern has match groups')
 
 
 class SampleAnnotation:
-    FILE_TYPES = ["RNA_BAM_FILE", "DNA_VCF_FILE", "GENE_COUNTS_FILE"]
+    FILE_TYPES = ["RNA_BAM_FILE", "DNA_VCF_FILE", "GENE_COUNTS_FILE", "SPLICE_COUNTS_DIR"]
     SAMPLE_ANNOTATION_COLUMNS = FILE_TYPES + [
         "RNA_ID", "DNA_ID", "DROP_GROUP", "ANNOTATION",
         "PAIRED_END", "COUNT_MODE", "COUNT_OVERLAPS", "STRAND"
@@ -30,6 +30,7 @@ class SampleAnnotation:
         self.dnaIDs = self.createGroupIds(file_type="DNA_VCF_FILE", sep=',')
         # external counts
         self.extGeneCountIDs = self.createGroupIds(file_type="GENE_COUNTS_FILE", sep=',')
+        self.extSpliceCountIDs = self.createGroupIds(file_type="SPLICE_COUNTS_DIR", sep=',')
 
     def parse(self, sep='\t'):
         """
@@ -43,7 +44,7 @@ class SampleAnnotation:
         sa = pd.read_csv(self.file, sep=sep, index_col=False, converters=data_types)
         missing_cols = [x for x in self.SAMPLE_ANNOTATION_COLUMNS if x not in sa.columns.values]
         if len(missing_cols) > 0:
-            raise ValueError(f"Incorrect columns in sample annotation file. Missing:\n{missing_cols}")
+            logger.warning(f"WARNING: Missing columns in sample annotation file. Add . Missing:\n{missing_cols}")
 
         # remove unwanted characters
         sa["DROP_GROUP"] = sa["DROP_GROUP"].str.replace(" ", "").str.replace("(|)", "", regex=True)
@@ -64,10 +65,12 @@ class SampleAnnotation:
             columns: [ID | ASSAY | FILE_TYPE | FILE_PATH ]
         """
 
-        assay_mapping = {'RNA_ID': ['RNA_BAM_FILE', 'GENE_COUNTS_FILE'], 'DNA_ID': ['DNA_VCF_FILE']}
+        assay_mapping = {'RNA_ID': ['RNA_BAM_FILE', 'GENE_COUNTS_FILE', 'SPLICE_COUNTS_DIR'], 'DNA_ID': ['DNA_VCF_FILE']}
         assay_subsets = []
         for id_, file_types in assay_mapping.items():
             for file_type in file_types:
+                if file_type not in self.sa.columns:
+                    continue
                 df = self.sa[[id_, file_type]].dropna().drop_duplicates().copy()
                 df.rename(columns={id_: 'ID', file_type: 'FILE_PATH'}, inplace=True)
                 df['ASSAY'] = id_
@@ -212,16 +215,23 @@ class SampleAnnotation:
             sampleIDs = self.getGroupedIDs(file_type)[group]
         return self.getFilePath(sampleIDs, file_type, single_file=False)
 
-    def getImportCountFiles(self, annotation, group, file_type="GENE_COUNTS_FILE",
-                            annotation_key="ANNOTATION", group_key="DROP_GROUP"):
+    def getImportCountFiles(self, annotation, group, file_type: str = "GENE_COUNTS_FILE",
+                            annotation_key: str = "ANNOTATION", group_key: str = "DROP_GROUP", 
+                            asSet: bool = True):
         """
-        :param annotation: annotation name as specified in config and ANNOTATION column
+        :param annotation: annotation name as specified in config and ANNOTATION column. Can be None
         :param group: a group of the DROP_GROUP column
         :return: set of unique external count file names
         """
-        subset = self.subsetSampleAnnotation(annotation_key, annotation)
+        if annotation_key is not None:
+            subset = self.subsetSampleAnnotation(annotation_key, annotation)
+        else:
+            subset = self.sa
         subset = self.subsetSampleAnnotation(group_key, group, subset)
-        return set(subset[file_type].tolist())
+        ans = subset[file_type].tolist()
+        if asSet:
+            ans = set(ans)
+        return ans
 
     def getRow(self, column, value):
         sa = self.sa
@@ -239,7 +249,8 @@ class SampleAnnotation:
         Get group to IDs mapping
         :param assays: list of or single assay the IDs should be from. Can be file_type or 'RNA'/'DNA'
         """
-        assays = [assays] if isinstance(assays, str) else assays
+        if isinstance(assays, str):
+            assays = [assays]
         groupedIDs = defaultdict(list)
         for assay in assays:
             if "RNA" in assay:
@@ -248,6 +259,8 @@ class SampleAnnotation:
                 groupedIDs.update(self.dnaIDs)
             elif "GENE_COUNT" in assay:
                 groupedIDs.update(self.extGeneCountIDs)
+            elif "SPLICE_COUNT" in assay:
+                groupedIDs.update(self.extSpliceCountIDs)
             else:
                 raise ValueError(f"'{assay}' is not a valid assay name")
         return groupedIDs

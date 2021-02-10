@@ -76,6 +76,8 @@ def subsetBy(df, column, values):
     if values is None:
         return df
     elif isinstance(values, str):
-        return df[df[column] == values]
+        return df[df[column].str.contains("(^|,)" + values + "(,|$)")]
     else:
+        if(values.__len__() > 1):
+            raise ValueError(f"Values too long! Please report this. Values are: {values}.")
         return df[df[column].isin(values)]

@@ -35,7 +35,7 @@ class Test_AE_Config:
 
         # import count
         counts_files_true = counts_files_true[2:]
-        counts_files_true.append(f"{demo_dir}/Data/external_geneCounts.tsv.gz")
+        counts_files_true.append(f"{demo_dir}/Data/external_count_data/geneCounts.tsv.gz")
         counts_files_true.sort()
         counts_files_test = dropConfig.AE.getCountFiles(annotation="v29", group="import_exp")
         counts_files_test.sort()

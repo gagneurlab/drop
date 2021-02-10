@@ -38,9 +38,10 @@ mapping <- fread(fileMapFile)
 
 subset_ids <- snakemake@params$ids
 annoSub <- anno[RNA_ID %in% subset_ids]
-colData <- merge(
-    annoSub[,.(sampleID = RNA_ID, STRAND, PAIRED_END)],
+setnames(annoSub, "RNA_ID", "sampleID")
+colData <- merge(annoSub,
     mapping[FILE_TYPE == "RNA_BAM_FILE", .(sampleID=ID, bamFile=FILE_PATH)])
+setcolorder(colData, unique(c("sampleID", "STRAND", "PAIRED_END", "bamFile"), colnames(annoSub)))
 
 #'
 #' ## Dataset: `r name`

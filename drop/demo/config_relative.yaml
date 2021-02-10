@@ -16,6 +16,7 @@ exportCounts:
   excludeGroups:
     - mae
     - import_exp
+    - fraser_ex
 
 aberrantExpression:
     groups: 
@@ -33,6 +34,7 @@ aberrantExpression:
 aberrantSplicing:
     groups:
       - fraser
+      - fraser_ex
     recount: true
     longRead: false
     keepNonStandardChrs: true
