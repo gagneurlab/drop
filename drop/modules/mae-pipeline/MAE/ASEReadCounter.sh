@@ -40,9 +40,10 @@ else
   echo "use UCSC format"
   canonical=$ucsc2ncbi
 fi
-# subset from canonical chromosomes
+
+# subset to standard chromosomes
 chr_subset=$(comm -12 <(cut -f1 -d" " ${canonical} | sort -u) <(echo ${vcf_chr} | xargs -n1 | sort -u))
-chr_subset=$(comm -12 <(echo ${bam_chr} | xargs -n1) <(echo ${chr_subset} | xargs -n1) | uniq)
+chr_subset=$(comm -12 <(echo ${bam_chr} | xargs -n1 | sort -u) <(echo ${chr_subset} | xargs -n1) | uniq)
 
 for chr in $chr_subset; do
   echo $chr

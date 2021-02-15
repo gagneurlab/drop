@@ -40,18 +40,19 @@ rmae <- lapply(snakemake@input$mae_res, function(m){
   return(rt)
 }) %>% rbindlist()
 
-
-# Add gene names
-gene_annot_dt <- fread(snakemake@input$gene_name_mapping)
-gene_annot_dt <- gene_annot_dt[seqnames %in% paste0('chr', c(1:22, 'X'))]
-
-# Subtract the genomic ranges from the annotation and results and overlap them
-gene_annot_ranges <- GRanges(seqnames = gene_annot_dt$seqnames, 
-                             IRanges(start = gene_annot_dt$start, end = gene_annot_dt$end), 
-                             strand = gene_annot_dt$strand)
+# Convert results into GRanges
 rmae_ranges <- GRanges(seqnames = rmae$contig, 
                        IRanges(start = rmae$position, end = rmae$position), strand = '*')
 
+# Read annotation and convert into GRanges
+gene_annot_dt <- fread(snakemake@input$gene_name_mapping)
+gene_annot_ranges <- GRanges(seqnames = gene_annot_dt$seqnames, 
+                             IRanges(start = gene_annot_dt$start, end = gene_annot_dt$end), 
+                             strand = gene_annot_dt$strand)
+gene_annot_ranges <- keepStandardChromosomes(gene_annot_ranges, pruning.mode = 'coarse')
+seqlevelsStyle(gene_annot_ranges) <- seqlevelsStyle(rmae_ranges)
+
+# Overlap results and annotation
 fo <- findOverlaps(rmae_ranges, gene_annot_ranges)
 
 # Add the gene names
@@ -73,20 +74,21 @@ res[, c('aux') := NULL]
 # Bring gene_name column front
 res <- cbind(res[, .(gene_name)], res[, -"gene_name"])
 
-#'
-#' Number of samples: `r uniqueN(res$ID)`
-#'
-#' Number of genes: `r uniqueN(res$gene_name)`
-
-# Subset for significant events
+# Add significance columns
 allelicRatioCutoff <- snakemake@params$allelicRatioCutoff
 res[, MAE := padj <= snakemake@params$padjCutoff &
       (altRatio >= allelicRatioCutoff | altRatio <= (1-allelicRatioCutoff))] 
 res[, MAE_ALT := MAE == TRUE & altRatio >= allelicRatioCutoff]
 
+#'
+#' Number of samples: `r uniqueN(res$ID)`
+#'
+#' Number of genes: `r uniqueN(res$gene_name)`
+#'
 #' Number of samples with significant MAE for alternative events: `r uniqueN(res[MAE_ALT == TRUE, ID])`
 
-### Save the results
+#+echo=F
+
 # Save full results zipped
 fwrite(res, snakemake@output$res_all, sep = '\t', 
        row.names = F, quote = F, compress = 'gzip')
@@ -96,7 +98,7 @@ fwrite(res[MAE_ALT == TRUE], snakemake@output$res_signif,
        sep = '\t', row.names = F, quote = F)
 
 
-#+echo=F
+# Add columns for plot
 res[, N := .N, by = ID]
 res[MAE == TRUE, N_MAE := .N, by = ID]
 res[MAE == TRUE & MAE_ALT == FALSE, N_MAE_REF := .N, by = ID]
