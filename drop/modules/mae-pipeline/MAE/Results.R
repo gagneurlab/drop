@@ -50,7 +50,9 @@ gene_annot_ranges <- GRanges(seqnames = gene_annot_dt$seqnames,
                              IRanges(start = gene_annot_dt$start, end = gene_annot_dt$end), 
                              strand = gene_annot_dt$strand)
 gene_annot_ranges <- keepStandardChromosomes(gene_annot_ranges, pruning.mode = 'coarse')
-seqlevelsStyle(gene_annot_ranges) <- seqlevelsStyle(rmae_ranges)
+
+# Keep the chr style of the annotation in case the results contain different styles
+seqlevelsStyle(rmae_ranges) <- seqlevelsStyle(gene_annot_ranges)
 
 # Overlap results and annotation
 fo <- findOverlaps(rmae_ranges, gene_annot_ranges)
