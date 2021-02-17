@@ -14,6 +14,9 @@ else
     echo "Data directory not empty, is not updated"
 fi
 
+# move fds object
+mv Data/Output ./
+
 # unzip fasta
 cd ./Data
 if [ ! -f "chr21.fa" ]; then gunzip chr21.fa.gz; fi
