@@ -5,7 +5,6 @@
 #'  log:
 #'    - snakemake: '`sm str(tmp_dir / "AS" / "{dataset}--{annotation}" / "07_results.Rds")`'
 #'  params:
-#'   - workingDir: '`sm cfg.getProcessedDataDir() + "/aberrant_splicing/datasets/"`'
 #'   - padjCutoff: '`sm cfg.AS.get("padjCutoff")`'
 #'   - zScoreCutoff: '`sm cfg.AS.get("zScoreCutoff")`'
 #'   - deltaPsiCutoff: '`sm cfg.AS.get("deltaPsiCutoff")`'
@@ -13,7 +12,6 @@
 #'   - assemblyVersion: '`sm cfg.getBSGenomeVersion()`'
 #'  threads: 10
 #'  input:
-#'   - setup: '`sm cfg.AS.getWorkdir() + "/config.R"`'
 #'   - add_HPO_cols: '`sm str(projectDir / ".drop" / "helpers" / "add_HPO_cols.R")`'
 #'   - fdsin: '`sm cfg.getProcessedDataDir() +
 #'                 "/aberrant_splicing/datasets/savedObjects/{dataset}/" +
@@ -31,25 +29,27 @@
 #'---
 
 saveRDS(snakemake, snakemake@log$snakemake)
-source(snakemake@input$setup, echo=FALSE)
+suppressPackageStartupMessages({
+  library(FRASER)
+  library(AnnotationDbi)
+})
 source(snakemake@input$add_HPO_cols)
-library(AnnotationDbi)
-
 opts_chunk$set(fig.width=12, fig.height=8)
 
-annotation    <- snakemake@wildcards$annotation
+# input
 dataset    <- snakemake@wildcards$dataset
 fdsFile    <- snakemake@input$fdsin
-workingDir <- snakemake@params$workingDir
+BPPARAM    <- MulticoreParam(snakemake@threads)
+annotation <- snakemake@wildcards$annotation
 assemblyVersion <- snakemake@params$assemblyVersion
 
-register(MulticoreParam(snakemake@threads))
-# Limit number of threads for DelayedArray operations
-setAutoBPPARAM(MulticoreParam(snakemake@threads))
+# Set number of threads including for DelayedArray operations
+register(BPPARAM)
+DelayedArray::setAutoBPPARAM(BPPARAM)
 
 # Load data and annotate ranges with gene names
-fds_input <- loadFraserDataSet(dir=workingDir, name=dataset)
-fds <- saveFraserDataSet(fds_input, name = paste(dataset, annotation, sep = '--'), rewrite = TRUE)
+fds_input <- loadFraserDataSet(file=fdsFile)
+fds <- saveFraserDataSet(fds_input, name = paste0(dataset, "--", annotation), rewrite = TRUE)
 
 txdb <- loadDb(snakemake@input$txdb)
 orgdb <- fread(snakemake@input$gene_name_mapping)

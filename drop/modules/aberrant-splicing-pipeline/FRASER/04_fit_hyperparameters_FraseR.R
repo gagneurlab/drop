@@ -30,10 +30,11 @@ if ("random_seed" %in% names(snakemake@config)){
 #+ input
 dataset  <- snakemake@wildcards$dataset
 fds_file <- snakemake@input$filter[1]
+BPPARAM  <- MulticoreParam(snakemake@threads)
 
-register(MulticoreParam(snakemake@threads))
-# Limit number of threads for DelayedArray operations
-setAutoBPPARAM(MulticoreParam(snakemake@threads))
+# Set number of threads including for DelayedArray operations
+register(BPPARAM)
+DelayedArray::setAutoBPPARAM(BPPARAM)
 
 # Load PSI data
 fds <- loadFraserDataSet(file=fds_file)

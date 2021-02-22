@@ -17,14 +17,17 @@
 saveRDS(snakemake, snakemake@log$snakemake)
 suppressPackageStartupMessages(library(FRASER))
 
+# input
 dataset <- snakemake@wildcards$dataset
 fds_in  <- file.path(dirname(snakemake@input$counting_done), "fds-object.RDS")
 params  <- snakemake@config$aberrantSplicing
+BPPARAM  <- MulticoreParam(snakemake@threads)
 
-register(MulticoreParam(snakemake@threads))
-# Limit number of threads for DelayedArray operations
-setAutoBPPARAM(MulticoreParam(snakemake@threads))
+# Set number of threads including for DelayedArray operations
+register(BPPARAM)
+DelayedArray::setAutoBPPARAM(BPPARAM)
 
+# load FraserDataSet object
 fds <- loadFraserDataSet(file=fds_in)
 
 # Calculating PSI values

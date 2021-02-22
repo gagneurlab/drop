@@ -24,15 +24,16 @@
 saveRDS(snakemake, snakemake@log$snakemake)
 suppressPackageStartupMessages(library(FRASER))
 
-dataset    <- snakemake@wildcards$dataset
-fdsIn      <- snakemake@input$fds_init
-params <- snakemake@config$aberrantSplicing
+# input
+dataset <- snakemake@wildcards$dataset
+fdsIn   <- snakemake@input$fds_init
+params  <- snakemake@config$aberrantSplicing
 minExpressionInOneSample <- params$minExpressionInOneSample
+BPPARAM <- MulticoreParam(snakemake@threads)
 
-
-register(MulticoreParam(snakemake@threads))
-# Limit number of threads for DelayedArray operations
-setAutoBPPARAM(MulticoreParam(snakemake@threads))
+# Set number of threads including for DelayedArray operations
+register(BPPARAM)
+DelayedArray::setAutoBPPARAM(BPPARAM)
 
 # Read FRASER object
 fds <- loadFraserDataSet(file=fdsIn)

@@ -4,9 +4,6 @@
 #' wb:
 #'  log:
 #'    - snakemake: '`sm str(tmp_dir / "AS" / "{dataset}" / "05_fit.Rds")`'
-#'  params:
-#'   - setup: '`sm cfg.AS.getWorkdir() + "/config.R"`'
-#'   - workingDir: '`sm cfg.getProcessedDataDir() + "/aberrant_splicing/datasets/"`'
 #'  threads: 20
 #'  input:
 #'   - hyper: '`sm cfg.getProcessedDataDir() + 
@@ -18,16 +15,19 @@
 #'---
 
 saveRDS(snakemake, snakemake@log$snakemake)
-source(snakemake@params$setup, echo=FALSE)
+suppressPackageStartupMessages(library(FRASER))
 
-dataset    <- snakemake@wildcards$dataset
-workingDir <- snakemake@params$workingDir
+# input
+dataset <- snakemake@wildcards$dataset
+fds_in  <- file.path(dirname(snakemake@input$hyper), "fds-object.RDS")
+BPPARAM <- MulticoreParam(snakemake@threads)
 
-register(MulticoreParam(snakemake@threads))
-# Limit number of threads for DelayedArray operations
-setAutoBPPARAM(MulticoreParam(snakemake@threads))
+# Set number of threads including for DelayedArray operations
+register(BPPARAM)
+DelayedArray::setAutoBPPARAM(BPPARAM)
 
-fds <- loadFraserDataSet(dir=workingDir, name=dataset)
+# load FraserDataSet object
+fds <- loadFraserDataSet(file=fds_in)
 
 # Fit autoencoder
 # run it for every type

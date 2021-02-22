@@ -18,23 +18,24 @@
 saveRDS(snakemake, snakemake@log$snakemake)
 suppressPackageStartupMessages(library(FRASER))
 
-dataset  <- snakemake@wildcards$dataset
-countsSS <- snakemake@output$countsSS
-params <- snakemake@config$aberrantSplicing
+dataset <- snakemake@wildcards$dataset
+fds_in  <- file.path(dirname(snakemake@output$countsSS), "fds-object.RDS")
+params  <- snakemake@config$aberrantSplicing
+BPPARAM <- MulticoreParam(snakemake@threads)
 
-register(MulticoreParam(snakemake@threads))
-# Limit number of threads for DelayedArray operations
-setAutoBPPARAM(MulticoreParam(snakemake@threads))
+# Set number of threads including for DelayedArray operations
+register(BPPARAM)
+DelayedArray::setAutoBPPARAM(BPPARAM)
 
 # Read FRASER object
-fds <- loadFraserDataSet(file=file.path(dirname(countsSS), "fds-object.RDS"))
+fds <- loadFraserDataSet(file=fds_in)
 
 # Read splice site coordinates from RDS
 splitCounts_gRanges <- readRDS(snakemake@input$gRangesNonSplitCounts)
 
 # If samples are recounted, remove the merged ones
 nonSplitCountsDir <- file.path(workingDir(fds), "savedObjects", 
-        paste0("raw-", dataset), 'nonSplitCounts')
+        name(fds), 'nonSplitCounts')
 if(dir.exists(nonSplitCountsDir)){
   unlink(nonSplitCountsDir, recursive=TRUE)
 }

@@ -32,12 +32,14 @@ exCountFiles <- snakemake@input$exCounts
 sample_anno_file <- snakemake@config$sampleAnnotation
 minExpressionInOneSample <- params$minExpressionInOneSample
 minDeltaPsi <- params$minDeltaPsi
+BPPARAM  <- MulticoreParam(snakemake@threads)
 
+# Set number of threads including for DelayedArray operations
+register(BPPARAM)
+DelayedArray::setAutoBPPARAM(BPPARAM)
+
+# Load FraserDataSet object
 fds <- loadFraserDataSet(file=fdsIn)
-
-register(MulticoreParam(snakemake@threads))
-# Limit number of threads for DelayedArray operations
-setAutoBPPARAM(MulticoreParam(snakemake@threads))
 
 # Apply filter
 fds <- filterExpressionAndVariability(fds, 
@@ -70,4 +72,4 @@ fds <- filterExpressionAndVariability(fds,
 # save filtered data into new dataset object
 dontWriteHDF5(fds) <- FALSE
 name(fds) <- dataset
-fds <- saveFraserDataSet(fds)
+fds <- saveFraserDataSet(fds, rewrite=TRUE)
