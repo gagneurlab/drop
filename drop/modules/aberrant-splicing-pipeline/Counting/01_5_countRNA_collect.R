@@ -4,9 +4,6 @@
 #' wb:
 #'  log:
 #'    - snakemake: '`sm str(tmp_dir / "AS" / "{dataset}" / "01_5_collect.Rds")`'
-#'  params:
-#'   - setup: '`sm cfg.AS.getWorkdir() + "/config.R"`'
-#'   - workingDir: '`sm cfg.getProcessedDataDir() + "/aberrant_splicing/datasets"`'
 #'  input:
 #'   - countsJ:  '`sm cfg.getProcessedDataDir() + 
 #'                    "/aberrant_splicing/datasets/savedObjects/raw-{dataset}/rawCountsJ.h5"`'
@@ -23,19 +20,19 @@
 #'---
 
 saveRDS(snakemake, snakemake@log$snakemake)
-source(snakemake@params$setup, echo=FALSE)
+suppressPackageStartupMessages(library(FRASER))
 
-dataset    <- snakemake@wildcards$dataset
-workingDir <- snakemake@params$workingDir
-
+dataset      <- snakemake@wildcards$dataset
+j_counts     <- snakemake@input$countsJ
+theta_counts <- snakemake@input$countsSS
 
 # Read FRASER object
-fds <- loadFraserDataSet(dir=workingDir, name=paste0("raw-", dataset))
+fds <- loadFraserDataSet(file=j_counts)
 splitCounts_gRanges <- readRDS(snakemake@input$gRangesSplitCounts)
 spliceSiteCoords <- readRDS(snakemake@input$spliceSites)
 
 # Get splitReads and nonSplitRead counts in order to store them in FRASER object
-splitCounts_h5 <- HDF5Array::HDF5Array(snakemake@input$countsJ, "rawCountsJ")
+splitCounts_h5 <- HDF5Array::HDF5Array(j_counts, "rawCountsJ")
 splitCounts_se <- SummarizedExperiment(
   colData = colData(fds),
   rowRanges = splitCounts_gRanges,
@@ -43,7 +40,7 @@ splitCounts_se <- SummarizedExperiment(
 )
 
 
-nonSplitCounts_h5 <- HDF5Array::HDF5Array(snakemake@input$countsSS, "rawCountsSS")
+nonSplitCounts_h5 <- HDF5Array::HDF5Array(theta_counts, "rawCountsSS")
 nonSplitCounts_se <- SummarizedExperiment(
   colData = colData(fds),
   rowRanges = spliceSiteCoords,
@@ -51,8 +48,9 @@ nonSplitCounts_se <- SummarizedExperiment(
 )
 
 # Add Counts to FRASER object
-fds <- addCountsToFraserDataSet(fds=fds, splitCounts=splitCounts_se,
-                                nonSplitCounts=nonSplitCounts_se)
+fds <- addCountsToFraserDataSet(fds=fds, 
+    splitCounts=splitCounts_se,
+    nonSplitCounts=nonSplitCounts_se)
 
 # Save final FRASER object 
 fds <- saveFraserDataSet(fds)

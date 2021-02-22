@@ -5,9 +5,7 @@
 #'  log:
 #'    - snakemake: '`sm str(tmp_dir / "AS" / "{dataset}" / "00_defineDataset.Rds")`'
 #'  params:
-#'    - setup: '`sm cfg.AS.getWorkdir() + "/config.R"`'
 #'    - ids: '`sm lambda w: sa.getIDsByGroup(w.dataset, assay="RNA")`'
-#'    - fileMappingFile: '`sm cfg.getRoot() + "/file_mapping.csv"`'
 #'  input:
 #'    - sampleAnnoFile: '`sm config["sampleAnnotation"]`'
 #'  output:
@@ -23,31 +21,30 @@
 #'---
 
 saveRDS(snakemake, snakemake@log$snakemake)
-source(snakemake@params$setup, echo=FALSE)
+suppressPackageStartupMessages(library(data.table))
 
 #+ input
 outFile       <- snakemake@output$colData
 annoFile      <- snakemake@input$sampleAnnoFile
-fileMapFile   <- snakemake@params$fileMapping
 
 #+ dataset name
 
 name <- snakemake@wildcards$dataset
 anno    <- fread(annoFile)
-mapping <- fread(fileMapFile)
 
 subset_ids <- snakemake@params$ids
 annoSub <- anno[RNA_ID %in% subset_ids]
 setnames(annoSub, "RNA_ID", "sampleID")
-colData <- merge(annoSub,
-    mapping[FILE_TYPE == "RNA_BAM_FILE", .(sampleID=ID, bamFile=FILE_PATH)])
-setcolorder(colData, unique(c("sampleID", "STRAND", "PAIRED_END", "bamFile"), colnames(annoSub)))
+setnames(annoSub, "RNA_BAM_FILE", "bamFile")
+setnames(annoSub, "PAIRED_END", "pairedEnd")
+setcolorder(annoSub, unique(c("sampleID", "STRAND", "pairedEnd", "bamFile"), 
+        colnames(annoSub)))
 
 #'
 #' ## Dataset: `r name`
 #'
 #+ echo=FALSE
-finalTable <- colData
+finalTable <- annoSub
 
 #'
 #' ## Final sample table `r name`
@@ -56,4 +53,4 @@ finalTable <- colData
 DT::datatable(finalTable, options=list(scrollX=TRUE))
 
 dim(finalTable)
-write_tsv(finalTable, file=outFile)
+write.table(x=finalTable, file=outFile, quote=FALSE, sep='\t', row.names=FALSE)

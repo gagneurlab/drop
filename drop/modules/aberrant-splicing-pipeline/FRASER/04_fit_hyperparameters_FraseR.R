@@ -4,13 +4,11 @@
 #' wb:
 #'  log:
 #'    - snakemake: '`sm str(tmp_dir / "AS" / "{dataset}" / "04_hyper.Rds")`'
-#'  params:
-#'   - setup: '`sm cfg.AS.getWorkdir() + "/config.R"`'
-#'   - workingDir: '`sm cfg.getProcessedDataDir() + "/aberrant_splicing/datasets/"`'
 #'  threads: 12
 #'  input:
-#'   - filter: '`sm cfg.getProcessedDataDir() + 
-#'                "/aberrant_splicing/datasets/savedObjects/{dataset}/filter.done" `'
+#'   - filter: '`sm expand(cfg.getProcessedDataDir() + 
+#'                "/aberrant_splicing/datasets/savedObjects/{{dataset}}/rawCounts{type}.h5",
+#'                type=["J", "SS"]) `'
 #'  output:
 #'   - hyper: '`sm cfg.getProcessedDataDir() + 
 #'                "/aberrant_splicing/datasets/savedObjects/{dataset}/hyper.done" `'
@@ -18,7 +16,7 @@
 #'---
 
 saveRDS(snakemake, snakemake@log$snakemake)
-source(snakemake@params$setup, echo=FALSE)
+suppressPackageStartupMessages(library(FRASER))
 
 if ("random_seed" %in% names(snakemake@config)){
   rseed <- snakemake@config$random_seed
@@ -30,15 +28,15 @@ if ("random_seed" %in% names(snakemake@config)){
 }
 
 #+ input
-dataset    <- snakemake@wildcards$dataset
-workingDir <- snakemake@params$workingDir
+dataset  <- snakemake@wildcards$dataset
+fds_file <- snakemake@input$filter[1]
 
 register(MulticoreParam(snakemake@threads))
 # Limit number of threads for DelayedArray operations
 setAutoBPPARAM(MulticoreParam(snakemake@threads))
 
 # Load PSI data
-fds <- loadFraserDataSet(dir=workingDir, name=dataset)
+fds <- loadFraserDataSet(file=fds_file)
 
 # Run hyper parameter optimization
 implementation <- snakemake@config$aberrantSplicing$implementation

@@ -43,10 +43,9 @@ class AS(Submodule):
         :return: list of files
         """
         ids = self.sa.getIDsByGroup(dataset, assay="RNA")
-        file_stump = self.processedDataDir / "aberrant_splicing" / "datasets" / "cache" / f"raw-{dataset}" / \
-                     "sample_tmp" / "splitCounts"
-        done_files = str(file_stump / "sample_{sample_id}.done")
-        return expand(done_files, sample_id=ids)
+        file_stump = self.processedDataDir / "aberrant_splicing" / "datasets" / "cache"
+        count_file = str(file_stump / "splitCounts-{sample_id}.RDS")
+        return expand(count_file, sample_id=ids)
 
     def getNonSplitCountFiles(self, dataset):
         """
@@ -55,9 +54,9 @@ class AS(Submodule):
         :return: list of files
         """
         ids = self.sa.getIDsByGroup(dataset, assay="RNA")
-        file_stump = self.processedDataDir / "aberrant_splicing" / "datasets" / "cache" / f"raw-{dataset}" / \
-                     "sample_tmp" / "nonSplitCounts"
-        done_files = str(file_stump / "sample_{sample_id}.done")
+        file_stump = self.processedDataDir / "aberrant_splicing" / "datasets" / \
+                     "cache" / "nonSplicedCounts" / f"raw-{dataset}" 
+        done_files = str(file_stump / "nonSplicedCounts-{sample_id}.h5")
         return expand(done_files, sample_id=ids)
 
 

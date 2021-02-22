@@ -4,10 +4,7 @@
 #' wb:
 #'  log:
 #'    - snakemake: '`sm str(tmp_dir / "AS" / "{dataset}" / "01_4_nonSplitReadsMerge.Rds")`'
-#'  params:
-#'   - setup: '`sm cfg.AS.getWorkdir() + "/config.R"`'
-#'   - workingDir: '`sm cfg.getProcessedDataDir() + "/aberrant_splicing/datasets"`'
-#'  threads: 20
+#'  threads: 10
 #'  input:
 #'   - sample_counts:  '`sm lambda w: cfg.AS.getNonSplitCountFiles(w.dataset)`'
 #'   - gRangesNonSplitCounts: '`sm cfg.getProcessedDataDir() + 
@@ -19,10 +16,10 @@
 #'---
 
 saveRDS(snakemake, snakemake@log$snakemake)
-source(snakemake@params$setup, echo=FALSE)
+suppressPackageStartupMessages(library(FRASER))
 
-dataset    <- snakemake@wildcards$dataset
-workingDir <- snakemake@params$workingDir
+dataset  <- snakemake@wildcards$dataset
+countsSS <- snakemake@output$countsSS
 params <- snakemake@config$aberrantSplicing
 
 register(MulticoreParam(snakemake@threads))
@@ -30,23 +27,23 @@ register(MulticoreParam(snakemake@threads))
 setAutoBPPARAM(MulticoreParam(snakemake@threads))
 
 # Read FRASER object
-fds <- loadFraserDataSet(dir=workingDir, name=paste0("raw-", dataset))
+fds <- loadFraserDataSet(file=file.path(dirname(countsSS), "fds-object.RDS"))
 
 # Read splice site coordinates from RDS
 splitCounts_gRanges <- readRDS(snakemake@input$gRangesNonSplitCounts)
 
 # If samples are recounted, remove the merged ones
-nonSplitCountsDir <- file.path(workingDir, "savedObjects", 
-                            paste0("raw-", dataset), 'nonSplitCounts')
-if(params$recount == TRUE & dir.exists(nonSplitCountsDir)){
-  unlink(nonSplitCountsDir, recursive = TRUE)
+nonSplitCountsDir <- file.path(workingDir(fds), "savedObjects", 
+        paste0("raw-", dataset), 'nonSplitCounts')
+if(dir.exists(nonSplitCountsDir)){
+  unlink(nonSplitCountsDir, recursive=TRUE)
 }
 
 # Get and merge nonSplitReads for all sample ids
 nonSplitCounts <- getNonSplitReadCountsForAllSamples(fds=fds, 
-                                                     splitCountRanges=splitCounts_gRanges, 
-                                                     minAnchor=5, 
-                                                     recount=FALSE, 
-                                                     longRead=params$longRead)
+        splitCountRanges=splitCounts_gRanges, 
+        minAnchor=5, 
+        recount=FALSE, 
+        longRead=params$longRead)
 
 message(date(), ":", dataset, " nonSplit counts done")

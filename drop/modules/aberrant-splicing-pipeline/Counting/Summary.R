@@ -8,8 +8,9 @@
 #'   - setup: '`sm cfg.AS.getWorkdir() + "/config.R"`'
 #'   - workingDir: '`sm cfg.getProcessedDataDir() + "/aberrant_splicing/datasets/"`'
 #'  input:
-#'   - filter: '`sm cfg.getProcessedDataDir() + 
-#'                "/aberrant_splicing/datasets/savedObjects/{dataset}/filter.done" `'
+#'   - filter: '`sm expand(cfg.getProcessedDataDir() + 
+#'                "/aberrant_splicing/datasets/savedObjects/{{dataset}}/rawCounts{type}.h5",
+#'                type=["J", "SS"]) `'
 #'  output:
 #'   - wBhtml: '`sm config["htmlOutputPath"] + 
 #'                  "/AberrantSplicing/{dataset}_countSummary.html"`'

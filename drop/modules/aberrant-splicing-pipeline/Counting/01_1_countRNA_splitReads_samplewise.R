@@ -3,51 +3,64 @@
 #' author: Luise Schuller
 #' wb:
 #'  log:
-#'    - snakemake: '`sm str(tmp_dir / "AS" / "{dataset}" / "splitReads" / "{sample_id}.Rds")`'
+#'    - snakemake: '`sm str(tmp_dir / "AS" / "splitReads" / "{sampleID}.Rds")`'
 #'  params:
-#'   - setup: '`sm cfg.AS.getWorkdir() + "/config.R"`'
-#'   - workingDir: '`sm cfg.getProcessedDataDir() + "/aberrant_splicing/datasets"`'
+#'    - COUNT_PARAMS: '`sm lambda w: cfg.AE.getCountParams(w.sampleID)`'
 #'  input:
-#'   - done_fds: '`sm cfg.getProcessedDataDir() + 
-#'                "/aberrant_splicing/datasets/cache/raw-{dataset}/fds.done"`'
+#'    - sample_bam: '`sm lambda w: sa.getFilePath(w.sampleID, file_type="RNA_BAM_FILE") `'
 #'  output:
-#'   - done_sample_splitCounts: '`sm cfg.getProcessedDataDir() + 
-#'                "/aberrant_splicing/datasets/cache/raw-{dataset}"
-#'                +"/sample_tmp/splitCounts/sample_{sample_id}.done"`'
+#'    - sample_splitCounts: '`sm cfg.getProcessedDataDir() + 
+#'                   "/aberrant_splicing/datasets/cache/splitCounts-{sampleID}.RDS"`'
 #'  threads: 3
 #'  type: script
 #'---
 
 saveRDS(snakemake, snakemake@log$snakemake)
-source(snakemake@params$setup, echo=FALSE)
-library(BSgenome)
+suppressPackageStartupMessages({
+  library(FRASER)
+  library(BSgenome)
+})
 
-dataset    <- snakemake@wildcards$dataset
-workingDir <- snakemake@params$workingDir
+sampleID   <- snakemake@wildcards$sampleID
+sample_bam <- snakemake@input$sample_bam
+fds_init   <- snakemake@input$fds_init
+out_rds    <- snakemake@output$sample_splitCounts
 params <- snakemake@config$aberrantSplicing
 genomeAssembly <- snakemake@config$genomeAssembly
+strand <- snakemake@params$COUNT_PARAMS$STRAND
+paired <- snakemake@params$COUNT_PARAMS$PAIRED_END
+coldata <- fread(snakemake@config$sampleAnnotation)[RNA_ID == sampleID]
 
-# Read FRASER object
-fds <- loadFraserDataSet(dir=workingDir, name=paste0("raw-", dataset))
 
-# Get sample id from wildcard
-sample_id <- snakemake@wildcards[["sample_id"]]
+# Get strand specificity of sample ('' does not exists in switch -> x_...)
+strand <- switch(paste0("x_", tolower(strand)),
+        'x_' = 0L,
+        'x_no' = 0L,
+        'x_unstranded' = 0L,
+        'x_yes' = 1L,
+        'x_stranded' = 1L,
+        'x_reverse' = 2L,
+        stop("Strand parameter not known! It was: '", strand, "'."))
 
 # If data is not strand specific, add genome info
 genome <- NULL
-if(strandSpecific(fds) == 0){
+if(strand == 0){
   genome <- getBSgenome(genomeAssembly)
 }
 
 # Count splitReads for a given sample id
-sample_result <- countSplitReads(sampleID = sample_id, 
-                                 fds = fds,
-                                 NcpuPerSample = snakemake@threads,
-                                 recount = params$recount,
-                                 keepNonStandardChromosomes = params$keepNonStandardChrs,
-                                 genome = genome)
+sample_result <- countSplitReads(
+    sampleID = sampleID,
+    NcpuPerSample = snakemake@threads,
+    genome = genome,
+    recount = TRUE,
+    keepNonStandardChromosomes=params$keepNonStandardChrs,
+    bamfile = sample_bam,
+    pairedend = paired,
+    strandmode = strand,
+    cacheFile = out_rds,
+    scanbamparam = ScanBamParam(mapqFilter=0), 
+    coldata = coldata)
 
-message(date(), ": ", dataset, ", ", sample_id,
-        " no. splice junctions (split counts) = ", length(sample_result))
-
-file.create(snakemake@output$done_sample_splitCounts)
+message(date(), ": ", sampleID," no. splice junctions (split counts) = ", 
+    length(sample_result))

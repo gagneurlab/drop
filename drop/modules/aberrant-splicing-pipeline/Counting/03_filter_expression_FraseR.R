@@ -5,30 +5,27 @@
 #'  log:
 #'    - snakemake: '`sm str(tmp_dir / "AS" / "{dataset}" / "03_filter.Rds")`'
 #'  params:
-#'   - setup: '`sm cfg.AS.getWorkdir() + "/config.R"`'
-#'   - workingDir: '`sm cfg.getProcessedDataDir() + "/aberrant_splicing/datasets/"`'
 #'   - exCountIDs: '`sm lambda w: sa.getIDsByGroup(w.dataset, assay="SPLICE_COUNT")`'
 #'  input:
 #'   - theta:  '`sm cfg.getProcessedDataDir()+
-#'                  "/aberrant_splicing/datasets/savedObjects/raw-{dataset}/theta.h5"`'
+#'                  "/aberrant_splicing/datasets/savedObjects/raw-{dataset}/delta_theta.h5"`'
 #'   - exCounts: '`sm lambda w: cfg.AS.getExternalCounts(w.dataset, "k_j_counts")`'
 #'  output:
-#'   - fds: '`sm cfg.getProcessedDataDir() +
-#'                "/aberrant_splicing/datasets/savedObjects/{dataset}/fds-object.RDS"`'
-#'   - done: '`sm cfg.getProcessedDataDir() + 
-#'                "/aberrant_splicing/datasets/savedObjects/{dataset}/filter.done" `'
+#'   - fds_k_j: '`sm cfg.getProcessedDataDir() +
+#'                "/aberrant_splicing/datasets/savedObjects/{dataset}/rawCountsJ.h5"`'
+#'   - fds_k_theta: '`sm cfg.getProcessedDataDir() +
+#'                "/aberrant_splicing/datasets/savedObjects/{dataset}/rawCountsSS.h5"`'
 #'  threads: 3
 #'  type: script
 #'---
 
 saveRDS(snakemake, snakemake@log$snakemake)
-source(snakemake@params$setup, echo=FALSE)
-
+suppressPackageStartupMessages(library(FRASER))
 opts_chunk$set(fig.width=12, fig.height=8)
 
 # input
 dataset    <- snakemake@wildcards$dataset
-workingDir <- snakemake@params$workingDir
+fdsIn      <- snakemake@input$theta
 params     <- snakemake@config$aberrantSplicing
 exCountIDs <- snakemake@params$exCountIDs
 exCountFiles <- snakemake@input$exCounts
@@ -36,13 +33,22 @@ sample_anno_file <- snakemake@config$sampleAnnotation
 minExpressionInOneSample <- params$minExpressionInOneSample
 minDeltaPsi <- params$minDeltaPsi
 
-fds <- loadFraserDataSet(dir=workingDir, name=paste0("raw-", dataset))
+fds <- loadFraserDataSet(file=fdsIn)
 
 register(MulticoreParam(snakemake@threads))
 # Limit number of threads for DelayedArray operations
 setAutoBPPARAM(MulticoreParam(snakemake@threads))
 
+# Apply filter
+fds <- filterExpressionAndVariability(fds, 
+        minExpressionInOneSample = minExpressionInOneSample,
+        minDeltaPsi = minDeltaPsi,
+        filter=FALSE)
+devNull <- saveFraserDataSet(fds)
+
+# TODO move it before applying filter to have it included in the summary
 # Add external data if provided by dataset
+dontWriteHDF5(fds) <- TRUE
 if(length(exCountIDs) > 0){
     for(resource in unique(exCountFiles)){
         exSampleIDs <- exCountIDs[exCountFiles == resource]
@@ -56,20 +62,12 @@ if(length(exCountIDs) > 0){
     }
 }
 
-# Apply filter
 fds <- filterExpressionAndVariability(fds, 
-                        minExpressionInOneSample = minExpressionInOneSample,
-                        minDeltaPsi = minDeltaPsi,
-                        filter=FALSE)
-devNull <- saveFraserDataSet(fds)
+        minExpressionInOneSample = minExpressionInOneSample,
+        minDeltaPsi = minDeltaPsi,
+        filter=params$filter)
 
-# Keep junctions that pass filter
+# save filtered data into new dataset object
+dontWriteHDF5(fds) <- FALSE
 name(fds) <- dataset
-if (params$filter == TRUE) {
-    filtered <- mcols(fds, type="j")[,"passed"]
-    fds <- fds[filtered,]
-    message(paste("filtered to", nrow(fds), "junctions"))
-}
-
 fds <- saveFraserDataSet(fds)
-file.create(snakemake@output$done)

@@ -4,48 +4,42 @@
 #' wb:
 #'  log:
 #'    - snakemake: '`sm str(tmp_dir / "AS" / "{dataset}" / "nonsplitReads" / "{sample_id}.Rds")`'
-#'  params:
-#'   - setup: '`sm cfg.AS.getWorkdir() + "/config.R"`'
-#'   - workingDir: '`sm cfg.getProcessedDataDir() + "/aberrant_splicing/datasets"`'
 #'  input:
 #'   - spliceSites: '`sm cfg.getProcessedDataDir() + 
 #'                   "/aberrant_splicing/datasets/cache/raw-{dataset}/spliceSites_splitCounts.rds"`'
+#'   - fds_init:    '`sm cfg.getProcessedDataDir() + 
+#'                   "/aberrant_splicing/datasets/savedObjects/raw-{dataset}/fds-init.done"`'
 #'  output:
-#'   - done_sample_nonSplitCounts : '`sm cfg.getProcessedDataDir() + 
-#'                   "/aberrant_splicing/datasets/cache/raw-{dataset}/sample_tmp/nonSplitCounts/sample_{sample_id}.done"`' 
+#'   - nonSplitCounts_sample : '`sm cfg.getProcessedDataDir() + 
+#'                   "/aberrant_splicing/datasets/cache/nonSplicedCounts/raw-{dataset}/nonSplicedCounts-{sample_id}.h5"`'
 #'  threads: 3
 #'  type: script
 #'---
 
 saveRDS(snakemake, snakemake@log$snakemake)
-source(snakemake@params$setup, echo=FALSE)
+suppressPackageStartupMessages(library(FRASER))
 
 dataset    <- snakemake@wildcards$dataset
-colDataFile <- snakemake@input$colData
-workingDir <- snakemake@params$workingDir
-params <- snakemake@config$aberrantSplicing
+sample_id  <- snakemake@wildcards$sample_id
+fds_init   <- snakemake@input$fds_init
+params     <- snakemake@config$aberrantSplicing
 
 # Read FRASER object
-fds <- loadFraserDataSet(dir=workingDir, name=paste0("raw-", dataset))
-
-# Get sample id from wildcard
-sample_id <- snakemake@wildcards[["sample_id"]]
-
+fds <- loadFraserDataSet(file=file.path(dirname(fds_init), "fds-object.RDS"))
 
 # Read splice site coordinates from RDS
 spliceSiteCoords <- readRDS(snakemake@input$spliceSites)
 
 # Count nonSplitReads for given sample id
 sample_result <- countNonSplicedReads(sample_id,
-                                      splitCountRanges = NULL,
-                                      fds = fds,
-                                      NcpuPerSample = snakemake@threads,
-                                      minAnchor=5,
-                                      recount=params$recount,
-                                      spliceSiteCoords=spliceSiteCoords,
-                                      longRead=params$longRead)
+        splitCountRanges = NULL,
+        fds = fds,
+        NcpuPerSample = snakemake@threads,
+        minAnchor=5,
+        # TODO should be TRUE in the future as snakemake is checking this
+        recount=params$recount,
+        spliceSiteCoords=spliceSiteCoords,
+        longRead=params$longRead)
 
 message(date(), ": ", dataset, ", ", sample_id,
         " no. splice junctions (non split counts) = ", length(sample_result))
-
-file.create(snakemake@output$done_sample_nonSplitCounts)
