@@ -26,7 +26,7 @@ suppressPackageStartupMessages(library(FRASER))
 
 # input
 dataset <- snakemake@wildcards$dataset
-fdsIn   <- snakemake@input$fds_init
+fdsIn   <- file.path(dirname(snakemake@input$fds_init), "fds-object.RDS")
 params  <- snakemake@config$aberrantSplicing
 minExpressionInOneSample <- params$minExpressionInOneSample
 BPPARAM <- MulticoreParam(snakemake@threads)
@@ -34,6 +34,10 @@ BPPARAM <- MulticoreParam(snakemake@threads)
 # Set number of threads including for DelayedArray operations
 register(BPPARAM)
 DelayedArray::setAutoBPPARAM(BPPARAM)
+
+# Force writing HDF5 files
+options(FRASER.maxSamplesNoHDF5=-1)
+options(FRASER.maxJunctionsNoHDF5=-1)
 
 # Read FRASER object
 fds <- loadFraserDataSet(file=fdsIn)
