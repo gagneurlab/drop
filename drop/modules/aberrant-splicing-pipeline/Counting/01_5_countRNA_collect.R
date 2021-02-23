@@ -26,6 +26,10 @@ dataset      <- snakemake@wildcards$dataset
 j_counts     <- snakemake@input$countsJ
 theta_counts <- snakemake@input$countsSS
 
+# Force writing HDF5 files
+options(FRASER.maxSamplesNoHDF5=-1)
+options(FRASER.maxJunctionsNoHDF5=-1)
+
 # Read FRASER object
 fds <- loadFraserDataSet(file=j_counts)
 splitCounts_gRanges <- readRDS(snakemake@input$gRangesSplitCounts)

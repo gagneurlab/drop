@@ -27,6 +27,10 @@ BPPARAM  <- MulticoreParam(snakemake@threads)
 register(BPPARAM)
 DelayedArray::setAutoBPPARAM(BPPARAM)
 
+# Force writing HDF5 files
+options(FRASER.maxSamplesNoHDF5=-1)
+options(FRASER.maxJunctionsNoHDF5=-1)
+
 # load FraserDataSet object
 fds <- loadFraserDataSet(file=fds_in)
 

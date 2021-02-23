@@ -34,7 +34,7 @@ suppressPackageStartupMessages({
   library(AnnotationDbi)
 })
 source(snakemake@input$add_HPO_cols)
-opts_chunk$set(fig.width=12, fig.height=8)
+knitr::opts_chunk$set(fig.width=12, fig.height=8)
 
 # input
 dataset    <- snakemake@wildcards$dataset
@@ -46,6 +46,10 @@ assemblyVersion <- snakemake@params$assemblyVersion
 # Set number of threads including for DelayedArray operations
 register(BPPARAM)
 DelayedArray::setAutoBPPARAM(BPPARAM)
+
+# Force writing HDF5 files
+options(FRASER.maxSamplesNoHDF5=-1)
+options(FRASER.maxJunctionsNoHDF5=-1)
 
 # Load data and annotate ranges with gene names
 fds_input <- loadFraserDataSet(file=fdsFile)

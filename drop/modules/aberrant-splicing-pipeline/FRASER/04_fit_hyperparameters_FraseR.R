@@ -16,7 +16,10 @@
 #'---
 
 saveRDS(snakemake, snakemake@log$snakemake)
-suppressPackageStartupMessages(library(FRASER))
+suppressPackageStartupMessages({
+  library(FRASER)
+  library(tidyr)
+})
 
 if ("random_seed" %in% names(snakemake@config)){
   rseed <- snakemake@config$random_seed
@@ -35,6 +38,10 @@ BPPARAM  <- MulticoreParam(snakemake@threads)
 # Set number of threads including for DelayedArray operations
 register(BPPARAM)
 DelayedArray::setAutoBPPARAM(BPPARAM)
+
+# Force writing HDF5 files
+options(FRASER.maxSamplesNoHDF5=-1)
+options(FRASER.maxJunctionsNoHDF5=-1)
 
 # Load PSI data
 fds <- loadFraserDataSet(file=fds_file)

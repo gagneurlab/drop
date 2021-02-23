@@ -21,7 +21,7 @@
 
 saveRDS(snakemake, snakemake@log$snakemake)
 suppressPackageStartupMessages(library(FRASER))
-opts_chunk$set(fig.width=12, fig.height=8)
+knitr::opts_chunk$set(fig.width=12, fig.height=8)
 
 # input
 dataset    <- snakemake@wildcards$dataset
@@ -37,6 +37,10 @@ BPPARAM  <- MulticoreParam(snakemake@threads)
 # Set number of threads including for DelayedArray operations
 register(BPPARAM)
 DelayedArray::setAutoBPPARAM(BPPARAM)
+
+# Force writing HDF5 files
+options(FRASER.maxSamplesNoHDF5=-1)
+options(FRASER.maxJunctionsNoHDF5=-1)
 
 # Load FraserDataSet object
 fds <- loadFraserDataSet(file=fdsIn)
