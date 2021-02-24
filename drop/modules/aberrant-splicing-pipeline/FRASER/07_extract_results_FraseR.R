@@ -31,6 +31,7 @@
 saveRDS(snakemake, snakemake@log$snakemake)
 suppressPackageStartupMessages({
   library(FRASER)
+  library(tidyr)
   library(AnnotationDbi)
 })
 source(snakemake@input$add_HPO_cols)
@@ -42,6 +43,8 @@ fdsFile    <- snakemake@input$fdsin
 BPPARAM    <- MulticoreParam(snakemake@threads)
 annotation <- snakemake@wildcards$annotation
 assemblyVersion <- snakemake@params$assemblyVersion
+outResJunc <- snakemake@output$resultTableJunc
+outResGene <- snakemake@output$resultTableGene
 
 # Set number of threads including for DelayedArray operations
 register(BPPARAM)
@@ -104,5 +107,5 @@ if(length(res_junc) > 0){
 } else res_genes_dt <- data.table()
 
 # Results
-write_tsv(res_junc_dt, file=snakemake@output$resultTableJunc)
-write_tsv(res_genes_dt, file=snakemake@output$resultTableGene)
+write.table(x=res_junc_dt,  file=outResJunc, quote=FALSE, sep='\t', row.names=FALSE)
+write.table(x=res_genes_dt, file=outResGene, quote=FALSE, sep='\t', row.names=FALSE)

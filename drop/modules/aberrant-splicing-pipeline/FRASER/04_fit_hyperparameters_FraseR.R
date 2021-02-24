@@ -6,9 +6,8 @@
 #'    - snakemake: '`sm str(tmp_dir / "AS" / "{dataset}" / "04_hyper.Rds")`'
 #'  threads: 12
 #'  input:
-#'   - filter: '`sm expand(cfg.getProcessedDataDir() + 
-#'                "/aberrant_splicing/datasets/savedObjects/{{dataset}}/rawCounts{type}.h5",
-#'                type=["J", "SS"]) `'
+#'   - filter: '`sm cfg.getProcessedDataDir() + 
+#'                "/aberrant_splicing/datasets/savedObjects/{dataset}/filtering.done"`'
 #'  output:
 #'   - hyper: '`sm cfg.getProcessedDataDir() + 
 #'                "/aberrant_splicing/datasets/savedObjects/{dataset}/hyper.done" `'
@@ -32,7 +31,7 @@ if ("random_seed" %in% names(snakemake@config)){
 
 #+ input
 dataset  <- snakemake@wildcards$dataset
-fds_file <- snakemake@input$filter[1]
+fds_file <- file.path(dirname(snakemake@input$filter), "fds-object.RDS")
 BPPARAM  <- MulticoreParam(snakemake@threads)
 
 # Set number of threads including for DelayedArray operations

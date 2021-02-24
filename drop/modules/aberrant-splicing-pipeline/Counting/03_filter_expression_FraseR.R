@@ -11,10 +11,8 @@
 #'                  "/aberrant_splicing/datasets/savedObjects/raw-{dataset}/delta_theta.h5"`'
 #'   - exCounts: '`sm lambda w: cfg.AS.getExternalCounts(w.dataset, "k_j_counts")`'
 #'  output:
-#'   - fds_k_j: '`sm cfg.getProcessedDataDir() +
-#'                "/aberrant_splicing/datasets/savedObjects/{dataset}/rawCountsJ.h5"`'
-#'   - fds_k_theta: '`sm cfg.getProcessedDataDir() +
-#'                "/aberrant_splicing/datasets/savedObjects/{dataset}/rawCountsSS.h5"`'
+#'   - fds_filter_done: '`sm cfg.getProcessedDataDir() +
+#'                "/aberrant_splicing/datasets/savedObjects/{dataset}/filtering.done"`'
 #'  threads: 3
 #'  type: script
 #'---
@@ -26,6 +24,7 @@ knitr::opts_chunk$set(fig.width=12, fig.height=8)
 # input
 dataset    <- snakemake@wildcards$dataset
 fdsIn      <- snakemake@input$theta
+fdsOut     <- snakemake@output$fds_filter_done
 params     <- snakemake@config$aberrantSplicing
 exCountIDs <- snakemake@params$exCountIDs
 exCountFiles <- snakemake@input$exCounts
@@ -77,3 +76,5 @@ fds <- filterExpressionAndVariability(fds,
 dontWriteHDF5(fds) <- FALSE
 name(fds) <- dataset
 fds <- saveFraserDataSet(fds, rewrite=TRUE)
+
+file.create(fdsOut)
