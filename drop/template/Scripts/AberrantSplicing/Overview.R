@@ -9,11 +9,11 @@
 #'    - datasets: '`sm cfg.AS.groups`'
 #'    - htmlDir: '`sm config["htmlOutputPath"] + "/AberrantSplicing"`'
 #'  input:
-#'    - fds_files: '`sm expand(cfg.getProcessedDataDir() +
+#'    - fds_files: '`sm expand(cfg.getProcessedResultsDir() +
 #'                "/aberrant_splicing/datasets/savedObjects/{dataset}--{annotation}/" + 
 #'                "fds-object.RDS", dataset=cfg.AS.groups, annotation=cfg.getGeneVersions())`'
-#'    - result_tables: '`sm expand(cfg.getProcessedDataDir() +
-#'                    "/aberrant_splicing/results/{dataset}--{annotation}_results_per_junction.tsv",
+#'    - result_tables: '`sm expand(cfg.getProcessedResultsDir() +
+#'                    "/aberrant_splicing/results/{annotation}/fraser/{dataset}/results_per_junction.tsv",
 #'                    dataset=cfg.AS.groups, annotation=cfg.getGeneVersions())`'
 #' output:
 #'   html_document:

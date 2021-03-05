@@ -9,6 +9,7 @@
 #'  input:
 #'   - sample_bam: '`sm lambda w: sa.getFilePath(w.sampleID, file_type="RNA_BAM_FILE") `'
 #'   - count_ranges: '`sm cfg.getProcessedDataDir() + "/aberrant_expression/{annotation}/count_ranges.Rds" `'
+#'   - input_params: '`sm cfg.getProcessedDataDir() + "/aberrant_expression/{annotation}/params/counts/{sampleID}_countParams.csv" `'
 #'  output:
 #'   - counts: '`sm cfg.getProcessedDataDir() + "/aberrant_expression/{annotation}/counts/{sampleID,[^/]+}.Rds"`'
 #'  type: script

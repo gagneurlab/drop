@@ -12,6 +12,7 @@
 #'                "/mae/samples/{id}_res.Rds", id=cfg.MAE.getMaeByGroup({w.dataset}))`'
 #'   - gene_name_mapping: '`sm cfg.getProcessedDataDir() +
 #'                          "/mae/gene_name_mapping_{annotation}.tsv"`'
+#'   - input_sample_params: '`sm cfg.getProcessedDataDir() + "/mae/params/results/{dataset}_resultParams.csv" `'
 #'  output:
 #'   - res_all: '`sm cfg.getProcessedResultsDir() + 
 #'                "/mae/{dataset}/MAE_results_all_{annotation}.tsv.gz"`' 

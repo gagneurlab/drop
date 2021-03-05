@@ -1,5 +1,6 @@
 from snakemake.io import expand
 import numpy as np
+import filecmp
 
 from drop import utils
 from .Submodules import Submodule
@@ -55,3 +56,4 @@ class AE(Submodule):
         }
         return count_params_dict
         # count_params.iloc[0].to_dict()
+

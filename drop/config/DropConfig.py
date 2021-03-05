@@ -4,6 +4,8 @@ from .ExportCounts import ExportCounts
 from drop import utils
 from pathlib import Path
 import wbuild
+from snakemake.logging import logger                                                                                    
+
 
 
 class DropConfig:
@@ -11,7 +13,7 @@ class DropConfig:
         # wbuild keys
         "projectTitle", "htmlOutputPath", "scriptsPath", "indexWithFolderName", "fileRegex", "readmePath",
         # global parameters
-        "root", "sampleAnnotation", "geneAnnotation", "genomeAssembly", "exportCounts", "tools", "hpoFile",
+        "root", "sampleAnnotation", "geneAnnotation", "genomeAssembly", "exportCounts", "tools", "hpoFile","genome",
         # modules
         "aberrantExpression", "aberrantSplicing", "mae"
     ]
@@ -38,9 +40,10 @@ class DropConfig:
         # annotations
         self.geneAnnotation = self.get("geneAnnotation")
         self.genomeAssembly = self.get("genomeAssembly")
-        self.fastaFile = self.get("mae")["genome"] # TODO: move fasta outside of mae
-        self.fastaDict = Path(self.fastaFile).with_suffix(".dict")
         self.sampleAnnotation = SampleAnnotation(self.get("sampleAnnotation"), self.root)
+
+        # config defined genome paths
+        self.genomeFiles = self.getGenomeFiles()
 
         # submodules
         self.AE = AE(
@@ -49,6 +52,7 @@ class DropConfig:
             processedDataDir=self.processedDataDir,
             processedResultsDir=self.processedResultsDir
         )
+
         self.AS = AS(
             config=self.get("aberrantSplicing"),
             sampleAnnotation=self.sampleAnnotation,
@@ -59,7 +63,8 @@ class DropConfig:
             config=self.get("mae"),
             sampleAnnotation=self.sampleAnnotation,
             processedDataDir=self.processedDataDir,
-            processedResultsDir=self.processedResultsDir
+            processedResultsDir=self.processedResultsDir,
+            genomeFiles=self.genomeFiles
         )
 
         # counts export
@@ -73,6 +78,62 @@ class DropConfig:
             aberrantSplicing=self.AS
         )
 
+        # write sample params for each module
+        #self.AE.writeSampleParams(self.geneAnnotation)
+
+        sampleParams = {}
+        for ann in self.geneAnnotation:
+            annParams = {self.AE.name :{
+                                        "countParams": 
+                                            [self.AE,
+                                             self.processedDataDir/"aberrant_expression"/f"{ann}"/"params/counts",
+                                             ["RNA_ID"],
+                                             True,
+                                             False
+                                            ],
+                                        "mergeParams":
+                                            [self.AE,
+                                             self.processedDataDir/"aberrant_expression"/f"{ann}"/"params/merge",
+                                             ["RNA_ID", "RNA_BAM_FILE","COUNT_MODE", "PAIRED_END", "COUNT_OVERLAPS", "STRAND"],
+                                             True,
+                                             True
+                                            ],
+                                        "resultParams": 
+                                            [self.AE,
+                                             self.processedDataDir/"aberrant_expression"/f"{ann}"/"params/results",
+                                             ["RNA_BAM_FILE", "DNA_VCF_FILE","DROP_GROUP","COUNT_MODE",
+                                              "PAIRED_END", "COUNT_OVERLAPS", "STRAND"],
+                                             False, #include 
+                                             True # grouped 
+                                            ]
+                                           },
+                          self.MAE.name:{
+                                        "sampleParams":
+                                            [self.MAE,
+                                             self.processedDataDir/"mae/params/snvs",
+                                             ["RNA_ID","DNA_ID","RNA_BAM_FILE", "DNA_VCF_FILE","GENOME"],
+                                             True, #include the columns above (if False take compliment)
+                                             False # grouped 
+                                            ],
+                                        "resultParams":
+                                            [self.MAE,
+                                             self.processedDataDir/"mae/params/results",
+                                             ["RNA_BAM_FILE", "DNA_VCF_FILE","DROP_GROUP","COUNT_MODE",
+                                             "PAIRED_END", "COUNT_OVERLAPS", "STRAND"], #columns for params
+                                             False, #include the columns above (if False take compliment)
+                                             True # grouped 
+                                            ]
+                                           }
+                                              
+                         }
+            sampleParams[ann] = annParams
+             
+
+        for ann in sampleParams:
+            for module in sampleParams[ann]:
+                for suffix in sampleParams[ann][module]:
+                    module_obj,path,params,include,group_param = sampleParams[ann][module][suffix]
+                    module_obj.writeSampleParams(path,params,include,suffix,group_param = group_param)
         # legacy
         utils.setKey(self.config_dict, None, "aberrantExpression", self.AE.dict_)
         utils.setKey(self.config_dict, None, "aberrantSplicing", self.AS.dict_)
@@ -150,11 +211,14 @@ class DropConfig:
     def getGeneAnnotationFile(self, annotation):
         return self.geneAnnotation[annotation]
 
-    def getFastaFile(self, str_=True):
-        return utils.returnPath(self.fastaFile, str_)
+    def getFastaFiles(self):
+        if isinstance(self.genomeFiles,str):
+            return {self.genomeFiles:self.genomeFiles}
+        else:
+            return self.genomeFiles
 
-    def getFastaDict(self, str_=True):
-        return utils.returnPath(self.fastaDict, str_)
+    def getFastaDict(self, fasta_file):
+        return self.getGenomeDict(fasta_file)
 
     def getBSGenomeName(self):
         assemblyID = self.get("genomeAssembly")
@@ -190,4 +254,23 @@ class DropConfig:
 
         raise ValueError("Provided genome assembly not known: " + assemblyID)
  
- 
+    def getTempSampleParams(self):
+        return(self.tempSampleParams)
+
+    # if mae still defines genome. Use that and print warning. otherwise use globally defined genome
+    def getGenomeFiles(self):
+        try:
+            fastaFiles = self.get("mae")["genome"]
+            logger.info( \
+"WARNING: Using the mae defined genome instead of the globally defined one.\n\
+This will be depreciated in the future to allow for reference genomes to be defined in \
+the sample annotation table. Please update your config and SA table\n")
+        
+        except:
+            fastaFiles = self.get("genome")
+        return fastaFiles
+
+    # generate name for genome dict based on fastaFile
+    def getGenomeDict(self,fastaFile):
+        return Path(fastaFile).with_suffix(".dict")
+

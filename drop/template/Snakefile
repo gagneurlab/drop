@@ -15,6 +15,7 @@ drop.installRPackages(cfg)
 sa = cfg.sampleAnnotation
 config = cfg.config_dict # legacy
 
+
 include: drop.utils.getWBuildSnakefile()
 include: cfg.AE.getWorkdir() + "/Snakefile"
 include: cfg.AS.getWorkdir() + "/Snakefile"

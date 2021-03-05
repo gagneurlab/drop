@@ -65,17 +65,22 @@ def getWBuildSnakefile(str_=True):
     return returnPath(wb_path / "wBuild.snakefile", str_=str_)
 
 
-def subsetBy(df, column, values):
+def subsetBy(df, column, values,exact_match = True):
     """
     Subset by one or more values of different columns from data frame
     :param df: data frame
     :param column: column to subset by
     :param values: values to subset by
+    :exact_match: default True. when False match substrings. Important for subsetting drop groups
     :return: df subset by values and column
     """
     if values is None:
         return df
-    elif isinstance(values, str):
+    elif isinstance(values, str) and exact_match :
         return df[df[column] == values]
-    else:
+    elif not isinstance(values,str) and exact_match:
         return df[df[column].isin(values)]
+    elif isinstance(values,str) and not exact_match:
+        return df[df[column].str.contains(values)]
+    else:
+        return df[df[column].str.contains("|".join(values))]

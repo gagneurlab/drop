@@ -6,6 +6,7 @@
 #'    - snakemake: '`sm str(tmp_dir / "AS" / "{dataset}--{annotation}" / "07_results.Rds")`'
 #'  params:
 #'   - workingDir: '`sm cfg.getProcessedDataDir() + "/aberrant_splicing/datasets/"`'
+#'   - outputDir: '`sm cfg.getProcessedResultsDir() + "/aberrant_splicing/datasets/"`'
 #'   - padjCutoff: '`sm cfg.AS.get("padjCutoff")`'
 #'   - zScoreCutoff: '`sm cfg.AS.get("zScoreCutoff")`'
 #'   - deltaPsiCutoff: '`sm cfg.AS.get("deltaPsiCutoff")`'
@@ -21,11 +22,11 @@
 #'   - txdb: '`sm cfg.getProcessedDataDir() + "/aberrant_expression/{annotation}/txdb.db"`'
 #'   - gene_name_mapping: '`sm cfg.getProcessedDataDir() + "/aberrant_expression/{annotation}/gene_name_mapping_{annotation}.tsv"`'
 #'  output:
-#'   - resultTableJunc: '`sm cfg.getProcessedDataDir() + 
-#'                          "/aberrant_splicing/results/{dataset}--{annotation}_results_per_junction.tsv"`'
-#'   - resultTableGene: '`sm cfg.getProcessedDataDir() + 
-#'                          "/aberrant_splicing/results/{dataset}--{annotation}_results.tsv"`'
-#'   - fds: '`sm cfg.getProcessedDataDir() + 
+#'   - resultTableJunc: '`sm cfg.getProcessedResultsDir() + 
+#'                          "/aberrant_splicing/results/{annotation}/fraser/{dataset}/results_per_junction.tsv"`'
+#'   - resultTableGene: '`sm cfg.getProcessedResultsDir() + 
+#'                          "/aberrant_splicing/results/{annotation}/fraser/{dataset}/results.tsv"`'
+#'   - fds: '`sm cfg.getProcessedResultsDir() + 
 #'                 "/aberrant_splicing/datasets/savedObjects/{dataset}--{annotation}/fds-object.RDS"`'                          
 #'  type: script
 #'---
@@ -41,6 +42,7 @@ annotation    <- snakemake@wildcards$annotation
 dataset    <- snakemake@wildcards$dataset
 fdsFile    <- snakemake@input$fdsin
 workingDir <- snakemake@params$workingDir
+outputDir  <- snakemake@params$outputDir 
 assemblyVersion <- snakemake@params$assemblyVersion
 
 register(MulticoreParam(snakemake@threads))
@@ -49,7 +51,7 @@ setAutoBPPARAM(MulticoreParam(snakemake@threads))
 
 # Load data and annotate ranges with gene names
 fds_input <- loadFraserDataSet(dir=workingDir, name=dataset)
-fds <- saveFraserDataSet(fds_input, name = paste(dataset, annotation, sep = '--'), rewrite = TRUE)
+fds <- saveFraserDataSet(fds_input, dir=outputDir, name = paste(dataset, annotation, sep = '--'), rewrite = TRUE)
 
 txdb <- loadDb(snakemake@input$txdb)
 orgdb <- fread(snakemake@input$gene_name_mapping)
