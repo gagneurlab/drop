@@ -13,7 +13,9 @@ class Test_AS_Pipeline:
 
     @pytest.mark.usefixtures("pipeline_run")
     def test_counts(self, demo_dir):
-        cnt_file = "Output/processed_data/aberrant_splicing/datasets/savedObjects/raw-fraser/fds-object.RDS"
+        annotation = "v29"                                                                                              
+        dataset = "fraser"                                                                                              
+        cnt_file = f"Output/processed_results/aberrant_splicing/datasets/savedObjects/{dataset}--{annotation}/fds-object.RDS"
         r_cmd = """ 
             library(FRASER)
             fds <- loadFraserDataSet(file="{}")
@@ -26,8 +28,10 @@ class Test_AS_Pipeline:
 
     @pytest.mark.usefixtures("pipeline_run")
     def test_results(self, demo_dir):
-        results_dir = "Output/processed_data/aberrant_splicing/results"
-        r = run(f"wc -l {results_dir}/fraser--v29_results_per_junction.tsv", demo_dir)
-        assert "87 " in r.stdout
-        r = run(f"wc -l {results_dir}/fraser--v29_results.tsv", demo_dir)
-        assert "1 " in r.stdout
+        results_dir = "Output/processed_results/aberrant_splicing/results"                                              
+        annotation = "v29"                                                                                              
+        dataset = "fraser"                                                                                              
+        r = run(f"wc -l {results_dir}/{annotation}/fraser/{dataset}/results_per_junction.tsv", demo_dir)                
+        assert " 87 " in r.stdout                                                                                        
+        r = run(f"wc -l {results_dir}/{annotation}/fraser/{dataset}/results.tsv", demo_dir)                             
+        assert " 11 " in r.stdout                                                

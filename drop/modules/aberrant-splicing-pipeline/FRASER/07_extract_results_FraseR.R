@@ -52,6 +52,7 @@ setAutoBPPARAM(MulticoreParam(snakemake@threads))
 # Load data and annotate ranges with gene names
 fds_input <- loadFraserDataSet(dir=workingDir, name=dataset)
 fds <- saveFraserDataSet(fds_input, dir=outputDir, name = paste(dataset, annotation, sep = '--'), rewrite = TRUE)
+workingDir(fds) <- outputDir
 
 txdb <- loadDb(snakemake@input$txdb)
 orgdb <- fread(snakemake@input$gene_name_mapping)
@@ -68,7 +69,7 @@ res_junc <- results(fds,
                     deltaPsiCutoff=snakemake@params$deltaPsiCutoff)
 res_junc_dt   <- as.data.table(res_junc)
 print('Results per junction extracted')
-saveFraserDataSet(fds)
+saveFraserDataSet(fds, dir=outputDir)
 
 
 # Add features 
