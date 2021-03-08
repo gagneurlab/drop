@@ -52,7 +52,6 @@ setAutoBPPARAM(MulticoreParam(snakemake@threads))
 # Load data and annotate ranges with gene names
 fds_input <- loadFraserDataSet(dir=workingDir, name=dataset)
 fds <- saveFraserDataSet(fds_input, dir=outputDir, name = paste(dataset, annotation, sep = '--'), rewrite = TRUE)
-workingDir(fds) <- outputDir
 
 txdb <- loadDb(snakemake@input$txdb)
 orgdb <- fread(snakemake@input$gene_name_mapping)
