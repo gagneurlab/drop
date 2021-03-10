@@ -46,7 +46,7 @@ class SampleAnnotation:
             if missing_cols == ["GENOME"]:
                 del data_types["GENOME"]
                 self.SAMPLE_ANNOTATION_COLUMNS.remove("GENOME")
-                logger.info("WARNING: GENOME must be a column in the Sample Annotation Table, genome should be defined globally and refrenced in the SA table. Current format (under mae) will be depreciated\n")
+                logger.info("WARNING: GENOME must be a column in the Sample Annotation Table, genome should be defined globally and refrenced in the SA table. Current format (under mae) will be deprecated\n")
             else:
                 raise ValueError(f"Incorrect columns in sample annotation file. Missing:\n{missing_cols}")
 
