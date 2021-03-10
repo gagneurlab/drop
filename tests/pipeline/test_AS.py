@@ -10,6 +10,18 @@ class Test_AS_Pipeline:
         tmp = run(["snakemake", "--unlock"], demo_dir)
         assert "Finished job 0." in pipeline_run.stderr
         return pipeline_run
+  
+
+#once Output is prebuilt with ncbi_fds obj present
+#    @pytest.mark.usefixtures("pipeline_run")
+#    def pipeline_run(self, demo_dir):
+#        LOGGER.info("run aberrant splicing ncbi results")
+#        annotation = "v29"
+#        dataset = "fraser_ncbi"
+#        pipeline_run = run(["snakemake", f"{demo_dir}/Output/processed_results/aberrant_splicing/results/{annotation}/fraser/{dataset}/results.tsv",
+#                            f"-j{CORES}"], demo_dir)
+#        assert "Finished job 0." in pipeline_run.stderr
+#        return pipeline_run    
 
     @pytest.mark.usefixtures("pipeline_run")
     def test_counts(self, demo_dir):
