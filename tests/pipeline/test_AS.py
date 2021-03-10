@@ -20,9 +20,10 @@ class Test_AS_Pipeline:
 #        dataset = "fraser_ncbi"
 #        pipeline_run = run(["snakemake", f"{demo_dir}/Output/processed_results/aberrant_splicing/results/{annotation}/fraser/{dataset}/results.tsv",
 #                            f"-j{CORES}"], demo_dir)
-#        assert "Finished job 0." in pipeline_run.stderr
-#        return pipeline_run    
-
+#        message = "This was a dry-run (flag -n). The order of jobs does not reflect the order of execution."
+#        assert message in r.stdout
+    
+    
     @pytest.mark.usefixtures("pipeline_run")
     def test_counts(self, demo_dir):
         annotation = "v29"                                                                                              
