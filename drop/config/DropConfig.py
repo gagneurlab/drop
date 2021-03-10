@@ -263,7 +263,7 @@ class DropConfig:
             fastaFiles = self.get("mae")["genome"]
             logger.info( \
 "WARNING: Using the mae defined genome instead of the globally defined one.\n\
-This will be depreciated in the future to allow for reference genomes to be defined in \
+This will be deprecated in the future to allow for reference genomes to be defined in \
 the sample annotation table. Please update your config and SA table\n")
         
         except:
