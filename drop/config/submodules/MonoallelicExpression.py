@@ -19,12 +19,9 @@ class MAE(Submodule):
         # genomeFiles{config_name -> path} from config and sampleGenomes {sampleID -> config_name} from SA
         self.genomeFiles = self.setGenomeFile(genomeFiles)
         self.sampleGenomes = self.setGenomeDict(self.genomeFiles)
-        if set(self.sampleGenomes.values()) not in set(self.genomeFiles.keys()) \
-         or len(self.sampleGenomes) != len(self.mae_IDs.values()):
+        if set(self.sampleGenomes.values()) not in set(self.genomeFiles.keys()) :
             logger.info("WARNING: The genome keys defined in the config do not match exactly the values in the GENOME SA column")
             logger.info("\t The missing values will be inferred from the global genome option (set in config) if possible")
-        #print(self.genomeFiles)
-        #print(self.sampleGenomes)
 
     def setDefaultKeys(self, dict_):
         super().setDefaultKeys(dict_)
