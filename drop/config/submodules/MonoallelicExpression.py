@@ -1,5 +1,6 @@
 from drop import utils
 from .Submodules import Submodule
+from snakemake import logger
 
 
 class MAE(Submodule):
@@ -18,6 +19,12 @@ class MAE(Submodule):
         # genomeFiles{config_name -> path} from config and sampleGenomes {sampleID -> config_name} from SA
         self.genomeFiles = self.setGenomeFile(genomeFiles)
         self.sampleGenomes = self.setGenomeDict(self.genomeFiles)
+        if set(self.sampleGenomes.values()) not in set(self.genomeFiles.keys()) \
+         or len(self.sampleGenomes) != len(self.mae_IDs.values()):
+            logger.info("WARNING: The genome keys defined in the config do not match exactly the values in the GENOME SA column")
+            logger.info("\t The missing values will be inferred from the global genome option (set in config) if possible")
+        #print(self.genomeFiles)
+        #print(self.sampleGenomes)
 
     def setDefaultKeys(self, dict_):
         super().setDefaultKeys(dict_)
@@ -98,4 +105,8 @@ class MAE(Submodule):
 
     # look up for a sampleID genomeFiles{ncbi -> path} and sampleGenomes {sampleID -> ncbi}
     def getGenomePath(self,sampleID):
-        return self.genomeFiles[self.sampleGenomes[sampleID]]
+        try:
+            return self.genomeFiles[self.sampleGenomes[sampleID]]
+        except KeyError:
+            raise KeyError(f"The Config file has defined specific key,value for genome path \
+but the SA table does not match for sample {sampleID}")
