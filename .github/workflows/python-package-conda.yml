@@ -27,7 +27,8 @@ jobs:
       - name: Lint with flake8
         shell: bash -l {0}
         run: |
-          . env.MAMBA_ROOT_PREFIX/etc/profile.d/mamba.sh
+          export MAMBA_ROOT_PREFIX=~/micromamba
+          . $MAMBA_ROOT_PREFIX/etc/profile.d/mamba.sh
           micromamba activate drop_env
           micromamba install flake8
           # stop the build if there are Python syntax errors or undefined names
@@ -37,7 +38,6 @@ jobs:
       - name: Install DROP dependencies
         shell: bash -l {0}
         run: |
-          export MAMBA_ROOT_PREFIX=~/micromamba
           . $MAMBA_ROOT_PREFIX/etc/profile.d/mamba.sh
           micromamba activate drop_env
           # install dependencies from bioconda
