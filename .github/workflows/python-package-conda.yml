@@ -7,7 +7,7 @@ jobs:
   build-linux:
     env:
       MAMBA_ROOT_PREFIX: ~/micromamba
-      MAMBA_EXE: ~/bin/micromamba
+      MAMBA_EXE: ~/micromamba_executable
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
@@ -21,7 +21,7 @@ jobs:
       - name: Setup micromamba
         run: |
           wget -qO- https://micromamba.snakepit.net/api/micromamba/linux-64/latest | tar -xvj bin/micromamba --strip-components=1
-          mkdir -p ~/bin
+          ls
           mv ./micromamba $MAMBA_EXE
           ./micromamba shell init -s bash -p $MAMBA_ROOT_PREFIX
           mkdir -p $MAMBA_ROOT_PREFIX/pkgs/
