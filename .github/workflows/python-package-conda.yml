@@ -4,44 +4,56 @@ on: [ push ]
 
 jobs:
 
-  build-linux:
+  setup-linux:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
       - uses: actions/cache@v2
         with:
           path: |
-            /usr/share/miniconda
+            ~/micromamba/
             /tmp/resource.tar.gz
           key: ${{ runner.os }}-${{ hashFiles('**/requirements*.txt') }}
-      - name: Set up Python 3.8
-        uses: actions/setup-python@v2
-        with:
-          python-version: 3.8
-      - name: Add conda to system path
+      - name: Setup micromamba
         run: |
-          # $CONDA is an environment variable pointing to the root of the miniconda directory
-          echo $CONDA/bin >> $GITHUB_PATH
+          wget -qO- https://micromamba.snakepit.net/api/micromamba/linux-64/latest | tar -xvj bin/micromamba --strip-components=1
+          ./micromamba shell init -s bash -p ~/micromamba
+          mkdir -p ~/micromamba/pkgs/
+          export MAMBA_ROOT_PREFIX=~/micromamba
+          . $MAMBA_ROOT_PREFIX/etc/profile.d/mamba.sh
+          ./micromamba create -n drop_env python=3.8
       - name: Lint with flake8
         run: |
-          conda install flake8
+          export MAMBA_ROOT_PREFIX=~/micromamba
+          . $MAMBA_ROOT_PREFIX/etc/profile.d/mamba.sh
+          micromamba activate drop_env
+          micromamba install flake8
           # stop the build if there are Python syntax errors or undefined names
           flake8 . --count --builtins="snakemake" --select=E9,F63,F7,F82 --show-source --statistics
           # exit-zero treats all errors as warnings. The GitHub editor is 127 chars wide
           flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
-      - name: Install dependencies
+      - name: Install DROP dependencies
         run: |
+          export MAMBA_ROOT_PREFIX=~/micromamba
+          . $MAMBA_ROOT_PREFIX/etc/profile.d/mamba.sh
+          micromamba activate drop_env
           # install dependencies from bioconda
-          conda install -c conda-forge -c bioconda drop
+          micromamba install -c conda-forge -c bioconda drop
           # reinstall DROP from source
           pip install .
       - name: Install test dependencies
         run: |
-          conda install pytest
+          export MAMBA_ROOT_PREFIX=~/micromamba
+          . $MAMBA_ROOT_PREFIX/etc/profile.d/mamba.sh
+          micromamba activate drop_env
+          micromamba install pytest
           pip install -r tests/requirements.txt
       - name: Test config
-        run: pytest --durations 0 tests/config
-
+        run: |
+          export MAMBA_ROOT_PREFIX=~/micromamba
+          . $MAMBA_ROOT_PREFIX/etc/profile.d/mamba.sh
+          micromamba activate drop_env
+          pytest --durations 0 tests/config
   test-pipeline:
     needs: build-linux
     strategy:
@@ -53,12 +65,12 @@ jobs:
       - uses: actions/cache@v2
         with:
           path: |
-            /usr/share/miniconda
+            ~/micromamba/
             /tmp/resource.tar.gz
           key: ${{ runner.os }}-${{ hashFiles('**/requirements*.txt') }}
-      - name: Set conda path
-        run: |
-          echo $CONDA/bin >> $GITHUB_PATH
-          cat $GITHUB_PATH
       - name: ${{ matrix.pipeline }}
-        run: pytest --durations 0 tests/pipeline/test_${{ matrix.pipeline }}.py
+        run: |
+          export MAMBA_ROOT_PREFIX=~/micromamba
+          . $MAMBA_ROOT_PREFIX/etc/profile.d/mamba.sh
+          micromamba activate drop_env
+          pytest --durations 0 tests/pipeline/test_${{ matrix.pipeline }}.py
