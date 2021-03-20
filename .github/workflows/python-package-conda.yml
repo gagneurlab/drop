@@ -20,12 +20,11 @@ jobs:
           key: ${{ runner.os }}-${{ hashFiles('**/requirements*.txt') }}
       - name: Setup micromamba
         run: |
-          wget -qO- https://micromamba.snakepit.net/api/micromamba/linux-64/latest \
-            | tar -xvj bin/micromamba -C ~
-          $MAMBA_EXE shell init -s bash -p $MAMBA_ROOT_PREFIX
+          wget -qO- https://micromamba.snakepit.net/api/micromamba/linux-64/latest | tar -xvj bin/micromamba --strip-components=1
+          ./micromamba shell init -s bash -p $MAMBA_ROOT_PREFIX
           mkdir -p $MAMBA_ROOT_PREFIX/pkgs/
           . $MAMBA_ROOT_PREFIX/etc/profile.d/mamba.sh
-          $MAMBA_EXE create -n drop_env -c conda-forge python=3.8
+          micromamba create -n drop_env -c conda-forge python=3.8
       - name: Lint with flake8
         shell: bash -l {0}
         run: |
