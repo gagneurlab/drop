@@ -5,6 +5,8 @@ on: [ push ]
 jobs:
 
   build-linux:
+    env:
+      MAMBA_ROOT_PREFIX: ~/micromamba
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
@@ -23,10 +25,9 @@ jobs:
           . $MAMBA_ROOT_PREFIX/etc/profile.d/mamba.sh
           ./micromamba create -n drop_env -c conda-forge python=3.8
       - name: Lint with flake8
-        bash -l {0}
+        shell: bash -l {0}
         run: |
-          export MAMBA_ROOT_PREFIX=~/micromamba
-          . $MAMBA_ROOT_PREFIX/etc/profile.d/mamba.sh
+          . env.MAMBA_ROOT_PREFIX/etc/profile.d/mamba.sh
           micromamba activate drop_env
           micromamba install flake8
           # stop the build if there are Python syntax errors or undefined names
@@ -34,7 +35,7 @@ jobs:
           # exit-zero treats all errors as warnings. The GitHub editor is 127 chars wide
           flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
       - name: Install DROP dependencies
-        bash -l {0}
+        shell: bash -l {0}
         run: |
           export MAMBA_ROOT_PREFIX=~/micromamba
           . $MAMBA_ROOT_PREFIX/etc/profile.d/mamba.sh
@@ -44,7 +45,7 @@ jobs:
           # reinstall DROP from source
           pip install .
       - name: Install test dependencies
-        bash -l {0}
+        shell: bash -l {0}
         run: |
           export MAMBA_ROOT_PREFIX=~/micromamba
           . $MAMBA_ROOT_PREFIX/etc/profile.d/mamba.sh
@@ -52,7 +53,7 @@ jobs:
           micromamba install pytest
           pip install -r tests/requirements.txt
       - name: Test config
-        bash -l {0}
+        shell: bash -l {0}
         run: |
           export MAMBA_ROOT_PREFIX=~/micromamba
           . $MAMBA_ROOT_PREFIX/etc/profile.d/mamba.sh
@@ -73,7 +74,7 @@ jobs:
             /tmp/resource.tar.gz
           key: ${{ runner.os }}-${{ hashFiles('**/requirements*.txt') }}
       - name: ${{ matrix.pipeline }}
-        bash -l {0}
+        shell: bash -l {0}
         run: |
           export MAMBA_ROOT_PREFIX=~/micromamba
           . $MAMBA_ROOT_PREFIX/etc/profile.d/mamba.sh
