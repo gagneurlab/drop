@@ -5,82 +5,57 @@ on: [ push ]
 jobs:
 
   build-linux:
-    env:
-      MAMBA_ROOT_PREFIX: ~/micromamba
-      MAMBA_EXE: ~/micromamba_executable
+
     runs-on: ubuntu-latest
+    container: mambaorg/micromamba:0.8.2
+
     steps:
       - uses: actions/checkout@v2
-      - uses: actions/cache@v2
-        with:
-          path: |
-            ~/micromamba/
-            ~/bin/micromamba
-            /tmp/resource.tar.gz
-          key: ${{ runner.os }}-${{ hashFiles('**/requirements*.txt') }}
-      - name: Setup micromamba
+
+      - name: Create test environment
         run: |
-          wget -qO- https://micromamba.snakepit.net/api/micromamba/linux-64/latest | tar -xvj bin/micromamba --strip-components=1
-          ls
-          mv ./micromamba $MAMBA_EXE
-          ./micromamba shell init -s bash -p $MAMBA_ROOT_PREFIX
-          mkdir -p $MAMBA_ROOT_PREFIX/pkgs/
-      - name: Create environment
-        shell: bash -l {0}
-        run: |
-          . $MAMBA_ROOT_PREFIX/etc/profile.d/mamba.sh
-          micromamba create -n drop_env -c conda-forge python=3.8
+          micromamba create -f tests/environment.yml -y
+          micromamba activate test
+          pip install -r tests/requirements.txt
+
       - name: Lint with flake8
-        shell: bash -l {0}
         run: |
-          . $MAMBA_ROOT_PREFIX/etc/profile.d/mamba.sh
-          micromamba activate drop_env
-          micromamba install flake8
+          micromamba activate test
           # stop the build if there are Python syntax errors or undefined names
           flake8 . --count --builtins="snakemake" --select=E9,F63,F7,F82 --show-source --statistics
           # exit-zero treats all errors as warnings. The GitHub editor is 127 chars wide
           flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
+
       - name: Install DROP dependencies
-        shell: bash -l {0}
         run: |
-          . $MAMBA_ROOT_PREFIX/etc/profile.d/mamba.sh
-          micromamba activate drop_env
-          # install dependencies from bioconda
-          micromamba install -c conda-forge -c bioconda drop
-          # reinstall DROP from source
-          pip install .
-      - name: Install test dependencies
-        shell: bash -l {0}
+          micromamba activate test
+          micromamba install -c conda-forge -c bioconda drop -y
+          pip install .  # reinstall DROP from source
+
+      - name: Test with pytest
         run: |
-          . $MAMBA_ROOT_PREFIX/etc/profile.d/mamba.sh
-          micromamba activate drop_env
-          micromamba install pytest
-          pip install -r tests/requirements.txt
-      - name: Test config
-        shell: bash -l {0}
-        run: |
-          . $MAMBA_ROOT_PREFIX/etc/profile.d/mamba.sh
-          micromamba activate drop_env
-          pytest --durations 0 tests/config
-  test-pipeline:
-    needs: build-linux
-    strategy:
-      matrix:
-        pipeline: [ AE, AS, MAE, pipeline ]
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v2
-      - uses: actions/cache@v2
-        with:
-          path: |
-            ~/micromamba/
-            ~/bin/micromamba
-            /tmp/resource.tar.gz
-          key: ${{ runner.os }}-${{ hashFiles('**/requirements*.txt') }}
-      - name: ${{ matrix.pipeline }}
-        shell: bash -l {0}
-        run: |
-          export MAMBA_ROOT_PREFIX=~/micromamba
-          . $MAMBA_ROOT_PREFIX/etc/profile.d/mamba.sh
-          micromamba activate drop_env
-          pytest --durations 0 tests/pipeline/test_${{ matrix.pipeline }}.py
+          micromamba activate test
+          pytest --durations 0
+
+#  test-pipeline:
+#    needs: build-linux
+#    strategy:
+#      matrix:
+#        pipeline: [ AE, AS, MAE, pipeline ]
+#    runs-on: ubuntu-latest
+#    steps:
+#      - uses: actions/checkout@v2
+#      - uses: actions/cache@v2
+#        with:
+#          path: |
+#            env.MAMBA_ROOT_PREFIX
+#            env.MAMBA_EXE
+#            /tmp/resource.tar.gz
+#          key: ${{ runner.os }}-${{ hashFiles('**/requirements*.txt') }}
+#      - name: ${{ matrix.pipeline }}
+#        shell: bash -l {0}
+#        run: |
+#          export MAMBA_ROOT_PREFIX=~/micromamba
+#          . $MAMBA_ROOT_PREFIX/etc/profile.d/mamba.sh
+#          micromamba activate drop_env
+#          pytest --durations 0 tests/pipeline/test_${{ matrix.pipeline }}.py
