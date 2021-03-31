@@ -47,17 +47,21 @@ register(MulticoreParam(snakemake@threads))
 # Limit number of threads for DelayedArray operations
 setAutoBPPARAM(MulticoreParam(snakemake@threads))
 
-# Load data and annotate ranges with gene names
+# Load fds and create a new one
 fds_input <- loadFraserDataSet(dir=workingDir, name=dataset)
 fds <- saveFraserDataSet(fds_input, name = paste(dataset, annotation, sep = '--'), rewrite = TRUE)
+colData(fds)$sampleID <- as.character(colData(fds)$sampleID)
 
+# Read annotation and match the chr style
 txdb <- loadDb(snakemake@input$txdb)
 orgdb <- fread(snakemake@input$gene_name_mapping)
 
+seqlevelsStyle(orgdb$seqnames) <- seqlevelsStyle(fds)
+seqlevelsStyle(txdb) <- seqlevelsStyle(fds)
+
+# Annotate the fds with gene names
 fds <- annotateRangesWithTxDb(fds, txdb = txdb, orgDb = orgdb, feature = 'gene_name', 
                               featureName = 'hgnc_symbol', keytype = 'gene_id')
-
-colData(fds)$sampleID <- as.character(colData(fds)$sampleID)
 
 # Extract results per junction
 res_junc <- results(fds,
