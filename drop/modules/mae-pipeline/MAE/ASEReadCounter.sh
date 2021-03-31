@@ -42,8 +42,8 @@ else
 fi
 
 # subset to standard chromosomes
-chr_subset=$(comm -12 <(cut -f1 -d" " ${canonical} | sort -u) <(echo ${vcf_chr} | xargs -n1 | sort -u))
-chr_subset=$(comm -12 <(echo ${bam_chr} | xargs -n1 | sort -u) <(echo ${chr_subset} | xargs -n1) | uniq)
+chr_subset=$(comm -12 <(cut -f1 -d" " ${canonical} | sort -u) <(echo "${vcf_chr}" | sort -u))
+chr_subset=$(comm -12 <(echo "${bam_chr}" | sort -u) <(echo "${chr_subset}") | uniq)
 
 for chr in $chr_subset; do
   echo $chr
