@@ -17,6 +17,10 @@ class AE(Submodule):
         self.name = "AberrantExpression"
         self.rnaIDs = self.sa.subsetGroups(self.groups, assay="RNA")
         self.extRnaIDs = self.sa.subsetGroups(self.groups, assay="GENE_COUNTS")
+        for g in self.groups:
+            if len(set(self.rnaIDs[g]) & set(self.extRnaIDs[g])) > 0:
+                raise ValueError(f"{set(self.rnaIDs[g]) & set(self.extRnaIDs[g])} has both BAM and external count file \
+please fix to only have either external count or BAM processing\n")
 
         # check number of IDs per group
         all_ids = {g: self.rnaIDs[g] + self.extRnaIDs[g] for g in self.groups}
