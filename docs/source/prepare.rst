@@ -126,15 +126,26 @@ Creating the sample annotation table
 ------------------------------------
 
 For a detailed explanation of the columns of the sample annotation, please refer to
-the DROP manuscript. 
-Inside the sample annotation, each row corresponds to a unique pair of RNA and DNA
+Box 3 of the `DROP manuscript <https://www.rdcu.be/cdMmF>`_. 
+
+Each row of the sample annotation table corresponds to a unique pair of RNA and DNA
 samples derived from the same individual. An RNA assay can belong to one or more DNA
 assays, and vice-versa. If so, they must be specified in different rows. The required
 columns are ``RNA_ID``, ``RNA_BAM_FILE`` and ``DROP_GROUP``, plus other module-specific
-ones (see DROP manuscript). In case external counts are included, add a new row for each
-sample from those files (or a subset if not all samples are needed).
+ones (see DROP manuscript). 
 
-The sample annotation file should be saved in the tab-separated values (tsv) format. The 
+The following columns describe the RNA-seq experimental setup:
+``PAIRED_END``, ``STRAND``, ``COUNT_MODE`` and ``COUNT_OVERLAPS``. They affect the 
+counting procedures of the aberrant expression and splicing modules. For a detailed 
+explanation, refer to the documentation of `HTSeq <https://htseq.readthedocs.io/en/latest/>`_.
+
+To run the MAE module, the columns ``DNA_ID`` and ``DNA_VCF_FILE`` are needed.
+
+In case external counts are included, add a new row for each sample from those 
+files (or a subset if not all samples are needed). Add the columns: ``GENE_COUNTS_FILE``,
+``GENE_ANNOTATON``, ``SPLIT_COUNTS_FILE`` and ``NON_SPLIT_COUNTS_FILE``. See examples below.
+
+The sample annotation file must be saved in the tab-separated values (tsv) format. The 
 column order does not matter. Also, it does not matter where it is stored, as the path is 
 specified in the config file. Here we provide some examples on how to deal with certain
 situations. For simplicity, we do not include all possible columns in the examples.
@@ -215,12 +226,13 @@ Advanced options
 A local copy of DROP can be edited and modified for uncovering potential issues or increasing outputs.
 For example, the user might want to add new plots to the ``Summary`` scripts, or add
 additional columns to the results tables.
-Specifically, the number of threads allowed for a computational step can be modified by the user.
+Also, the number of threads allowed for a computational step can be modified.
 
 .. note::
 
-    DROP needs to be installed from a local directory :ref:`otherversions` using ``pip install -e <path/to/drop-repo>``
-    so that any changes in the code will be available in the next pipeline run.
+    DROP needs to be installed from a local directory using ``pip install -e <path/to/drop-repo>``
+    so that any changes in the code will be available in the next pipeline run
+    (see :ref:`otherversions`).
     Any changes made to the R code need to be updated with ``drop update`` in the project directory.
 
 The aberrant expression and splicing modules use a denoising autoencoder to
