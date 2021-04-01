@@ -11,7 +11,7 @@ warnings.filterwarnings("ignore", 'This pattern has match groups')
 class SampleAnnotation:
     FILE_TYPES = ["RNA_BAM_FILE", "DNA_VCF_FILE", "GENE_COUNTS_FILE"]
     SAMPLE_ANNOTATION_COLUMNS = FILE_TYPES + [
-        "RNA_ID", "DNA_ID", "DROP_GROUP", "ANNOTATION",
+        "RNA_ID", "DNA_ID", "DROP_GROUP", "GENE_ANNOTATION",
         "PAIRED_END", "COUNT_MODE", "COUNT_OVERLAPS", "STRAND","GENOME"
     ]
 
@@ -37,7 +37,7 @@ class SampleAnnotation:
         clean columns and set types
         """
         data_types = {
-            "RNA_ID": str, "DNA_ID": str, "DROP_GROUP": str, "ANNOTATION": str,
+            "RNA_ID": str, "DNA_ID": str, "DROP_GROUP": str, "GENE_ANNOTATION": str,
             "PAIRED_END": bool, "COUNT_MODE": str, "COUNT_OVERLAPS": bool, "STRAND": str,"GENOME":str
         }
         sa = pd.read_csv(self.file, sep=sep, index_col=False)
@@ -237,9 +237,9 @@ class SampleAnnotation:
         return genomeDict 
 
     def getImportCountFiles(self, annotation, group, file_type="GENE_COUNTS_FILE",
-                            annotation_key="ANNOTATION", group_key="DROP_GROUP",exact_match = True):
+                            annotation_key="GENE_ANNOTATION", group_key="DROP_GROUP",exact_match = True):
         """
-        :param annotation: annotation name as specified in config and ANNOTATION column
+        :param annotation: annotation name as specified in config and GENE_ANNOTATION column
         :param group: a group of the DROP_GROUP column
         :return: set of unique external count file names
         """
