@@ -43,6 +43,10 @@ indexWithFolderName  boolean     If true, the basename of the project directory 
 genomeAssembly       character   Either hg19/hs37d5 or hg38/GRCh38, depending on the genome assembly used for mapping                                                     ``/data/project1``
 sampleAnnotation     character   Full path of the sample annotation table                                                                                                 ``/data/project1/sample_annotation.tsv``
 root                 character   Full path of the folder where the subdirectories processed_data and processed_results will be created containing DROP's output files.    ``/data/project1``
+genome               character   Full path of a human reference genome fasta file                                                                                         ``/path/to/hg19.fa``
+genome               dictionary  (Optional) Multiple fasta files can be specified when RNA-seq BAM files belong to different genome assemblies (eg, ncbi, ucsc).          ``ncbi: /path/to/hg19_ncbi.fa``
+
+                                                                                                                                                                          ``ucsc: /path/to/hg19_ucsc.fa``
 geneAnnotation       dictionary  A key-value list of the annotation name (key) and the full path to the GTF file (value). More than one annotation file can be provided.  ``anno1: /path/to/gtf1.gtf``
 
                                                                                                                                                                           ``anno2: /path/to/gtf2.gtf``
@@ -75,7 +79,7 @@ groups                        list       DROP groups that should be executed in 
 
                                                                                                                                                                             ``- group2``
 minIds                        numeric    A positive number indicating the minimum number of samples that a group needs in order to be analyzed. We recommend at least 50.   ``1``
-fpkmCutoff                    numeric    A positive number indicating the minimum FPKM 5% of the samples per gene should have. If a gene has less it will be filtered out.  ``1 # suggested by OUTRIDER``
+fpkmCutoff                    numeric    A positive number indicating the minimum FPKM per gene that 5% of the samples should have. If a gene has less it is filtered out.  ``1 # suggested by OUTRIDER``
 implementation                character  Either 'autoencoder', 'pca' or 'peer'. Methods to remove sample covariation in OUTRIDER.                                           ``autoencoder``
 zScoreCutoff                  numeric    A non-negative number. Z scores (in absolute value) greater than this cutoff are considered as outliers.                           ``0``
 padjCutoff                    numeric    A number between (0, 1] indicating the maximum FDR an event can have in order to be considered an outlier.                         ``0.05``
@@ -110,7 +114,6 @@ Mono-allelic expression dictionary
 Parameter              Type       Description                                                                                                               Default/Examples
 =====================  =========  ========================================================================================================================  ======
 groups                 list       Same as in aberrant expression.                                                                                           ``# see aberrant expression example``
-genome                 character  Full path of a human reference genome fasta file                                                                          ``/path/to/hg19.fa``
 gatkIgnoreHeaderCheck  boolean    If true (recommended), it ignores the header warnings of a VCF file when performing the allelic counts                    ``true``
 padjCutoff             numeric    Same as in aberrant expression.                                                                                           ``0.05``
 allelicRatioCutoff     numeric    A number between [0.5, 1) indicating the maximum allelic ratio allele1/(allele1+allele2) for the test to be significant.  ``0.8``
@@ -144,6 +147,12 @@ To run the MAE module, the columns ``DNA_ID`` and ``DNA_VCF_FILE`` are needed.
 In case external counts are included, add a new row for each sample from those 
 files (or a subset if not all samples are needed). Add the columns: ``GENE_COUNTS_FILE``,
 ``GENE_ANNOTATON``, ``SPLIT_COUNTS_FILE`` and ``NON_SPLIT_COUNTS_FILE``. See examples below.
+
+In case RNA-seq BAM files belong to different genome assemblies (eg, ncbi, ucsc), multiple
+reference genome fasta files can be specified. Add a column called `GENOME` that  
+contains, for each sample, the key from the `genome` parameter in the config file that
+matches its genome assembly (eg, ncbi or ucsc).
+
 
 The sample annotation file must be saved in the tab-separated values (tsv) format. The 
 column order does not matter. Also, it does not matter where it is stored, as the path is 
@@ -242,4 +251,16 @@ We recommend the search space to be at most N/3 for the aberrant expression,
 and N/6 for the aberrant splicing case. Nevertheless, the user can specify the 
 denominator with the parameter ``maxTestedDimensionProportion``.
 
+DROP allows that BAM files from RNA-seq from samples belonging to the same `DROP_GROUP`
+were aligned to different genome assemblies from the same build (eg, some to ucsc 
+and others to ncbi, but all to either hg19 or hg38). If so, for the aberrant 
+expression and splicing modules, no special configuration is needed.
+For the MAE module, the different fasta files must be specified as a dictionary in 
+the `genome` parameter of the config file, and, for each sample, the corresponding
+key of the `genome` dictionary must be specified in the `GENOME` column of the
+sample annotation.
+In additon, DROP allows that BAM files from RNA-seq were aligned to one genome
+assembly (eg ucsc) and the corresponding VCF files from DNA sequencing to another
+genome assembly (eg ncbi). If so, the assembly of the reference genome fasta file
+must correspond to the one of the BAM file from RNA-seq.
 
