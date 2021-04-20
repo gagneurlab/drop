@@ -43,11 +43,17 @@ class SampleAnnotation:
         sa = pd.read_csv(self.file, sep=sep, index_col=False)
         missing_cols = [x for x in self.SAMPLE_ANNOTATION_COLUMNS if x not in sa.columns.values]
         if len(missing_cols) > 0:
-            if missing_cols == ["GENOME"]:
+            if "GENOME" in missing_cols: 
                 del data_types["GENOME"]
                 self.SAMPLE_ANNOTATION_COLUMNS.remove("GENOME")
-                logger.info("WARNING: GENOME must be a column in the Sample Annotation Table, genome should be defined globally and refrenced in the SA table. Current format (under mae) will be deprecated\n")
-            else:
+                missing_cols.remove("GENOME")
+
+            if "GENE_ANNOTATION" in missing_cols and "ANNOTATION" in sa.columns.values:
+                logger.info("WARNING: GENE_ANNOTATION must be a column in the sample annotation table, ANNOTATION is the old column name and will be deprecated in the future\n")
+                sa["GENE_ANNOTATION"] = sa.pop("ANNOTATION")
+                missing_cols.remove("GENE_ANNOTATION")
+                
+            if len(missing_cols) > 0:
                 raise ValueError(f"Incorrect columns in sample annotation file. Missing:\n{missing_cols}")
 
         sa = sa.astype(data_types)
