@@ -21,8 +21,10 @@ class MAE(Submodule):
         self.sampleGenomes = self.setGenomeDict(self.genomeFiles)
         if len(set(self.genomeFiles.keys()) - set(self.sampleGenomes.values())) > 0: 
             logger.error("The genome keys defined in the config do not match exactly the values in the GENOME column of the sample annotation. Please fix them.")
-        if not all(self.sa.sa["GENOME"] == "nan") and len(self.genomeFiles) == 1:
-            logger.info("WARNING: The genome is defined globally in the config, however non-empty values are in the sample annotation table. Using the globally defined path, please consider fixing this.")
+        elif "GENOME" not in self.sa.sa.columns.values: #genome column not defined 
+            pass
+        elif not all(self.sa.sa["GENOME"] == "nan") and len(self.genomeFiles) == 1:
+            logger.error("WARNING: The genome is defined globally in the config, however non-empty values are in the sample annotation table. Using the globally defined path, please consider fixing this.")
 
     def setDefaultKeys(self, dict_):
         super().setDefaultKeys(dict_)

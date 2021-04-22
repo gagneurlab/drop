@@ -165,7 +165,7 @@ class SampleAnnotation:
 
         # check if column is valid
         if not column in sa_cols:
-            raise KeyError(f"Column '{column}' invalid for sample annotation")
+            raise KeyError(f"Column '{column}' not present in sample annotation.")
         return utils.subsetBy(subset, column, values,exact_match=exact_match)
 
     def subsetFileMapping(self, file_type=None, sample_id=None):
