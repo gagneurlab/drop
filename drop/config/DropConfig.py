@@ -87,7 +87,7 @@ class DropConfig:
                                         "countParams": 
                                             [self.AE,
                                              self.processedDataDir/"aberrant_expression"/f"{ann}"/"params/counts",
-                                             ["RNA_ID"],
+                                             ["RNA_ID", "RNA_BAM_FILE","COUNT_MODE", "PAIRED_END", "COUNT_OVERLAPS", "STRAND"],
                                              True,
                                              False
                                             ],
@@ -118,8 +118,7 @@ class DropConfig:
                                         "resultParams":
                                             [self.MAE,
                                              self.processedDataDir/"mae/params/results",
-                                             ["RNA_BAM_FILE", "DNA_VCF_FILE","DROP_GROUP","COUNT_MODE",
-                                             "PAIRED_END", "COUNT_OVERLAPS", "STRAND"], #columns for params
+                                             ["RNA_BAM_FILE", "DNA_VCF_FILE","DROP_GROUP"],
                                              False, #include the columns above (if False take compliment)
                                              True # grouped 
                                             ]
@@ -211,6 +210,7 @@ class DropConfig:
     def getGeneAnnotationFile(self, annotation):
         return self.geneAnnotation[annotation]
 
+    # to allow for old drop config stylings. The old method was a string under MAE, but now we want a dictionary
     def getFastaFiles(self):
         if isinstance(self.genomeFiles,str):
             return {self.genomeFiles:self.genomeFiles}
@@ -254,8 +254,6 @@ class DropConfig:
 
         raise ValueError("Provided genome assembly not known: " + assemblyID)
  
-    def getTempSampleParams(self):
-        return(self.tempSampleParams)
 
     # if mae still defines genome. Use that and print warning. otherwise use globally defined genome
     def getGenomeFiles(self):

@@ -46,7 +46,9 @@ class Submodule:
             elif len(groupSubsets[group]) < warn:
                 logger.info(f'WARNING: Less than {warn} IDs in DROP_GROUP {group}')
 
-    def update_param_files(self,param_path,filename,sa_df,param_cols,ID,sa_col = "RNA_ID",include = True):
+
+    # helper for the writeSampleParams. build temp files and compare them.
+    def updateParamFiles(self,param_path,filename,sa_df,param_cols,ID,sa_col = "RNA_ID",include = True):
         # build the path to the param file
         param_path.mkdir(parents = True,exist_ok = True)
 
@@ -80,6 +82,8 @@ class Submodule:
             logger.info("{} Param File did not already exist. Writing it\n".format(filename))
             sa_df.loc[sa_df[sa_col].isin(ID),param_cols].to_csv(true_filename, index = False,header = True,na_rep = "NA")
 
+
+    # write sample parameter files based on the current sample annotation table
     def writeSampleParams(self,path,params,include,file_suffix,group_param = False):
         # initialize groups and sa table                                                                                
         module_groups = self.groups                                                                                     
@@ -95,12 +99,12 @@ class Submodule:
                                                                                                                         
             if group_param:                                                                                             
                 # write the params file for the Merge, and also the info_params file for the Results                    
-                self.update_param_files(path,f"{group}_{file_suffix}.csv", \
+                self.updateParamFiles(path,f"{group}_{file_suffix}.csv", \
                                     sa_df,params,group_IDs,sa_col = "RNA_ID",include = include)                         
                                                                                                                         
             else:                                                                                                       
             # for all unique RNA_IDs compiled across the groups build the individual param files used for Counts        
                 for ID in set(all_RNA_ids):                                                                             
-                    self.update_param_files(path,f"{ID}_{file_suffix}.csv", \
+                    self.updateParamFiles(path,f"{ID}_{file_suffix}.csv", \
                                     sa_df,params,[ID],sa_col = "RNA_ID",include = include)                        
                                                                                                    

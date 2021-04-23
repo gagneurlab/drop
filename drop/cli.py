@@ -22,13 +22,13 @@ def main():
     pass
 
 
-def safe_overwrite(base_repo,local_proj):
+def overwrite(base_repo,local_proj):
     fc.clear_cache() # clear file compare cache to avoid mistakes
     compare_obj = fc.dircmp(base_repo,local_proj)
 
     #remove all things not in the base_repo
     for i in compare_obj.right_only:
-        logger.info(f"remove local file {i} not in base drop")
+        logger.info(f"removing local file {i} it is not in the base drop")
         if os.path.isfile(local_proj / i):
             removeFile(local_proj / i,warn = False)   
         else:
@@ -55,7 +55,7 @@ def safe_overwrite(base_repo,local_proj):
         #dirs
         elif os.path.isdir(base_repo / i):
             if i in compare_obj.common_dirs:
-                safe_overwrite(base_repo / i, local_proj / i)
+                overwrite(base_repo / i, local_proj / i)
             else:
                 logger.info(f"the directory {str(base_repo / i)} does not exist locally. copying here: {str(local_proj)}")
                 copy_tree(str(base_repo / i), str(local_proj / i))
@@ -65,7 +65,7 @@ def safe_overwrite(base_repo,local_proj):
             logger.info(i, "is something other than file or dir. Ignoring")
 
 
-def copyModuleCode_safe(repoPaths,projectPaths):
+def copyModuleCode(repoPaths,projectPaths):
     repo_map = {
         "aberrant-expression-pipeline": "AberrantExpression",
         "aberrant-splicing-pipeline": "AberrantSplicing",
@@ -80,7 +80,7 @@ def copyModuleCode_safe(repoPaths,projectPaths):
             logger.info(f"{local_proj} is not a directory, copy over from drop base")
             copy_tree(str(base_repo), str(local_proj))
         else: #module dir does exist. Do a safe-overwrite
-            safe_overwrite(base_repo,local_proj)
+            overwrite(base_repo,local_proj)
     
 def removeFile(filePath, warn=True):
     filePath = Path(filePath)
@@ -90,7 +90,7 @@ def removeFile(filePath, warn=True):
         filePath.unlink()
 
 
-def setFiles(projectDir=None, warn=True):
+def setFiles(projectDir=None):
     projectDir = Path.cwd().resolve() if projectDir is None else projectDir
     repoPaths, projectPaths = drop.setupPaths(projectRoot=projectDir)
 
@@ -108,7 +108,7 @@ def setFiles(projectDir=None, warn=True):
     # copy Scripts and pipelines
     copy2(repoPaths["template"] / "Snakefile", projectPaths["projectDir"] / "Snakefile")
     copy_tree(str(repoPaths["Scripts"]), str(projectPaths["Scripts"]))
-    copyModuleCode_safe(repoPaths, projectPaths)
+    copyModuleCode(repoPaths, projectPaths)
     #copyModuleCode(repoPaths, projectPaths)
 
     config_file = projectPaths["projectDir"] / "config.yaml"

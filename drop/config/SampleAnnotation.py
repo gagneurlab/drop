@@ -44,6 +44,7 @@ class SampleAnnotation:
         missing_cols = [x for x in self.SAMPLE_ANNOTATION_COLUMNS if x not in sa.columns.values]
         if len(missing_cols) > 0:
             if "GENOME" in missing_cols: 
+                # deal with missing columns in data types, remove it to fix checks later
                 del data_types["GENOME"]
                 self.SAMPLE_ANNOTATION_COLUMNS.remove("GENOME")
                 missing_cols.remove("GENOME")
@@ -146,12 +147,14 @@ class SampleAnnotation:
 
     ### Subsetting
 
+
     def subsetSampleAnnotation(self, column, values, subset=None,exact_match=True):
         """
         subset by one or more values of different columns from sample file mapping
             :param column: valid column in sample annotation
             :param values: values of column to subset
             :param subset: subset sample annotation
+            :param exact_match: whether to match substrings in the sample annotation, false allows substring matching
         """
         sa_cols = set(self.SAMPLE_ANNOTATION_COLUMNS)
         if subset is None:
@@ -228,16 +231,21 @@ class SampleAnnotation:
     def getGenomes(self, value, group, file_type="RNA_ID",
                             column="GENOME", group_key="DROP_GROUP",exact_match = True,skip = False):
         """
-        :param value: values to match in the column. Must be an exact match
-        :param group: a group of the group_key (DROP_GROUP) column. exact_match can allow for containing values
+        :param value: values to match in the column. Must be an exact match, passed to subsetting sample annotation 
+        :param group: a group of the group_key (DROP_GROUP) column. 
         :return: dict file_type to column
         """
         genomeDict = {}
+
+        # skip the subsetting for the column and the value to search for.
         if skip:
             subset = None
         else:
             subset = self.subsetSampleAnnotation(column, value,exact_match=True)
+
+        # additionally subset for the group_key and the group
         subset = self.subsetSampleAnnotation(group_key, group, subset,exact_match=exact_match)
+
         for sample in subset[file_type].tolist():
             genomeDict[sample] = value
         return genomeDict 
@@ -246,9 +254,10 @@ class SampleAnnotation:
                             annotation_key="GENE_ANNOTATION", group_key="DROP_GROUP",exact_match = True):
         """
         :param annotation: annotation name as specified in config and GENE_ANNOTATION column
-        :param group: a group of the DROP_GROUP column
+        :param group: a group of the DROP_GROUP column. exact match is passed to subsetter, false allows for substring matching
         :return: set of unique external count file names
         """
+        #subset for the annotation_key in the annotation group and the group_key in the group
         subset = self.subsetSampleAnnotation(annotation_key, annotation,exact_match=exact_match)
         subset = self.subsetSampleAnnotation(group_key, group, subset,exact_match=exact_match)
         return set(subset[file_type].tolist())
