@@ -21,6 +21,11 @@ include: cfg.AE.getWorkdir() + "/Snakefile"
 include: cfg.AS.getWorkdir() + "/Snakefile"
 include: cfg.MAE.getWorkdir() + "/Snakefile"
 
+
+# don't allow the dataset wildcard to contain '--' as this is a delimter
+wildcard_constraints:
+    dataset="((?!--).)*"
+
 rule all:
     input: 
         rules.aberrantExpression.output,
