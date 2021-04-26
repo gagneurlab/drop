@@ -5,16 +5,16 @@
 #'  log:
 #'    - snakemake: '`sm str(tmp_dir / "AS" / "Overview.Rds")`'
 #'  params:
-#'    - annotations: '`sm cfg.getGeneVersions()`'
+#'    - annotations: '`sm cfg.genome.getGeneVersions()`'
 #'    - datasets: '`sm cfg.AS.groups`'
 #'    - htmlDir: '`sm config["htmlOutputPath"] + "/AberrantSplicing"`'
 #'  input:
 #'    - fds_files: '`sm expand(cfg.getProcessedResultsDir() +
 #'                "/aberrant_splicing/datasets/savedObjects/{dataset}--{annotation}/" + 
-#'                "fds-object.RDS", dataset=cfg.AS.groups, annotation=cfg.getGeneVersions())`'
+#'                "fds-object.RDS", dataset=cfg.AS.groups, annotation=cfg.genome.getGeneVersions())`'
 #'    - result_tables: '`sm expand(cfg.getProcessedResultsDir() +
 #'                    "/aberrant_splicing/results/{annotation}/fraser/{dataset}/results_per_junction.tsv",
-#'                    dataset=cfg.AS.groups, annotation=cfg.getGeneVersions())`'
+#'                    dataset=cfg.AS.groups, annotation=cfg.genome.getGeneVersions())`'
 #' output:
 #'   html_document:
 #'    code_folding: show

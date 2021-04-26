@@ -12,16 +12,18 @@ class SampleAnnotation:
     FILE_TYPES = ["RNA_BAM_FILE", "DNA_VCF_FILE", "GENE_COUNTS_FILE"]
     SAMPLE_ANNOTATION_COLUMNS = FILE_TYPES + [
         "RNA_ID", "DNA_ID", "DROP_GROUP", "GENE_ANNOTATION",
-        "PAIRED_END", "COUNT_MODE", "COUNT_OVERLAPS", "STRAND","GENOME"
+        "PAIRED_END", "COUNT_MODE", "COUNT_OVERLAPS", "STRAND", "GENOME"
     ]
 
-    def __init__(self, file, root):
+    def __init__(self, file, root, genome):
         """
         sa_file: sample annotation file location from config
         root: output location for file mapping
         """
         self.root = Path(root)
         self.file = file
+        self.genome = genome
+
         self.sa = self.parse()
         self.idMapping = self.createIdMapping()
         self.sampleFileMapping = self.createSampleFileMapping()
@@ -38,22 +40,23 @@ class SampleAnnotation:
         """
         data_types = {
             "RNA_ID": str, "DNA_ID": str, "DROP_GROUP": str, "GENE_ANNOTATION": str,
-            "PAIRED_END": bool, "COUNT_MODE": str, "COUNT_OVERLAPS": bool, "STRAND": str,"GENOME":str
+            "PAIRED_END": bool, "COUNT_MODE": str, "COUNT_OVERLAPS": bool, "STRAND": str, "GENOME": str
         }
         sa = pd.read_csv(self.file, sep=sep, index_col=False)
         missing_cols = [x for x in self.SAMPLE_ANNOTATION_COLUMNS if x not in sa.columns.values]
         if len(missing_cols) > 0:
-            if "GENOME" in missing_cols: 
+            if "GENOME" in missing_cols:
                 # deal with missing columns in data types, remove it to fix checks later
                 del data_types["GENOME"]
                 self.SAMPLE_ANNOTATION_COLUMNS.remove("GENOME")
                 missing_cols.remove("GENOME")
 
             if "GENE_ANNOTATION" in missing_cols and "ANNOTATION" in sa.columns.values:
-                logger.info("WARNING: GENE_ANNOTATION must be a column in the sample annotation table, ANNOTATION is the old column name and will be deprecated in the future\n")
+                logger.info(
+                    "WARNING: GENE_ANNOTATION must be a column in the sample annotation table, ANNOTATION is the old column name and will be deprecated in the future\n")
                 sa["GENE_ANNOTATION"] = sa.pop("ANNOTATION")
                 missing_cols.remove("GENE_ANNOTATION")
-                
+
             if len(missing_cols) > 0:
                 raise ValueError(f"Incorrect columns in sample annotation file. Missing:\n{missing_cols}")
 
@@ -63,7 +66,7 @@ class SampleAnnotation:
 
         return sa
 
-    ##### Construction
+    #### Construction
 
     def createIdMapping(self):
         """
@@ -147,8 +150,7 @@ class SampleAnnotation:
 
     ### Subsetting
 
-
-    def subsetSampleAnnotation(self, column, values, subset=None,exact_match=True):
+    def subsetSampleAnnotation(self, column, values, subset=None, exact_match=True):
         """
         subset by one or more values of different columns from sample file mapping
             :param column: valid column in sample annotation
@@ -167,9 +169,9 @@ class SampleAnnotation:
                 raise ValueError(f"Subset columns not the same as {sa_cols}\ngot: {subset.columns}")
 
         # check if column is valid
-        if not column in sa_cols:
+        if column not in sa_cols:
             raise KeyError(f"Column '{column}' not present in sample annotation.")
-        return utils.subsetBy(subset, column, values,exact_match=exact_match)
+        return utils.subsetBy(subset, column, values, exact_match=exact_match)
 
     def subsetFileMapping(self, file_type=None, sample_id=None):
         """
@@ -235,7 +237,6 @@ class SampleAnnotation:
         :param group: a group of the group_key (DROP_GROUP) column. 
         :return: dict file_type to column
         """
-        genomeDict = {}
 
         # skip the subsetting for the column and the value to search for.
         if skip:
@@ -246,9 +247,7 @@ class SampleAnnotation:
         # additionally subset for the group_key and the group
         subset = self.subsetSampleAnnotation(group_key, group, subset,exact_match=exact_match)
 
-        for sample in subset[file_type].tolist():
-            genomeDict[sample] = value
-        return genomeDict 
+        return {sample_id: value for sample_id in subset[file_type].tolist()}
 
     def getImportCountFiles(self, annotation, group, file_type="GENE_COUNTS_FILE",
                             annotation_key="GENE_ANNOTATION", group_key="DROP_GROUP",exact_match = True):
@@ -304,4 +303,3 @@ class SampleAnnotation:
     def getSampleIDs(self, file_type):
         ids = self.subsetFileMapping(file_type)["ID"]
         return list(ids)
-

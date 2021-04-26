@@ -11,7 +11,7 @@
 #'   - zScoreCutoff: '`sm cfg.AS.get("zScoreCutoff")`'
 #'   - deltaPsiCutoff: '`sm cfg.AS.get("deltaPsiCutoff")`'
 #'   - hpoFile: '`sm cfg.get("hpoFile")`'
-#'   - assemblyVersion: '`sm cfg.getBSGenomeVersion()`'
+#'   - assemblyVersion: '`sm cfg.genome.getBSGenomeVersion()`'
 #'  threads: 10
 #'  input:
 #'   - setup: '`sm cfg.AS.getWorkdir() + "/config.R"`'

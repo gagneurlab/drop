@@ -5,7 +5,14 @@ from snakemake import logger
 
 class MAE(Submodule):
 
-    def __init__(self, config, sampleAnnotation, processedDataDir, processedResultsDir,genomeFiles):
+    def __init__(
+            self,
+            config,
+            sampleAnnotation,
+            processedDataDir,
+            processedResultsDir,
+            genome
+    ):
         super().__init__(config, sampleAnnotation, processedDataDir, processedResultsDir)
         self.CONFIG_KEYS = [
             "groups", "genome", "qcVcf", "qcGroups", "gatkIgnoreHeaderCheck", "padjCutoff",
@@ -17,14 +24,21 @@ class MAE(Submodule):
         self.maeIDs = self.createMaeIDS(id_sep='--')
         
         # genomeFiles{config_name -> path} from config and sampleGenomes {sampleID -> config_name} from SA
-        self.genomeFiles = self.setGenomeFile(genomeFiles)
+        self.genomeFiles = genome.reference
         self.sampleGenomes = self.setGenomeDict(self.genomeFiles)
-        if len(set(self.genomeFiles.keys()) - set(self.sampleGenomes.values())) > 0: 
-            logger.error("The genome keys defined in the config do not match exactly the values in the GENOME column of the sample annotation. Please fix them.")
-        elif "GENOME" not in self.sa.sa.columns.values: #genome column not defined 
+        if "GENOME" not in self.sa.sa.columns.values: #genome column not defined
             pass
-        elif not all(self.sa.sa["GENOME"] == "nan") and len(self.genomeFiles) == 1:
-            logger.error("WARNING: The genome is defined globally in the config, however non-empty values are in the sample annotation table. Using the globally defined path, please consider fixing this.")
+        elif not all(self.sa.sa["GENOME"].isnull()) and len(self.genomeFiles) == 1:
+            logger.warning(
+                "WARNING: The genome is defined globally in the config, however "
+                "non-empty values are in the sample annotation table. Using the "
+                "globally defined path, please consider fixing this."
+            )
+        elif len(set(self.genomeFiles.keys()) - set(self.sampleGenomes.values())) > 0:
+            logger.error(
+                "The genome keys defined in the config do not match exactly the values"
+                " in the GENOME column of the sample annotation. Please fix them."
+            )
 
     def setDefaultKeys(self, dict_):
         super().setDefaultKeys(dict_)
@@ -101,7 +115,7 @@ class MAE(Submodule):
                 genomeDict.update(self.sa.getGenomes(gf,self.groups, file_type="RNA_ID",
                                             column="GENOME", group_key="DROP_GROUP",exact_match = False,skip = False))
 
-        return genomeDict  
+        return genomeDict
 
     # look up for a sampleID genomeFiles{ncbi -> path} and sampleGenomes {sampleID -> ncbi}
     def getGenomePath(self,sampleID):
