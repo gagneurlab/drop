@@ -26,9 +26,9 @@ class MAE(Submodule):
         # genomeFiles{config_name -> path} from config and sampleGenomes {sampleID -> config_name} from SA
         self.genomeFiles = genome.reference
         self.sampleGenomes = self.setGenomeDict(self.genomeFiles)
-        if "GENOME" not in self.sa.sa.columns.values: #genome column not defined
+        if "GENOME" not in self.sa.annotationTable.columns.values: #genome column not defined
             pass
-        elif not all(self.sa.sa["GENOME"].isnull()) and len(self.genomeFiles) == 1:
+        elif not all(self.sa.annotationTable["GENOME"].isnull()) and len(self.genomeFiles) == 1:
             logger.warning(
                 "WARNING: The genome is defined globally in the config, however "
                 "non-empty values are in the sample annotation table. Using the "

@@ -5,7 +5,7 @@ exportCounts = cfg.exportCounts
 sampleAnnotation = snakemake.params.sampleAnnotation
 
 # adapt sample annotation data frame
-sa = sampleAnnotation.sa.copy()
+sa = sampleAnnotation.annotationTable.copy()
 sa["STRAND_SPECIFIC"] = sa["STRAND"] != "no"
 if "ICD_10" in sa:
     sa["ICD_10"] = sa["ICD_10"].str.upper()
