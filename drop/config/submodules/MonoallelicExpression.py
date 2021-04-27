@@ -92,14 +92,6 @@ class MAE(Submodule):
             return self.qcVcfFile
         return self.sa.getFilePath(id, 'DNA_VCF_FILE')
 
-     
-    # set the genomeFiles to be a dictionary. if globally (or MAE) defined as a string. force into dictionary {genome:genome}
-    def setGenomeFile(self,genomeFiles):
-        if isinstance(genomeFiles,str):
-            return {genomeFiles:genomeFiles}
-        else:
-            return genomeFiles
-
     # map out the samples in the group to the corresponding genome defined in SA
     def setGenomeDict(self,genomeFiles):
         genomeDict = {}
@@ -122,5 +114,7 @@ class MAE(Submodule):
         try:
             return self.genomeFiles[self.sampleGenomes[sampleID]]
         except KeyError:
-            raise KeyError(f"The Config file has defined specific key,value for genome path \
-but the SA table does not match for sample {sampleID}")
+            raise KeyError(
+                f"The Config file has defined specific key,value for genome path "
+                f"but the SA table does not match for sample {sampleID}"
+            )
