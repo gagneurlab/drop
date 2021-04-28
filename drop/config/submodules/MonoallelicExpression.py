@@ -119,6 +119,7 @@ class MAE(Submodule):
 
     # look up for a sampleID genomeFiles{ncbi -> path} and sampleGenomes {sampleID -> ncbi}
     def getGenomePath(self,sampleID):
+        print(self.genomeFiles,sampleID)
         try:
             return self.genomeFiles[self.sampleGenomes[sampleID]]
         except KeyError:
