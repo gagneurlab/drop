@@ -87,7 +87,7 @@ class Submodule:
     def writeSampleParams(self,path,params,include,file_suffix,group_param = False):
         # initialize groups and sa table                                                                                
         module_groups = self.groups                                                                                     
-        sa_df = self.sa.sa                                                                                              
+        sa_df = self.sa.annotationTable
                                                                                                                         
         all_RNA_ids = []                                                                                                
         # for each DROP_GROUP used for aberrantExpression build the list of RNA_IDs that are going to be merged for that run

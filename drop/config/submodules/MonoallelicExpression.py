@@ -26,9 +26,9 @@ class MAE(Submodule):
         # genomeFiles{config_name -> path} from config and sampleGenomes {sampleID -> config_name} from SA
         self.genomeFiles = genome.reference
         self.sampleGenomes = self.setGenomeDict(self.genomeFiles)
-        if "GENOME" not in self.sa.sa.columns.values: #genome column not defined
+        if "GENOME" not in self.sa.annotationTable.columns.values: #genome column not defined
             pass
-        elif not all(self.sa.sa["GENOME"].isnull()) and len(self.genomeFiles) == 1:
+        elif not all(self.sa.annotationTable["GENOME"].isnull()) and len(self.genomeFiles) == 1:
             logger.warning(
                 "WARNING: The genome is defined globally in the config, however "
                 "non-empty values are in the sample annotation table. Using the "
@@ -92,14 +92,6 @@ class MAE(Submodule):
             return self.qcVcfFile
         return self.sa.getFilePath(id, 'DNA_VCF_FILE')
 
-     
-    # set the genomeFiles to be a dictionary. if globally (or MAE) defined as a string. force into dictionary {genome:genome}
-    def setGenomeFile(self,genomeFiles):
-        if isinstance(genomeFiles,str):
-            return {genomeFiles:genomeFiles}
-        else:
-            return genomeFiles
-
     # map out the samples in the group to the corresponding genome defined in SA
     def setGenomeDict(self,genomeFiles):
         genomeDict = {}
@@ -123,5 +115,7 @@ class MAE(Submodule):
         try:
             return self.genomeFiles[self.sampleGenomes[sampleID]]
         except KeyError:
-            raise KeyError(f"The Config file has defined specific key,value for genome path \
-but the SA table does not match for sample {sampleID}")
+            raise KeyError(
+                f"The Config file has defined specific key,value for genome path "
+                f"but the SA table does not match for sample {sampleID}"
+            )

@@ -24,7 +24,7 @@ class SampleAnnotation:
         self.file = file
         self.genome = genome
 
-        self.sa = self.parse()
+        self.annotationTable = self.parse()
         self.idMapping = self.createIdMapping()
         self.sampleFileMapping = self.createSampleFileMapping()
 
@@ -72,7 +72,7 @@ class SampleAnnotation:
         """
         Get mapping of RNA and DNA IDs
         """
-        return self.sa[["RNA_ID", "DNA_ID"]].drop_duplicates().dropna()
+        return self.annotationTable[["RNA_ID", "DNA_ID"]].drop_duplicates().dropna()
 
     def createSampleFileMapping(self):
         """
@@ -84,7 +84,7 @@ class SampleAnnotation:
         assay_subsets = []
         for id_, file_types in assay_mapping.items():
             for file_type in file_types:
-                df = self.sa[[id_, file_type]].dropna().drop_duplicates().copy()
+                df = self.annotationTable[[id_, file_type]].dropna().drop_duplicates().copy()
                 df.rename(columns={id_: 'ID', file_type: 'FILE_PATH'}, inplace=True)
                 df['ASSAY'] = id_
                 df['FILE_TYPE'] = file_type
@@ -131,13 +131,13 @@ class SampleAnnotation:
 
         # Subset sample annotation to only IDs of specified file_type
         ids = self.getSampleIDs(file_type)
-        df = self.sa[self.sa[assay_id].isin(ids)]
+        df = self.annotationTable[self.annotationTable[assay_id].isin(ids)]
         # mapping of ID to group names
         df = df[[assay_id, group_key]].drop_duplicates().copy()
 
         # get unique group names
         groups = []
-        for s in set(self.sa[group_key]):
+        for s in set(self.annotationTable[group_key]):
             groups.extend(s.split(sep))
         groups = set(groups)
 
@@ -160,7 +160,7 @@ class SampleAnnotation:
         """
         sa_cols = set(self.SAMPLE_ANNOTATION_COLUMNS)
         if subset is None:
-            subset = self.sa
+            subset = self.annotationTable
         else:
             # check type for subset
             if not isinstance(subset, pd.DataFrame):
@@ -262,7 +262,7 @@ class SampleAnnotation:
         return set(subset[file_type].tolist())
 
     def getRow(self, column, value):
-        sa = self.sa
+        sa = self.annotationTable
         if column not in sa.columns:
             raise KeyError(f"column {column} not in sample annotation")
         row = sa[sa[column] == value]

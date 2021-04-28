@@ -10,7 +10,7 @@ class Genome:
 
         # Allow for old drop config stylings, where the file was a string under MAE
         # -> force into dictionary
-        self.reference = {None: reference} if isinstance(reference, str) else reference
+        self.reference = {reference: reference} if isinstance(reference, str) else reference
 
     def getGeneAnnotations(self):
         return self.annotation
