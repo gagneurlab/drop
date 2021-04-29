@@ -1,5 +1,6 @@
 from .SampleAnnotation import SampleAnnotation
 from .Genome import Genome
+from .SampleParams import SampleParams
 from .submodules import *
 from .ExportCounts import ExportCounts
 from drop import utils
@@ -58,6 +59,7 @@ class DropConfig:
             processedResultsDir=self.processedResultsDir
         )
 
+
         self.AS = AS(
             config=self.get("aberrantSplicing"),
             sampleAnnotation=self.sampleAnnotation,
@@ -82,61 +84,16 @@ class DropConfig:
             aberrantSplicing=self.AS
         )
 
-        # write sample params for each module
-        #self.AE.writeSampleParams(self.genome.annotation)
+        # write sample params for each module AS not currently supported
+        sampleParams = SampleParams(
+            self.AE, 
+            self.MAE, 
+            self.get("geneAnnotation"),
+            self.processedDataDir, 
+            self.sampleAnnotation
+        )
 
-        sampleParams = {}
-        for ann in self.genome.annotation:
-            annParams = {self.AE.name :{
-                                        "countParams": 
-                                            [self.AE,
-                                             self.processedDataDir/"aberrant_expression"/f"{ann}"/"params/counts",
-                                             ["RNA_ID", "RNA_BAM_FILE","COUNT_MODE", "PAIRED_END", "COUNT_OVERLAPS", "STRAND"],
-                                             True,
-                                             False
-                                            ],
-                                        "mergeParams":
-                                            [self.AE,
-                                             self.processedDataDir/"aberrant_expression"/f"{ann}"/"params/merge",
-                                             ["RNA_ID", "RNA_BAM_FILE","COUNT_MODE", "PAIRED_END", "COUNT_OVERLAPS", "STRAND"],
-                                             True,
-                                             True
-                                            ],
-                                        "resultParams": 
-                                            [self.AE,
-                                             self.processedDataDir/"aberrant_expression"/f"{ann}"/"params/results",
-                                             ["RNA_BAM_FILE", "DNA_VCF_FILE","DROP_GROUP","COUNT_MODE",
-                                              "PAIRED_END", "COUNT_OVERLAPS", "STRAND"],
-                                             False, #include 
-                                             True # grouped 
-                                            ]
-                                           },
-                          self.MAE.name:{
-                                        "sampleParams":
-                                            [self.MAE,
-                                             self.processedDataDir/"mae/params/snvs",
-                                             ["RNA_ID","DNA_ID","RNA_BAM_FILE", "DNA_VCF_FILE","GENOME"],
-                                             True, #include the columns above (if False take compliment)
-                                             False # grouped 
-                                            ],
-                                        "resultParams":
-                                            [self.MAE,
-                                             self.processedDataDir/"mae/params/results",
-                                             ["RNA_BAM_FILE", "DNA_VCF_FILE","DROP_GROUP"],
-                                             False, #include the columns above (if False take compliment)
-                                             True # grouped 
-                                            ]
-                                           }
-                                              
-                         }
-            sampleParams[ann] = annParams
-             
 
-        for ann in sampleParams:
-            for module in sampleParams[ann]:
-                for suffix in sampleParams[ann][module]:
-                    module_obj,path,params,include,group_param = sampleParams[ann][module][suffix]
-                    module_obj.writeSampleParams(path,params,include,suffix,group_param = group_param)
         # legacy
         utils.setKey(self.config_dict, None, "aberrantExpression", self.AE.dict_)
         utils.setKey(self.config_dict, None, "aberrantSplicing", self.AS.dict_)

@@ -33,7 +33,7 @@ rule mae_createSNVs:
         vcf_file  = lambda w: cfg.MAE.getVcf(w.vcf),
         bam_file  = lambda w: sa.getFilePath(w.rna, 'RNA_BAM_FILE'),
         script    = MAE_WORKDIR / "MAE" / "filterSNVs.sh",
-        sample_params = lambda w: cfg.processedDataDir / "mae" / "params/snvs" / (w.rna + "_sampleParams.csv")
+        snv_params = lambda w: cfg.processedDataDir / "mae" / "params/snvs" / (w.rna + "_snvParams.csv")
     output:
         snvs_filename = cfg.processedDataDir / "mae" / "snvs" / "{vcf}--{rna}.vcf.gz",
         snvs_index = cfg.processedDataDir / "mae" / "snvs" / "{vcf}--{rna}.vcf.gz.tbi"
