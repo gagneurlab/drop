@@ -19,6 +19,9 @@ exportCounts:
       - v29
     excludeGroups:
       - group1
+genome: # path to genome sequence in fasta format. 
+    # You can define multiple reference genomes in yaml format, ncbi: path_to_ncbi, ucsc: path_to_ucsc
+    # the keywords that define the path should be in the GENOME column of the SA table
 
 aberrantExpression:
     groups: 
@@ -50,7 +53,6 @@ mae:
         - group1
         - group2
         - group3
-    genome:       # path to genome sequence in fasta format
     gatkIgnoreHeaderCheck: true
     padjCutoff: .05
     allelicRatioCutoff: 0.8
