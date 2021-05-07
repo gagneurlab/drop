@@ -26,19 +26,47 @@ class MAE(Submodule):
         # genomeFiles{config_name -> path} from config and sampleGenomes {sampleID -> config_name} from SA
         self.genomeFiles = genome.reference
         self.sampleGenomes = self.setGenomeDict(self.genomeFiles)
-        if "GENOME" not in self.sa.annotationTable.columns.values: #genome column not defined
-            pass
-        elif not all(self.sa.annotationTable["GENOME"].isnull()) and len(self.genomeFiles) == 1:
-            logger.warning(
-                "WARNING: The genome is defined globally in the config, however "
-                "non-empty values are in the sample annotation table. Using the "
-                "globally defined path, please consider fixing this."
-            )
-        elif len(set(self.genomeFiles.keys()) - set(self.sampleGenomes.values())) > 0:
-            logger.error(
-                "The genome keys defined in the config do not match exactly the values"
-                " in the GENOME column of the sample annotation. Please fix them."
-            )
+
+        self.checkConfigSampleannotation()
+
+    def checkConfigSampleannotation(self):
+        subset = self.sa.subsetSampleAnnotation("DROP_GROUP", self.groups,exact_match = False)
+
+        if len(self.genomeFiles.keys()) > 1: #more than 1 value in config defined genome dictionary
+            if "GENOME" not in subset.columns.values: #GENOME column not defined
+                logger.error("ERROR: More than 1 genome is defined globally in the config. However the sample matching column GENOME is not in the sample annotation column")
+                raise(KeyError)
+ 
+            else: # GENOME is defined
+                if all(subset["GENOME"] == "nan"): # GENOME is all empty
+                    logger.error("ERROR: More than 1 genome is defined globally in the config. However the sample matching column GENOME is empty")
+                    raise(KeyError)
+                else: #GENOME is not empty
+                    if len(set(subset["GENOME"]) - set(self.genomeFiles.keys())) > 0: #sa table contains unknown value
+                        logger.error("ERROR: A value (or empty) in the sample annotation table is not defined as a genome key in the config")
+                        raise(KeyError)
+                        
+        else: # only 1 value in the config defined genome dictionary
+            if "GENOME" not in subset.columns.values: #GENOME column not defined
+                pass #old sample annotation table styling, no errors
+            else: #GENOME is defined
+                if list(self.genomeFiles.keys()) == list(self.genomeFiles.values()): # genome is defined as a string in config
+                    if all(subset["GENOME"] == "nan"): # GENOME is all empty
+                        logger.warning("WARNING: genome is defined as a singular global string instead of a dict. This will be depricated in the future.")
+                    else:
+                        logger.warning("WARNING: genome is defined as a singular global string instead of a dict. Information in the sample annotation table column GENOME will be ignored.")
+                else: #genome is defined as dict in the config of length 1 and GENOME column exists
+                    if all(subset["GENOME"] == "nan"): # GENOME is all empty
+                        pass # desired behavior
+                    else: #GENOME is not empty
+                        if len(set(subset["GENOME"]) - set(self.genomeFiles.keys())) > 0: #sa table contains unknown values
+                            logger.error("ERROR: A value (or empty) in the sample annotation table is not defined as a genome key in the config")
+                            raise(KeyError)
+                        else:
+                            pass # desired behavior
+                    
+
+
 
     def setDefaultKeys(self, dict_):
         super().setDefaultKeys(dict_)
