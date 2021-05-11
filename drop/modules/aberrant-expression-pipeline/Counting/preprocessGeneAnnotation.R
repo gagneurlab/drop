@@ -5,7 +5,7 @@
 #'  log:
 #'   - snakemake: '`sm str(tmp_dir / "AE" / "{annotation}" / "preprocess.Rds")`'
 #'  input:
-#'   - gtf: '`sm lambda wildcards: cfg.getGeneAnnotationFile(wildcards.annotation) `'
+#'   - gtf: '`sm lambda wildcards: cfg.genome.getGeneAnnotationFile(wildcards.annotation) `'
 #'  output:
 #'   - txdb: '`sm cfg.getProcessedDataDir() + "/aberrant_expression/{annotation}/txdb.db"`'
 #'   - count_ranges: '`sm cfg.getProcessedDataDir() + 

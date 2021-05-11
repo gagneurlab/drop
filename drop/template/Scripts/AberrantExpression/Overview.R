@@ -5,17 +5,17 @@
 #'  log:
 #'    - snakemake: '`sm str(tmp_dir / "AE" / "Overview.Rds")`'
 #'  params:
-#'    - annotations: '`sm cfg.getGeneVersions()`'
+#'    - annotations: '`sm cfg.genome.getGeneVersions()`'
 #'    - datasets: '`sm cfg.AE.groups`'
 #'    - htmlDir: '`sm config["htmlOutputPath"] + "/AberrantExpression"`'
 #'  input:
 #'    - odsFiles: '`sm expand(cfg.getProcessedResultsDir() +
 #'                  "/aberrant_expression/{annotation}/outrider/{dataset}/ods.Rds",
-#'                  annotation=cfg.getGeneVersions(), dataset=cfg.AE.groups)`'
+#'                  annotation=cfg.genome.getGeneVersions(), dataset=cfg.AE.groups)`'
 #'    - resultTables: '`sm expand(cfg.getProcessedResultsDir() +
 #'                      "/aberrant_expression/{annotation}/outrider/" +
 #'                      "{dataset}/OUTRIDER_results.tsv",
-#'                      annotation=cfg.getGeneVersions(), dataset=cfg.AE.groups)`'
+#'                      annotation=cfg.genome.getGeneVersions(), dataset=cfg.AE.groups)`'
 #' output:
 #'   html_document:
 #'    code_folding: show

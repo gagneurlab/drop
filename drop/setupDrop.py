@@ -36,11 +36,11 @@ def installRPackages(config: DropConfig = None):
 
     # install pipeline depending packages
     if config is not None:
-        pkg_assembly_name = config.getBSGenomeName()
+        pkg_assembly_name = config.genome.getBSGenomeName()
         response = subprocess.run(["Rscript", script, pkg_assembly_name], stderr=subprocess.STDOUT)
         response.check_returncode()
 
-        pkg_mafdb_name = config.getMafDbName()
+        pkg_mafdb_name = config.genome.getMafDbName()
         if pkg_mafdb_name is not None and config.get("mae").get('addAF') is True:
             response = subprocess.run(["Rscript", script, pkg_mafdb_name], stderr=subprocess.STDOUT)
             response.check_returncode()

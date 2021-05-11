@@ -6,12 +6,11 @@
 #'    - snakemake: '`sm str(tmp_dir / "AS" / "{dataset}--{annotation}" / "FRASER_summary.Rds")`'
 #'  params:
 #'   - setup: '`sm cfg.AS.getWorkdir() + "/config.R"`'
-#'   - workingDir: '`sm cfg.getProcessedDataDir() + "/aberrant_splicing/datasets/"`'
 #'  input:
-#'   - fdsin: '`sm cfg.getProcessedDataDir() + 
+#'   - fdsin: '`sm cfg.getProcessedResultsDir() + 
 #'                 "/aberrant_splicing/datasets/savedObjects/{dataset}--{annotation}/fds-object.RDS"`'
-#'   - results: '`sm cfg.getProcessedDataDir() + 
-#'                   "/aberrant_splicing/results/{dataset}--{annotation}_results.tsv"`'
+#'   - results: '`sm cfg.getProcessedResultsDir() + 
+#'                   "/aberrant_splicing/results/{annotation}/fraser/{dataset}/results.tsv"`'
 #'  output:
 #'   - wBhtml: '`sm config["htmlOutputPath"] +
 #'               "/AberrantSplicing/{dataset}--{annotation}_summary.html"`'
@@ -28,9 +27,8 @@ suppressPackageStartupMessages({
 #+ input
 dataset    <- snakemake@wildcards$dataset
 annotation <- snakemake@wildcards$annotation
-workingDir <- snakemake@params$workingDir
 
-fds <- loadFraserDataSet(dir=workingDir, name=paste(dataset, annotation, sep = '--'))
+fds <- loadFraserDataSet(file=snakemake@input$fdsin)
 
 #' Number of samples: `r nrow(colData(fds))`
 #' 
