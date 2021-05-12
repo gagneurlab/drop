@@ -69,8 +69,7 @@ for ga, sa_file, desc_file in zip(group_with_anno, sa_files, desc_files):
 
     # subset by group
     rna_ids = sampleAnnotation.rnaIDs[group]
-    dna_ids = sampleAnnotation.dnaIDs[group]
-    sa_sub = sa.loc[(sa["RNA_ID"].isin(rna_ids)) & (sa["DNA_ID"].isin(dna_ids))]
+    sa_sub = sa.loc[sa["RNA_ID"].isin(rna_ids)]
 
     # save sample annotation subset
     sa_sub.to_csv(sa_file, sep='\t', index=False, columns=sa_cols)
