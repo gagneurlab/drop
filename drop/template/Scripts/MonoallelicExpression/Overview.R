@@ -13,7 +13,7 @@
 #'                       mae_id=cfg.MAE.getMaeAll())`'
 #'    - results_tables: '`sm expand(cfg.getProcessedResultsDir() + 
 #'                       "/mae/{dataset}/MAE_results_{annotation}.tsv", 
-#'                       dataset=cfg.MAE.groups, annotation=cfg.getGeneVersions())`'
+#'                       dataset=cfg.MAE.groups, annotation=cfg.genome.getGeneVersions())`'
 #'    - qc_matrix: '`sm expand(cfg.getProcessedResultsDir() + "/mae/{qc_group}/" +
 #'                  "dna_rna_qc_matrix.Rds", qc_group=cfg.MAE.qcGroups)`'
 #' output:

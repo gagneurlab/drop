@@ -7,7 +7,7 @@
 #'  input: 
 #'   - summaries: '`sm expand(config["htmlOutputPath"] + 
 #'                "/AberrantExpression/Counting/{annotation}/Summary_{dataset}.html",
-#'                annotation=cfg.getGeneVersions(), dataset=cfg.AE.groups)`'
+#'                annotation=cfg.genome.getGeneVersions(), dataset=cfg.AE.groups)`'
 #' output:
 #'   html_document:
 #'    code_folding: hide

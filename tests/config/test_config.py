@@ -12,7 +12,7 @@ def test_DropConfigPaths(demo_dir, dropConfig):
     assert dropConfig.getProcessedDataDir() == f"{demo_dir}/Output/processed_data"
     assert dropConfig.getProcessedResultsDir() == f"{demo_dir}/Output/processed_results"
     gene_anno = {'v29': f'{demo_dir}/Data/gencode_annotation_trunc.gtf'}
-    assert gene_anno == dropConfig.getGeneAnnotations()
+    assert gene_anno == dropConfig.genome.getGeneAnnotations()
 
 
 @pytest.mark.parametrize(

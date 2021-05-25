@@ -12,6 +12,7 @@
 #'   - add_HPO_cols: '`sm str(projectDir / ".drop" / "helpers" / "add_HPO_cols.R")`'
 #'   - ods: '`sm cfg.getProcessedResultsDir() + "/aberrant_expression/{annotation}/outrider/{dataset}/ods.Rds"`'
 #'   - gene_name_mapping: '`sm cfg.getProcessedDataDir() + "/aberrant_expression/{annotation}/gene_name_mapping_{annotation}.tsv"`'
+#'   - input_params: '`sm cfg.getProcessedDataDir() + "/aberrant_expression/{annotation}/params/results/{dataset}_resultParams.csv"`'
 #'  output:
 #'   - results: '`sm cfg.getProcessedResultsDir() + "/aberrant_expression/{annotation}/outrider/{dataset}/OUTRIDER_results.tsv"`'
 #'   - results_all: '`sm cfg.getProcessedResultsDir() + "/aberrant_expression/{annotation}/outrider/{dataset}/OUTRIDER_results_all.Rds"`'
@@ -63,11 +64,3 @@ if(!is.null(sa$HPO_TERMS) & nrow(res) > 0){
 
 # Save results 
 fwrite(res, snakemake@output$results, sep = "\t", quote = F)
-
-web_dir <- snakemake@config$webDir
-if (!is.null(web_dir)) {
-    pub_res <- paste0(web_dir, 
-                      "/aberrant_expression/results/",{snakemake@wildcards$annotation},"/outrider/",
-                      {snakemake@wildcards$dataset},"/OUTRIDER_results.tsv")
-    fwrite(res, pub_res, sep = "\t", quote = F)
-}

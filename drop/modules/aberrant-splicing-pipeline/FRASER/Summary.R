@@ -6,15 +6,16 @@
 #'    - snakemake: '`sm str(tmp_dir / "AS" / "{dataset}--{annotation}" / "FRASER_summary.Rds")`'
 #'  params:
 #'   - setup: '`sm cfg.AS.getWorkdir() + "/config.R"`'
-#'   - workingDir: '`sm cfg.getProcessedDataDir() + "/aberrant_splicing/datasets/"`'
 #'  input:
-#'   - fdsin: '`sm cfg.getProcessedDataDir() + 
+#'   - fdsin: '`sm cfg.getProcessedResultsDir() + 
 #'                 "/aberrant_splicing/datasets/savedObjects/{dataset}--{annotation}/fds-object.RDS"`'
-#'   - results: '`sm cfg.getProcessedDataDir() + 
-#'                   "/aberrant_splicing/results/{dataset}--{annotation}_results.tsv"`'
+#'   - results: '`sm cfg.getProcessedResultsDir() + 
+#'                   "/aberrant_splicing/results/{annotation}/fraser/{dataset}/results.tsv"`'
 #'  output:
 #'   - wBhtml: '`sm config["htmlOutputPath"] +
 #'               "/AberrantSplicing/{dataset}--{annotation}_summary.html"`'
+#'   - res_html: '`sm config["htmlOutputPath"] +
+#'               "/AberrantSplicing/FRASER_results_{dataset}--{annotation}.tsv"`'
 #'  type: noindex
 #'---
 
@@ -28,9 +29,8 @@ suppressPackageStartupMessages({
 #+ input
 dataset    <- snakemake@wildcards$dataset
 annotation <- snakemake@wildcards$annotation
-workingDir <- snakemake@params$workingDir
 
-fds <- loadFraserDataSet(dir=workingDir, name=paste(dataset, annotation, sep = '--'))
+fds <- loadFraserDataSet(file=snakemake@input$fdsin)
 
 #' Number of samples: `r nrow(colData(fds))`
 #' 
@@ -95,15 +95,12 @@ for(type in psiTypes){
   after
 }
 
-#' # Results
+#' ## Results
 res <- fread(snakemake@input$results)
-file <- gsub(".html$", ".tsv", snakemake@output$wBhtml)
-write_tsv(res, file=file)
-
-#'
-#' The results table can also be downloaded with the link below.
+file <- snakemake@output$res_html
+write_tsv(res, file = file)
 #+ echo=FALSE, results='asis'
-cat(paste0("<a href='./", basename(file), "'>Download results table</a>"))
+cat(paste0("<a href='./", basename(file), "'>Download FRASER results table</a>"))
 
 # round numbers
 if(nrow(res) > 0){
@@ -116,8 +113,5 @@ if(nrow(res) > 0){
   res[, padjustGene := signif(padjustGene, 2)]
 }
 
-#' ## Results table
 DT::datatable(res, options=list(scrollX=TRUE), escape=FALSE, filter = 'top')
 
-#' ## Samples table
-DT::datatable(as.data.table(colData(fds)), options=list(scrollX=TRUE))

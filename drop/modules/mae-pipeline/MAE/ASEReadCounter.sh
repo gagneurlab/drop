@@ -40,9 +40,10 @@ else
   echo "use UCSC format"
   canonical=$ucsc2ncbi
 fi
-# subset from canonical chromosomes
-chr_subset=$(comm -12 <(cut -f1 -d" " ${canonical} | sort -u) <(echo ${vcf_chr} | xargs -n1 | sort -u))
-chr_subset=$(comm -12 <(echo ${bam_chr} | xargs -n1) <(echo ${chr_subset} | xargs -n1) | uniq)
+
+# subset to standard chromosomes
+chr_subset=$(comm -12 <(cut -f1 -d" " ${canonical} | sort -u) <(echo "${vcf_chr}" | sort -u))
+chr_subset=$(comm -12 <(echo "${bam_chr}" | sort -u) <(echo "${chr_subset}") | uniq)
 
 for chr in $chr_subset; do
   $gatk ASEReadCounter \
