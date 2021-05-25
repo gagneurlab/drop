@@ -125,19 +125,13 @@ if (nrow(res) > 0) {
 
 
 #' ## Results table
-#+echo=F
+
+## Save results table in html folder and provide link to download
+file <- gsub(".html$", ".tsv", snakemake@output$wBhtml)
+fwrite(res, file, sep = '\t', quote = F)
+#+ echo=FALSE, results='asis'
+cat(paste0("<a href='./", basename(file), "'>Download OUTRIDER results table</a>"))
+
 res[, pValue := format(pValue, scientific = T, digits = 2)]
 res[, padjust := format(padjust, scientific = T, digits = 2)]
 DT::datatable(res, caption = "OUTRIDER results", style = 'bootstrap', filter = 'top')
-
-#' ### Download results table
-web_dir <- snakemake@config$webDir
-if (!is.null(web_dir)) {
-  results_link <- paste0(web_dir, 
-                         "/aberrant_expression/results/", snakemake@wildcards$annotation,
-                         "/outrider/", snakemake@wildcards$dataset ,"/OUTRIDER_results.tsv")
-} else {
-  results_link <- snakemake@input$results
-}
-#' [Download OUTRIDER results table](`r results_link`)
-
