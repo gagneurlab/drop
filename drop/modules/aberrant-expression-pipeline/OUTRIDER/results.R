@@ -64,11 +64,3 @@ if(!is.null(sa$HPO_TERMS) & nrow(res) > 0){
 
 # Save results 
 fwrite(res, snakemake@output$results, sep = "\t", quote = F)
-
-web_dir <- snakemake@config$webDir
-if (!is.null(web_dir)) {
-    pub_res <- paste0(web_dir, 
-                      "/aberrant_expression/results/",{snakemake@wildcards$annotation},"/outrider/",
-                      {snakemake@wildcards$dataset},"/OUTRIDER_results.tsv")
-    fwrite(res, pub_res, sep = "\t", quote = F)
-}
