@@ -117,5 +117,4 @@ if(nrow(res) > 0){
 #' ## Results table
 DT::datatable(res, options=list(scrollX=TRUE), escape=FALSE, filter = 'top')
 
-#' ## Samples table
-DT::datatable(as.data.table(colData(fds)), options=list(scrollX=TRUE))
+
