@@ -73,7 +73,7 @@ class SampleParams:
                  }
 
 
-    def __init__(self,AE,MAE,annotation,processedDataDir, sampleAnnotation):
+    def __init__(self,AE,MAE,geneAnnotation,processedDataDir, sampleAnnotation):
         """
         AE: object. AberrantExpression object as created in DropConfig.py
         MAE: object. MonoallelicExpression object as created in DropConfig.py
@@ -82,11 +82,8 @@ class SampleParams:
         sampleAnnotation: object. SampleAnnotation object as defined by SampleAnnotation.py 
         """
 
-        #annotation just needs v29 to know where to build the dir
-        for ann in annotation: #annotation is currently a dictionary that will only have 1 entry for now. Hotfix
-            self.annotation = ann
-        
         moduleList = [AE,MAE]
+        self.geneAnnotation = geneAnnotation
         self.processedDataDir = processedDataDir
         self.sampleAnnotation = sampleAnnotation
 
@@ -98,24 +95,25 @@ class SampleParams:
         moduleList: list. list containing module objects to loop through
         using the dictionary and helpers defined above, loop through each module and param pair and write the sample param file
         """
-        for module in moduleList:
-            paramKeys = self.PARAM_COLS[module.name].keys()
-            if module.name == "AberrantExpression":
-                modulePath = self.processedDataDir / self.MODULE_NAMES[module.name] / self.annotation / "params"
-            elif module.name == "MonoallelicExpression":
-                modulePath = self.processedDataDir / self.MODULE_NAMES[module.name] / "params"
-            else: raise(ValueError,"currently only AberrantExpression and MonoallelicExpression are supported")
-        
-            for paramType in paramKeys:
+        for ann in self.geneAnnotation:
+            for module in moduleList:
+                paramKeys = self.PARAM_COLS[module.name].keys()
+                if module.name == "AberrantExpression":
+                    modulePath = self.processedDataDir / self.MODULE_NAMES[module.name] / ann / "params"
+                elif module.name == "MonoallelicExpression":
+                    modulePath = self.processedDataDir / self.MODULE_NAMES[module.name] / "params"
+                else: raise(ValueError,"currently only AberrantExpression and MonoallelicExpression are supported")
+            
+                for paramType in paramKeys:
 
-                self.writeSampleParams(
+                    self.writeSampleParams(
                                  module,
                                  modulePath / self.PARAM_COLS[module.name][paramType].path,
                                  paramType,
                                  self.PARAM_COLS[module.name][paramType].sampleAnnotationColumns,
                                  self.PARAM_COLS[module.name][paramType].include,
                                  self.PARAM_COLS[module.name][paramType].group
-                             )
+                     )
 
     def writeSampleParams(self,module,path,file_suffix,param_cols,include,group_param):
         """
