@@ -14,6 +14,8 @@
 #'  output:
 #'   - wBhtml: '`sm config["htmlOutputPath"] +
 #'               "/AberrantSplicing/{dataset}--{annotation}_summary.html"`'
+#'   - res_html: '`sm config["htmlOutputPath"] +
+#'               "/AberrantSplicing/FRASER_results_{dataset}--{annotation}.tsv"`'
 #'  type: noindex
 #'---
 
@@ -95,8 +97,8 @@ for(type in psiTypes){
 
 #' ## Results
 res <- fread(snakemake@input$results)
-file <- gsub(".html$", ".tsv", snakemake@output$wBhtml)
-write_tsv(res, file=file)
+file <- snakemake@output$res_html
+write_tsv(res, file = file)
 #+ echo=FALSE, results='asis'
 cat(paste0("<a href='./", basename(file), "'>Download FRASER results table</a>"))
 

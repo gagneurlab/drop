@@ -15,6 +15,8 @@
 #'  output:
 #'   - wBhtml: '`sm config["htmlOutputPath"] + 
 #'              "/AberrantExpression/Outrider/{annotation}/Summary_{dataset}.html"`'
+#'   - res_html: '`sm config["htmlOutputPath"] + 
+#'              "/AberrantExpression/Outrider/{annotation}/OUTRIDER_results_{dataset}.tsv"`'
 #'  type: noindex
 #' output:
 #'  html_document:
@@ -126,8 +128,8 @@ if (nrow(res) > 0) {
 
 #' ## Results table
 
-## Save results table in html folder and provide link to download
-file <- gsub(".html$", ".tsv", snakemake@output$wBhtml)
+## Save results table in the html folder and provide link to download
+file <- snakemake@output$res_html
 fwrite(res, file, sep = '\t', quote = F)
 #+ echo=FALSE, results='asis'
 cat(paste0("<a href='./", basename(file), "'>Download OUTRIDER results table</a>"))
