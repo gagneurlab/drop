@@ -93,15 +93,12 @@ for(type in psiTypes){
   after
 }
 
-#' # Results
+#' ## Results
 res <- fread(snakemake@input$results)
 file <- gsub(".html$", ".tsv", snakemake@output$wBhtml)
 write_tsv(res, file=file)
-
-#'
-#' The results table can also be downloaded with the link below.
 #+ echo=FALSE, results='asis'
-cat(paste0("<a href='./", basename(file), "'>Download results table</a>"))
+cat(paste0("<a href='./", basename(file), "'>Download FRASER results table</a>"))
 
 # round numbers
 if(nrow(res) > 0){
@@ -114,7 +111,5 @@ if(nrow(res) > 0){
   res[, padjustGene := signif(padjustGene, 2)]
 }
 
-#' ## Results table
 DT::datatable(res, options=list(scrollX=TRUE), escape=FALSE, filter = 'top')
-
 
