@@ -1,6 +1,5 @@
 from snakemake.io import expand
 import numpy as np
-import filecmp
 
 from drop import utils
 from .Submodules import Submodule

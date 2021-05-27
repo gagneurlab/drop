@@ -56,9 +56,8 @@ class DropConfig:
             config=self.get("aberrantExpression"),
             sampleAnnotation=self.sampleAnnotation,
             processedDataDir=self.processedDataDir,
-            processedResultsDir=self.processedResultsDir
+            processedResultsDir=self.processedResultsDir,
         )
-
 
         self.AS = AS(
             config=self.get("aberrantSplicing"),

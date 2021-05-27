@@ -24,6 +24,7 @@ genome: # path to genome sequence in fasta format.
     # the keywords that define the path should be in the GENOME column of the SA table
 
 aberrantExpression:
+    run: true
     groups: 
         - group1
         - group2

@@ -1,11 +1,6 @@
 from pathlib import Path
 from drop import utils
 from snakemake.logging import logger
-import numpy as np                                                                                                      
-import pandas as pd
-import os                                                                                                               
-import shutil
-
 
 class Submodule:
 
@@ -17,6 +12,7 @@ class Submodule:
         self.sa = sampleAnnotation
         self.dict_ = self.setDefaultKeys(config)
         self.groups = self.dict_["groups"]
+        self.run = self.dict_.get('run', True)
 
     def setDefaultKeys(self, dict_):
         dict_ = {} if dict_ is None else dict_
