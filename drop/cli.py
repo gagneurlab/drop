@@ -1,9 +1,8 @@
 import wbuild
 import drop
-import yaml
 from pathlib import Path
 from shutil import copy2
-from distutils.dir_util import mkpath, copy_tree, remove_tree
+from distutils.dir_util import copy_tree, remove_tree
 import subprocess
 import click
 import click_log
@@ -15,28 +14,29 @@ wbuildPath = Path(wbuild.__file__).parent / ".wBuild"
 logger = logging.getLogger(__name__)
 click_log.basic_config(logger)
 
+
 @click.group()
 @click_log.simple_verbosity_option(logger)
-@click.version_option('1.0.4',prog_name='drop')
+@click.version_option('1.0.4', prog_name='drop')
 def main():
     pass
 
 
-def overwrite(base_repo,local_proj):
-    fc.clear_cache() # clear file compare cache to avoid mistakes
-    compare_obj = fc.dircmp(base_repo,local_proj)
+def overwrite(base_repo, local_proj):
+    fc.clear_cache()  # clear file compare cache to avoid mistakes
+    compare_obj = fc.dircmp(base_repo, local_proj)
 
-    #remove all things not in the base_repo
+    # remove all things not in the base_repo
     for i in compare_obj.right_only:
         logger.info(f"removing local file {i} it is not in the base drop")
         if os.path.isfile(local_proj / i):
-            removeFile(local_proj / i,warn = False)   
+            removeFile(local_proj / i, warn=False)
         else:
             remove_tree(local_proj / i)
 
     # for all dirs and files in base_dir
     for i in compare_obj.left_list:
-        #files
+        # files
         if os.path.isfile(base_repo / i):
             # filename is the same in both
             if i in compare_obj.common_files:
@@ -44,20 +44,21 @@ def overwrite(base_repo,local_proj):
                 # if file is diff copy original over. otherwise do nothing
                 if i in compare_obj.diff_files:
                     logger.info(f"overwriting {local_proj / i} with {base_repo / i})")
-                    copy2(base_repo / i,local_proj / i)
+                    copy2(base_repo / i, local_proj / i)
 
 
             # file not present in local project. Copy it
             else:
                 logger.info(f"overwriting {local_proj / i} with {base_repo / i})")
-                copy2(base_repo / i,local_proj / i)
+                copy2(base_repo / i, local_proj / i)
 
-        #dirs
+        # dirs
         elif os.path.isdir(base_repo / i):
             if i in compare_obj.common_dirs:
                 overwrite(base_repo / i, local_proj / i)
             else:
-                logger.info(f"the directory {str(base_repo / i)} does not exist locally. copying here: {str(local_proj)}")
+                logger.info(
+                    f"the directory {str(base_repo / i)} does not exist locally. copying here: {str(local_proj)}")
                 copy_tree(str(base_repo / i), str(local_proj / i))
 
         # other?
@@ -65,7 +66,7 @@ def overwrite(base_repo,local_proj):
             logger.info(i, "is something other than file or dir. Ignoring")
 
 
-def copyModuleCode(repoPaths,projectPaths):
+def copyModuleCode(repoPaths, projectPaths):
     repo_map = {
         "aberrant-expression-pipeline": "AberrantExpression",
         "aberrant-splicing-pipeline": "AberrantSplicing",
@@ -73,15 +74,16 @@ def copyModuleCode(repoPaths,projectPaths):
     }
 
     for repo, analysis_dir in repo_map.items():
-        fc.clear_cache() # clear file compare cache to avoid mistakes
+        fc.clear_cache()  # clear file compare cache to avoid mistakes
         base_repo = repoPaths["modules"] / repo
         local_proj = projectPaths["Scripts"] / analysis_dir / "pipeline"
-        if not local_proj.is_dir(): # module directory does not exist. copy it
+        if not local_proj.is_dir():  # module directory does not exist. copy it
             logger.info(f"{local_proj} is not a directory, copy over from drop base")
             copy_tree(str(base_repo), str(local_proj))
-        else: #module dir does exist. Do a safe-overwrite
-            overwrite(base_repo,local_proj)
-    
+        else:  # module dir does exist. Do a safe-overwrite
+            overwrite(base_repo, local_proj)
+
+
 def removeFile(filePath, warn=True):
     filePath = Path(filePath)
     if filePath.is_file():
@@ -109,7 +111,7 @@ def setFiles(projectDir=None):
     copy2(repoPaths["template"] / "Snakefile", projectPaths["projectDir"] / "Snakefile")
     copy_tree(str(repoPaths["Scripts"]), str(projectPaths["Scripts"]))
     copyModuleCode(repoPaths, projectPaths)
-    #copyModuleCode(repoPaths, projectPaths)
+    # copyModuleCode(repoPaths, projectPaths)
 
     config_file = projectPaths["projectDir"] / "config.yaml"
     if not config_file.is_file():

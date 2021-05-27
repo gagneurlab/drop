@@ -7,6 +7,7 @@ class Submodule:
     def __init__(self, config, sampleAnnotation, processedDataDir, processedResultsDir):
         self.CONFIG_KEYS = []
         self.name = "Submodule"
+        self.sampleAnnotation = sampleAnnotation
         self.processedDataDir = processedDataDir
         self.processedResultsDir = processedResultsDir
         self.sa = sampleAnnotation

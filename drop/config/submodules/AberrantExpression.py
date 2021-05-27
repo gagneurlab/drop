@@ -14,12 +14,12 @@ class AE(Submodule):
             "maxTestedDimensionProportion"
         ]
         self.name = "AberrantExpression"
-        self.rnaIDs = self.sa.subsetGroups(self.groups, assay="RNA")
-        self.extRnaIDs = self.sa.subsetGroups(self.groups, assay="GENE_COUNTS")
+        self.rnaIDs = self.sampleAnnotation.subsetGroups(self.groups, assay="RNA")
+        self.extRnaIDs = self.sampleAnnotation.subsetGroups(self.groups, assay="GENE_COUNTS")
         for g in self.groups:
             if len(set(self.rnaIDs[g]) & set(self.extRnaIDs[g])) > 0:
                 raise ValueError(f"{set(self.rnaIDs[g]) & set(self.extRnaIDs[g])} has both BAM and external count file \
-please fix to only have either external count or BAM processing\n")
+                please fix to only have either external count or BAM processing\n")
 
         # check number of IDs per group
         all_ids = {g: self.rnaIDs[g] + self.extRnaIDs[g] for g in self.groups}
@@ -28,7 +28,7 @@ please fix to only have either external count or BAM processing\n")
     def setDefaultKeys(self, dict_):
         super().setDefaultKeys(dict_)
         setKey = utils.setKey
-        setKey(dict_, None, "groups", self.sa.getGroups(assay="RNA"))
+        setKey(dict_, None, "groups", self.sampleAnnotation.getGroups(assay="RNA"))
         setKey(dict_, None, "fpkmCutoff", 1)
         setKey(dict_, None, "implementation", "autoencoder")
         setKey(dict_, None, "padjCutoff", .05)
@@ -43,15 +43,15 @@ please fix to only have either external count or BAM processing\n")
         :param group: DROP group name from wildcard
         :return: list of files
         """
-        bam_IDs = self.sa.getIDsByGroup(group, assay="RNA")
+        bam_IDs = self.sampleAnnotation.getIDsByGroup(group, assay="RNA")
         file_stump = self.processedDataDir / "aberrant_expression" / annotation / "counts" / "{sampleID}.Rds"
         count_files = expand(str(file_stump), sampleID=bam_IDs)
-        extCountFiles = self.sa.getImportCountFiles(annotation, group, file_type="GENE_COUNTS_FILE")
+        extCountFiles = self.sampleAnnotation.getImportCountFiles(annotation, group, file_type="GENE_COUNTS_FILE")
         count_files.extend(extCountFiles)
         return count_files
 
     def getCountParams(self, rnaID):
-        sa_row = self.sa.getRow("RNA_ID", rnaID)
+        sa_row = self.sampleAnnotation.getRow("RNA_ID", rnaID)
         count_params = sa_row[["STRAND", "COUNT_MODE", "PAIRED_END", "COUNT_OVERLAPS"]]
         count_params_dict = {
             k: bool(v) if isinstance(v, np.bool_) else v
@@ -59,4 +59,3 @@ please fix to only have either external count or BAM processing\n")
         }
         return count_params_dict
         # count_params.iloc[0].to_dict()
-
