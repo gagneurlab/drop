@@ -11,9 +11,10 @@ class MAE(Submodule):
             sampleAnnotation,
             processedDataDir,
             processedResultsDir,
+            workDir,
             genome
     ):
-        super().__init__(config, sampleAnnotation, processedDataDir, processedResultsDir)
+        super().__init__(config, sampleAnnotation, processedDataDir, processedResultsDir, workDir)
         self.CONFIG_KEYS = [
             "groups", "genome", "qcVcf", "qcGroups", "gatkIgnoreHeaderCheck", "padjCutoff",
             "allelicRatioCutoff", "maxAF", "gnomAD"

@@ -7,8 +7,8 @@ from .Submodules import Submodule
 
 class AE(Submodule):
 
-    def __init__(self, config, sampleAnnotation, processedDataDir, processedResultsDir):
-        super().__init__(config, sampleAnnotation, processedDataDir, processedResultsDir)
+    def __init__(self, config, sampleAnnotation, processedDataDir, processedResultsDir, workDir):
+        super().__init__(config, sampleAnnotation, processedDataDir, processedResultsDir, workDir)
         self.CONFIG_KEYS = [
             "groups", "fpkmCutoff", "implementation", "padjCutoff", "zScoreCutoff",
             "maxTestedDimensionProportion"

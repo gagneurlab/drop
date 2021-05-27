@@ -1,16 +1,15 @@
-from pathlib import Path
 from drop import utils
 from snakemake.logging import logger
 
 class Submodule:
 
-    def __init__(self, config, sampleAnnotation, processedDataDir, processedResultsDir):
+    def __init__(self, config, sampleAnnotation, processedDataDir, processedResultsDir, workDir):
         self.CONFIG_KEYS = []
         self.name = "Submodule"
         self.sampleAnnotation = sampleAnnotation
         self.processedDataDir = processedDataDir
         self.processedResultsDir = processedResultsDir
-        self.sa = sampleAnnotation
+        self.workDir = workDir
         self.dict_ = self.setDefaultKeys(config)
         self.groups = self.dict_["groups"]
         self.run = self.dict_.get('run', True)
@@ -25,7 +24,7 @@ class Submodule:
         return self.dict_[key]
 
     def getWorkdir(self, str_=True):
-        return utils.returnPath(Path("Scripts") / self.name / "pipeline", str_)
+        return utils.returnPath(self.workDir / "Scripts" / self.name / "pipeline", str_)
 
     def checkSubset(self, groupSubsets, warn=30, error=10):
         """

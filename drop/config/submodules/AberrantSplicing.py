@@ -6,8 +6,8 @@ from .Submodules import Submodule
 
 class AS(Submodule):
 
-    def __init__(self, config, sampleAnnotation, processedDataDir, processedResultsDir):
-        super().__init__(config, sampleAnnotation, processedDataDir, processedResultsDir)
+    def __init__(self, config, sampleAnnotation, processedDataDir, processedResultsDir, workDir):
+        super().__init__(config, sampleAnnotation, processedDataDir, processedResultsDir, workDir)
         self.CONFIG_KEYS = [
             "groups", "recount", "longRead", "filter", "minExpressionInOneSample", "minDeltaPsi",
             "implementation", "padjCutoff", "zScoreCutoff", "deltaPsiCutoff", "maxTestedDimensionProportion"
