@@ -5,7 +5,21 @@ AS_index_input, AS_index_output, AS_graph_file, _ = createIndexRule(
     scriptsPath=str(AS_WORKDIR),
     index_name=AS_index_name
 )
-    
+
+def aberrantSplicing_output(cfg):
+    if cfg.AS.run:
+       return {"fds_files" :
+                            expand(cfg.getProcessedResultsDir() +
+                            "/aberrant_splicing/datasets/savedObjects/{dataset}--{annotation}/" + 
+                            "fds-object.RDS", dataset=cfg.AS.groups, annotation=cfg.genome.getGeneVersions()),
+              "result_tables":
+                            expand(cfg.getProcessedResultsDir() +
+                            "/aberrant_splicing/results/{annotation}/fraser/{dataset}/results_per_junction.tsv",
+                            dataset=cfg.AS.groups, annotation=cfg.genome.getGeneVersions())
+                }
+    else:
+        return {"dummy_file": cfg.getProcessedDataDir() + "/.module_skips/aberrant_splicing.skip"}
+
 rule aberrantSplicing:
     input: AS_index_input, AS_graph_file
     output: AS_index_output

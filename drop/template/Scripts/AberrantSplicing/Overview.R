@@ -10,12 +10,7 @@
 #'    - datasets: '`sm cfg.AS.groups`'
 #'    - htmlDir: '`sm config["htmlOutputPath"] + "/AberrantSplicing"`'
 #'  input:
-#'    - fds_files: '`sm expand(cfg.getProcessedResultsDir() +
-#'                "/aberrant_splicing/datasets/savedObjects/{dataset}--{annotation}/" + 
-#'                "fds-object.RDS", dataset=cfg.AS.groups, annotation=cfg.genome.getGeneVersions())`'
-#'    - result_tables: '`sm expand(cfg.getProcessedResultsDir() +
-#'                    "/aberrant_splicing/results/{annotation}/fraser/{dataset}/results_per_junction.tsv",
-#'                    dataset=cfg.AS.groups, annotation=cfg.genome.getGeneVersions())`'
+#'        - '` sm **aberantSplicing_output(cfg) `'
 #' output:
 #'   html_document:
 #'    code_folding: show
