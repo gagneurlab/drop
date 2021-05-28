@@ -13,7 +13,12 @@ rule aberrantExpression:
 
 rule aberrantExpression_dependency:
     output: AE_graph_file
-    shell: "snakemake --nolock --rulegraph {AE_index_output} | dot -Tsvg -Grankdir=TB > {output}"
+    shell:
+        """
+        snakemake --nolock --rulegraph {AE_index_output} | \
+            sed -n '/digraph snakemake_dag/,$p' | \
+            dot -Tsvg -Grankdir=TB > {output}
+        """
 
 rule aberrantExpression_bamStats:
     input: 
