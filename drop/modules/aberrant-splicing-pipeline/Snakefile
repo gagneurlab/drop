@@ -6,7 +6,7 @@ AS_index_input, AS_index_output, AS_graph_file, _ = createIndexRule(
     index_name=AS_index_name
 )
 
-def aberrantSplicing_output(cfg):
+def aberrantSplicing_Overview_R_input(cfg):
     if cfg.AS.run:
        return {"fds_files" :
                             expand(cfg.getProcessedResultsDir() +
@@ -19,6 +19,7 @@ def aberrantSplicing_output(cfg):
                 }
     else:
         return {"dummy_file": cfg.getProcessedDataDir() + "/.module_skips/aberrant_splicing.skip"}
+
 
 rule aberrantSplicing:
     input: AS_index_input, AS_graph_file

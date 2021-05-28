@@ -7,18 +7,8 @@
 #'  params:
 #'    - run: '`sm cfg.MAE.run`'
 #'  input:
-#'    - allelic_counts: '`sm expand(cfg.getProcessedDataDir() + 
-#'                          "/mae/allelic_counts/{mae_id}.csv.gz",
-#'                          mae_id=cfg.MAE.getMaeAll())`'
-#'    - results_obj: '`sm expand(cfg.getProcessedResultsDir() + 
-#'                       "/mae/samples/{mae_id}_res.Rds", 
-#'                       mae_id=cfg.MAE.getMaeAll())`'
-#'    - results_tables: '`sm expand(cfg.getProcessedResultsDir() + 
-#'                       "/mae/{dataset}/MAE_results_{annotation}.tsv", 
-#'                       dataset=cfg.MAE.groups, annotation=cfg.genome.getGeneVersions())`'
-#'    - qc_matrix: '`sm expand(cfg.getProcessedResultsDir() + "/mae/{qc_group}/" +
-#'                  "dna_rna_qc_matrix.Rds", qc_group=cfg.MAE.qcGroups)`'
-#' output:
+#'    - '`sm **aberrantSplicing_Overview_R_input(cfg)`'
+#'  output:
 #'   html_document:
 #'    code_folding: hide
 #'    code_download: TRUE

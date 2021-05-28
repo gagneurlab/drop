@@ -10,14 +10,8 @@
 #'    - datasets: '`sm cfg.AE.groups`'
 #'    - htmlDir: '`sm config["htmlOutputPath"] + "/AberrantExpression"`'
 #'  input:
-#'    - odsFiles: '`sm expand(cfg.getProcessedResultsDir() +
-#'                  "/aberrant_expression/{annotation}/outrider/{dataset}/ods.Rds",
-#'                  annotation=cfg.genome.getGeneVersions(), dataset=cfg.AE.groups)`'
-#'    - resultTables: '`sm expand(cfg.getProcessedResultsDir() +
-#'                      "/aberrant_expression/{annotation}/outrider/" +
-#'                      "{dataset}/OUTRIDER_results.tsv",
-#'                      annotation=cfg.genome.getGeneVersions(), dataset=cfg.AE.groups)`'
-#' output:
+#'    - '`sm **aberrantExpression_Overview_R_input(cfg)`'
+#'  output:
 #'   html_document:
 #'    code_folding: show
 #'    code_download: TRUE

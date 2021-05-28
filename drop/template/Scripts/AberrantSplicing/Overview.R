@@ -10,8 +10,8 @@
 #'    - datasets: '`sm cfg.AS.groups`'
 #'    - htmlDir: '`sm config["htmlOutputPath"] + "/AberrantSplicing"`'
 #'  input:
-#'        - '` sm **aberrantSplicing_output(cfg) `'
-#' output:
+#'    - '`sm **aberrantSplicing_Overview_R_input(cfg)`'
+#'  output:
 #'   html_document:
 #'    code_folding: show
 #'    code_download: TRUE
@@ -21,8 +21,9 @@
 #+ include=FALSE
 knitr::opts_chunk$set(eval = snakemake@params$run)
 
-#+ echo=FALSE, eval = TRUE
+#+ echo=TRUE, eval = TRUE
 saveRDS(snakemake, snakemake@log$snakemake)
+print(snakemake@input)
 
 
 # define functions
