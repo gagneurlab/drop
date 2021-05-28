@@ -90,6 +90,7 @@ class DropConfig:
         # write sample params for each module AS not currently supported
         sampleParams = SampleParams(
             self.AE, 
+            self.AS, 
             self.MAE, 
             self.get("geneAnnotation"),
             self.processedDataDir, 
