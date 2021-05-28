@@ -10,7 +10,7 @@
 #'    - datasets: '`sm cfg.AS.groups`'
 #'    - htmlDir: '`sm config["htmlOutputPath"] + "/AberrantSplicing"`'
 #'  input:
-#'        - '` sm **aberantSplicing_output(cfg) `'
+#'        - '` sm **aberrantSplicing_output(cfg) `'
 #' output:
 #'   html_document:
 #'    code_folding: show
