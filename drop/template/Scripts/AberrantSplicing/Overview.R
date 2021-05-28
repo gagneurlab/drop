@@ -29,10 +29,6 @@ knitr::opts_chunk$set(eval = snakemake@params$run)
 #+ echo=FALSE, eval = TRUE
 saveRDS(snakemake, snakemake@log$snakemake)
 
-suppressPackageStartupMessages({
-  library(FRASER)
-  library(magrittr)
-})
 
 # define functions
 get_html_path <- function(datasets, htmlDir, fileName) {
@@ -85,6 +81,11 @@ fraser_links <- get_html_path(datasets = datasets_annotations,
 #' `r paste('* ', snakemake@input$result_tables, collapse = '\n')`  
 #'
 #'
+
+#+ echo=FALSE
+library(FRASER)
+library(magrittr)
+
 #' ## Analyze individual results
 # Read the first fds object and results table
 fds <- loadFraserDataSet(file = snakemake@input$fds_files[[1]])

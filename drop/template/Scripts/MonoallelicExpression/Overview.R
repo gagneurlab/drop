@@ -51,9 +51,7 @@ saveRDS(snakemake, snakemake@log$snakemake)
 res_sample <- readRDS(snakemake@input$results_obj[[1]])
 
 #+echo=F
-suppressPackageStartupMessages({
-  library(tMAE)
-})
+library(tMAE)
 
 if(is.null(res_sample$rare)){
   g1 <- plotMA4MAE(res_sample)
