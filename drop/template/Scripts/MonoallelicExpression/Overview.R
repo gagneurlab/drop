@@ -4,6 +4,8 @@
 #' wb:
 #'  log:
 #'    - snakemake: '`sm str(tmp_dir / "MAE" / "Overview.Rds")`'
+#'  params:
+#'    - run: '`sm cfg.MAE.run`'
 #'  input:
 #'    - allelic_counts: '`sm expand(cfg.getProcessedDataDir() + 
 #'                          "/mae/allelic_counts/{mae_id}.csv.gz",
@@ -22,12 +24,12 @@
 #'    code_download: TRUE
 #'---
 
-#+ echo=F
+#+ include=FALSE
+knitr::opts_chunk$set(eval = snakemake@params$run)
+
+#+ eval=TRUE, echo=FALSE
 saveRDS(snakemake, snakemake@log$snakemake)
 
-suppressPackageStartupMessages({
-  library(tMAE)
-})
 
 
 #' ## Files
@@ -49,6 +51,10 @@ suppressPackageStartupMessages({
 res_sample <- readRDS(snakemake@input$results_obj[[1]])
 
 #+echo=F
+suppressPackageStartupMessages({
+  library(tMAE)
+})
+
 if(is.null(res_sample$rare)){
   g1 <- plotMA4MAE(res_sample)
   g2 <- plotAllelicCounts(res_sample)
