@@ -16,10 +16,10 @@ sa = cfg.sampleAnnotation
 config = cfg.config_dict # legacy
 
 
-include: drop.utils.getWBuildSnakefile()
 include: cfg.AE.getWorkdir() + "/Snakefile"
 include: cfg.AS.getWorkdir() + "/Snakefile"
 include: cfg.MAE.getWorkdir() + "/Snakefile"
+include: drop.utils.getWBuildSnakefile()
 
 
 # don't allow the dataset wildcard to contain '--' as this is a delimter
