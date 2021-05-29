@@ -11,7 +11,7 @@
 #'    - htmlDir: '`sm config["htmlOutputPath"] + "/AberrantExpression"`'
 #'  input:
 #'    - '`sm **aberrantExpression_Overview_R_input(cfg)`'
-#'  output:
+#' output:
 #'   html_document:
 #'    code_folding: show
 #'    code_download: TRUE

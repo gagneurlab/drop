@@ -8,7 +8,7 @@
 #'    - run: '`sm cfg.MAE.run`'
 #'  input:
 #'    - '`sm **aberrantSplicing_Overview_R_input(cfg)`'
-#'  output:
+#' output:
 #'   html_document:
 #'    code_folding: hide
 #'    code_download: TRUE
