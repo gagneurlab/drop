@@ -10,7 +10,6 @@ def aberrantExpression_Overview_R_input(cfg):
         return (
         {
                 "odsFiles": expand(cfg.getProcessedResultsDir() +
-                 "/aberrant_expression/{annotation}/outrider/{dataset}/ods.Rds" +
                  "/aberrant_expression/{annotation}/outrider/{dataset}/ods.Rds",
                  annotation=cfg.genome.getGeneVersions(), dataset=cfg.AE.groups),
 
