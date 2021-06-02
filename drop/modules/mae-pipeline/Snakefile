@@ -16,7 +16,7 @@ rule mae_dependency:
     shell:
         """
         snakemake --nolock --rulegraph {MAE_index_output} | \
-            sed -n '/digraph snakemake_dag/,$p' | \
+            sed -ne '/digraph snakemake_dag/,/}}/p' | \
             dot -Tsvg -Grankdir=TB > {output}
         """
 

@@ -16,6 +16,6 @@ rule aberrantSplicing_dependency:
     shell:
         """
         snakemake --nolock --rulegraph {AS_index_output} | \
-            sed -n '/digraph snakemake_dag/,$p' | \
+            sed -ne '/digraph snakemake_dag/,/}}/p' | \
             dot -Tsvg -Grankdir=TB > {output}
         """
