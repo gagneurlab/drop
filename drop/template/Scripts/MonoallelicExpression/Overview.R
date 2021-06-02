@@ -7,7 +7,7 @@
 #'  params:
 #'    - run: '`sm cfg.MAE.run`'
 #'  input:
-#'    - '`sm **aberrantSplicing_Overview_R_input(cfg)`'
+#'    - '`sm **mae_Overview_R_input(cfg)`'
 #' output:
 #'   html_document:
 #'    code_folding: hide
@@ -25,16 +25,16 @@ saveRDS(snakemake, snakemake@log$snakemake)
 #' ## Files
 #' ### Allelic counts
 #' Located in `r file.path(snakemake@config$root, 'processed_data/mae/allelic_counts/')`
-#' 
+#'
 #' ### Results tables of each sample
 #' Located in `r file.path(snakemake@config$root, 'processed_results/mae/samples/')`
-#' 
+#'
 #' ### Aggregated results tables of each group
-#' `r paste('* ', snakemake@input$results_tables, collapse = '\n')`  
+#' `r paste('* ', snakemake@input$results_tables, collapse = '\n')`
 #'
 #' ### MAE Pipeline Output
 #' [MAE Pipeline Output](`r "./Scripts_MAE_Datasets.html"`)
-#' 
+#'
 
 #' ## Analyze Individual Results
 # Read the first results table
@@ -58,9 +58,8 @@ g1
 g2
 
 #' ## Quality Control: VCF-BAM Matching
-#' 
+#'
 #' [QC Overview](`r "./Scripts_QC_Datasets.html"`)
-#' 
-#' ### DNA-RNA matrix: 
-#' `r paste('* ', snakemake@input$qc_matrix, collapse='\n')`  
-
+#'
+#' ### DNA-RNA matrix:
+#' `r paste('* ', snakemake@input$qc_matrix, collapse='\n')`

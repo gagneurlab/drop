@@ -97,33 +97,32 @@ class SampleParams:
         """
         for ann in self.geneAnnotation:
             for module in moduleList:
-                if not module.run:
-                    #make new dummy files for module skipping. Should be empty and present regardless if skipped
-                    dummy_dir = self.processedDataDir / ".module_skips"
-                    dummy_dir.mkdir(parents = True,exist_ok = True)
-                    dummy_filename = dummy_dir / f"{self.MODULE_NAMES[module.name]}.skip"
-                    with open(dummy_filename,'w') as dummy:
-                        pass
-                else:
-                    if module.name == "AberrantExpression":
-                        modulePath = self.processedDataDir / self.MODULE_NAMES[module.name] / ann / "params"
-                    elif module.name == "MonoallelicExpression":
-                        modulePath = self.processedDataDir / self.MODULE_NAMES[module.name] / "params"
-                    elif module.name == "AberrantSplicing":
-                        continue
-                        #modulePath = self.processedDataDir / self.MODULE_NAMES[module.name] / "params"
-                    else: raise(ValueError,"currently only AberrantExpression, AberrantSplicing, and MonoallelicExpression are supported")
+                #make new dummy files for module skipping. Should be empty and present regardless if skipped
+                dummy_dir = self.processedDataDir / ".module_skips"
+                dummy_dir.mkdir(parents = True,exist_ok = True)
+                dummy_filename = dummy_dir / f"{self.MODULE_NAMES[module.name]}.skip"
+                with open(dummy_filename,'w') as dummy:
+                    pass
 
-                    paramKeys = self.PARAM_COLS[module.name].keys()
-                    for paramType in paramKeys:
+                if module.name == "AberrantExpression":
+                    modulePath = self.processedDataDir / self.MODULE_NAMES[module.name] / ann / "params"
+                elif module.name == "MonoallelicExpression":
+                    modulePath = self.processedDataDir / self.MODULE_NAMES[module.name] / "params"
+                elif module.name == "AberrantSplicing":
+                    continue
+                    #modulePath = self.processedDataDir / self.MODULE_NAMES[module.name] / "params"
+                else: raise(ValueError,"currently only AberrantExpression, AberrantSplicing, and MonoallelicExpression are supported")
 
-                        self.writeSampleParams(
-                                 module,
-                                 modulePath / self.PARAM_COLS[module.name][paramType].path,
-                                 paramType,
-                                 self.PARAM_COLS[module.name][paramType].sampleAnnotationColumns,
-                                 self.PARAM_COLS[module.name][paramType].include,
-                                 self.PARAM_COLS[module.name][paramType].group
+                paramKeys = self.PARAM_COLS[module.name].keys()
+                for paramType in paramKeys:
+
+                    self.writeSampleParams(
+                             module,
+                             modulePath / self.PARAM_COLS[module.name][paramType].path,
+                             paramType,
+                             self.PARAM_COLS[module.name][paramType].sampleAnnotationColumns,
+                             self.PARAM_COLS[module.name][paramType].include,
+                             self.PARAM_COLS[module.name][paramType].group
                          )
 
     def writeSampleParams(self,module,path,file_suffix,param_cols,include,group_param):

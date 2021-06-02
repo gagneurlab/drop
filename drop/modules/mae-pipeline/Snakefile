@@ -9,17 +9,16 @@ MAE_index_input, MAE_index_output, MAE_graph_file, _ = createIndexRule(
 def mae_Overview_R_input(cfg):
     if cfg.MAE.run:
        return {"allelic_counts" :
-                                  expand(cfg.getProcessedResultsDir() + "/mae/allelic_counts/{mae_id}.csv.gz",
+                                  expand(cfg.getProcessedDataDir() + "/mae/allelic_counts/{mae_id}.csv.gz",
                                   mae_id=cfg.MAE.getMaeAll()),
-			  "results_obj": 
+			  "results_obj":
 			                      expand(cfg.getProcessedResultsDir() + "/mae/samples/{mae_id}_res.Rds",
                                   mae_id=cfg.MAE.getMaeAll()),
 
               "result_tables":
                                   expand(cfg.getProcessedResultsDir() + "/mae/{dataset}/MAE_results_{annotation}.tsv",
-                                  "/aberrant_splicing/results/{annotation}/fraser/{dataset}/results_per_junction.tsv",
                                   dataset=cfg.MAE.groups, annotation=cfg.genome.getGeneVersions()),
-              "qc_matrix":        
+              "qc_matrix":
 			                      expand(cfg.getProcessedResultsDir() + "/mae/{qc_group}/" + "dna_rna_qc_matrix.Rds",
 								  qc_group=cfg.MAE.qcGroups)
                 }
@@ -79,7 +78,7 @@ rule mae_allelicCounts:
         fasta     = lambda w: cfg.MAE.getGenomePath(w.rna),
         dict      = lambda w: cfg.genome.getFastaDict(cfg.MAE.getGenomePath(w.rna)),
         script    = MAE_WORKDIR / "MAE" / "ASEReadCounter.sh"
-    output:    
+    output:
         counted = cfg.processedDataDir / "mae" / "allelic_counts" / "{vcf}--{rna}.csv.gz"
     params:
         bcftools = cfg.getTool("bcftoolsCmd"),
