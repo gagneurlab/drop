@@ -43,11 +43,19 @@ def renameLocalDir(module):
     if module.run:
         work_dir = Path(work_dir_on  + "/pipeline")
         if(os.path.isdir(work_dir_off)):
-            os.rename(work_dir_off,work_dir_on)
+            try:
+                os.rename(work_dir_off,work_dir_on)
+            except:
+                raise OSError(f"Could not rename {work_dir_off} to {work_dir_on}\n \
+                    try running 'drop update' to reset file structure\n")
     else:
         work_dir = Path(work_dir_off + "/pipeline")
         if(os.path.isdir(work_dir_on)):
-            os.rename(work_dir_on,work_dir_off)
+            try:
+                os.rename(work_dir_on,work_dir_off)
+            except:
+                raise OSError(f"Could not rename {work_dir_on} to {work_dir_off}\n \
+                    try running 'drop update' to reset file structure\n")
 
     return work_dir
 
