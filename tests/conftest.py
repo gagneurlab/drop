@@ -27,6 +27,6 @@ def dropConfig(demo_dir):
     orig_path = os.getcwd()
     os.chdir(demo_dir)
     with patch.object(sys, 'argv', ["snakemake", "-n"]):
-        cfg = drop.config.DropConfig(wbuild.utils.Config())
+        cfg = drop.config.DropConfig(wbuild.utils.Config(),demo_dir)
     os.chdir(orig_path)
     return cfg
