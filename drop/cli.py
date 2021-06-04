@@ -1,7 +1,7 @@
 import wbuild
 import drop
 from pathlib import Path
-from shutil import copy2
+from shutil import copy2, rmtree
 from distutils.dir_util import copy_tree, remove_tree
 import subprocess
 import click
@@ -73,8 +73,15 @@ def copyModuleCode(repoPaths, projectPaths):
         "mae-pipeline": "MonoallelicExpression"
     }
 
+    import sys
     for repo, analysis_dir in repo_map.items():
         fc.clear_cache()  # clear file compare cache to avoid mistakes
+
+        #look for analysis_dir hidden from wbuild with "_" prefix and remove dir
+        wbuild_hidden_path = projectPaths["Scripts"] / ("_" + analysis_dir)
+        if os.path.isdir(wbuild_hidden_path):
+            rmtree(wbuild_hidden_path,ignore_errors=True)
+
         base_repo = repoPaths["modules"] / repo
         local_proj = projectPaths["Scripts"] / analysis_dir / "pipeline"
         if not local_proj.is_dir():  # module directory does not exist. copy it
@@ -101,7 +108,6 @@ def setFiles(projectDir=None):
         if not path.is_dir():
             path.mkdir(parents=True)
             logger.info(f"create {str(path)}")
-
     # hidden files
     copy_tree(str(wbuildPath), str(projectPaths["projectDir"] / ".wBuild"))
     copy_tree(str(repoPaths["modules"] / "helpers"), str(projectPaths["dropDir"] / "helpers"))
@@ -111,7 +117,6 @@ def setFiles(projectDir=None):
     copy2(repoPaths["template"] / "Snakefile", projectPaths["projectDir"] / "Snakefile")
     copy_tree(str(repoPaths["Scripts"]), str(projectPaths["Scripts"]))
     copyModuleCode(repoPaths, projectPaths)
-    # copyModuleCode(repoPaths, projectPaths)
 
     config_file = projectPaths["projectDir"] / "config.yaml"
     if not config_file.is_file():

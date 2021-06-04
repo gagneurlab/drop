@@ -1,37 +1,12 @@
-MAE_WORKDIR = cfg.MAE.getWorkdir(str_=False)
+MAE_WORKDIR = renameLocalDir(cfg.MAE)
 
-MAE_index_name = "mae-pipeline"
-MAE_index_input, MAE_index_output, MAE_graph_file, _ = createIndexRule(
-    scriptsPath=str(MAE_WORKDIR),
-    index_name=MAE_index_name
-)
-
-def mae_Overview_R_input(cfg):
-    if cfg.MAE.run:
-       return {"allelic_counts" :
-                                  expand(cfg.getProcessedDataDir() + "/mae/allelic_counts/{mae_id}.csv.gz",
-                                  mae_id=cfg.MAE.getMaeAll()),
-			  "results_obj":
-			                      expand(cfg.getProcessedResultsDir() + "/mae/samples/{mae_id}_res.Rds",
-                                  mae_id=cfg.MAE.getMaeAll()),
-
-              "result_tables":
-                                  expand(cfg.getProcessedResultsDir() + "/mae/{dataset}/MAE_results_{annotation}.tsv",
-                                  dataset=cfg.MAE.groups, annotation=cfg.genome.getGeneVersions()),
-              "qc_matrix":
-			                      expand(cfg.getProcessedResultsDir() + "/mae/{qc_group}/" + "dna_rna_qc_matrix.Rds",
-								  qc_group=cfg.MAE.qcGroups)
-                }
-    else:
-        return {"dummy_file": cfg.getProcessedDataDir() + "/.module_skips/mae.skip"}
-
-
-
-
+MAE_index_input,MAE_graph_file,MAE_index_output = moduleInputOutput("mae-pipeline",MAE_WORKDIR,cfg.MAE.run)
 rule mae:
-    input: MAE_index_input, MAE_graph_file
+    input:  MAE_index_input,MAE_graph_file
     output: MAE_index_output
-    run: ci(str(MAE_WORKDIR), MAE_index_name)
+    run:
+        if cfg.MAE.run:
+            ci(str(MAE_WORKDIR), 'mae-pipeline')
 
 rule mae_dependency:
     output: MAE_graph_file

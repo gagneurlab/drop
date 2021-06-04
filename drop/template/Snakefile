@@ -1,4 +1,5 @@
 from pathlib import Path
+import os
 import drop
 import wbuild
 from wbuild.createIndex import createIndexRule, ci
@@ -15,10 +16,44 @@ drop.installRPackages(cfg)
 sa = cfg.sampleAnnotation
 config = cfg.config_dict # legacy
 
+def find_snakefile(module):
+    if os.path.isdir(module.getWorkdir()):
+        return module.getWorkdir() + "/Snakefile"
+    else:
+        return module.getWorkdir(hide_dir = True) + "/Snakefile"
 
-include: cfg.AE.getWorkdir() + "/Snakefile"
-include: cfg.AS.getWorkdir() + "/Snakefile"
-include: cfg.MAE.getWorkdir() + "/Snakefile"
+
+def moduleInputOutput(index_name, work_dir,run):
+    if(run):
+        index_input, index_output, graph_file, _ = createIndexRule(
+            scriptsPath=str(work_dir),
+            index_name= index_name
+        )
+        return index_input,graph_file,index_output
+    else:
+        #dummy return of root directory which already exists
+        return cfg.root,cfg.root,cfg.root
+
+def renameLocalDir(module):
+    work_dir = module.getWorkdir(str_=False)
+    work_dir_prefix = str(work_dir).rsplit("Scripts",1)[0] + "Scripts/"
+    work_dir_off = work_dir_prefix + "_" + module.name
+    work_dir_on = work_dir_prefix + module.name
+
+    if module.run:
+        work_dir = Path(work_dir_on  + "/pipeline")
+        if(os.path.isdir(work_dir_off)):
+            os.rename(work_dir_off,work_dir_on)
+    else:
+        work_dir = Path(work_dir_off + "/pipeline")
+        if(os.path.isdir(work_dir_on)):
+            os.rename(work_dir_on,work_dir_off)
+
+    return work_dir
+
+include: find_snakefile(cfg.AE)
+include: find_snakefile(cfg.AS)
+include: find_snakefile(cfg.MAE)
 include: drop.utils.getWBuildSnakefile()
 
 
@@ -27,7 +62,7 @@ wildcard_constraints:
     dataset="((?!--).)*"
 
 rule all:
-    input: 
+    input:
         rules.aberrantExpression.output,
         rules.aberrantSplicing.output,
         rules.mae.output,

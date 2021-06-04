@@ -23,8 +23,11 @@ class Submodule:
             raise KeyError(f"{key} not defined for {self.name} config")
         return self.dict_[key]
 
-    def getWorkdir(self, str_=True):
-        return utils.returnPath(self.workDir / "Scripts" / self.name / "pipeline", str_)
+    def getWorkdir(self, hide_dir = False, str_=True):
+        if hide_dir:
+            return utils.returnPath(self.workDir / "Scripts" / ("_" + self.name) / "pipeline", str_)
+        else:
+            return utils.returnPath(self.workDir / "Scripts" / self.name / "pipeline", str_)
 
     def checkSubset(self, groupSubsets, warn=30, error=10):
         """
@@ -41,5 +44,3 @@ class Submodule:
                 raise ValueError(message)
             elif len(groupSubsets[group]) < warn:
                 logger.info(f'WARNING: Less than {warn} IDs in DROP_GROUP {group}')
-
-

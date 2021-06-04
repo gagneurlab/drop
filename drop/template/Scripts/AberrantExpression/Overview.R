@@ -10,7 +10,13 @@
 #'    - datasets: '`sm cfg.AE.groups`'
 #'    - htmlDir: '`sm config["htmlOutputPath"] + "/AberrantExpression"`'
 #'  input:
-#'    - '`sm **aberrantExpression_Overview_R_input(cfg)`'
+#'    - odsFiles: '`sm expand(cfg.getProcessedResultsDir() +
+#'                  "/aberrant_expression/{annotation}/outrider/{dataset}/ods.Rds",
+#'                  annotation=cfg.genome.getGeneVersions(), dataset=cfg.AE.groups)`'
+#'    - resultTables: '`sm expand(cfg.getProcessedResultsDir() +
+#'                      "/aberrant_expression/{annotation}/outrider/" +
+#'                      "{dataset}/OUTRIDER_results.tsv",
+#'                      annotation=cfg.genome.getGeneVersions(), dataset=cfg.AE.groups)`'
 #' output:
 #'   html_document:
 #'    code_folding: show
