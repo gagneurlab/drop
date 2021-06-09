@@ -128,7 +128,7 @@ def setFiles(projectDir=None):
 
     # copy Scripts and pipelines
     copy2(repoPaths["template"] / "Snakefile", projectPaths["projectDir"] / "Snakefile")
-    #copy_tree(str(repoPaths["Scripts"]), str(projectPaths["Scripts"]))
+    copy_tree(str(repoPaths["Scripts"]), str(projectPaths["Scripts"]))
     copyModuleCode(repoPaths, projectPaths)
 
     config_file = projectPaths["projectDir"] / "config.yaml"
