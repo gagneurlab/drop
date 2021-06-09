@@ -77,18 +77,31 @@ def copyModuleCode(repoPaths, projectPaths):
     for repo, analysis_dir in repo_map.items():
         fc.clear_cache()  # clear file compare cache to avoid mistakes
 
+        base_repo = repoPaths["modules"] / repo
+        local_proj = projectPaths["Scripts"] / analysis_dir
+
         #look for analysis_dir hidden from wbuild with "_" prefix and remove dir
         wbuild_hidden_path = projectPaths["Scripts"] / ("_" + analysis_dir)
-        if os.path.isdir(wbuild_hidden_path):
-            rmtree(wbuild_hidden_path,ignore_errors=True)
 
-        base_repo = repoPaths["modules"] / repo
-        local_proj = projectPaths["Scripts"] / analysis_dir / "pipeline"
+        #if both hidden and local exist. Delete the hidden
+        if wbuild_hidden_path.is_dir() and local_proj.is_dir():
+            logger.info(f"removing the hidden wBuild path: {analysis_dir}")
+            rmtree(wbuild_hidden_path,ignore_errors=True)
+            logger.info("done")
+        # if only hidden exists. rename and run normally
+        elif wbuild_hidden_path.is_dir() and not local_proj.is_dir():
+            logger.info(f"renaming the hidden wBuild path: {analysis_dir}")
+            os.rename(wbuild_hidden_path,local_proj)
+            logger.info("done")
+
+        local_proj = local_proj / "pipeline"
         if not local_proj.is_dir():  # module directory does not exist. copy it
             logger.info(f"{local_proj} is not a directory, copy over from drop base")
             copy_tree(str(base_repo), str(local_proj))
         else:  # module dir does exist. Do a safe-overwrite
+            logger.info(f"rewriting the module {analysis_dir} from the base DROP path")
             overwrite(base_repo, local_proj)
+            logger.info("done")
 
 
 def removeFile(filePath, warn=True):
@@ -115,7 +128,7 @@ def setFiles(projectDir=None):
 
     # copy Scripts and pipelines
     copy2(repoPaths["template"] / "Snakefile", projectPaths["projectDir"] / "Snakefile")
-    copy_tree(str(repoPaths["Scripts"]), str(projectPaths["Scripts"]))
+    #copy_tree(str(repoPaths["Scripts"]), str(projectPaths["Scripts"]))
     copyModuleCode(repoPaths, projectPaths)
 
     config_file = projectPaths["projectDir"] / "config.yaml"
@@ -138,9 +151,8 @@ def init():
 
 @main.command()
 def update():
-    drop.checkDropVersion(Path().cwd().resolve(), force=True)
     logger.info("updating local Scripts if necessary")
-    setFiles()
+    drop.checkDropVersion(Path().cwd().resolve(), force=True)
     logger.info("update...done")
 
 
