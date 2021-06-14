@@ -3,6 +3,15 @@ from tests.common import *
 
 class Test_AS_Pipeline:
 
+    def test_pipeline_no_run(self,demo_dir):
+        LOGGER.info("run aberrantSplicing pipeline with \'run: false\'")
+        run("awk -v n=2 \'/run: true/ { if (++count == n) sub(/run: true/, \"run: false\"); } 1\' \
+          config.yaml > config_AS_norun.yaml  ",demo_dir)
+        pipeline_run = run(["snakemake", "aberrantSplicing", f"-j{CORES}", "--configfile", "config_AS_norun.yaml"], demo_dir)
+        tmp = run(["snakemake", "--unlock"], demo_dir)
+        assert "Nothing to be done." in pipeline_run.stderr
+        return pipeline_run
+
     @pytest.fixture(scope="class")
     def pipeline_run(self, demo_dir):
         LOGGER.info("run aberrant splicing pipeline")
@@ -10,7 +19,7 @@ class Test_AS_Pipeline:
         tmp = run(["snakemake", "--unlock"], demo_dir)
         assert "Finished job 0." in pipeline_run.stderr
         return pipeline_run
-  
+
 
 #once Output is prebuilt with ncbi_fds obj present
 #    @pytest.mark.usefixtures("pipeline_run")
@@ -22,14 +31,14 @@ class Test_AS_Pipeline:
 #                            f"-j{CORES}"], demo_dir)
 #        message = "This was a dry-run (flag -n). The order of jobs does not reflect the order of execution."
 #        assert message in r.stdout
-    
-    
+
+
     @pytest.mark.usefixtures("pipeline_run")
     def test_counts(self, demo_dir):
-        annotation = "v29"                                                                                              
-        dataset = "fraser"                                                                                              
+        annotation = "v29"
+        dataset = "fraser"
         cnt_file = f"Output/processed_results/aberrant_splicing/datasets/savedObjects/{dataset}--{annotation}/fds-object.RDS"
-        r_cmd = """ 
+        r_cmd = """
             library(FRASER)
             fds <- loadFraserDataSet(file="{}")
             print(fds)
@@ -41,10 +50,10 @@ class Test_AS_Pipeline:
 
     @pytest.mark.usefixtures("pipeline_run")
     def test_results(self, demo_dir):
-        results_dir = "Output/processed_results/aberrant_splicing/results"                                              
-        annotation = "v29"                                                                                              
-        dataset = "fraser"                                                                                              
-        r = run(f"wc -l {results_dir}/{annotation}/fraser/{dataset}/results_per_junction.tsv", demo_dir)                
-        assert "87" == r.stdout.split()[0]                                                                                        
-        r = run(f"wc -l {results_dir}/{annotation}/fraser/{dataset}/results.tsv", demo_dir)                             
-        assert "11" == r.stdout.split()[0]                                     
+        results_dir = "Output/processed_results/aberrant_splicing/results"
+        annotation = "v29"
+        dataset = "fraser"
+        r = run(f"wc -l {results_dir}/{annotation}/fraser/{dataset}/results_per_junction.tsv", demo_dir)
+        assert "87" == r.stdout.split()[0]
+        r = run(f"wc -l {results_dir}/{annotation}/fraser/{dataset}/results.tsv", demo_dir)
+        assert "11" == r.stdout.split()[0]

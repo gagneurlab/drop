@@ -3,6 +3,16 @@ from tests.common import *
 
 class Test_AE_Pipeline:
 
+    def test_pipeline_no_run(self,demo_dir):
+        LOGGER.info("run aberrantExpression pipeline with \'run: false\'")
+        run("awk -v n=1 \'/run: true/ { if (++count == n) sub(/run: true/, \"run: false\"); } 1\' \
+          config.yaml > config_AE_norun.yaml  ",demo_dir)
+        pipeline_run = run(["snakemake", "aberrantExpression", f"-j{CORES}", "--configfile", "config_AE_norun.yaml"], demo_dir)
+        tmp = run(["snakemake", "--unlock"], demo_dir)
+        assert "Nothing to be done." in pipeline_run.stderr
+        return pipeline_run
+
+
     @pytest.fixture(scope="class")
     def pipeline_run(self, demo_dir):
         LOGGER.info("run aberrant expression pipeline...")
@@ -25,11 +35,11 @@ class Test_AE_Pipeline:
     @pytest.mark.usefixtures("pipeline_run")
     def test_results(self, demo_dir):
         output_dir = "Output/processed_results/aberrant_expression/v29/outrider/outrider"
-        r_cmd = """ 
+        r_cmd = """
                 # ods object
                 ods <- readRDS(file.path("{}", "ods.Rds"))
                 print(ods)
-    
+
                 # results table
                 res <- readRDS(file.path("{}", "OUTRIDER_results_all.Rds"))
                 print(paste(c("res:", dim(res)), collapse=" "))
@@ -41,7 +51,7 @@ class Test_AE_Pipeline:
 
     def test_import_results(self, demo_dir):
         output_dir = "Output/processed_results/aberrant_expression/v29/outrider/import_exp"
-        r_cmd = """ 
+        r_cmd = """
                 # ods object
                 ods <- readRDS(file.path("{}", "ods.Rds"))
                 print(ods)
@@ -76,7 +86,7 @@ class Test_AE_Pipeline:
         merged_counts = f"{no_import}/Output/processed_data/aberrant_expression/v29/outrider/outrider/total_counts.Rds"
         r = run(f"snakemake {merged_counts} --configfile config_noimp.yaml -nqF", no_import)
         tmp = run(["snakemake", "--unlock"], no_import)
-        
+
         print(r.stdout)
         assert "10\tAberrantExpression_pipeline_Counting_countReads_R" in r.stdout
         assert "1\tAberrantExpression_pipeline_Counting_mergeCounts_R" in r.stdout
