@@ -20,8 +20,14 @@
 saveRDS(snakemake, snakemake@log$snakemake)
 source(snakemake@params$setup, echo=FALSE)
 
-if ("random_seed" %in% names(snakemake@config) && isTRUE(snakemake@config$random_seed))
-  set.seed(42)
+if ("random_seed" %in% names(snakemake@config)){
+  rseed <- snakemake@config$random_seed
+  if(isTRUE(rseed)){
+    set.seed(42)
+  } else if (is.numeric(rseed)){
+    set.seed(as.integer(rseed))
+  }
+}
 
 #+ input
 dataset    <- snakemake@wildcards$dataset
@@ -60,4 +66,3 @@ for(type in psiTypes){
 }
 fds <- saveFraserDataSet(fds)
 file.create(snakemake@output$hyper)
-

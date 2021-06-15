@@ -3,9 +3,9 @@
 #' author: vyepez
 #' wb:
 #'  log:
-#'   - snakemake: '`sm str(tmp_dir / "MAE" / "deseq" / "qc_{rna}.Rds")`'
+#'   - snakemake: '`sm str(tmp_dir / "MAE" / "deseq" / "QC--{rna}.Rds")`'
 #'  input:
-#'   - qc_counts: '`sm cfg.getProcessedDataDir() + "/mae/allelic_counts/qc_{rna}.csv.gz" `'
+#'   - qc_counts: '`sm cfg.getProcessedDataDir() + "/mae/allelic_counts/QC--{rna}.csv.gz" `'
 #'  output:
 #'   - mae_res: '`sm cfg.getProcessedDataDir() + "/mae/RNA_GT/{rna}.Rds"`'
 #'  type: script

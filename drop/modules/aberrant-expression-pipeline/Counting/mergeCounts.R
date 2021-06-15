@@ -9,6 +9,7 @@
 #'    - exCountIDs: '`sm lambda w: sa.getIDsByGroup(w.dataset, assay="GENE_COUNT")`'
 #'  input: 
 #'    - counts: '`sm lambda w: cfg.AE.getCountFiles(w.annotation, w.dataset)`'
+#'    - input_params: '`sm cfg.getProcessedDataDir() + "/aberrant_expression/{annotation}/params/merge/{dataset}_mergeParams.csv"`'
 #'  output:
 #'    - counts: '`sm cfg.getProcessedDataDir() +
 #'               "/aberrant_expression/{annotation}/outrider/{dataset}/total_counts.Rds"`'

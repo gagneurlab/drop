@@ -5,7 +5,7 @@ exportCounts = cfg.exportCounts
 sampleAnnotation = snakemake.params.sampleAnnotation
 
 # adapt sample annotation data frame
-sa = sampleAnnotation.sa.copy()
+sa = sampleAnnotation.annotationTable.copy()
 sa["STRAND_SPECIFIC"] = sa["STRAND"] != "no"
 if "ICD_10" in sa:
     sa["ICD_10"] = sa["ICD_10"].str.upper()
@@ -17,11 +17,11 @@ sa_cols = list(sa_cols)
 
 # Getters for DESCRIPTION file
 def get_tissue_info(sa):
-    if "TISSUE" not in sa or sa["TISSUE"].is_null():
-        return 'No tissue information'
-    uniq_tissues = sa.TISSUE.unique()
+    if "TISSUE" not in sa or sa["TISSUE"].isnull().all():
+            return "No tissue information provided"
+    uniq_tissues = sa["TISSUE"].unique()
     if len(uniq_tissues) > 1:
-        return "More than 1 tissue in dataset is not allowed!"
+        raise ValueError("Either missing value or more than 1 tissue in dataset")
     return "".join(uniq_tissues)
 
 
@@ -69,8 +69,7 @@ for ga, sa_file, desc_file in zip(group_with_anno, sa_files, desc_files):
 
     # subset by group
     rna_ids = sampleAnnotation.rnaIDs[group]
-    dna_ids = sampleAnnotation.dnaIDs[group]
-    sa_sub = sa.loc[(sa["RNA_ID"].isin(rna_ids)) & (sa["DNA_ID"].isin(dna_ids))]
+    sa_sub = sa.loc[sa["RNA_ID"].isin(rna_ids)]
 
     # save sample annotation subset
     sa_sub.to_csv(sa_file, sep='\t', index=False, columns=sa_cols)

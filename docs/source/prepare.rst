@@ -44,6 +44,9 @@ genomeAssembly       character   Either hg19/hs37d5 or hg38/GRCh38, depending on
 sampleAnnotation     character   Full path of the sample annotation table                                                                                                 ``/data/project1/sample_annotation.tsv``
 root                 character   Full path of the folder where the subdirectories processed_data and processed_results will be created containing DROP's output files.    ``/data/project1``
 genome               character   Full path of a human reference genome fasta file                                                                                         ``/path/to/hg19.fa``
+genome               dictionary  (Optional) Multiple fasta files can be specified when RNA-seq BAM files belong to different genome assemblies (eg, ncbi, ucsc).          ``ncbi: /path/to/hg19_ncbi.fa``
+
+                                                                                                                                                                          ``ucsc: /path/to/hg19_ucsc.fa``
 geneAnnotation       dictionary  A key-value list of the annotation name (key) and the full path to the GTF file (value). More than one annotation file can be provided.  ``anno1: /path/to/gtf1.gtf``
 
                                                                                                                                                                           ``anno2: /path/to/gtf2.gtf``
@@ -76,7 +79,7 @@ groups                        list       DROP groups that should be executed in 
 
                                                                                                                                                                             ``- group2``
 minIds                        numeric    A positive number indicating the minimum number of samples that a group needs in order to be analyzed. We recommend at least 50.   ``1``
-fpkmCutoff                    numeric    A positive number indicating the minimum FPKM 5% of the samples per gene should have. If a gene has less it will be filtered out.  ``1 # suggested by OUTRIDER``
+fpkmCutoff                    numeric    A positive number indicating the minimum FPKM per gene that 5% of the samples should have. If a gene has less it is filtered out.  ``1 # suggested by OUTRIDER``
 implementation                character  Either 'autoencoder', 'pca' or 'peer'. Methods to remove sample covariation in OUTRIDER.                                           ``autoencoder``
 zScoreCutoff                  numeric    A non-negative number. Z scores (in absolute value) greater than this cutoff are considered as outliers.                           ``0``
 padjCutoff                    numeric    A number between (0, 1] indicating the maximum FDR an event can have in order to be considered an outlier.                         ``0.05``
@@ -151,15 +154,32 @@ Creating the sample annotation table
 ------------------------------------
 
 For a detailed explanation of the columns of the sample annotation, please refer to
-the DROP manuscript. 
-Inside the sample annotation, each row corresponds to a unique pair of RNA and DNA
+Box 3 of the `DROP manuscript <https://www.rdcu.be/cdMmF>`_. 
+
+Each row of the sample annotation table corresponds to a unique pair of RNA and DNA
 samples derived from the same individual. An RNA assay can belong to one or more DNA
 assays, and vice-versa. If so, they must be specified in different rows. The required
 columns are ``RNA_ID``, ``RNA_BAM_FILE`` and ``DROP_GROUP``, plus other module-specific
-ones (see DROP manuscript). In case external counts are included, add a new row for each
-sample from those files (or a subset if not all samples are needed).
+ones (see DROP manuscript). 
 
-The sample annotation file should be saved in the tab-separated values (tsv) format. The 
+The following columns describe the RNA-seq experimental setup:
+``PAIRED_END``, ``STRAND``, ``COUNT_MODE`` and ``COUNT_OVERLAPS``. They affect the 
+counting procedures of the aberrant expression and splicing modules. For a detailed 
+explanation, refer to the documentation of `HTSeq <https://htseq.readthedocs.io/en/latest/>`_.
+
+To run the MAE module, the columns ``DNA_ID`` and ``DNA_VCF_FILE`` are needed.
+
+In case external counts are included, add a new row for each sample from those 
+files (or a subset if not all samples are needed). Add the columns: ``GENE_COUNTS_FILE``,
+``GENE_ANNOTATON``, ``SPLIT_COUNTS_FILE`` and ``NON_SPLIT_COUNTS_FILE``. See examples below.
+
+In case RNA-seq BAM files belong to different genome assemblies (eg, ncbi, ucsc), multiple
+reference genome fasta files can be specified. Add a column called `GENOME` that  
+contains, for each sample, the key from the `genome` parameter in the config file that
+matches its genome assembly (eg, ncbi or ucsc).
+
+
+The sample annotation file must be saved in the tab-separated values (tsv) format. The 
 column order does not matter. Also, it does not matter where it is stored, as the path is 
 specified in the config file. Here we provide some examples on how to deal with certain
 situations. For simplicity, we do not include all possible columns in the examples.
@@ -240,12 +260,13 @@ Advanced options
 A local copy of DROP can be edited and modified for uncovering potential issues or increasing outputs.
 For example, the user might want to add new plots to the ``Summary`` scripts, or add
 additional columns to the results tables.
-Specifically, the number of threads allowed for a computational step can be modified by the user.
+Also, the number of threads allowed for a computational step can be modified.
 
 .. note::
 
-    DROP needs to be installed from a local directory :ref:`otherversions` using ``pip install -e <path/to/drop-repo>``
-    so that any changes in the code will be available in the next pipeline run.
+    DROP needs to be installed from a local directory using ``pip install -e <path/to/drop-repo>``
+    so that any changes in the code will be available in the next pipeline run
+    (see :ref:`otherversions`).
     Any changes made to the R code need to be updated with ``drop update`` in the project directory.
 
 The aberrant expression and splicing modules use a denoising autoencoder to
@@ -255,4 +276,16 @@ We recommend the search space to be at most N/3 for the aberrant expression,
 and N/6 for the aberrant splicing case. Nevertheless, the user can specify the 
 denominator with the parameter ``maxTestedDimensionProportion``.
 
+DROP allows that BAM files from RNA-seq from samples belonging to the same `DROP_GROUP`
+were aligned to different genome assemblies from the same build (eg, some to ucsc 
+and others to ncbi, but all to either hg19 or hg38). If so, for the aberrant 
+expression and splicing modules, no special configuration is needed.
+For the MAE module, the different fasta files must be specified as a dictionary in 
+the `genome` parameter of the config file, and, for each sample, the corresponding
+key of the `genome` dictionary must be specified in the `GENOME` column of the
+sample annotation.
+In additon, DROP allows that BAM files from RNA-seq were aligned to one genome
+assembly (eg ucsc) and the corresponding VCF files from DNA sequencing to another
+genome assembly (eg ncbi). If so, the assembly of the reference genome fasta file
+must correspond to the one of the BAM file from RNA-seq.
 

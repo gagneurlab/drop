@@ -21,7 +21,7 @@ jobs:
     - name: Install dependencies
       run: |
         #conda env update --file environment.yml --name base
-        conda install -c conda-forge -c bioconda drop
+        conda install -c conda-forge -c bioconda drop 'r-dplyr=1.0.5' 
         pip install .
     - name: Lint with flake8
       run: |

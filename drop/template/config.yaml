@@ -1,6 +1,10 @@
-projectTitle: Detection of RNA Outlier Pipeline
-htmlOutputPath: Output/html
-indexWithFolderName: true
+projectTitle: "DROP: Detection of RNA Outliers Pipeline"
+root:             # root directory of all intermediate output
+htmlOutputPath:   # path for HTML rendered reports
+indexWithFolderName: true # whether the root base name should be part of the index name
+
+hpoFile: null  # if null, downloads it from webserver
+sampleAnnotation: # path to sample annotation (see documenation on how to create it)
 
 root: Output
 sampleAnnotation: Data/sample_annotation.tsv
@@ -13,16 +17,21 @@ hpoFile: null
 random_seed: true  # just for demo data, remove for proper analysis
 
 exportCounts:
-  geneAnnotations:
-    - v29
-  excludeGroups:
-    - mae
-    - import_exp
+    # specify which gene annotations to include and which
+    # groups to exclude when exporting counts
+    geneAnnotations:
+      - v29
+    excludeGroups
+      - group1
+genome: # path to genome sequence in fasta format.
+    # You can define multiple reference genomes in yaml format, ncbi: path_to_ncbi, ucsc: path_to_ucsc
+    # the keywords that define the path should be in the GENOME column of the SA table
 
 aberrantExpression:
-    groups: 
-      - outrider
-      - import_exp
+    run: true
+    groups:
+        - group1
+        - group2
     fpkmCutoff: 1
     implementation: autoencoder
     padjCutoff: 1
@@ -33,6 +42,7 @@ aberrantExpression:
         pasWindow: 1000
 
 aberrantSplicing:
+    run: true
     groups:
       - fraser
     recount: true
@@ -48,9 +58,11 @@ aberrantSplicing:
     maxTestedDimensionProportion: 6
 
 mae:
+    run: true
     groups:
-      - mae
-    genome: Data/chr21.fa
+        - group1
+        - group2
+        - group3
     gatkIgnoreHeaderCheck: true
     padjCutoff: .05
     allelicRatioCutoff: 0.8
@@ -78,4 +90,3 @@ tools:
     gatkCmd: gatk
     bcftoolsCmd: bcftools
     samtoolsCmd: samtools
-

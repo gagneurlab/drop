@@ -1,15 +1,22 @@
 from snakemake.io import expand
 from drop import utils
 
-class ExportCounts:
 
+class ExportCounts:
     COUNT_TYPE_MAP = {
         "geneCounts": "aberrantExpression",
         "splicingCounts": "aberrantSplicing",
     }
 
-    def __init__(self, dict_, outputRoot, sampleAnnotation, geneAnnotations, genomeAssembly,
-                 aberrantExpression, aberrantSplicing):
+    def __init__(
+            self,
+            dict_,
+            outputRoot,
+            sampleAnnotation,
+            genome,
+            aberrantExpression,
+            aberrantSplicing
+    ):
         """
         :param dict_: config dictionary for count export
         :param sampleAnnotation: parsed sample annotation
@@ -18,11 +25,10 @@ class ExportCounts:
         :param aberrantSplicing: AberrantSplicing object
         """
         self.CONFIG_KEYS = ["geneAnnotations", "excludeGroups"]
-        self.config_dict = self.setDefaults(dict_, geneAnnotations)
-
+        self.config_dict = self.setDefaults(dict_, genome.annotation)
         self.outputRoot = outputRoot / "exported_counts"
         self.sa = sampleAnnotation
-        self.genomeAssembly = genomeAssembly
+        self.genomeAssembly = genome.assembly
         self.geneAnnotations = self.get("geneAnnotations")
         self.modules = {
             "aberrantExpression": aberrantExpression,
@@ -52,7 +58,7 @@ class ExportCounts:
     def getFilePattern(self, str_=True, expandStr=False):
         pattern = self.pattern
         if expandStr:
-            pattern = pattern.__str__().replace("{", "{{").replace("}", "}}") 
+            pattern = pattern.__str__().replace("{", "{{").replace("}", "}}")
         return utils.returnPath(pattern, str_=str_)
 
     def getExportGroups(self, modules=None):
@@ -101,4 +107,3 @@ class ExportCounts:
         datasets = self.getExportGroups([self.COUNT_TYPE_MAP[count_type]])
         expandPattern = count_type if expandPattern is None else expandPattern
         return self.getFiles(f"{expandPattern}.{suffix}", datasets, **kwargs)
-

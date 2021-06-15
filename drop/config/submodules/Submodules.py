@@ -1,18 +1,18 @@
-from pathlib import Path
 from drop import utils
 from snakemake.logging import logger
 
-
 class Submodule:
 
-    def __init__(self, config, sampleAnnotation, processedDataDir, processedResultsDir):
+    def __init__(self, config, sampleAnnotation, processedDataDir, processedResultsDir, workDir):
         self.CONFIG_KEYS = []
         self.name = "Submodule"
+        self.sampleAnnotation = sampleAnnotation
         self.processedDataDir = processedDataDir
         self.processedResultsDir = processedResultsDir
-        self.sa = sampleAnnotation
+        self.workDir = workDir
         self.dict_ = self.setDefaultKeys(config)
         self.groups = self.dict_["groups"]
+        self.run = self.dict_.get('run', True)
 
     def setDefaultKeys(self, dict_):
         dict_ = {} if dict_ is None else dict_
@@ -23,8 +23,11 @@ class Submodule:
             raise KeyError(f"{key} not defined for {self.name} config")
         return self.dict_[key]
 
-    def getWorkdir(self, str_=True):
-        return utils.returnPath(Path("Scripts") / self.name / "pipeline", str_)
+    def getWorkdir(self, hide_dir = False, str_=True):
+        if hide_dir:
+            return utils.returnPath(self.workDir / "Scripts" / ("_" + self.name) / "pipeline", str_)
+        else:
+            return utils.returnPath(self.workDir / "Scripts" / self.name / "pipeline", str_)
 
     def checkSubset(self, groupSubsets, warn=30, error=10):
         """

@@ -1,10 +1,13 @@
 from .SampleAnnotation import SampleAnnotation
 
+from .Genome import Genome
+from .SampleParams import SampleParams
 from .submodules import *
 from .ExportCounts import ExportCounts
 from drop import utils
 from pathlib import Path
 import wbuild
+from snakemake.logging import logger
 
 
 class DropConfig:
@@ -12,18 +15,19 @@ class DropConfig:
         # wbuild keys
         "projectTitle", "htmlOutputPath", "scriptsPath", "indexWithFolderName", "fileRegex", "readmePath",
         # global parameters
-        "root", "sampleAnnotation", "geneAnnotation", "genomeAssembly", "exportCounts", "tools", "hpoFile",
+        "root", "sampleAnnotation", "geneAnnotation", "genomeAssembly", "exportCounts", "tools", "hpoFile","genome",
         # modules
         "aberrantExpression", "aberrantSplicing", "mae","rnaVariantCalling"
 
     ]
 
-    def __init__(self, wbuildConfig):
+    def __init__(self, wbuildConfig, workDir):
         """
         Parse wbuild/snakemake config object for DROP-specific content
         :param wbuildConfig: wBuild config object
+        :param workDir: path to project working directory
         """
-
+        self.workDir = Path(workDir)
         self.wBuildConfig = wbuildConfig
         self.config_dict = self.setDefaults(wbuildConfig.getConfig())
 
@@ -38,49 +42,71 @@ class DropConfig:
         self.readmePath = Path(self.get("readmePath"))
 
         # annotations
-        self.geneAnnotation = self.get("geneAnnotation")
-        self.genomeAssembly = self.get("genomeAssembly")
-        self.fastaFile = self.get("mae")["genome"] # TODO: move fasta outside of mae
-        self.fastaDict = Path(self.fastaFile).with_suffix(".dict")
-        self.sampleAnnotation = SampleAnnotation(self.get("sampleAnnotation"), self.root)
+        self.genome = Genome(
+            annotation=self.get("geneAnnotation"),
+            assembly=self.get("genomeAssembly"),
+            reference=self.get("genome")
+        )
+
+        self.sampleAnnotation = SampleAnnotation(
+            file=self.get("sampleAnnotation"),
+            root=self.root,
+            genome=self.genome
+        )
 
         # submodules
         self.AE = AE(
             config=self.get("aberrantExpression"),
             sampleAnnotation=self.sampleAnnotation,
             processedDataDir=self.processedDataDir,
-            processedResultsDir=self.processedResultsDir
+            processedResultsDir=self.processedResultsDir,
+            workDir=workDir
         )
+
         self.AS = AS(
             config=self.get("aberrantSplicing"),
             sampleAnnotation=self.sampleAnnotation,
             processedDataDir=self.processedDataDir,
-            processedResultsDir=self.processedResultsDir
+            processedResultsDir=self.processedResultsDir,
+            workDir=workDir
         )
         self.MAE = MAE(
             config=self.get("mae"),
             sampleAnnotation=self.sampleAnnotation,
             processedDataDir=self.processedDataDir,
-            processedResultsDir=self.processedResultsDir
+            processedResultsDir=self.processedResultsDir,
+            workDir=workDir,
+            genome=self.genome
         )
         self.RVC = RVC(
             config=self.get("rnaVariantCalling"),
             sampleAnnotation=self.sampleAnnotation,
             processedDataDir=self.processedDataDir,
             processedResultsDir=self.processedResultsDir
+            workDir=workDir,
+            genome=self.genome
         )
-
 
         # counts export
         self.exportCounts = ExportCounts(
             dict_=self.get("exportCounts"),
             outputRoot=self.processedResultsDir,
             sampleAnnotation=self.sampleAnnotation,
-            geneAnnotations=self.getGeneAnnotations(),
-            genomeAssembly=self.get("genomeAssembly"),
+            genome=self.genome,
             aberrantExpression=self.AE,
             aberrantSplicing=self.AS
         )
+
+        # write sample params for each module AS not currently supported
+        sampleParams = SampleParams(
+            self.AE,
+            self.AS,
+            self.MAE,
+            self.get("geneAnnotation"),
+            self.processedDataDir,
+            self.sampleAnnotation
+        )
+
 
         # legacy
         utils.setKey(self.config_dict, None, "aberrantExpression", self.AE.dict_)
@@ -117,6 +143,21 @@ class DropConfig:
         setKey(config_dict, None, "rnaVariantCalling", dict())
 
         setKey(config_dict, None, "exportCounts", dict())
+
+        # Legacy check: If mae still defines genome print warning, otherwise use the
+        # globally defined genome
+        try:
+            genome_files = self.get("mae")["genome"]
+            logger.info(
+                "WARNING: Using the mae defined genome instead of the globally defined one.\n"
+                "This will be deprecated in the future to allow for reference genomes to"
+                " be defined in the sample annotation table. Please update your config "
+                "and sample annotation table\n"
+            )
+        except KeyError:
+            genome_files = self.get("genome")
+        setKey(config_dict, None, "genome", genome_files)
+
 
         # commandline tools
         setKey(config_dict, None, "tools", dict())
@@ -155,54 +196,3 @@ class DropConfig:
         except KeyError:
             raise KeyError(f"'{toolCmd}' not a defined tool for DROP config")
         return toolCmd
-
-    def getGeneAnnotations(self):
-        return self.geneAnnotation
-
-    def getGeneVersions(self):
-        return self.geneAnnotation.keys()
-
-    def getGeneAnnotationFile(self, annotation):
-        return self.geneAnnotation[annotation]
-
-    def getFastaFile(self, str_=True):
-        return utils.returnPath(self.fastaFile, str_)
-
-    def getFastaDict(self, str_=True):
-        return utils.returnPath(self.fastaDict, str_)
-
-    def getBSGenomeName(self):
-        assemblyID = self.get("genomeAssembly")
-
-        if assemblyID == 'hg19':
-            return "BSgenome.Hsapiens.UCSC.hg19"
-        if assemblyID == 'hs37d5':
-            return "BSgenome.Hsapiens.1000genomes.hs37d5"
-        if assemblyID == 'hg38':
-            return "BSgenome.Hsapiens.UCSC.hg38"
-        if assemblyID == 'GRCh38':
-            return "BSgenome.Hsapiens.NCBI.GRCh38"
-        
-        raise ValueError("Provided genome assembly not known: " + assemblyID)
- 
-    def getBSGenomeVersion(self):
-        assemblyID = self.get("genomeAssembly")
-
-        if assemblyID in ['hg19', 'hs37d5']:
-            return 37
-        if assemblyID in ['hg38', 'GRCh38']:
-            return 38
-        
-        raise ValueError("Provided genome assembly not known: " + assemblyID)
-
-    def getMafDbName(self):
-        assemblyID = self.get("genomeAssembly")
-
-        if assemblyID in ['hg19', 'hs37d5']:
-            return "MafDb.gnomAD.r2.1.hs37d5"
-        if assemblyID in ['hg38', 'GRCh38']:
-            return "MafDb.gnomAD.r2.1.GRCh38"
-
-        raise ValueError("Provided genome assembly not known: " + assemblyID)
- 
- 

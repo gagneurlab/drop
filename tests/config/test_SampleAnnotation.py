@@ -7,7 +7,7 @@ class Test_SampleAnnotation:
         return dropConfig.sampleAnnotation
 
     def test_columns(self, sampleAnnotation):
-        parsed_cols = set(list(sampleAnnotation.sa))
+        parsed_cols = set(list(sampleAnnotation.annotationTable))
         def_cols = set(sampleAnnotation.SAMPLE_ANNOTATION_COLUMNS)
         assert def_cols <= parsed_cols
 
