@@ -1,10 +1,6 @@
-RVC_WORKDIR = cfg.RVC.getWorkdir(str_=False)
+RVC_WORKDIR = renameLocalDir(cfg.RVC)   
+RVC_index_input,RVC_graph_file,RVC_index_output = moduleInputOutput("rvc-pipeline",RVC_WORKDIR,cfg.RVC)      
 
-RVC_index_name = "rvc-pipeline"
-RVC_index_input, RVC_index_output, RVC_graph_file, _ = createIndexRule(
-    scriptsPath=str(RVC_WORKDIR),
-    index_name=RVC_index_name
-)
 
 #########
 # Helper Functions
@@ -35,13 +31,19 @@ def getMinAlt():
 
 #################################
 
-
 #Define the {dataset} variable
 #make sure all of the different {datasets} are processed. As defined by the sample annotation table RNA_VARIANT_GROUPS
 rule rnaVariantCalling:
-    input:
-        expand(os.path.join(str(cfg.processedDataDir) + "/rnaVariantCalling/{dataset}_alt{minAlt}_done.txt"),dataset = cfg.RVC.groups,minAlt = getMinAlt())
+    input:  RVC_index_input,RVC_graph_file
+    output: RVC_index_output
+    run:
+        if cfg.RVC.run:
+            ci(str(RVC_WORKDIR), 'rvc-pipeline')
 
+
+rule rnaVariantCalling_dependency:
+    output: RVC_graph_file
+    shell: "snakemake --rulegraph rnaVariantCalling | dot -Tsvg -Grankdir=TB > {output}"
 
 #Define the {sample} variable
 #create the empty output file of the form: {dataset}_alt{minAlt}_done.txt
@@ -653,6 +655,3 @@ rule indexReads:
 #        mv {params.tmp_bai} {output.bai}
 #        #"""
 
-rule rnaVariantCalling_dependency:
-    output: RVC_graph_file
-    shell: "snakemake --rulegraph rnaVariantCalling | dot -Tsvg -Grankdir=TB > {output}"

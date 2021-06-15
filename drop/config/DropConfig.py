@@ -82,7 +82,7 @@ class DropConfig:
             config=self.get("rnaVariantCalling"),
             sampleAnnotation=self.sampleAnnotation,
             processedDataDir=self.processedDataDir,
-            processedResultsDir=self.processedResultsDir
+            processedResultsDir=self.processedResultsDir,
             workDir=workDir,
             genome=self.genome
         )

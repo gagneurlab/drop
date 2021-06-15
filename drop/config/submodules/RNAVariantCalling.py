@@ -3,13 +3,13 @@ from .Submodules import Submodule
  
 class RVC(Submodule):
     
-    def __init__(self, config, sampleAnnotation, processedDataDir, processedResultsDir):
-        super().__init__(config, sampleAnnotation, processedDataDir, processedResultsDir)
+    def __init__(self, config, sampleAnnotation, processedDataDir, processedResultsDir,workDir,genome):
+        super().__init__(config, sampleAnnotation, processedDataDir, processedResultsDir,workDir)
         self.CONFIG_KEYS = [
             "groups","KGsnps", "millsIndels", "dbSNP","repeat_mask","hcArgs","minAlt"
         ]
         self.name = "rnaVariantCalling"
-        self.rnaIDs = self.sa.subsetGroups(self.groups, assay="RVC")
+        self.rnaIDs = self.sampleAnnotation.subsetGroups(self.groups, assay="RVC")
         self.batchIDs = self.setBatchDict()
 
     def setBatchDict(self):
@@ -26,7 +26,7 @@ class RVC(Submodule):
         super().setDefaultKeys(dict_)
         setKey = utils.setKey
         dict_ = utils.checkKeys(dict_, keys=["repeat_mask"], check_files=True)
-        groups = setKey(dict_, None, "groups", self.sa.getGroups(assay="RVC"))
+        groups = setKey(dict_, None, "groups", self.sampleAnnotation.getGroups(assay="RVC"))
         setKey(dict_, None, "knownVCFs", [])
         setKey(dict_, None, "repeat_mask", "")
         setKey(dict_, None, "hcArgs", "")
