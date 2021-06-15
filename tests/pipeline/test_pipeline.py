@@ -8,7 +8,7 @@ def test_dryrun(demo_dir):
 
 def test_pipeline_no_run(demo_dir):
     LOGGER.info("run entire pipeline with \'run: false\'")
-    run("sed 's/run: true/run: false:/g' config.yaml > config_norun.yaml  ",demo_dir)
+    run("sed 's/run: true/run: false/g' config.yaml > config_norun.yaml  ",demo_dir)
     pipeline_run = run(["snakemake",  f"-j{CORES}", "--configfile", "config_norun.yaml"], demo_dir)
     tmp = run(["snakemake", "--unlock"], demo_dir)
     assert "Finished job 0." in pipeline_run.stderr
