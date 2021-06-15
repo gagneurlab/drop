@@ -6,7 +6,7 @@ def test_dryrun(demo_dir):
     message = "This was a dry-run (flag -n). The order of jobs does not reflect the order of execution."
     assert message in r.stdout
 
-def test_pipeline_no_run(self,demo_dir):
+def test_pipeline_no_run(demo_dir):
     LOGGER.info("run entire pipeline with \'run: false\'")
     run("sed 's/run: true/run: false:/g' config.yaml > config_norun.yaml  ",demo_dir)
     pipeline_run = run(["snakemake",  f"-j{CORES}", "--configfile", "config_norun.yaml"], demo_dir)
