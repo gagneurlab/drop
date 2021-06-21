@@ -17,9 +17,9 @@ sa = cfg.sampleAnnotation
 config = cfg.config_dict # legacy
 
 
-include: cfg.AE.find_snakefile()
-include: cfg.AS.find_snakefile()
-include: cfg.MAE.find_snakefile()
+include: cfg.AE.getSnakefile()
+include: cfg.AS.getSnakefile()
+include: cfg.MAE.getSnakefile()
 include: drop.utils.getWBuildSnakefile()
 
 
