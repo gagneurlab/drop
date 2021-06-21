@@ -5,6 +5,8 @@ class Test_MAE_Pipeline:
 
     def test_pipeline_no_run(self,demo_dir):
         LOGGER.info("run monoallelicExpression pipeline with \'run: false\'")
+        # change the third instance of "run: true" to "run: false" to turn off the MAE module
+        # run the MAE module using this config_MAE_norun (which should do nothing)
         run("awk -v n=3 \'/run: true/ { if (++count == n) sub(/run: true/, \"run: false\"); } 1\' \
           config.yaml > config_MAE_norun.yaml  ",demo_dir)
         pipeline_run = run(["snakemake", "aberrantExpression", f"-j{CORES}", "--configfile", "config_MAE_norun.yaml"], demo_dir)

@@ -1,6 +1,6 @@
-MAE_WORKDIR = renameLocalDir(cfg.MAE)
+MAE_WORKDIR = cfg.MAE.renameLocalDir()
+MAE_index_input,MAE_graph_file,MAE_index_output = cfg.MAE.getModuleIndexFiles("mae-pipeline",MAE_WORKDIR)
 
-MAE_index_input,MAE_graph_file,MAE_index_output = moduleInputOutput("mae-pipeline",MAE_WORKDIR,cfg.MAE)
 rule mae:
     input:  MAE_index_input,MAE_graph_file
     output: MAE_index_output

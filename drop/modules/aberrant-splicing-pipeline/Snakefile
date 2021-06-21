@@ -1,6 +1,6 @@
-AS_WORKDIR = renameLocalDir(cfg.AS)
+AS_WORKDIR = cfg.AS.renameLocalDir()
 
-AS_index_input,AS_graph_file,AS_index_output = moduleInputOutput("aberrant-splicing-pipeline",AS_WORKDIR,cfg.AS)
+AS_index_input,AS_graph_file,AS_index_output = cfg.AS.getModuleIndexFiles("aberrant-splicing-pipeline",AS_WORKDIR)
 
 rule aberrantSplicing:
     input: AS_index_input, AS_graph_file

@@ -1,6 +1,6 @@
-AE_WORKDIR = renameLocalDir(cfg.AE)
+AE_WORKDIR = cfg.AE.renameLocalDir()
 
-AE_index_input,AE_graph_file,AE_index_output = moduleInputOutput("aberrant-expression-pipeline",AE_WORKDIR,cfg.AE)
+AE_index_input,AE_graph_file,AE_index_output = cfg.AE.getModuleIndexFiles("aberrant-expression-pipeline",AE_WORKDIR)
 rule aberrantExpression:
     input:  AE_index_input,AE_graph_file
     output: AE_index_output

@@ -5,6 +5,8 @@ class Test_AE_Pipeline:
 
     def test_pipeline_no_run(self,demo_dir):
         LOGGER.info("run aberrantExpression pipeline with \'run: false\'")
+        # change the first instance of "run: true" to "run: false" to turn off the AE module
+        # run the AE module using this config_AE_norun (which should do nothing)
         run("awk -v n=1 \'/run: true/ { if (++count == n) sub(/run: true/, \"run: false\"); } 1\' \
           config.yaml > config_AE_norun.yaml  ",demo_dir)
         pipeline_run = run(["snakemake", "aberrantExpression", f"-j{CORES}", "--configfile", "config_AE_norun.yaml"], demo_dir)

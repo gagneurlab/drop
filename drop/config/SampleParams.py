@@ -1,8 +1,8 @@
 from pathlib import Path
 from snakemake.logging import logger
-import numpy as np                                                                                                      
+import numpy as np
 import pandas as pd
-import os                                                                                                               
+import os
 import shutil
 
 
@@ -15,8 +15,8 @@ class ParamHelper:
         group: boolean. True- treat the IDs as a drop group, False- treat the IDs separately as individual files
         path: string. path of the directory to write the sample param file to
         """
-        self.include= include 
-        self.sampleAnnotationColumns = sampleAnnotationColumns 
+        self.include= include
+        self.sampleAnnotationColumns = sampleAnnotationColumns
         self.group = group
         self.path = path
 
@@ -60,7 +60,7 @@ class SampleParams:
                    "results")
 
     # dictionary containing the key type of parameter and the corresponding param information object
-    PARAM_COLS = {"AberrantExpression": 
+    PARAM_COLS = {"AberrantExpression":
                      { "countParams":  AE_countParams,
                        "mergeParams":  AE_mergeParams,
                        "resultParams": AE_resultParams
@@ -79,7 +79,7 @@ class SampleParams:
         MAE: object. MonoallelicExpression object as created in DropConfig.py
         annotation: dict. dictionary containing the annotation ID (version) and the path to it
         processedDataDir: string. path to the processedDataDir
-        sampleAnnotation: object. SampleAnnotation object as defined by SampleAnnotation.py 
+        sampleAnnotation: object. SampleAnnotation object as defined by SampleAnnotation.py
         """
 
         moduleList = [AE,AS,MAE]
@@ -97,13 +97,6 @@ class SampleParams:
         """
         for ann in self.geneAnnotation:
             for module in moduleList:
-                #make new dummy files for module skipping. Should be empty and present regardless if skipped
-                dummy_dir = self.processedDataDir / ".module_skips"
-                dummy_dir.mkdir(parents = True,exist_ok = True)
-                dummy_filename = dummy_dir / f"{self.MODULE_NAMES[module.name]}.skip"
-                with open(dummy_filename,'w') as dummy:
-                    pass
-
                 if module.name == "AberrantExpression":
                     modulePath = self.processedDataDir / self.MODULE_NAMES[module.name] / ann / "params"
                 elif module.name == "MonoallelicExpression":
@@ -134,29 +127,29 @@ class SampleParams:
         include: boolean. True- include all of the columns in param_cols to build param file. False- use all other columns in SA
         group_param: boolean. True- group by drop_group in sample annotation table. False- treat each sample individually
         """
-        # initialize groups and sa table                                                                                
-        module_groups = module.groups                                                                                     
+        # initialize groups and sa table
+        module_groups = module.groups
         sa_df = self.sampleAnnotation.annotationTable
-                                                                                                                        
-        all_RNA_ids = []                                                                                                
+
+        all_RNA_ids = []
         # for each DROP_GROUP used for aberrantExpression build the list of RNA_IDs that are going to be merged for that run
-        # also build a list of all RNA_IDs triggered in this run                                                        
-        for group in module_groups:                                                                                     
+        # also build a list of all RNA_IDs triggered in this run
+        for group in module_groups:
             group_IDs = self.sampleAnnotation.getIDsByGroup(group, assay="RNA") + \
-                          self.sampleAnnotation.getIDsByGroup(group, assay="GENE_COUNT")                                              
-            all_RNA_ids = all_RNA_ids + group_IDs                                                                       
-                                                                                                                        
-            if group_param:                                                                                             
-                # write the params file for the Merge, and also the info_params file for the Results                    
+                          self.sampleAnnotation.getIDsByGroup(group, assay="GENE_COUNT")
+            all_RNA_ids = all_RNA_ids + group_IDs
+
+            if group_param:
+                # write the params file for the Merge, and also the info_params file for the Results
                 self.updateParamFiles(path,f"{group}_{file_suffix}.csv", \
-                                    sa_df,param_cols,group_IDs,include)                         
-                                                                                                                        
-            else:                                                                                                       
-            # for all unique RNA_IDs compiled across the groups build the individual param files used for Counts        
-                for ID in set(all_RNA_ids):                                                                             
+                                    sa_df,param_cols,group_IDs,include)
+
+            else:
+            # for all unique RNA_IDs compiled across the groups build the individual param files used for Counts
+                for ID in set(all_RNA_ids):
                     self.updateParamFiles(path,f"{ID}_{file_suffix}.csv", \
-                                    sa_df,param_cols,[ID],include)                        
-                                                                                                   
+                                    sa_df,param_cols,[ID],include)
+
 
 
     def updateParamFiles(self,path,filename,sa_df,param_cols,ID,include):
@@ -175,12 +168,12 @@ class SampleParams:
         # take the complement of columns if indicated by !include
         if not include:
             param_cols = [col for col in sa_df.columns if col not in param_cols]
-    
+
         # designate the TEMP and final param file names
         true_filename = "{path}/{filename}".format(path = path, filename = filename)
 
-    
-        # if a file by the desired name exists. 
+
+        # if a file by the desired name exists.
         if os.path.isfile(true_filename):
 
             # replace any strings of nan with "NA"
@@ -194,9 +187,8 @@ class SampleParams:
                 # if they're different remove the existing file and rename TEMP to the desired file. Updating to the current SA table
                 logger.info("{} Param Files do not match. Updating to current Sample Annotation\n".format(filename))
                 current_SA.to_csv(true_filename, index = False,header = True,na_rep = "NA")
-                
+
         # if the param file doesn't exist, just write to the desired file
         else:
             logger.info("{} Param File did not already exist. Writing it\n".format(filename))
             sa_df.loc[sa_df["RNA_ID"].isin(ID),param_cols].to_csv(true_filename, index = False,header = True,na_rep = "NA")
-

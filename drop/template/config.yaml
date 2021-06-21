@@ -17,7 +17,7 @@ exportCounts:
     # groups to exclude when exporting counts
     geneAnnotations:
       - v29
-    excludeGroupsu
+    excludeGroups:
       - group1
 genome: # path to genome sequence in fasta format.
     # You can define multiple reference genomes in yaml format, ncbi: path_to_ncbi, ucsc: path_to_ucsc

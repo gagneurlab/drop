@@ -4,17 +4,15 @@
 #' wb:
 #'  log:
 #'    - snakemake: '`sm str(tmp_dir / "MAE" / "Overview.Rds")`'
-#'  params:
-#'    - run: '`sm cfg.MAE.run`'
 #'  input:
-#'    - allelic_counts: '`sm expand(cfg.getProcessedDataDir() + 
+#'    - allelic_counts: '`sm expand(cfg.getProcessedDataDir() +
 #'                          "/mae/allelic_counts/{mae_id}.csv.gz",
 #'                          mae_id=cfg.MAE.getMaeAll())`'
-#'    - results_obj: '`sm expand(cfg.getProcessedResultsDir() + 
-#'                       "/mae/samples/{mae_id}_res.Rds", 
+#'    - results_obj: '`sm expand(cfg.getProcessedResultsDir() +
+#'                       "/mae/samples/{mae_id}_res.Rds",
 #'                       mae_id=cfg.MAE.getMaeAll())`'
-#'    - results_tables: '`sm expand(cfg.getProcessedResultsDir() + 
-#'                       "/mae/{dataset}/MAE_results_{annotation}.tsv", 
+#'    - results_tables: '`sm expand(cfg.getProcessedResultsDir() +
+#'                       "/mae/{dataset}/MAE_results_{annotation}.tsv",
 #'                       dataset=cfg.MAE.groups, annotation=cfg.genome.getGeneVersions())`'
 #'    - qc_matrix: '`sm expand(cfg.getProcessedResultsDir() + "/mae/{qc_group}/" +
 #'                  "dna_rna_qc_matrix.Rds", qc_group=cfg.MAE.qcGroups)`'
@@ -25,7 +23,6 @@
 #'---
 
 #+ include=FALSE
-knitr::opts_chunk$set(eval = snakemake@params$run)
 
 #+ eval=TRUE, echo=FALSE
 saveRDS(snakemake, snakemake@log$snakemake)

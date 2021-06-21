@@ -5,7 +5,6 @@
 #'  log:
 #'    - snakemake: '`sm str(tmp_dir / "AE" / "Overview.Rds")`'
 #'  params:
-#'    - run: '`sm cfg.AE.run`'
 #'    - annotations: '`sm cfg.genome.getGeneVersions()`'
 #'    - datasets: '`sm cfg.AE.groups`'
 #'    - htmlDir: '`sm config["htmlOutputPath"] + "/AberrantExpression"`'
@@ -24,7 +23,6 @@
 #'---
 
 #+ include=FALSE
-knitr::opts_chunk$set(eval = snakemake@params$run)
 
 #+ eval=TRUE, echo=FALSE
 saveRDS(snakemake, snakemake@log$snakemake)
@@ -32,7 +30,7 @@ saveRDS(snakemake, snakemake@log$snakemake)
 # define functions
 get_html_path <- function(annotationVersion, datasets, htmlDir, fileName) {
   file_paths <- file.path(htmlDir, annotationVersion, fileName)
-  file_link <- paste0('\n* [', datasets ,'](', file_paths, 
+  file_link <- paste0('\n* [', datasets ,'](', file_paths,
                       '){target="_blank"}\n', collapse = ' ')
   file_link
 }
@@ -58,7 +56,7 @@ outrider_links <- sapply(annotations, get_html_path,
 
 #'
 #' **Datasets:** `r paste(datasets, collapse = ', ')`
-#' 
+#'
 #' **Gene annotations:** `r paste(annotations, collapse = ', ')`
 #'
 #' ## Summaries
@@ -66,20 +64,20 @@ outrider_links <- sapply(annotations, get_html_path,
 #' ### Counts summary
 #'
 #' `r display_text(caption = 'Gene annotation version ', count_links)`
-#' 
+#'
 #' ### OUTRIDER summary
-#' 
+#'
 #' `r display_text(caption = 'Gene annotation version ', outrider_links)`
-#' 
+#'
 #' ## Files
 #' ### OUTRIDER datasets (ods)
-#' 
+#'
 #' `r paste('* ', snakemake@input$odsFiles, collapse = '\n')`
-#' 
+#'
 #' ### Results tables
-#' 
+#'
 #'  `r paste('* ', snakemake@input$resultTables, collapse = '\n')`
-#' 
+#'
 
 #' ## Analyze Individual Results
 #+ echo=FALSE
@@ -108,4 +106,3 @@ OUTRIDER::plotExpressionRank(ods, gene, basePlot = TRUE)
 
 #' ### Expected vs observed counts
 OUTRIDER::plotExpectedVsObservedCounts(ods, gene, basePlot = TRUE)
-
