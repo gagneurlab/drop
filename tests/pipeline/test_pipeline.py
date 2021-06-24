@@ -2,7 +2,7 @@ from tests.common import *
 
 
 def test_dryrun(demo_dir):
-    r = run(["snakemake", "-n --cores 1"], dir_path=demo_dir)
+    r = run("snakemake -n --cores 1", dir_path=demo_dir)
     message = "This was a dry-run (flag -n). The order of jobs does not reflect the order of execution."
     assert message in r.stdout
 
