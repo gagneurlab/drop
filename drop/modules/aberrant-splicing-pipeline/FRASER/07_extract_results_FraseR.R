@@ -21,6 +21,8 @@
 #'                 "padjBetaBinomial_theta.h5"`'
 #'   - txdb: '`sm cfg.getProcessedDataDir() + "/aberrant_expression/{annotation}/txdb.db"`'
 #'   - gene_name_mapping: '`sm cfg.getProcessedDataDir() + "/aberrant_expression/{annotation}/gene_name_mapping_{annotation}.tsv"`'
+#'   - spliceTypeSetup: '`sm cfg.AS.getWorkdir() + "/spliceTypeConfig.R"`'
+#'   - addAnnotation:  '`sm cfg.AS.getWorkdir() + "/FRASER/fds_annotation.R"`'
 #'  output:
 #'   - resultTableJunc: '`sm cfg.getProcessedResultsDir() + 
 #'                          "/aberrant_splicing/results/{annotation}/fraser/{dataset}/results_per_junction.tsv"`'
@@ -34,6 +36,8 @@
 saveRDS(snakemake, snakemake@log$snakemake)
 source(snakemake@input$setup, echo=FALSE)
 source(snakemake@input$add_HPO_cols)
+source(snakemake@input$spliceTypeSetup, echo=FALSE)
+source(snakemake@input$addAnnotation)
 library(AnnotationDbi)
 
 opts_chunk$set(fig.width=12, fig.height=8)
@@ -64,6 +68,9 @@ seqlevelsStyle(txdb) <- seqlevelsStyle(fds)
 # Annotate the fds with gene names
 fds <- annotateRangesWithTxDb(fds, txdb = txdb, orgDb = orgdb, feature = 'gene_name', 
                               featureName = 'hgnc_symbol', keytype = 'gene_id')
+
+# Add the junction annotations to the fds
+fds <- testFct(fds)
 
 # Extract results per junction
 res_junc <- results(fds,
