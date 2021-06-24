@@ -136,4 +136,11 @@ cat(paste0("<a href='./", basename(file), "'>Download OUTRIDER results table</a>
 
 res[, pValue := format(pValue, scientific = T, digits = 2)]
 res[, padjust := format(padjust, scientific = T, digits = 2)]
-DT::datatable(res, caption = "OUTRIDER results", style = 'bootstrap', filter = 'top')
+
+
+viewing_cutoff <- 1000
+if (nrow(res) < viewing_cutoff){
+	viewing_cutoff <- nrow(res)
+}
+cat(paste0("<p> Taking a look at no more than the first 1,000 results.<p>"))
+DT::datatable(res[1:viewing_cutoff], caption = "OUTRIDER results", style = 'bootstrap', filter = 'top')
