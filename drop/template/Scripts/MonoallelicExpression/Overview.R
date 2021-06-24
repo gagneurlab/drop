@@ -4,7 +4,12 @@
 #' wb:
 #'  log:
 #'    - snakemake: '`sm str(tmp_dir / "MAE" / "Overview.Rds")`'
+#'  params:
+#'    - annotations: '`sm cfg.genome.getGeneVersions()`'
+#'    - datasets: '`sm cfg.MAE.groups`'
+#'    - htmlDir: '`sm config["htmlOutputPath"] + "/MAE"`'
 #'  input:
+#'    - functions: '`sm cfg.workDir / "Scripts/html_functions.R"`'
 #'    - allelic_counts: '`sm expand(cfg.getProcessedDataDir() +
 #'                          "/mae/allelic_counts/{mae_id}.csv.gz",
 #'                          mae_id=cfg.MAE.getMaeAll())`'
@@ -26,23 +31,32 @@
 
 #+ eval=TRUE, echo=FALSE
 saveRDS(snakemake, snakemake@log$snakemake)
+source(snakemake@input$functions)
 
+# get parameters
+datasets <- sort(snakemake@params$datasets)
+annotations <- snakemake@params$annotations
+htmlDir <- snakemake@params$htmlDir
 
-
+results_links <- sapply(
+  annotations, function(v) build_link_list(
+    file_paths = file.path(htmlDir, paste0(datasets, '--', v, '_results.html')),
+    captions = datasets
+  )
+)
+#'
+#' **Datasets:** `r paste(datasets, collapse = ', ')`
+#'
+#' **Gene annotations:** `r paste(annotations, collapse = ', ')`
+#'
+#' ## MAE results
+#' `r display_text(caption = 'Gene annotation version ', links = results_links)`
+#'
 #' ## Files
-#' ### Allelic counts
-#' Located in `r file.path(snakemake@config$root, 'processed_data/mae/allelic_counts/')`
+#' * [Allelic counts](`r file.path(snakemake@config$root, 'processed_data/mae/allelic_counts/')`)
+#' * [Results tables of each sample](`r file.path(snakemake@config$root, 'processed_results/mae/samples/')`)
+#' * [Aggregated results tables of each group](`r paste('* ', snakemake@input$results_tables, collapse = '\n')`)
 #'
-#' ### Results tables of each sample
-#' Located in `r file.path(snakemake@config$root, 'processed_results/mae/samples/')`
-#'
-#' ### Aggregated results tables of each group
-#' `r paste('* ', snakemake@input$results_tables, collapse = '\n')`
-#'
-#' ### MAE Pipeline Output
-#' [MAE Pipeline Output](`r "./Scripts_MAE_Datasets.html"`)
-#'
-
 #' ## Analyze Individual Results
 # Read the first results table
 res_sample <- readRDS(snakemake@input$results_obj[[1]])
