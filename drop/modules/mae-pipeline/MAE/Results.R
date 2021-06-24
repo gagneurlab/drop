@@ -130,12 +130,10 @@ DT::datatable(melt_dt[, .(median = median(value, na.rm = T)), by = variable])
 
 #' 
 #' ## Results table
+#' Taking a look at no more than the first 1,000 results.
 viewing_cutoff <- 1000
-if (nrow(res) < viewing_cutoff){
-    viewing_cutoff <- nrow(res)
+if (nrow(res[MAE_ALT == TRUE]) < viewing_cutoff){
+    viewing_cutoff <- nrow(res[MAE_ALT == TRUE])
 }
-
-
-cat(paste0("<p> Taking a look at no more than the first 1,000 results.<p>"))
 DT::datatable(res[MAE_ALT == TRUE][1:viewing_cutoff], filter = 'top')
 
