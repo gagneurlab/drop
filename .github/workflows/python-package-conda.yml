@@ -9,7 +9,7 @@ jobs:
     steps:
     - uses: actions/checkout@v2
 
-    - name: provision-with-micromamba
+    - name: Setup environment with micromamba
       uses: mamba-org/provision-with-micromamba@v10
       with:
         environment-file: tests/environment.yml
