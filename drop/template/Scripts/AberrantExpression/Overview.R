@@ -24,11 +24,10 @@
 #'---
 
 #+ include=FALSE
-
-#+ eval=TRUE, echo=FALSE
 saveRDS(snakemake, snakemake@log$snakemake)
 source(snakemake@input$functions)
 
+#+ eval=TRUE, echo=FALSE
 # get parameters
 datasets <- sort(snakemake@params$datasets)
 annotations <- snakemake@params$annotations

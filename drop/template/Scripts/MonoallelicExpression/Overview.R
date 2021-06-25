@@ -7,7 +7,8 @@
 #'  params:
 #'    - annotations: '`sm cfg.genome.getGeneVersions()`'
 #'    - datasets: '`sm cfg.MAE.groups`'
-#'    - htmlDir: '`sm config["htmlOutputPath"] + "/MAE"`'
+#'    - qc_groups: '`sm cfg.MAE.qcGroups`'
+#'    - htmlDir: '`sm config["htmlOutputPath"] + "/MonoallelicExpression"`'
 #'  input:
 #'    - functions: '`sm cfg.workDir / "Scripts/html_functions.R"`'
 #'    - allelic_counts: '`sm expand(cfg.getProcessedDataDir() +
@@ -28,11 +29,10 @@
 #'---
 
 #+ include=FALSE
-
-#+ eval=TRUE, echo=FALSE
 saveRDS(snakemake, snakemake@log$snakemake)
 source(snakemake@input$functions)
 
+#+ eval=TRUE, echo=FALSE
 # get parameters
 datasets <- sort(snakemake@params$datasets)
 annotations <- snakemake@params$annotations
@@ -44,6 +44,7 @@ results_links <- sapply(
     captions = datasets
   )
 )
+
 #'
 #' **Datasets:** `r paste(datasets, collapse = ', ')`
 #'
@@ -79,8 +80,18 @@ g1
 g2
 
 #' ## Quality Control: VCF-BAM Matching
+#+ eval=TRUE, echo=FALSE
+qc_groups <- sort(snakemake@params$qc_groups)
+qc_links <- build_link_list(
+    file_paths = file.path(htmlDir, paste0('QC', qc_groups, '.html')),
+    captions = qc_groups
+)
+
+qc_matrix_links <- build_link_list(
+    file_paths = file.path(snakemake@input$qc_matrix),
+    captions = qc_groups
+)
+
+#' `r display_text(caption = 'QC Overview ', links = qc_links)`
+#' `r display_text(caption = 'DNA-RNA matrix ', links = qc_matrix_links)`
 #'
-#' [QC Overview](`r "./Scripts_QC_Datasets.html"`)
-#'
-#' ### DNA-RNA matrix:
-#' `r paste('* ', snakemake@input$qc_matrix, collapse='\n')`
