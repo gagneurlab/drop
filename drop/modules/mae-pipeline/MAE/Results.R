@@ -129,11 +129,11 @@ ggplot(melt_dt, aes(variable, value)) + geom_boxplot() +
 DT::datatable(melt_dt[, .(median = median(value, na.rm = T)), by = variable])
 
 #' 
-#' ## Results table
-#' Taking a look at no more than the first 1,000 results.
-viewing_cutoff <- 1000
-if (nrow(res[MAE_ALT == TRUE]) < viewing_cutoff){
-    viewing_cutoff <- nrow(res[MAE_ALT == TRUE])
-}
-DT::datatable(res[MAE_ALT == TRUE][1:viewing_cutoff], filter = 'top')
+#' ## MAE Results table
+DT::datatable(
+  head(res[MAE_ALT == TRUE], 1000),
+  caption = 'Taking a look at no more than the first 1,000 results.',
+  options=list(scrollX=TRUE),
+  filter = 'top'
+)
 
