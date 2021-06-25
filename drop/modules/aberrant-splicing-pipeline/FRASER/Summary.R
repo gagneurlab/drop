@@ -115,7 +115,7 @@ if(nrow(res) > 0){
 
 DT::datatable(
   head(res, 1000),
-  caption = 'Taking a look at no more than the first 1,000 results.',
+  caption = 'Taking a look at no more than the first 1,000 FRASER results.',
   options=list(scrollX=TRUE),
   escape=FALSE,
   filter = 'top'
