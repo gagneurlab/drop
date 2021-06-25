@@ -6,7 +6,7 @@ from unittest.mock import patch
 from .common import *
 
 
-@pytest.yield_fixture(scope="session", autouse=True)
+@pytest.fixture(scope="session", autouse=True)
 def demo_dir(tmpdir_factory):
     """
     Directory containing files downloaded from Gagneurlab ready to run the demo pipeline
@@ -26,7 +26,7 @@ def demo_dir(tmpdir_factory):
 def dropConfig(demo_dir):
     orig_path = os.getcwd()
     os.chdir(demo_dir)
-    with patch.object(sys, 'argv', ["snakemake", "-n"]):
+    with patch.object(sys, 'argv', ["snakemake", "-n", "--cores 1"]):
         cfg = drop.config.DropConfig(wbuild.utils.Config(),demo_dir)
     os.chdir(orig_path)
     return cfg
