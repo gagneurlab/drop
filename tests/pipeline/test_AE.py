@@ -6,8 +6,7 @@ class Test_AE_Pipeline:
     @pytest.fixture(scope="class")
     def pipeline_run(self, demo_dir):
         LOGGER.info("run aberrant expression pipeline...")
-        pipeline_run = run(["snakemake", "aberrantExpression", f"-j{CORES}"], demo_dir)
-        tmp = run(["snakemake", "--unlock"], demo_dir)
+        pipeline_run = run(f"snakemake aberrantExpression --cores {CORES}", demo_dir)
         assert "Finished job 0." in pipeline_run.stderr
         return pipeline_run
 
@@ -74,12 +73,12 @@ class Test_AE_Pipeline:
 
     def test_no_import(self, no_import):
         merged_counts = f"{no_import}/Output/processed_data/aberrant_expression/v29/outrider/outrider/total_counts.Rds"
-        r = run(f"snakemake {merged_counts} --configfile config_noimp.yaml -nqF", no_import)
-        tmp = run(["snakemake", "--unlock"], no_import)
-        
-        print(r.stdout)
-        assert "10\tAberrantExpression_pipeline_Counting_countReads_R" in r.stdout
-        assert "1\tAberrantExpression_pipeline_Counting_mergeCounts_R" in r.stdout
+        # check dryrun
+        r = run(f"snakemake {merged_counts} --configfile config_noimp.yaml -nF --cores 1", no_import)
+
+        # check if new rules are included in snakemake output
+        assert "AberrantExpression_pipeline_Counting_countReads_R" in r.stdout
+        assert "AberrantExpression_pipeline_Counting_mergeCounts_R" in r.stdout
 
         # check if pipeline runs through without errors
-        run(f"snakemake {merged_counts} --configfile config_noimp.yaml -j{CORES}", no_import)
+        run(f"snakemake {merged_counts} --configfile config_noimp.yaml --cores {CORES}", no_import)
