@@ -7,3 +7,4 @@ dependencies:
   - pip
   - drop
   - flake8
+  - bioconductor-bsgenome.hsapiens.ucsc.hg19
