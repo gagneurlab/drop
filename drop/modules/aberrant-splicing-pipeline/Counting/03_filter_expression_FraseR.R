@@ -10,9 +10,6 @@
 #'   - setup: '`sm cfg.AS.getWorkdir() + "/config.R"`'
 #'   - theta:  '`sm cfg.getProcessedDataDir()+
 #'                  "/aberrant_splicing/datasets/savedObjects/raw-{dataset}/theta.h5"`'
-#'   - txdb: '`sm cfg.getProcessedDataDir() + "/aberrant_expression/{annotation}/txdb.db"`'
-#'   - addAnnotation:  '`sm cfg.AS.getWorkdir() + "/Counting/fds_annotation.R"`'
-#'   - spliceTypeSetup: '`sm cfg.AS.getWorkdir() + "/spliceTypeConfig.R"`'
 #'  output:
 #'   - fds: '`sm cfg.getProcessedDataDir() +
 #'                "/aberrant_splicing/datasets/savedObjects/{dataset}/fds-object.RDS"`'
@@ -24,8 +21,8 @@
 
 saveRDS(snakemake, snakemake@log$snakemake)
 source(snakemake@input$setup, echo=FALSE)
-source(snakemake@input$spliceTypeSetup, echo=FALSE)
-source(snakemake@input$addAnnotation)
+#source(snakemake@input$spliceTypeSetup, echo=FALSE)
+#source(snakemake@input$addAnnotation)
 
 opts_chunk$set(fig.width=12, fig.height=8)
 
@@ -61,11 +58,11 @@ if (params$filter == TRUE) {
 fds <- saveFraserDataSet(fds)
 
 # Add the junction annotations to the fds
-message("load db for annotation")
-txdb <- loadDb(snakemake@input$txdb)
-seqlevelsStyle(txdb) <- seqlevelsStyle(fds)
-fds <- createFDSAnnotations(fds, txdb)
-message("save object after annotation")
+#message("03: load db for annotation")
+#txdb <- loadDb(snakemake@input$txdb)
+#seqlevelsStyle(txdb) <- seqlevelsStyle(fds)
+#fds <- createFDSAnnotations(fds, txdb)
+#message("03: save object after annotation")
 
 fds <- saveFraserDataSet(fds)
 file.create(snakemake@output$done)

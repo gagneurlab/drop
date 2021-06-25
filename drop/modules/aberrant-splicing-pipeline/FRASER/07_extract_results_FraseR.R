@@ -22,7 +22,8 @@
 #'   - txdb: '`sm cfg.getProcessedDataDir() + "/aberrant_expression/{annotation}/txdb.db"`'
 #'   - gene_name_mapping: '`sm cfg.getProcessedDataDir() + "/aberrant_expression/{annotation}/gene_name_mapping_{annotation}.tsv"`'
 #'   - spliceTypeSetup: '`sm cfg.AS.getWorkdir() + "/spliceTypeConfig.R"`'
-#'   - addAnnotation:  '`sm cfg.AS.getWorkdir() + "/FRASER/fds_annotation.R"`'
+#'   - addAnnotation:  '`sm cfg.AS.getWorkdir() + "/fds_annotation.R"`'
+#'   - blacklist_19: '`sm cfg.AS.getWorkdir() + "/resource/hg19-blacklist.v2.bed.gz"`'
 #'  output:
 #'   - resultTableJunc: '`sm cfg.getProcessedResultsDir() + 
 #'                          "/aberrant_splicing/results/{annotation}/fraser/{dataset}/results_per_junction.tsv"`'
@@ -38,6 +39,7 @@ source(snakemake@input$setup, echo=FALSE)
 source(snakemake@input$add_HPO_cols)
 source(snakemake@input$spliceTypeSetup, echo=FALSE)
 source(snakemake@input$addAnnotation)
+#source(snakemake@input$blacklist_19)
 library(AnnotationDbi)
 
 opts_chunk$set(fig.width=12, fig.height=8)
@@ -48,6 +50,7 @@ fdsFile    <- snakemake@input$fdsin
 workingDir <- snakemake@params$workingDir
 outputDir  <- snakemake@params$outputDir 
 assemblyVersion <- snakemake@params$assemblyVersion
+#blacklist_folder <- snakemake@params$blacklist
 
 register(MulticoreParam(snakemake@threads))
 # Limit number of threads for DelayedArray operations
@@ -70,16 +73,22 @@ fds <- annotateRangesWithTxDb(fds, txdb = txdb, orgDb = orgdb, feature = 'gene_n
                               featureName = 'hgnc_symbol', keytype = 'gene_id')
 
 # Add the junction annotations to the fds
-fds <- testFct(fds)
+fds <- createFDSAnnotations(fds, txdb)
+#print(rowRanges(fds,type="j"))
+
+mcols(fds, type="ss")$annotatedJunction <-  "none"
+#print(rowRanges(fds, type="ss"))
 
 # Extract results per junction
 res_junc <- results(fds,
                     padjCutoff=snakemake@params$padjCutoff,
                     zScoreCutoff=snakemake@params$zScoreCutoff,
-                    deltaPsiCutoff=snakemake@params$deltaPsiCutoff)
+                    deltaPsiCutoff=snakemake@params$deltaPsiCutoff,
+                    additionalColumns="annotatedJunction")
 res_junc_dt   <- as.data.table(res_junc)
 print('Results per junction extracted')
 saveFraserDataSet(fds, dir=outputDir)
+#print(res_junc_dt)
 
 
 # Add features 
@@ -97,6 +106,7 @@ if(nrow(res_junc_dt) > 0){
   warning("The aberrant splicing pipeline gave 0 results for the ", dataset, " dataset.")
 }
 
+
 # Aggregate results by gene
 if(length(res_junc) > 0){
   res_genes_dt <- resultsByGenes(res_junc) %>% as.data.table
@@ -111,6 +121,12 @@ if(length(res_junc) > 0){
     }
   }
 } else res_genes_dt <- data.table()
+
+# Add UTR labels
+res_junc_dt <- addUTRLabels(res_junc_dt, txdb)
+#print(blacklist_19)
+#blacklist_file <- blacklist_folder + "hg19-blacklist.v2.bed.gz"
+#res_junc_dt <- addBlacklistLabels(res_junc, blacklist_file)
 
 # Results
 write_tsv(res_junc_dt, file=snakemake@output$resultTableJunc)

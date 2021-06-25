@@ -2,20 +2,28 @@
 
 ### basic annotations (start, end, none, both) for full fds
 
+testFct <- function(fds){
+  message("start test function")
+  test_vector <- rep("test", times = length(rowRanges(fds, type="j")))
+  rowRanges(fds)$test = test_vector
+  message("end test functiont")
+  return(fds)
+}
+
 createFDSAnnotations <- function(fds, txdb){
   print("loading introns")
   #seqlevelsStyle(fds) <- seqlevelsStyle(txdb)[1]
   introns <- unique(unlist(intronsByTranscript(txdb)))
   # reduce the introns to only the actually expressed introns
   fds_known <- fds[unique(to(findOverlaps(introns, rowRanges(fds, type = "j"), type = "equal"))),]
-  grAnno <- rowRanges(fds_known, type="psi5")
+  grAnno <- rowRanges(fds_known, type="j")
   anno_introns <- as.data.table(grAnno)
   anno_introns <- anno_introns[,.(seqnames, start, end, strand)]
   
   #calculate extra columns with mean/median intron expression count
   #add the new columns
   print("adding median count to introns")
-  sampleCounts <- K(fds_known, type = "psi5")
+  sampleCounts <- K(fds_known, type = "j")
   anno_introns[, "meanCount" := rowMeans(sampleCounts)]
   anno_introns[, "medianCount" := rowMedians(as.matrix(sampleCounts))]
   
