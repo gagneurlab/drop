@@ -132,7 +132,7 @@ DT::datatable(melt_dt[, .(median = median(value, na.rm = T)), by = variable])
 #' ## MAE Results table
 DT::datatable(
   head(res[MAE_ALT == TRUE], 1000),
-  caption = 'MAE results (up to 1,000 rows shown)'
+  caption = 'MAE results (up to 1,000 rows shown)',
   options=list(scrollX=TRUE),
   filter = 'top'
 )

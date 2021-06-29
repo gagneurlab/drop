@@ -139,7 +139,7 @@ res[, padjust := format(padjust, scientific = T, digits = 2)]
 
 DT::datatable(
   head(res, 1000),
-  caption = 'OUTRIDER results (up to 1,000 rows shown)'
+  caption = 'OUTRIDER results (up to 1,000 rows shown)',
   options=list(scrollX=TRUE),
   filter = 'top'
 )

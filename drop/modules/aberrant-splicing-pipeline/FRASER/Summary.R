@@ -115,7 +115,7 @@ if(nrow(res) > 0){
 
 DT::datatable(
   head(res, 1000),
-  caption = 'FRASER results (up to 1,000 rows shown)'
+  caption = 'FRASER results (up to 1,000 rows shown)',
   options=list(scrollX=TRUE),
   escape=FALSE,
   filter = 'top'
