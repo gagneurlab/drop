@@ -24,25 +24,30 @@ addUTRLabels <- function(junctions_dt, txdb){
   #print(fives)
   junctions_dt[psi_positions[threes], UTR := "3"]
   junctions_dt[psi_positions[fives], UTR := "5"]
+  colnames(junctions_dt)[which(names(junctions_dt) == "strand2")] <- "STRAND"
   print("UTR labels done")
   #print(junctions_dt)
   return(junctions_dt)
 }
 
-addBlacklistLabels <- function(junctions_dt, blacklist_file){
+
+addBlacklistLabels <- function(junctions_dt, blacklist_gr){
   ### add the blacklist information
-  #blacklist_file <- "./resource/hg19-blacklist.v2.bed.gz"
-  blacklist_gr =  import(blacklist_file, format = "BED")
-  #seqlevelsStyle(blacklist_gr) <- seqlevelsStyle(txdb)[1]
+  print("Set up blacklist file")
+  psi_positions <- which(junctions_dt$type != "theta")
+  colnames(junctions_dt)[which(names(junctions_dt) == "STRAND")] <- "strand2"
+  junctions_gr <- makeGRangesFromDataFrame(junctions_dt[psi_positions])
   
-  #junctions_gr <- makeGRangesFromDataFrame(junctions_dt)
-  #seqlevelsStyle(blacklist_gr) <- seqlevelsStyle(junctions_gr)
+  #blacklist_gr =  import(blacklist_file, format = "BED")
+  seqlevelsStyle(blacklist_gr) <- seqlevelsStyle(junctions_gr)
   
   ## create overlap with blacklist and annotate extra column
   print("find blacklist overlap")
-  #black_hits <- unique(from(findOverlaps(junctions_gr, blacklist_gr)))
+  black_hits <- unique(from(findOverlaps(junctions_gr, blacklist_gr)))
   junctions_dt[, blacklist := FALSE]
-  #junctions_dt[black_hits, blacklist := TRUE]
+  junctions_dt[psi_positions[black_hits], blacklist := TRUE]
   print("blacklist labels done")
+  
+  colnames(junctions_dt)[which(names(junctions_dt) == "strand2")] <- "STRAND"
   return(junctions_dt)
 }

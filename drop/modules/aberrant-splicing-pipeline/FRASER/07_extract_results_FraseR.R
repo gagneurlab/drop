@@ -23,7 +23,10 @@
 #'   - gene_name_mapping: '`sm cfg.getProcessedDataDir() + "/aberrant_expression/{annotation}/gene_name_mapping_{annotation}.tsv"`'
 #'   - spliceTypeSetup: '`sm cfg.AS.getWorkdir() + "/spliceTypeConfig.R"`'
 #'   - addAnnotation:  '`sm cfg.AS.getWorkdir() + "/fds_annotation.R"`'
+#'   - addSpliceType: '`sm cfg.AS.getWorkdir() + "/spliceType_frameshift_annotation.R"`'
+#'   - subtypes: '`sm cfg.AS.getWorkdir() + "/subtypes_exonSkipping_inconclusive.R"`'
 #'   - blacklist_19: '`sm cfg.AS.getWorkdir() + "/resource/hg19-blacklist.v2.bed.gz"`'
+#'   - blacklist_38: '`sm cfg.AS.getWorkdir() + "/resource/hg38-blacklist.v2.bed.gz"`'
 #'  output:
 #'   - resultTableJunc: '`sm cfg.getProcessedResultsDir() + 
 #'                          "/aberrant_splicing/results/{annotation}/fraser/{dataset}/results_per_junction.tsv"`'
@@ -39,7 +42,8 @@ source(snakemake@input$setup, echo=FALSE)
 source(snakemake@input$add_HPO_cols)
 source(snakemake@input$spliceTypeSetup, echo=FALSE)
 source(snakemake@input$addAnnotation)
-#source(snakemake@input$blacklist_19)
+source(snakemake@input$addSpliceType)
+source(snakemake@input$subtypes)
 library(AnnotationDbi)
 
 opts_chunk$set(fig.width=12, fig.height=8)
@@ -50,7 +54,6 @@ fdsFile    <- snakemake@input$fdsin
 workingDir <- snakemake@params$workingDir
 outputDir  <- snakemake@params$outputDir 
 assemblyVersion <- snakemake@params$assemblyVersion
-#blacklist_folder <- snakemake@params$blacklist
 
 register(MulticoreParam(snakemake@threads))
 # Limit number of threads for DelayedArray operations
@@ -122,11 +125,23 @@ if(length(res_junc) > 0){
   }
 } else res_genes_dt <- data.table()
 
+# Calculate splice types and frameshift
+res_junc_dt <- aberrantSpliceType(res_junc_dt, fds, txdb)
+
+# Add the subtypes for exonSkipping and inconclusive
+res_junc_dt <- checkExonSkipping(res_junc_dt, txdb)
+res_junc_dt <- checkInconclusive(res_junc_dt, txdb)
+
 # Add UTR labels
 res_junc_dt <- addUTRLabels(res_junc_dt, txdb)
-#print(blacklist_19)
-#blacklist_file <- blacklist_folder + "hg19-blacklist.v2.bed.gz"
-#res_junc_dt <- addBlacklistLabels(res_junc, blacklist_file)
+
+# Add blacklist labels
+if(assemblyVersion == 37){
+  blacklist_gr <- import(snakemake@input$blacklist_19, format = "BED")
+}else{
+  blacklist_gr <- import(snakemake@input$blacklist_38, format = "BED")
+}
+res_junc_dt <- addBlacklistLabels(res_junc_dt, blacklist_gr)
 
 # Results
 write_tsv(res_junc_dt, file=snakemake@output$resultTableJunc)
