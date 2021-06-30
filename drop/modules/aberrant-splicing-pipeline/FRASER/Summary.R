@@ -113,10 +113,11 @@ if(nrow(res) > 0){
   res[, padjustGene := signif(padjustGene, 2)]
 }
 
-viewing_cutoff <- 1000
-if (nrow(res) < viewing_cutoff){
-    viewing_cutoff <- nrow(res)
-}
-cat(paste0("<p> Taking a look at no more than the first 1,000 results.<p>"))
-DT::datatable(res[1:viewing_cutoff], options=list(scrollX=TRUE), escape=FALSE, filter = 'top')
+DT::datatable(
+  head(res, 1000),
+  caption = 'FRASER results (up to 1,000 rows shown)',
+  options=list(scrollX=TRUE),
+  escape=FALSE,
+  filter = 'top'
+)
 
