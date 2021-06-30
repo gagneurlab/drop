@@ -19,7 +19,7 @@
 #'   - res_signif: '`sm cfg.getProcessedResultsDir() + 
 #'                   "/mae/{dataset}/MAE_results_{annotation}.tsv"`'
 #'   - wBhtml: '`sm config["htmlOutputPath"] +
-#'               "/MAE/{dataset}--{annotation}_results.html"`'
+#'               "/MonoallelicExpression/{dataset}--{annotation}_results.html"`'
 #'  type: noindex
 #'---
 

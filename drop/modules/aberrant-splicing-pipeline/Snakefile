@@ -1,15 +1,13 @@
-AS_WORKDIR = cfg.AS.getWorkdir(str_=False)
+AS_WORKDIR = cfg.AS.renameLocalDir()
 
-AS_index_name = "aberrant-splicing-pipeline"
-AS_index_input, AS_index_output, AS_graph_file, _ = createIndexRule(
-    scriptsPath=str(AS_WORKDIR),
-    index_name=AS_index_name
-)
-    
+AS_index_input,AS_graph_file,AS_index_output = cfg.AS.getModuleIndexFiles("aberrant-splicing-pipeline",AS_WORKDIR)
+
 rule aberrantSplicing:
     input: AS_index_input, AS_graph_file
     output: AS_index_output
-    run: ci(str(AS_WORKDIR), AS_index_name)
+    run:
+        if cfg.AS.run:
+            ci(str(AS_WORKDIR), 'aberrant-splicing-pipeline')
 
 rule aberrantSplicing_dependency:
     output: AS_graph_file
