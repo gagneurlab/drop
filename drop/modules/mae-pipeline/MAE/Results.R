@@ -129,6 +129,11 @@ ggplot(melt_dt, aes(variable, value)) + geom_boxplot() +
 DT::datatable(melt_dt[, .(median = median(value, na.rm = T)), by = variable])
 
 #' 
-#' ## Results table
-DT::datatable(res[MAE_ALT == TRUE], filter = 'top')
+#' ## MAE Results table
+DT::datatable(
+  head(res[MAE_ALT == TRUE], 1000),
+  caption = 'MAE results (up to 1,000 rows shown)',
+  options=list(scrollX=TRUE),
+  filter = 'top'
+)
 
