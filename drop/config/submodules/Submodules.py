@@ -69,6 +69,7 @@ class Submodule:
                     raise OSError(f"Could not rename {work_dir_off} to {work_dir_on}\n \
                         try running 'drop update' to reset file structure\n")
         else:
+            logger.info(f"{self.name} has been turned off in the config file")
             work_dir = Path(work_dir_off / "pipeline")
             if (os.path.isdir(work_dir_on)):
                 try:

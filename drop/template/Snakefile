@@ -23,7 +23,7 @@ include: cfg.MAE.getSnakefile()
 include: drop.utils.getWBuildSnakefile()
 
 
-# don't allow the dataset wildcard to contain '--' as this is a delimter
+# don't allow the dataset wildcard to contain '--' as this is a delimiter
 wildcard_constraints:
     dataset="((?!--).)*"
 
