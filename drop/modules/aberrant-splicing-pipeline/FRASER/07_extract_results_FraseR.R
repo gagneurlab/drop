@@ -25,8 +25,9 @@
 #'   - addAnnotation:  '`sm cfg.AS.getWorkdir() + "/fds_annotation.R"`'
 #'   - addSpliceType: '`sm cfg.AS.getWorkdir() + "/spliceType_frameshift_annotation.R"`'
 #'   - subtypes: '`sm cfg.AS.getWorkdir() + "/subtypes_exonSkipping_inconclusive.R"`'
-#'   - blacklist_19: '`sm cfg.AS.getWorkdir() + "/resource/hg19-blacklist.v2.bed.gz"`'
-#'   - blacklist_38: '`sm cfg.AS.getWorkdir() + "/resource/hg38-blacklist.v2.bed.gz"`'
+#'   - annotate_blacklist: '`sm str(projectDir / ".drop" / "helpers" / "annotate_blacklist.R")`'
+#'   - blacklist_19: '`sm str(projectDir / ".drop" / "helpers" / "resource" / "hg19-blacklist.v2.bed.gz")`'
+#'   - blacklist_38: '`sm str(projectDir / ".drop" / "helpers" / "resource" / "hg38-blacklist.v2.bed.gz")`'
 #'  output:
 #'   - resultTableJunc: '`sm cfg.getProcessedResultsDir() + 
 #'                          "/aberrant_splicing/results/{annotation}/fraser/{dataset}/results_per_junction.tsv"`'
@@ -44,6 +45,7 @@ source(snakemake@input$spliceTypeSetup, echo=FALSE)
 source(snakemake@input$addAnnotation)
 source(snakemake@input$addSpliceType)
 source(snakemake@input$subtypes)
+source(snakemake@input$annotate_blacklist)
 library(AnnotationDbi)
 
 opts_chunk$set(fig.width=12, fig.height=8)
@@ -141,7 +143,7 @@ if(assemblyVersion == 37){
 }else{
   blacklist_gr <- import(snakemake@input$blacklist_38, format = "BED")
 }
-res_junc_dt <- addBlacklistLabels(res_junc_dt, blacklist_gr)
+res_junc_dt <- addBlacklistLabels(res_junc_dt, blacklist_gr, "splicing")
 
 # Results
 write_tsv(res_junc_dt, file=snakemake@output$resultTableJunc)
