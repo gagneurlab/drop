@@ -13,6 +13,8 @@ class RVC(Submodule):
         self.batchIDs = self.setBatchDict()
 
     def setBatchDict(self):
+        if not self.run:
+            return {}
         if (len(self.rnaIDs.items()) < 1): raise ValueError("No RNA IDs found in the group, can not create dictionary")
         dict_ = super().setDefaultKeys(None)
         setKey = utils.setKey

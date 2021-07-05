@@ -28,7 +28,11 @@ class SampleAnnotation:
         self.idMapping = self.createIdMapping()
         self.sampleFileMapping = self.createSampleFileMapping()
 
-        self.rnaIDs_RVC = self.createGroupIds(file_type="RNA_BAM_FILE", sep=',',group_key = "RNA_VARIANT_GROUP")
+        try:
+            self.rnaIDs_RVC = self.createGroupIds(file_type="RNA_BAM_FILE", sep=',',group_key = "RNA_VARIANT_GROUP")
+        except KeyError:
+            logger.info("RNA_VARIANT_GROUP not in annotation table, can not create RVC IDs")
+            self.rnaIDs_RVC = {}
         self.rnaIDs = self.createGroupIds(file_type="RNA_BAM_FILE", sep=',')
         self.dnaIDs = self.createGroupIds(file_type="DNA_VCF_FILE", sep=',')
         # external counts
@@ -43,29 +47,35 @@ class SampleAnnotation:
             "RNA_ID": str, "DNA_ID": str, "DROP_GROUP": str, "GENE_ANNOTATION": str,
             "PAIRED_END": bool, "COUNT_MODE": str, "COUNT_OVERLAPS": bool, "STRAND": str, "GENOME": str, "RNA_VARIANT_GROUP":str
         }
-        sa = pd.read_csv(self.file, sep=sep, index_col=False)
-        missing_cols = [x for x in self.SAMPLE_ANNOTATION_COLUMNS if x not in sa.columns.values]
+        annotationTable = pd.read_csv(self.file, sep=sep, index_col=False)
+        missing_cols = [x for x in self.SAMPLE_ANNOTATION_COLUMNS if x not in annotationTable.columns.values]
         if len(missing_cols) > 0:
+            if "RNA_VARIANT_GROUP" in missing_cols:
+                # deal with missing columns in data types, remove it to fix checks later
+                del data_types["RNA_VARIANT_GROUP"]
+                self.SAMPLE_ANNOTATION_COLUMNS.remove("RNA_VARIANT_GROUP")
+                missing_cols.remove("RNA_VARIANT_GROUP")
+
             if "GENOME" in missing_cols:
                 # deal with missing columns in data types, remove it to fix checks later
                 del data_types["GENOME"]
                 self.SAMPLE_ANNOTATION_COLUMNS.remove("GENOME")
                 missing_cols.remove("GENOME")
 
-            if "GENE_ANNOTATION" in missing_cols and "ANNOTATION" in sa.columns.values:
+            if "GENE_ANNOTATION" in missing_cols and "ANNOTATION" in annotationTable.columns.values:
                 logger.info(
                     "WARNING: GENE_ANNOTATION must be a column in the sample annotation table, ANNOTATION is the old column name and will be deprecated in the future\n")
-                sa["GENE_ANNOTATION"] = sa.pop("ANNOTATION")
+                annotationTable["GENE_ANNOTATION"] = annotationTable.pop("ANNOTATION")
                 missing_cols.remove("GENE_ANNOTATION")
 
             if len(missing_cols) > 0:
                 raise ValueError(f"Incorrect columns in sample annotation file. Missing:\n{missing_cols}")
 
-        sa = sa.astype(data_types)
+        annotationTable = annotationTable.astype(data_types)
         # remove unwanted characters
-        sa["DROP_GROUP"] = sa["DROP_GROUP"].str.replace(" ", "").str.replace("(|)", "", regex=True)
+        annotationTable["DROP_GROUP"] = annotationTable["DROP_GROUP"].str.replace(" ", "").str.replace("(|)", "", regex=True)
 
-        return sa
+        return annotationTable
 
     #### Construction
 
