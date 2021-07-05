@@ -1,4 +1,5 @@
-MAE_WORKDIR = renameLocalDir(cfg.MAE)
+MAE_WORKDIR = cfg.MAE.renameLocalDir()
+MAE_index_input,MAE_graph_file,MAE_index_output = cfg.MAE.getModuleIndexFiles("mae-pipeline",MAE_WORKDIR)
 
 MAE_index_input,MAE_graph_file,MAE_index_output = moduleInputOutput("mae-pipeline",MAE_WORKDIR,cfg.MAE)
 rule mae:
@@ -10,7 +11,12 @@ rule mae:
 
 rule mae_dependency:
     output: MAE_graph_file
-    shell: "snakemake --nolock --rulegraph {MAE_index_output} | dot -Tsvg -Grankdir=TB > {output}"
+    shell:
+        """
+        snakemake --nolock --rulegraph {MAE_index_output} | \
+            sed -ne '/digraph snakemake_dag/,/}}/p' | \
+            dot -Tsvg -Grankdir=TB > {output}
+        """
 
 rule sampleQC:
     input: cfg.getHtmlFromScript(MAE_WORKDIR / "QC" / "Datasets.R")

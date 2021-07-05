@@ -10,19 +10,19 @@ Open a terminal in your project repository. Execute
 
 .. code-block:: bash
     
-    snakemake -n 
+    snakemake -nj1
 
 This will perform a *dry-run*, which means it will display all the steps (or rules) that need to be executed. To also display the reason why those rules need to be exeucted, run 
 
 .. code-block:: bash
 
-    snakemake -nr
+    snakemake -nrj1
 
 Finally, a simplified dry-run can be achieved by executing
 
 .. code-block:: bash
 
-    snakemake -nq
+    snakemake -nqj1
     
 Calling ``snakemake`` without any parameters will execute the whole workflow. 
 

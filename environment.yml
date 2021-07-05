@@ -1,0 +1,10 @@
+name: drop_test
+channels:
+  - conda-forge
+  - bioconda
+dependencies:
+  - python==3.8
+  - pip
+  - drop
+  - flake8
+  - bioconductor-bsgenome.hsapiens.ucsc.hg19

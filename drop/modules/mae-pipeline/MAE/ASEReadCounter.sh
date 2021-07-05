@@ -31,8 +31,8 @@ header+="lowBaseQDepth\trawDepth\totherBases\timproperPairs"
 echo -e $header >> $tmp
 
 # get chr format
-bam_chr=$($samtools idxstats ${bam_file} | grep -vP "\t0\t0" | cut -f1) # only chr with coverage
-vcf_chr=$($bcftools view ${vcf_file} | cut -f1 | grep -v '#' | uniq)
+bam_chr=$($samtools idxstats ${bam_file} | grep -vP "\t0\t0" | cut -f1 | sort -u) # only chr with coverage
+vcf_chr=$($bcftools view ${vcf_file} | cut -f1 | grep -v '#' | sort -u)
 if [ "$(echo ${vcf_chr} | grep -c 'chr')" -eq 0 ]; then
   echo "use NCBI format"
   canonical=$ncbi2ucsc
@@ -42,11 +42,10 @@ else
 fi
 
 # subset to standard chromosomes
-chr_subset=$(comm -12 <(cut -f1 -d" " ${canonical} | sort -u) <(echo "${vcf_chr}" | sort -u))
-chr_subset=$(comm -12 <(echo "${bam_chr}" | sort -u) <(echo "${chr_subset}") | uniq)
+chr_subset=$(comm -12 <(cut -f1 -d" " ${canonical} | sort -u) <(echo "${vcf_chr}"))
+chr_subset=$(comm -12 <(echo "${bam_chr}") <(echo "${chr_subset}") | uniq)
 
 for chr in $chr_subset; do
-  echo $chr
   $gatk ASEReadCounter \
     -R ${fasta} \
     -I ${bam_file} \
@@ -58,10 +57,23 @@ for chr in $chr_subset; do
     tail -n+2 >>$tmp
 done
 
-echo $mae_id
 cat $tmp | awk -v id="${mae_id}" \
   -F $'\t' 'BEGIN {OFS = FS} NR==1{print $0, "ID"} NR>1{print $0, id}' |
   bgzip >${output}
 rm ${tmp}
+
+num_out=$(zcat "${output}" | wc -l )
+if [ "${num_out}" -lt 2 ]
+then
+  printf  "%s\n" "" "ERROR: No allele-specific counts" \
+    "  Make sure that the chromosome styles of the FASTA reference and BAM file match." \
+    "  If that isn't the issue, check that your VCF and BAM files are correctly formatted." \
+    "  If this problem persists and if this is your only sample causing issues, consider removing it from your analysis, as a last resort." \
+    "" "  MAE ID: ${mae_id}" \
+    "  VCF file: ${vcf_file}" \
+    "  BAM file: ${bam_file}" \
+    "  FASTA file: ${fasta}"
+  exit 1
+fi
 
 zcat ${output} | head

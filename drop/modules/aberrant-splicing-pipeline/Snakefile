@@ -1,6 +1,6 @@
-AS_WORKDIR = renameLocalDir(cfg.AS)
+AS_WORKDIR = cfg.AS.renameLocalDir()
 
-AS_index_input,AS_graph_file,AS_index_output = moduleInputOutput("aberrant-splicing-pipeline",AS_WORKDIR,cfg.AS)
+AS_index_input,AS_graph_file,AS_index_output = cfg.AS.getModuleIndexFiles("aberrant-splicing-pipeline",AS_WORKDIR)
 
 rule aberrantSplicing:
     input: AS_index_input, AS_graph_file
@@ -11,4 +11,9 @@ rule aberrantSplicing:
 
 rule aberrantSplicing_dependency:
     output: AS_graph_file
-    shell: "snakemake --nolock --rulegraph {AS_index_output} | dot -Tsvg -Grankdir=TB > {output}"
+    shell:
+        """
+        snakemake --nolock --rulegraph {AS_index_output} | \
+            sed -ne '/digraph snakemake_dag/,/}}/p' | \
+            dot -Tsvg -Grankdir=TB > {output}
+        """

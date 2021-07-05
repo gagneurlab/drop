@@ -2,9 +2,8 @@
 set -e
 
 # get data
-
 resource_url="https://www.cmm.in.tum.de/public/paper/drop_analysis/resource_rnaVariantCalling.tar.gz"
-tmpdir="$(dirname "$(tempfile)")"
+tmpdir="$(dirname "$(mktemp)")"
 wget -nc -P $tmpdir $resource_url
 mkdir -p Data
 if [ -z "$(ls Data)" ]; then

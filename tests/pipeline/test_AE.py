@@ -5,6 +5,8 @@ class Test_AE_Pipeline:
 
     def test_pipeline_no_run(self,demo_dir):
         LOGGER.info("run aberrantExpression pipeline with \'run: false\'")
+        # change the first instance of "run: true" to "run: false" to turn off the AE module
+        # run the AE module using this config_AE_norun (which should do nothing)
         run("awk -v n=1 \'/run: true/ { if (++count == n) sub(/run: true/, \"run: false\"); } 1\' \
           config.yaml > config_AE_norun.yaml  ",demo_dir)
         pipeline_run = run(["snakemake", "aberrantExpression", f"-j{CORES}", "--configfile", "config_AE_norun.yaml"], demo_dir)
@@ -16,8 +18,7 @@ class Test_AE_Pipeline:
     @pytest.fixture(scope="class")
     def pipeline_run(self, demo_dir):
         LOGGER.info("run aberrant expression pipeline...")
-        pipeline_run = run(["snakemake", "aberrantExpression", f"-j{CORES}"], demo_dir)
-        tmp = run(["snakemake", "--unlock"], demo_dir)
+        pipeline_run = run(f"snakemake aberrantExpression --cores {CORES}", demo_dir)
         assert "Finished job 0." in pipeline_run.stderr
         return pipeline_run
 
@@ -84,12 +85,12 @@ class Test_AE_Pipeline:
 
     def test_no_import(self, no_import):
         merged_counts = f"{no_import}/Output/processed_data/aberrant_expression/v29/outrider/outrider/total_counts.Rds"
-        r = run(f"snakemake {merged_counts} --configfile config_noimp.yaml -nqF", no_import)
-        tmp = run(["snakemake", "--unlock"], no_import)
+        # check dryrun
+        r = run(f"snakemake {merged_counts} --configfile config_noimp.yaml -nF --cores 1", no_import)
 
-        print(r.stdout)
-        assert "10\tAberrantExpression_pipeline_Counting_countReads_R" in r.stdout
-        assert "1\tAberrantExpression_pipeline_Counting_mergeCounts_R" in r.stdout
+        # check if new rules are included in snakemake output
+        assert "AberrantExpression_pipeline_Counting_countReads_R" in r.stdout
+        assert "AberrantExpression_pipeline_Counting_mergeCounts_R" in r.stdout
 
         # check if pipeline runs through without errors
-        run(f"snakemake {merged_counts} --configfile config_noimp.yaml -j{CORES}", no_import)
+        run(f"snakemake {merged_counts} --configfile config_noimp.yaml --cores {CORES}", no_import)

@@ -1,5 +1,4 @@
 from .SampleAnnotation import SampleAnnotation
-
 from .Genome import Genome
 from .SampleParams import SampleParams
 from .submodules import *

@@ -75,6 +75,7 @@ Aberrant expression dictionary
 ============================  =========  =================================================================================================================================  ======
 Parameter                     Type       Description                                                                                                                        Default/Examples
 ============================  =========  =================================================================================================================================  ======
+run                           boolean    true or false. This designates whether or not this module should be run using snakemake.                                           ``true``
 groups                        list       DROP groups that should be executed in this module. If not specified or ``null`` all groups are used.                              ``- group1``
 
                                                                                                                                                                             ``- group2``
@@ -92,6 +93,7 @@ Aberrant splicing dictionary
 ============================  =========  ============================================================================================  ======
 Parameter                     Type       Description                                                                                   Default/Examples
 ============================  =========  ============================================================================================  ======
+run                           boolean    true or false. This designates whether or not this module should be run using snakemake.      ``true``
 groups                        list       Same as in aberrant expression.                                                               ``# see aberrant expression example``
 minIds                        numeric    Same as in aberrant expression.                                                               ``1``
 recount                       boolean    If true, it forces samples to be recounted.                                                   ``false``
@@ -113,6 +115,7 @@ Mono-allelic expression dictionary
 =====================  =========  ========================================================================================================================  ======
 Parameter              Type       Description                                                                                                               Default/Examples
 =====================  =========  ========================================================================================================================  ======
+run                    boolean    true or false. This designates whether or not this module should be run using snakemake.                                  ``true``
 groups                 list       Same as in aberrant expression.                                                                                           ``# see aberrant expression example``
 gatkIgnoreHeaderCheck  boolean    If true (recommended), it ignores the header warnings of a VCF file when performing the allelic counts                    ``true``
 padjCutoff             numeric    Same as in aberrant expression.                                                                                           ``0.05``
