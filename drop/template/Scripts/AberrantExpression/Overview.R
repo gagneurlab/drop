@@ -24,41 +24,14 @@
 #'---
 
 #+ include=FALSE
-knitr::opts_chunk$set(eval = snakemake@params$run)
-
-#+ eval=TRUE, echo=FALSE
-saveRDS(snakemake, snakemake@log$snakemake)
-
-# define functions
-get_html_path <- function(annotationVersion, datasets, htmlDir, fileName) {
-  file_paths <- file.path(htmlDir, annotationVersion, fileName)
-  file_link <- paste0('\n* [', datasets ,'](', file_paths, 
-                      '){target="_blank"}\n', collapse = ' ')
-  file_link
-}
-
-display_text <- function(caption, links) {
-  paste0('**', caption, '**', names(links), '\n', links, collapse = '\n')
-}
-
-=======
 saveRDS(snakemake, snakemake@log$snakemake)
 source(snakemake@input$functions)
 
 #+ eval=TRUE, echo=FALSE
->>>>>>> c885d8ecbdbd6165f096e335bafcd36c0a320245
 # get parameters
 datasets <- sort(snakemake@params$datasets)
 annotations <- snakemake@params$annotations
 htmlDir <- snakemake@params$htmlDir
-count_links <- sapply(annotations, get_html_path,
-                      datasets = datasets,
-                      htmlDir = file.path(htmlDir, "Counting"),
-                      fileName = paste0('Summary_', datasets, '.html'))
-outrider_links <- sapply(annotations, get_html_path,
-                         datasets = datasets,
-                         htmlDir = file.path(htmlDir, "Outrider"),
-                         fileName = paste0('Summary_', datasets, '.html'))
 
 count_links <- sapply(
   annotations, function(x) build_link_list(
