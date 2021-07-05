@@ -19,6 +19,7 @@ config = cfg.config_dict # legacy
 include: cfg.AE.getSnakefile()
 include: cfg.AS.getSnakefile()
 include: cfg.MAE.getSnakefile()
+include: cfg.RVC.getSnakefile()
 include: drop.utils.getWBuildSnakefile()
 
 

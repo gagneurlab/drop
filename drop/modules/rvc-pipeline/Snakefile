@@ -1,5 +1,5 @@
-RVC_WORKDIR = renameLocalDir(cfg.RVC)   
-RVC_index_input,RVC_graph_file,RVC_index_output = cfg.RVC.moduleInputOutput("rvc-pipeline",RVC_WORKDIR)
+RVC_WORKDIR = cfg.RVC.renameLocalDir()
+RVC_index_input,RVC_graph_file,RVC_index_output = cfg.RVC.getModuleIndexFiles("rvc-pipeline",RVC_WORKDIR)
 
 
 #########
