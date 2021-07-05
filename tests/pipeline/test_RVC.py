@@ -5,15 +5,15 @@ class Test_RVC_Pipeline:
 
 # change the third instance of "run: true" to "run: false" to turn off the RVC module
 # run the RVC module using this config_RVC_norun (which should do nothing)
-    def test_pipeline_no_run(self,demo_dir):                                                                            
-        LOGGER.info("run RNA variant calling pipeline with \'run: false\'")                                           
-        # change the fourth instance of "run: true" to "run: false" to turn off the RVC module                           
-        # run the RVC module using this config_RVC_norun (which should do nothing)                                      
-        run("awk -v n=4 \'/run: true/ { if (++count == n) sub(/run: true/, \"run: false\"); } 1\' \                     
-        config.yaml > config_RVC_norun.yaml  ",demo_dir)                                                              
+    def test_pipeline_no_run(self,demo_dir):
+        LOGGER.info("run RNA variant calling pipeline with \'run: false\'")
+        # change the fourth instance of "run: true" to "run: false" to turn off the RVC module
+        # run the RVC module using this config_RVC_norun (which should do nothing)
+        run("awk -v n=4 \'/run: true/ { if (++count == n) sub(/run: true/, \"run: false\"); } 1\' \
+        	config.yaml > config_RVC_norun.yaml  ",demo_dir)
         pipeline_run = run(["snakemake", "aberrantExpression", f"-j{CORES}", "--configfile", "config_RVC_norun.yaml"], demo_dir)
-        tmp = run(["snakemake", "--unlock"], demo_dir)                                                                  
-        assert "Nothing to be done." in pipeline_run.stderr                                                             
+        tmp = run(["snakemake", "--unlock"], demo_dir)
+        assert "Nothing to be done." in pipeline_run.stderr
         return pipeline_run
 
     @pytest.fixture(scope="class")
