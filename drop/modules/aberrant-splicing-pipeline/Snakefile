@@ -11,6 +11,4 @@ rule aberrantSplicing:
 
 rule aberrantSplicing_dependency:
     output: AS_graph_file
-
     shell: "snakemake --nolock --rulegraph {AS_index_output} | dot -Tsvg -Grankdir=TB > {output}"
-

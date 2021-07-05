@@ -43,7 +43,13 @@ rule rnaVariantCalling:
 
 rule rnaVariantCalling_dependency:
     output: RVC_graph_file
-    shell: "snakemake --rulegraph rnaVariantCalling | dot -Tsvg -Grankdir=TB > {output}"
+    shell: 
+        """
+        snakemake --rulegraph rnaVariantCalling | \
+        sed -ne '/digraph snakemake_dag/,/}}/p' | \
+        dot -Tsvg -Grankdir=TB > {output}
+        """
+
 
 #Define the {sample} variable
 #create the empty output file of the form: {dataset}_alt{minAlt}_done.txt

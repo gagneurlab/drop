@@ -48,6 +48,7 @@ class Test_AE_Config:
             'PAIRED_END': True,
             'COUNT_OVERLAPS': True
         }
+        print(dropConfig.AE.getCountParams("HG00103.4.M_120208_3"))
         assert params == dropConfig.AE.getCountParams("HG00103.4.M_120208_3")
 
 
