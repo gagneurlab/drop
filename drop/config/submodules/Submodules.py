@@ -90,3 +90,45 @@ class Submodule:
         else:
             # dummy return of hidden pipeline directory which already exists
             return self.getWorkdir(hide_dir=True), self.getWorkdir(hide_dir=True), self.getWorkdir(hide_dir=True)
+
+
+    def setGenomeDict(self, genomeFiles,group_key="DROP_GROUP"):
+        genomeDict = {}
+        if len(genomeFiles) == 1:  # globally defined in the config
+            globalGenome = list(genomeFiles.values())[0]
+
+            # subset SA by the drop group (not exact match) and skip the filtering by SA-GENOME column
+            genomeDict = self.sampleAnnotation.getGenomes(
+                globalGenome,
+                self.groups,
+                file_type="RNA_ID",
+                column=group_key, group_key=group_key,
+                exact_match=False, skip=True
+            )
+        else:
+            # subset SA by the drop group (not exact match) and filter by SA-GENOME column. Must exactly match config key
+            for gf in genomeFiles.keys():
+                genomeDict.update(
+                    self.sampleAnnotation.getGenomes(
+                        gf,
+                        self.groups,
+                        file_type="RNA_ID",
+                        column="GENOME", group_key=group_key,
+                        exact_match=False, skip=False
+                    )
+                )
+
+        return genomeDict
+
+    # look up for a sampleID genomeFiles{ncbi -> path} and sampleGenomes {sampleID -> ncbi}
+    def getGenomePath(self, sampleID):
+        if len(self.genomeFiles) ==1:
+            return(list(self.genomeFiles.values())[0])
+        else:
+            try:
+                return self.genomeFiles[self.sampleGenomes[sampleID]]
+            except KeyError:
+                raise KeyError(
+                    f"The Config file has defined specific key,value for genome path "
+                    f"but the SA table does not match for sample {sampleID}"
+                )
