@@ -64,7 +64,7 @@ mae:
       - mae
 
 rnaVariantCalling:
-  run: false
+  run: true
   groups:
   - batch_0
   knownVCFs:
