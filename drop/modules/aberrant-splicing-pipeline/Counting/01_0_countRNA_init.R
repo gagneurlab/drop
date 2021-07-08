@@ -5,9 +5,9 @@
 #'  log:
 #'    - snakemake: '`sm str(tmp_dir / "AS" / "{dataset}" / "01_0_init.Rds")`'
 #'  params:
-#'   - setup: '`sm cfg.AS.getWorkdir() + "/config.R"`'
 #'   - workingDir: '`sm cfg.getProcessedDataDir() + "/aberrant_splicing/datasets"`'
 #'  input:
+#'    - setup: '`sm cfg.AS.getWorkdir() + "/config.R"`'
 #'    - colData: '`sm cfg.getProcessedDataDir() + 
 #'                    "/aberrant_splicing/annotations/{dataset}.tsv"`'
 #'  output:
@@ -19,7 +19,7 @@
 #'---
 
 saveRDS(snakemake, snakemake@log$snakemake)
-source(snakemake@params$setup, echo=FALSE)
+source(snakemake@input$setup, echo=FALSE)
 
 dataset    <- snakemake@wildcards$dataset
 colDataFile <- snakemake@input$colData

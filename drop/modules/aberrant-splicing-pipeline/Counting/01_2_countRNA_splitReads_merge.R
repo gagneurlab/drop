@@ -5,10 +5,10 @@
 #'  log:
 #'    - snakemake: '`sm str(tmp_dir / "AS" / "{dataset}" / "01_2_splitReadsMerge.Rds")`'
 #'  params:
-#'   - setup: '`sm cfg.AS.getWorkdir() + "/config.R"`'
 #'   - workingDir: '`sm cfg.getProcessedDataDir() + "/aberrant_splicing/datasets"`'
 #'  threads: 20
 #'  input:
+#'   - setup: '`sm cfg.AS.getWorkdir() + "/config.R"`'
 #'   - sample_counts: '`sm lambda w: cfg.AS.getSplitCountFiles(w.dataset)`'
 #'  output:
 #'   - countsJ: '`sm cfg.getProcessedDataDir() +
@@ -23,7 +23,7 @@
 #'---
 
 saveRDS(snakemake, snakemake@log$snakemake)
-source(snakemake@params$setup, echo=FALSE)
+source(snakemake@input$setup, echo=FALSE)
 
 dataset    <- snakemake@wildcards$dataset
 workingDir <- snakemake@params$workingDir

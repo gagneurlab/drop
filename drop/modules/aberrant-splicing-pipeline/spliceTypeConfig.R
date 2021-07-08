@@ -29,25 +29,3 @@ addUTRLabels <- function(junctions_dt, txdb){
   #print(junctions_dt)
   return(junctions_dt)
 }
-
-
-#addBlacklistLabels <- function(junctions_dt, blacklist_gr){
-#  ### add the blacklist information
-#  print("Set up blacklist file")
-#  psi_positions <- which(junctions_dt$type != "theta")
-#  colnames(junctions_dt)[which(names(junctions_dt) == "STRAND")] <- "strand2"
-#  junctions_gr <- makeGRangesFromDataFrame(junctions_dt[psi_positions])
-#  
-#  #blacklist_gr =  import(blacklist_file, format = "BED")
-#  seqlevelsStyle(blacklist_gr) <- seqlevelsStyle(junctions_gr)
-#  
-#  ## create overlap with blacklist and annotate extra column
-#  print("find blacklist overlap")
-#  black_hits <- unique(from(findOverlaps(junctions_gr, blacklist_gr)))
-#  junctions_dt[, blacklist := FALSE]
-#  junctions_dt[psi_positions[black_hits], blacklist := TRUE]
-#  print("blacklist labels done")
-#  
-#  colnames(junctions_dt)[which(names(junctions_dt) == "strand2")] <- "STRAND"
-#  return(junctions_dt)
-#}

@@ -44,14 +44,28 @@ res <- res[padjust <= snakemake@params$padjCutoff &
                abs(zScore) > snakemake@params$zScoreCutoff]
 
 gene_annot_dt <- fread(snakemake@input$gene_name_mapping)
+
+print("IN OUTRIDER RESULTS: GENE NAME MAPPING DT")
+print(gene_annot_dt)
+
+print("RES BEFORE GENE NAME MAPPING")
+print(res)
+
 if(!is.null(gene_annot_dt$gene_name)){
   if(grepl('ENSG00', res[1,geneID]) & grepl('ENSG00', gene_annot_dt[1,gene_id])){
-    res <- merge(res, gene_annot_dt[, .(gene_id, gene_name)], 
+    res <- merge(res, gene_annot_dt[, .(gene_id, gene_name, blacklist)], 
                  by.x = 'geneID', by.y = 'gene_id', sort = FALSE, all.x = TRUE)
     setnames(res, 'gene_name', 'hgncSymbol')
     res <- cbind(res[, .(hgncSymbol)], res[, - 'hgncSymbol'])
   }
 }
+
+
+print("RES AFTER GENE NAME MAPPING")
+print(res)
+
+
+
 
 # Add HPO terms, requires online connection and for there to be annotated HPO terms
 sa <- fread(snakemake@config$sampleAnnotation)
