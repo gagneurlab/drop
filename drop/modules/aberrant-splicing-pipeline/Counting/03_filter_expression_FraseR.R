@@ -1,13 +1,15 @@
 #'---
-#' title: Filter and clean dataset
+#' title: Merge, filter, and clean dataset
 #' author: Christian Mertes
 #' wb:
 #'  log:
 #'    - snakemake: '`sm str(tmp_dir / "AS" / "{dataset}" / "03_filter.Rds")`'
 #'  params:
 #'   - setup: '`sm cfg.AS.getWorkdir() + "/config.R"`'
+#'   - exCountIDs: '`sm lambda w: sa.getIDsByGroup(w.dataset, assay="SPLICE_COUNT")`'
 #'   - workingDir: '`sm cfg.getProcessedDataDir() + "/aberrant_splicing/datasets/"`'
 #'  input:
+#'   - exCtsFiles: '`sm lambda w: cfg.AS.getCountFiles(w.annotation, w.dataset)`'
 #'   - theta:  '`sm cfg.getProcessedDataDir()+
 #'                  "/aberrant_splicing/datasets/savedObjects/raw-{dataset}/theta.h5"`'
 #'  output:
