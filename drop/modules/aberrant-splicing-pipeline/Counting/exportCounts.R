@@ -7,8 +7,8 @@
 #'  params:
 #'   - setup: '`sm cfg.AS.getWorkdir() + "/config.R"`'
 #'  input:
-#'   - annotation: '`sm cfg.getProcessedDataDir() + "/aberrant_expression/{annotation}/txdb.db"`'
-#'   - fds_theta: '`sm cfg.getProcessedDataDir() + 
+#'   - annotation: '`sm cfg.getProcessedDataDir() + "/preprocess/{annotation}/txdb.db"`'
+#'   - fds_theta: '`sm cfg.getProcessedDataDir() +
 #'                    "/aberrant_splicing/datasets/savedObjects/raw-{dataset}/theta.h5"`'
 #'  output:
 #'    - k_counts: '`sm expand(cfg.exportCounts.getFilePattern(str_=True, expandStr=True) + "/k_{metric}_counts.tsv.gz", metric=["j", "theta"])`'
@@ -20,7 +20,7 @@ saveRDS(snakemake, snakemake@log$snakemake)
 source(snakemake@params$setup, echo=FALSE)
 library(AnnotationDbi)
 
-# 
+#
 # input
 #
 annotation_file <- snakemake@input$annotation
@@ -52,4 +52,3 @@ for(i in c(out_k_files, out_n_files)){
 
   fwrite(cbind(anno, cts), file=i, quote=FALSE, row.names=FALSE, sep="\t", compress="gzip")
 }
-

@@ -1,5 +1,5 @@
 #'---
-#' title: "OUTRIDER Summary: `r gsub('_', ' ', snakemake@wildcards$dataset)`"
+#' title: "OUTRIDER Summary: `r paste(snakemake@wildcards$dataset, snakemake@wildcards$annotation, sep = '--')`"
 #' author: mumichae, vyepez
 #' wb:
 #'  log:
@@ -15,6 +15,8 @@
 #'  output:
 #'   - wBhtml: '`sm config["htmlOutputPath"] + 
 #'              "/AberrantExpression/Outrider/{annotation}/Summary_{dataset}.html"`'
+#'   - res_html: '`sm config["htmlOutputPath"] + 
+#'              "/AberrantExpression/Outrider/{annotation}/OUTRIDER_results_{dataset}.tsv"`'
 #'  type: noindex
 #' output:
 #'  html_document:
@@ -26,17 +28,17 @@
 saveRDS(snakemake, snakemake@log$snakemake)
 
 suppressPackageStartupMessages({
-    library(OUTRIDER)
-    library(SummarizedExperiment)
-    library(ggplot2)
-    library(cowplot)
-    library(data.table)
-    library(dplyr)
-    library(ggthemes)
+  library(OUTRIDER)
+  library(SummarizedExperiment)
+  library(ggplot2)
+  library(cowplot)
+  library(data.table)
+  library(dplyr)
+  library(ggthemes)
 })
 
 # used for most plots
-dataset_title <- paste("Dataset:", snakemake@wildcards$dataset)
+dataset_title <- paste("Dataset:", paste(snakemake@wildcards$dataset, snakemake@wildcards$annotation, sep = '--'))
 
 ods <- readRDS(snakemake@input$ods)
 
@@ -47,10 +49,10 @@ ods <- readRDS(snakemake@input$ods)
 #' ## Visualize
 #' ### Encoding dimension
 plotEncDimSearch(ods) +
-    labs(title = dataset_title) +
-    theme_cowplot() +
-    background_grid() +
-    scale_color_brewer(palette = "Set1")
+  labs(title = dataset_title) +
+  theme_cowplot() +
+  background_grid() +
+  scale_color_brewer(palette = "Set1")
 
 
 #' ### Aberrantly expressed genes per sample
@@ -99,11 +101,10 @@ bcv_dt <- rbind(before, after)
 # boxplot of BCV Before and After Autoencoder
 #+ BCV, fig.height=5, fig.width=6
 ggplot(bcv_dt, aes(when, BCV)) +
-    geom_boxplot() +
-    theme_bw(base_size = 14) +
-    labs(x = "",
-         title = paste0("BCV - Before and After Autoencoder (", 
-                        dataset_title, ")"))
+  geom_boxplot() +
+  theme_bw(base_size = 14) +
+  labs(x = "Autoencoder correction", y = "Biological coefficient \nof variation",
+       title = dataset_title)
 
 
 #' ## Results
@@ -113,32 +114,32 @@ res <- fread(snakemake@input$results)
 #'
 #' ### Aberrant samples
 if (nrow(res) > 0) {
-    ab_table <- res[AberrantBySample > nrow(ods)/1000, .N, by = .(sampleID)] %>% unique
-    if (nrow(ab_table) > 0) {
-      setorder(ab_table, N) 
-      DT::datatable(ab_table)
-    } else {
-      print("no aberrant samples")
-    }
+  ab_table <- res[AberrantBySample > nrow(ods)/1000, .N, by = .(sampleID)] %>% unique
+  if (nrow(ab_table) > 0) {
+    setorder(ab_table, N) 
+    DT::datatable(ab_table)
+  } else {
+    print("no aberrant samples")
+  }
 } else {
-    print('no results')
+  print('no results')
 }
 
 
 #' ## Results table
-#+echo=F
+
+## Save results table in the html folder and provide link to download
+file <- snakemake@output$res_html
+fwrite(res, file, sep = '\t', quote = F)
+#+ echo=FALSE, results='asis'
+cat(paste0("<a href='./", basename(file), "'>Download OUTRIDER results table</a>"))
+
 res[, pValue := format(pValue, scientific = T, digits = 2)]
 res[, padjust := format(padjust, scientific = T, digits = 2)]
-DT::datatable(res, caption = "OUTRIDER results", style = 'bootstrap', filter = 'top')
 
-#' ### Download results table
-web_dir <- snakemake@config$webDir
-if (!is.null(web_dir)) {
-    results_link <- paste0(web_dir, 
-        "/aberrant_expression/results/", snakemake@wildcards$annotation,
-        "/outrider/", snakemake@wildcards$dataset ,"/OUTRIDER_results.tsv")
-} else {
-    results_link <- snakemake@input$results
-}
-#' [Download OUTRIDER results table](`r results_link`)
-
+DT::datatable(
+  head(res, 1000),
+  caption = 'OUTRIDER results (up to 1,000 rows shown)',
+  options=list(scrollX=TRUE),
+  filter = 'top'
+)

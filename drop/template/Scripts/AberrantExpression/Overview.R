@@ -5,85 +5,75 @@
 #'  log:
 #'    - snakemake: '`sm str(tmp_dir / "AE" / "Overview.Rds")`'
 #'  params:
-#'    - annotations: '`sm cfg.getGeneVersions()`'
+#'    - annotations: '`sm cfg.genome.getGeneVersions()`'
 #'    - datasets: '`sm cfg.AE.groups`'
 #'    - htmlDir: '`sm config["htmlOutputPath"] + "/AberrantExpression"`'
 #'  input:
+#'    - functions: '`sm cfg.workDir / "Scripts/html_functions.R"`'
 #'    - odsFiles: '`sm expand(cfg.getProcessedResultsDir() +
 #'                  "/aberrant_expression/{annotation}/outrider/{dataset}/ods.Rds",
-#'                  annotation=cfg.getGeneVersions(), dataset=cfg.AE.groups)`'
+#'                  annotation=cfg.genome.getGeneVersions(), dataset=cfg.AE.groups)`'
 #'    - resultTables: '`sm expand(cfg.getProcessedResultsDir() +
 #'                      "/aberrant_expression/{annotation}/outrider/" +
 #'                      "{dataset}/OUTRIDER_results.tsv",
-#'                      annotation=cfg.getGeneVersions(), dataset=cfg.AE.groups)`'
+#'                      annotation=cfg.genome.getGeneVersions(), dataset=cfg.AE.groups)`'
 #' output:
 #'   html_document:
 #'    code_folding: show
 #'    code_download: TRUE
 #'---
 
-#+ echo=F
+#+ include=FALSE
 saveRDS(snakemake, snakemake@log$snakemake)
+source(snakemake@input$functions)
 
-suppressPackageStartupMessages({
-    library(OUTRIDER)
-})
-
-# define functions
-get_html_path <- function(annotationVersion, datasets, htmlDir, fileName) {
-    file_paths <- file.path(htmlDir, annotationVersion, fileName)
-    file_link <- paste0('\n* [', datasets ,'](', file_paths, 
-                        '){target="_blank"}\n', collapse = ' ')
-    file_link
-}
-
-display_text <- function(caption, links) {
-    paste0('**', caption, '**', names(links), '\n', links, collapse = '\n')
-}
-
+#+ eval=TRUE, echo=FALSE
 # get parameters
 datasets <- sort(snakemake@params$datasets)
 annotations <- snakemake@params$annotations
 htmlDir <- snakemake@params$htmlDir
 
+count_links <- sapply(
+  annotations, function(x) build_link_list(
+    file_paths = file.path(htmlDir, "Counting", annotations, paste0('Summary_', datasets, '.html')),
+    captions = datasets)
+)
+
+results_links <- sapply(
+ annotations, function(x) build_link_list(
+    file_paths = file.path(htmlDir, "Outrider", annotations, paste0('Summary_', datasets, '.html')),
+    captions = datasets)
+)
+
+ods_links <- build_link_list(snakemake@input$odsFiles)
+results_tables <- build_link_list(snakemake@input$resultTables)
+
 ## start html
 
 #'
 #' **Datasets:** `r paste(datasets, collapse = ', ')`
-#' 
+#'
 #' **Gene annotations:** `r paste(annotations, collapse = ', ')`
 #'
 #' ## Summaries
+#'
 #' ### Counts summary
-#+ echo=FALSE
-htmlDir <- './AberrantExpression'
-count_links <- sapply(annotations, get_html_path, 
-                      datasets = datasets,
-                      htmlDir = file.path(htmlDir, "Counting"), 
-                      fileName = paste0('Summary_', datasets, '.html'))
-#' 
-#' `r display_text(caption = 'Gene annotation version ', count_links)`
-#' 
+#'
+#' `r display_text(caption = 'Gene annotation version ', links = count_links)`
+#'
 #' ### OUTRIDER summary
-#+ echo=FALSE
-outrider_links <- sapply(annotations, get_html_path, 
-                      datasets = datasets,
-                      htmlDir = file.path(htmlDir, "Outrider"), 
-                      fileName = paste0('Summary_', datasets, '.html'))
-#' 
-#' `r display_text(caption = 'Gene annotation version ', outrider_links)`
-#' 
+#'
+#' `r display_text(caption = 'Gene annotation version ', links = results_links)`
+#'
 #' ## Files
-#' ### OUTRIDER datasets (ods)
-#' 
-#' `r paste('* ', snakemake@input$odsFiles, collapse = '\n')`
-#' 
-#' ### Results tables
-#' 
-#'  `r paste('* ', snakemake@input$resultTables, collapse = '\n')`
-#' 
-  
+#' `r display_text(caption = 'OUTRIDER datasets (ods)', links = ods_links)`
+#' `r display_text(caption = 'Results tables', links = results_tables)`
+#'
+
 #' ## Analyze Individual Results
+#+ echo=FALSE
+library(OUTRIDER)
+
 # Read the first ods object and results table
 ods <- readRDS(snakemake@input$odsFiles[[1]])
 res <- fread(snakemake@input$resultTables[[1]])
@@ -107,4 +97,3 @@ OUTRIDER::plotExpressionRank(ods, gene, basePlot = TRUE)
 
 #' ### Expected vs observed counts
 OUTRIDER::plotExpectedVsObservedCounts(ods, gene, basePlot = TRUE)
-

@@ -7,7 +7,7 @@
 #'  input: 
 #'   - summaries: '`sm expand(config["htmlOutputPath"] + 
 #'                "/AberrantExpression/Counting/{annotation}/Summary_{dataset}.html",
-#'                annotation=cfg.getGeneVersions(), dataset=cfg.AE.groups)`'
+#'                annotation=cfg.genome.getGeneVersions(), dataset=cfg.AE.groups)`'
 #' output:
 #'   html_document:
 #'    code_folding: hide
@@ -23,11 +23,11 @@ datasets <- snakemake@config$aberrantExpression$groups
 #+ echo=FALSE, results="asis"
 devNull <- sapply(datasets, function(name){
   sapply(gene_annotation_names, function(version){
-  cat(paste0(
-    "<h1>Dataset: ", name, "</h1>",
-    "<p>",
-    "</br>", "<a href='AberrantExpression/Counting/", version, "/Summary_", name, ".html'   >Count Summary</a>",
-    "</br>", "</p>"
-  ))
+    cat(paste0(
+      "<h1>Dataset: ", name, ", annotation: ", version, "</h1>",
+      "<p>",
+      "</br>", "<a href='AberrantExpression/Counting/", version, "/Summary_", name, ".html'   >Count Summary</a>",
+      "</br>", "</p>"
+    ))
   })
 })

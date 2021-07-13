@@ -3,14 +3,15 @@
 #' author: Christian Mertes
 #' wb:
 #'  log:
-#'    - snakemake: '`sm str(tmp_dir / "AS" / "{dataset}" / "07_results.Rds")`'
+#'    - snakemake: '`sm str(tmp_dir / "AS" / "{dataset}--{annotation}" / "07_results.Rds")`'
 #'  params:
 #'   - workingDir: '`sm cfg.getProcessedDataDir() + "/aberrant_splicing/datasets/"`'
+#'   - outputDir: '`sm cfg.getProcessedResultsDir() + "/aberrant_splicing/datasets/"`'
 #'   - padjCutoff: '`sm cfg.AS.get("padjCutoff")`'
 #'   - zScoreCutoff: '`sm cfg.AS.get("zScoreCutoff")`'
 #'   - deltaPsiCutoff: '`sm cfg.AS.get("deltaPsiCutoff")`'
 #'   - hpoFile: '`sm cfg.get("hpoFile")`'
-#'   - assemblyVersion: '`sm cfg.getBSGenomeVersion()`'
+#'   - assemblyVersion: '`sm cfg.genome.getBSGenomeVersion()`'
 #'  threads: 10
 #'  input:
 #'   - setup: '`sm cfg.AS.getWorkdir() + "/config.R"`'
@@ -18,65 +19,73 @@
 #'   - fdsin: '`sm cfg.getProcessedDataDir() +
 #'                 "/aberrant_splicing/datasets/savedObjects/{dataset}/" +
 #'                 "padjBetaBinomial_theta.h5"`'
+#'   - txdb: '`sm cfg.getProcessedDataDir() + "/preprocess/{annotation}/txdb.db"`'
+#'   - gene_name_mapping: '`sm cfg.getProcessedDataDir() + "/preprocess/{annotation}/gene_name_mapping_{annotation}.tsv"`'
 #'  output:
-#'   - resultTableJunc: '`sm cfg.getProcessedDataDir() + 
-#'                          "/aberrant_splicing/results/{dataset}_results_per_junction.tsv"`'
-#'   - resultTableGene: '`sm cfg.getProcessedDataDir() + 
-#'                          "/aberrant_splicing/results/{dataset}_results.tsv"`'
+#'   - resultTableJunc: '`sm cfg.getProcessedResultsDir() +
+#'                          "/aberrant_splicing/results/{annotation}/fraser/{dataset}/results_per_junction.tsv"`'
+#'   - resultTableGene: '`sm cfg.getProcessedResultsDir() +
+#'                          "/aberrant_splicing/results/{annotation}/fraser/{dataset}/results.tsv"`'
+#'   - fds: '`sm cfg.getProcessedResultsDir() +
+#'                 "/aberrant_splicing/datasets/savedObjects/{dataset}--{annotation}/fds-object.RDS"`'
 #'  type: script
 #'---
 
 saveRDS(snakemake, snakemake@log$snakemake)
 source(snakemake@input$setup, echo=FALSE)
 source(snakemake@input$add_HPO_cols)
+library(AnnotationDbi)
 
 opts_chunk$set(fig.width=12, fig.height=8)
 
+annotation    <- snakemake@wildcards$annotation
 dataset    <- snakemake@wildcards$dataset
 fdsFile    <- snakemake@input$fdsin
 workingDir <- snakemake@params$workingDir
+outputDir  <- snakemake@params$outputDir
 assemblyVersion <- snakemake@params$assemblyVersion
 
 register(MulticoreParam(snakemake@threads))
 # Limit number of threads for DelayedArray operations
 setAutoBPPARAM(MulticoreParam(snakemake@threads))
 
-# Load data and annotate ranges with gene names
-fds <- loadFraserDataSet(dir=workingDir, name=dataset)
-fds <- annotateRanges(fds, GRCh = assemblyVersion)
+# Load fds and create a new one
+fds_input <- loadFraserDataSet(dir=workingDir, name=dataset)
+fds <- saveFraserDataSet(fds_input, dir=outputDir, name = paste(dataset, annotation, sep = '--'), rewrite = TRUE)
 colData(fds)$sampleID <- as.character(colData(fds)$sampleID)
+
+# Read annotation and match the chr style
+txdb <- loadDb(snakemake@input$txdb)
+orgdb <- fread(snakemake@input$gene_name_mapping)
+
+seqlevelsStyle(orgdb$seqnames) <- seqlevelsStyle(fds)
+seqlevelsStyle(txdb) <- seqlevelsStyle(fds)
+
+# Annotate the fds with gene names
+fds <- annotateRangesWithTxDb(fds, txdb = txdb, orgDb = orgdb, feature = 'gene_name',
+                              featureName = 'hgnc_symbol', keytype = 'gene_id')
 
 # Extract results per junction
 res_junc <- results(fds,
-                 padjCutoff=snakemake@params$padjCutoff,
-                 zScoreCutoff=snakemake@params$zScoreCutoff,
-                 deltaPsiCutoff=snakemake@params$deltaPsiCutoff,
-                 additionalColumns=c("other_hgnc_symbol"))
+                    padjCutoff=snakemake@params$padjCutoff,
+                    zScoreCutoff=snakemake@params$zScoreCutoff,
+                    deltaPsiCutoff=snakemake@params$deltaPsiCutoff)
 res_junc_dt   <- as.data.table(res_junc)
 print('Results per junction extracted')
-saveFraserDataSet(fds)
+saveFraserDataSet(fds, dir=outputDir)
 
-correctRes <- function(RT){
-  rt <- copy(RT)
-  rt[, bamFile := NULL]
-  rt[, pairedEnd := NULL]
-  rt[hgncSymbol == 'APOA1BP', hgncSymbol := 'NAXE']  # new gene name
-  rt[hgncSymbol == 'C10orf2', hgncSymbol := 'TWNK']  # new gene name
-  rt[hgncSymbol == 'CARKD', hgncSymbol := 'NAXD']  # new gene name
-  return(rt)
-}
 
-# Add features 
+# Add features
 if(nrow(res_junc_dt) > 0){
-  
-  # number of samples per gene and variant  
+
+  # number of samples per gene and variant
   res_junc_dt[, numSamplesPerGene := uniqueN(sampleID), by = hgncSymbol]
   res_junc_dt[, numEventsPerGene := .N, by = "hgncSymbol,sampleID"]
   res_junc_dt[, numSamplesPerJunc := uniqueN(sampleID), by = "seqnames,start,end,strand"]
-  
+
   # add colData to the results
   res_junc_dt <- merge(res_junc_dt, as.data.table(colData(fds)), by = "sampleID")
-  res_junc_dt <- correctRes(res_junc_dt)
+  res_junc_dt[, c("bamFile", "pairedEnd") := NULL]
 } else{
   warning("The aberrant splicing pipeline gave 0 results for the ", dataset, " dataset.")
 }
@@ -85,9 +94,8 @@ if(nrow(res_junc_dt) > 0){
 if(length(res_junc) > 0){
   res_genes_dt <- resultsByGenes(res_junc) %>% as.data.table
   res_genes_dt <- merge(res_genes_dt, as.data.table(colData(fds)), by = "sampleID")
-  res_genes_dt[, bamFile := NULL]
-  res_genes_dt[, pairedEnd := NULL]
-  
+  res_genes_dt[, c("bamFile", "pairedEnd") := NULL]
+
   # add HPO overlap information
   sa <- fread(snakemake@config$sampleAnnotation)
   if(!is.null(sa$HPO_TERMS)){
@@ -100,4 +108,3 @@ if(length(res_junc) > 0){
 # Results
 write_tsv(res_junc_dt, file=snakemake@output$resultTableJunc)
 write_tsv(res_genes_dt, file=snakemake@output$resultTableGene)
-

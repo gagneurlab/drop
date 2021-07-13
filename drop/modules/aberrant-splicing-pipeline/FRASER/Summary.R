@@ -1,21 +1,21 @@
 #'---
-#' title: "FRASER Summary: `r gsub('_', ' ', snakemake@wildcards$dataset)`"
+#' title: "FRASER Summary: `r paste(snakemake@wildcards$dataset, snakemake@wildcards$annotation, sep = '--')`"
 #' author: mumichae, vyepez, ischeller
 #' wb:
 #'  log:
-#'    - snakemake: '`sm str(tmp_dir / "AS" / "{dataset}" / "FRASER_summary.Rds")`'
+#'    - snakemake: '`sm str(tmp_dir / "AS" / "{dataset}--{annotation}" / "FRASER_summary.Rds")`'
 #'  params:
 #'   - setup: '`sm cfg.AS.getWorkdir() + "/config.R"`'
-#'   - workingDir: '`sm cfg.getProcessedDataDir() + "/aberrant_splicing/datasets/"`'
 #'  input:
-#'   - fdsin: '`sm cfg.getProcessedDataDir() + 
-#'                 "/aberrant_splicing/datasets/savedObjects/{dataset}/" + 
-#'                 "padjBetaBinomial_theta.h5"`'
-#'   - results: '`sm cfg.getProcessedDataDir() + 
-#'                   "/aberrant_splicing/results/{dataset}_results.tsv"`'
+#'   - fdsin: '`sm cfg.getProcessedResultsDir() + 
+#'                 "/aberrant_splicing/datasets/savedObjects/{dataset}--{annotation}/fds-object.RDS"`'
+#'   - results: '`sm cfg.getProcessedResultsDir() + 
+#'                   "/aberrant_splicing/results/{annotation}/fraser/{dataset}/results.tsv"`'
 #'  output:
 #'   - wBhtml: '`sm config["htmlOutputPath"] +
-#'               "/AberrantSplicing/{dataset}_summary.html"`'
+#'               "/AberrantSplicing/{dataset}--{annotation}_summary.html"`'
+#'   - res_html: '`sm config["htmlOutputPath"] +
+#'               "/AberrantSplicing/FRASER_results_{dataset}--{annotation}.tsv"`'
 #'  type: noindex
 #'---
 
@@ -28,9 +28,9 @@ suppressPackageStartupMessages({
 
 #+ input
 dataset    <- snakemake@wildcards$dataset
-workingDir <- snakemake@params$workingDir
+annotation <- snakemake@wildcards$annotation
 
-fds <- loadFraserDataSet(dir=workingDir, name=dataset)
+fds <- loadFraserDataSet(file=snakemake@input$fdsin)
 
 #' Number of samples: `r nrow(colData(fds))`
 #' 
@@ -39,71 +39,68 @@ fds <- loadFraserDataSet(dir=workingDir, name=dataset)
 #' Number of splice sites (theta): `r length(rowRanges(fds, type = "theta"))`
 
 # used for most plots
-dataset_title <- paste("Dataset:", dataset)
+dataset_title <- paste0("Dataset: ", dataset, "--", annotation)
 
 
 #' ## Hyperparameter optimization
 for(type in psiTypes){
-    g <- plotEncDimSearch(fds, type=type) 
-    if (!is.null(g)) {
-        g <- g + theme_cowplot(font_size = 16) + 
-          ggtitle(paste0("Q estimation, ", type))
-        print(g)
-    }
+  g <- plotEncDimSearch(fds, type=type) 
+  if (!is.null(g)) {
+    g <- g + theme_cowplot(font_size = 16) + 
+      ggtitle(paste0("Q estimation, ", type))
+    print(g)
+  }
 }
 
 #' ## Aberrantly spliced genes per sample
 plotAberrantPerSample(fds, aggregate=TRUE, main=dataset_title) + 
-    theme_cowplot(font_size = 16) +
-    theme(legend.position = "top")
+  theme_cowplot(font_size = 16) +
+  theme(legend.position = "top")
 
 #' ## Batch Correlation: Samples x samples
 topN <- 30000
 topJ <- 10000
 for(type in psiTypes){
-    before <- plotCountCorHeatmap(
-        fds,
-        type = type,
-        logit = TRUE,
-        topN = topN,
-        topJ = topJ,
-        plotType = "sampleCorrelation",
-        normalized = FALSE,
-        annotation_col = NA,
-        annotation_row = NA,
-        sampleCluster = NA,
-        plotMeanPsi=FALSE,
-        plotCov = FALSE,
-        annotation_legend = TRUE
-    )
-    before
-    after <- plotCountCorHeatmap(
-        fds,
-        type = type,
-        logit = TRUE,
-        topN = topN,
-        topJ = topJ,
-        plotType = "sampleCorrelation",
-        normalized = TRUE,
-        annotation_col = NA,
-        annotation_row = NA,
-        sampleCluster = NA,
-        plotMeanPsi=FALSE,
-        plotCov = FALSE,
-        annotation_legend = TRUE
-    )
-    after
+  before <- plotCountCorHeatmap(
+    fds,
+    type = type,
+    logit = TRUE,
+    topN = topN,
+    topJ = topJ,
+    plotType = "sampleCorrelation",
+    normalized = FALSE,
+    annotation_col = NA,
+    annotation_row = NA,
+    sampleCluster = NA,
+    plotMeanPsi=FALSE,
+    plotCov = FALSE,
+    annotation_legend = TRUE
+  )
+  before
+  after <- plotCountCorHeatmap(
+    fds,
+    type = type,
+    logit = TRUE,
+    topN = topN,
+    topJ = topJ,
+    plotType = "sampleCorrelation",
+    normalized = TRUE,
+    annotation_col = NA,
+    annotation_row = NA,
+    sampleCluster = NA,
+    plotMeanPsi=FALSE,
+    plotCov = FALSE,
+    annotation_legend = TRUE
+  )
+  after
 }
 
-#' # Results
+#' ## Results
 res <- fread(snakemake@input$results)
-file <- gsub(".html$", ".tsv", snakemake@output$wBhtml)
-write_tsv(res, file=file)
-
-#'
-#' The results table can also be downloaded with the link below.
+file <- snakemake@output$res_html
+write_tsv(res, file = file)
 #+ echo=FALSE, results='asis'
-cat(paste0("<a href='./", basename(file), "'>Download results table</a>"))
+cat(paste0("<a href='./", basename(file), "'>Download FRASER results table</a>"))
 
 # round numbers
 if(nrow(res) > 0){
@@ -116,8 +113,11 @@ if(nrow(res) > 0){
   res[, padjustGene := signif(padjustGene, 2)]
 }
 
-#' ## Results table
-DT::datatable(res, options=list(scrollX=TRUE), escape=FALSE, filter = 'top')
+DT::datatable(
+  head(res, 1000),
+  caption = 'FRASER results (up to 1,000 rows shown)',
+  options=list(scrollX=TRUE),
+  escape=FALSE,
+  filter = 'top'
+)
 
-#' ## Samples table
-DT::datatable(as.data.table(colData(fds)), options=list(scrollX=TRUE))

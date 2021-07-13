@@ -38,7 +38,7 @@ The pipeline can be run using `snakemake <https://snakemake.readthedocs.io/>`_ c
 
 .. code-block:: bash
 
-    snakemake -n # dryrun
+    snakemake -nj1 # dryrun
     snakemake --cores 1
 
 Expected runtime: 25 min

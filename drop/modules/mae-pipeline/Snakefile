@@ -1,26 +1,28 @@
-MAE_WORKDIR = cfg.MAE.getWorkdir(str_=False)
-
-MAE_index_name = "mae-pipeline"
-MAE_index_input, MAE_index_output, MAE_graph_file, _ = createIndexRule(
-    scriptsPath=str(MAE_WORKDIR),
-    index_name=MAE_index_name
-)
+MAE_WORKDIR = cfg.MAE.renameLocalDir()
+MAE_index_input,MAE_graph_file,MAE_index_output = cfg.MAE.getModuleIndexFiles("mae-pipeline",MAE_WORKDIR)
 
 rule mae:
-    input: MAE_index_input, MAE_graph_file
+    input:  MAE_index_input, MAE_graph_file
     output: MAE_index_output
-    run: ci(str(MAE_WORKDIR), MAE_index_name)
+    run:
+        if cfg.MAE.run:
+            ci(str(MAE_WORKDIR), 'mae-pipeline')
 
 rule mae_dependency:
     output: MAE_graph_file
-    shell: "snakemake --nolock --rulegraph {MAE_index_output} | dot -Tsvg -Grankdir=TB > {output}"
+    shell:
+        """
+        snakemake --nolock --rulegraph {MAE_index_output} | \
+            sed -ne '/digraph snakemake_dag/,/}}/p' | \
+            dot -Tsvg -Grankdir=TB > {output}
+        """
 
 rule sampleQC:
     input: cfg.getHtmlFromScript(MAE_WORKDIR / "QC" / "Datasets.R")
 
 rule create_dict:
-    input: cfg.getFastaFile()
-    output: cfg.getFastaDict()
+    input:  "{fasta_file_base}.fa"
+    output: "{fasta_file_base}.dict"
     params:
         gatk = cfg.getTool("gatkCmd"),
     shell: "{params.gatk} CreateSequenceDictionary --REFERENCE {input}"
@@ -30,9 +32,10 @@ rule mae_createSNVs:
     input:
         ncbi2ucsc = MAE_WORKDIR / "resource" / "chr_NCBI_UCSC.txt",
         ucsc2ncbi = MAE_WORKDIR / "resource" / "chr_UCSC_NCBI.txt",
-        vcf_file  = lambda w: sa.getFilePath(w.vcf, 'DNA_VCF_FILE'),
+        vcf_file  = lambda w: cfg.MAE.getVcf(w.vcf),
         bam_file  = lambda w: sa.getFilePath(w.rna, 'RNA_BAM_FILE'),
-        script    = MAE_WORKDIR / "MAE" / "filterSNVs.sh"
+        script    = MAE_WORKDIR / "MAE" / "filterSNVs.sh",
+        snv_params = lambda w: cfg.processedDataDir / "mae" / "params/snvs" / (w.rna + "_snvParams.csv")
     output:
         snvs_filename = cfg.processedDataDir / "mae" / "snvs" / "{vcf}--{rna}.vcf.gz",
         snvs_index = cfg.processedDataDir / "mae" / "snvs" / "{vcf}--{rna}.vcf.gz.tbi"
@@ -52,10 +55,10 @@ rule mae_allelicCounts:
         ucsc2ncbi = MAE_WORKDIR / "resource" / "chr_UCSC_NCBI.txt",
         vcf_file  = rules.mae_createSNVs.output.snvs_filename,
         bam_file  = lambda w: sa.getFilePath(w.rna, 'RNA_BAM_FILE'),
-        fasta     = cfg.getFastaFile(),
-        dict      = cfg.getFastaDict(),
+        fasta     = lambda w: cfg.MAE.getGenomePath(w.rna),
+        dict      = lambda w: cfg.genome.getFastaDict(cfg.MAE.getGenomePath(w.rna)),
         script    = MAE_WORKDIR / "MAE" / "ASEReadCounter.sh"
-    output:    
+    output:
         counted = cfg.processedDataDir / "mae" / "allelic_counts" / "{vcf}--{rna}.csv.gz"
     params:
         bcftools = cfg.getTool("bcftoolsCmd"),
@@ -68,48 +71,4 @@ rule mae_allelicCounts:
         {input.vcf_file} {input.bam_file} {wildcards.vcf}--{wildcards.rna} \
         {input.fasta} {params.gatkIgnoreHeaderCheck} {output.counted} \
         {params.bcftools} {params.samtools} {params.gatk}
-        """
-
-## QC
-rule mae_QC_reChrVCF:
-    input:
-        ucsc2ncbi = MAE_WORKDIR / "resource" / "chr_NCBI_UCSC.txt",
-        ucsc_vcf = cfg.MAE.getQcVcf()
-    output:
-        ncbi_vcf = cfg.processedDataDir / "mae" / "qc_vcf_ncbi.vcf.gz"
-    params:
-        bcftools = cfg.getTool("bcftoolsCmd")
-    shell:
-        """
-        echo 'converting from UCSC to NCBI format'
-        {params.bcftools} annotate --rename-chrs {input.ucsc2ncbi} {input.ucsc_vcf} \
-            | bgzip > {output.ncbi_vcf}
-        {params.bcftools} index -t {output.ncbi_vcf}
-        """
-
-rule mae_allelicCountsQC:
-    input:
-        ncbi2ucsc = MAE_WORKDIR / "resource" / "chr_NCBI_UCSC.txt",
-        ucsc2ncbi = MAE_WORKDIR / "resource" / "chr_UCSC_NCBI.txt",
-        vcf_file_ucsc = cfg.MAE.getQcVcf(),
-        vcf_file_ncbi = rules.mae_QC_reChrVCF.output.ncbi_vcf,
-        bam_file      = lambda w: sa.getFilePath(w.rna, 'RNA_BAM_FILE'),
-        fasta         = cfg.getFastaFile(),
-        dict          = cfg.getFastaDict(),
-        script_qc =MAE_WORKDIR / "QC" / "ASEReadCounter.sh",
-        script_mae =MAE_WORKDIR / "MAE" / "ASEReadCounter.sh"
-    output:    
-        counted = cfg.processedDataDir / "mae" / "allelic_counts" / "qc_{rna}.csv.gz"
-    params:
-        bcftools = cfg.getTool("bcftoolsCmd"),
-        samtools = cfg.getTool("samtoolsCmd"),
-        gatk = cfg.getTool("gatkCmd"),
-        gatkIgnoreHeaderCheck = cfg.MAE.get("gatkIgnoreHeaderCheck")
-    shell:
-        """
-        {input.script_qc} {input.ncbi2ucsc} {input.ucsc2ncbi} \
-        {input.vcf_file_ucsc} {input.vcf_file_ncbi} {input.bam_file} \
-        {wildcards.rna} {input.fasta} {params.gatkIgnoreHeaderCheck} \
-        {output.counted} {params.bcftools} {params.samtools} {params.gatk} \
-        {input.script_mae}
         """

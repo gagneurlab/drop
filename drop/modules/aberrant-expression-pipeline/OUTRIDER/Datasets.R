@@ -7,7 +7,7 @@
 #'  input:
 #'    - summaries: '`sm expand(config["htmlOutputPath"] + 
 #'                 "/AberrantExpression/Outrider/{annotation}/Summary_{dataset}.html",
-#'                 annotation=cfg.getGeneVersions(), dataset=cfg.AE.groups)`'
+#'                 annotation=cfg.genome.getGeneVersions(), dataset=cfg.AE.groups)`'
 #' output:
 #'   html_document:
 #'    code_folding: hide
@@ -24,7 +24,7 @@ gene_annotation_names <- names(snakemake@config$geneAnnotation)
 devNull <- sapply(datasets, function(name){
   sapply(gene_annotation_names, function(version){
     cat(paste0(
-      "<h1>Dataset: ", name, "</h1>",
+      "<h1>Dataset: ", name, ", annotation: ", version, "</h1>",
       "<p>",
       "</br>", "<a href='AberrantExpression/Outrider/", version, "/Summary_", name, ".html'   >OUTRIDER Summary</a>",
       "</br>", "</p>"

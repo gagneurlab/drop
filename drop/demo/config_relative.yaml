@@ -7,7 +7,9 @@ sampleAnnotation: Data/sample_annotation.tsv
 geneAnnotation:
     v29: Data/gencode_annotation_trunc.gtf
 genomeAssembly: hg19
+genome: Data/chr21.fa
 hpoFile: null
+random_seed: true  # use this to fully gain reproducible data in debug mode
 
 exportCounts:
   geneAnnotations:
@@ -17,7 +19,8 @@ exportCounts:
     - import_exp
 
 aberrantExpression:
-    groups: 
+    run: true
+    groups:
       - outrider
       - import_exp
     fpkmCutoff: 1
@@ -30,7 +33,8 @@ aberrantExpression:
         pasWindow: 1000
 
 aberrantSplicing:
-    groups: 
+    run: true
+    groups:
       - fraser
     recount: true
     longRead: false
@@ -45,9 +49,9 @@ aberrantSplicing:
     maxTestedDimensionProportion: 6
 
 mae:
+    run: true
     groups:
       - mae
-    genome: Data/chr21.fa
     gatkIgnoreHeaderCheck: true
     padjCutoff: .05
     allelicRatioCutoff: 0.8
@@ -63,4 +67,3 @@ tools:
     gatkCmd: gatk
     bcftoolsCmd: bcftools
     samtoolsCmd: samtools
-

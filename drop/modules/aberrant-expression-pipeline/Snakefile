@@ -1,22 +1,24 @@
-AE_WORKDIR = cfg.AE.getWorkdir(str_=False)
+AE_WORKDIR = cfg.AE.renameLocalDir()
 
-AE_index_name = "aberrant-expression-pipeline"
-AE_index_input, AE_index_output, AE_graph_file, _ = createIndexRule(
-    scriptsPath=str(AE_WORKDIR),
-    index_name=AE_index_name
-)
-
+AE_index_input,AE_graph_file,AE_index_output = cfg.AE.getModuleIndexFiles("aberrant-expression-pipeline",AE_WORKDIR)
 rule aberrantExpression:
-    input: AE_index_input, AE_graph_file
+    input:  AE_index_input, AE_graph_file
     output: AE_index_output
-    run: ci(str(AE_WORKDIR), AE_index_name)
+    run:
+        if cfg.AE.run:
+            ci(str(AE_WORKDIR), 'aberrant-expression-pipeline')
 
 rule aberrantExpression_dependency:
     output: AE_graph_file
-    shell: "snakemake --nolock --rulegraph {AE_index_output} | dot -Tsvg -Grankdir=TB > {output}"
+    shell:
+        """
+        snakemake --nolock --rulegraph {AE_index_output} | \
+            sed -ne '/digraph snakemake_dag/,/}}/p' | \
+            dot -Tsvg -Grankdir=TB > {output}
+        """
 
 rule aberrantExpression_bamStats:
-    input: 
+    input:
         bam = lambda wildcards: sa.getFilePath(wildcards.sampleID, "RNA_BAM_FILE"),
         ucsc2ncbi =AE_WORKDIR / "resource" / "chr_UCSC_NCBI.txt"
     output:
@@ -41,7 +43,7 @@ rule aberrantExpression_bamStats:
         """
 
 rule aberrantExpression_mergeBamStats:
-    input: 
+    input:
         lambda w: expand(cfg.getProcessedDataDir() +
             "/aberrant_expression/{{annotation}}/coverage/{sampleID}.tsv",
             sampleID=sa.getIDsByGroup(w.dataset), assay="RNA")
