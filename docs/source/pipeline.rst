@@ -10,21 +10,21 @@ Open a terminal in your project repository. Execute
 
 .. code-block:: bash
     
-    snakemake -n 
+    snakemake --cores 1 -n 
 
 This will perform a *dry-run*, which means it will display all the steps (or rules) that need to be executed. To also display the reason why those rules need to be exeucted, run 
 
 .. code-block:: bash
 
-    snakemake -nr
+    snakemake --cores 1 -nr
 
 Finally, a simplified dry-run can be achieved by executing
 
 .. code-block:: bash
 
-    snakemake -nq
+    snakemake --cores 1 -nq
     
-Calling ``snakemake`` without any parameters will execute the whole workflow. 
+Calling ``snakemake --cores 1`` without any parameters will execute the whole workflow. Snakemake requires you to designate the number of cores when running the ``snakemake`` command.
 
 
 Parallelizing jobs
@@ -35,8 +35,6 @@ DROP's steps are computationally heavy, therefore it is a good idea to run them 
 .. code-block:: bash
 
     snakemake --cores 10
-
-If the ``--cores`` flag is not specified, snakemake will use a single core by default.
 
 
 Executing subworkflows

@@ -75,6 +75,7 @@ Aberrant expression dictionary
 ============================  =========  =================================================================================================================================  ======
 Parameter                     Type       Description                                                                                                                        Default/Examples
 ============================  =========  =================================================================================================================================  ======
+run                           boolean    If true, the aberrant expression module will be run. If false, it will be ignored.                                                 true
 groups                        list       DROP groups that should be executed in this module. If not specified or ``null`` all groups are used.                              ``- group1``
 
                                                                                                                                                                             ``- group2``
@@ -92,6 +93,7 @@ Aberrant splicing dictionary
 ============================  =========  ============================================================================================  ======
 Parameter                     Type       Description                                                                                   Default/Examples
 ============================  =========  ============================================================================================  ======
+run                           boolean    If true, the aberrant expression module will be run. If false, it will be ignored.            true
 groups                        list       Same as in aberrant expression.                                                               ``# see aberrant expression example``
 minIds                        numeric    Same as in aberrant expression.                                                               ``1``
 recount                       boolean    If true, it forces samples to be recounted.                                                   ``false``
@@ -113,6 +115,7 @@ Mono-allelic expression dictionary
 =====================  =========  ========================================================================================================================  ======
 Parameter              Type       Description                                                                                                               Default/Examples
 =====================  =========  ========================================================================================================================  ======
+run                    boolean    If true, the aberrant expression module will be run. If false, it will be ignored.                                        true
 groups                 list       Same as in aberrant expression.                                                                                           ``# see aberrant expression example``
 gatkIgnoreHeaderCheck  boolean    If true (recommended), it ignores the header warnings of a VCF file when performing the allelic counts                    ``true``
 padjCutoff             numeric    Same as in aberrant expression.                                                                                           ``0.05``
@@ -124,6 +127,12 @@ qcVcf                  character  Full path to the vcf file used for VCF-BAM mat
 qcGroups               list       Same as “groups”, but for the VCF-BAM matching                                                                            ``# see aberrant expression example``
 =====================  =========  ========================================================================================================================  ======
 
+
+Modularization of the DROP pipeline
+-----------------------------------
+DROP was originally written to run all 3 parts modules in some capacity for each research project, however we understand that each researcher has their own preferences and goals when analyzing their data. As a result, we have implemented the ability to further control their DROP experience by setting the ``run`` variable in the config file. By default each module will be set to ``run: true`` however you can set this value to be false to stop a particular module from being run. This will be noted as a warning at the beginning of the ``snakemake`` run, and further noted by a renaming of the module in the ``Scripts/`` directory. 
+
+For example if the AberrantExpression module is set to false. The ``Scripts/AberrantExpression/`` directory will be renamed to ``Scripts/_AberrantExpression/`` which further indicates that this module will not be run.
 
 Creating the sample annotation table
 ------------------------------------
