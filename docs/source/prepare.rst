@@ -93,7 +93,7 @@ Aberrant splicing dictionary
 ============================  =========  ============================================================================================  ======
 Parameter                     Type       Description                                                                                   Default/Examples
 ============================  =========  ============================================================================================  ======
-run                           boolean    If true, the aberrant expression module will be run. If false, it will be ignored.            ``true``
+run                           boolean    If true, the aberrant splicing module will be run. If false, it will be ignored.              ``true``
 groups                        list       Same as in aberrant expression.                                                               ``# see aberrant expression example``
 minIds                        numeric    Same as in aberrant expression.                                                               ``1``
 recount                       boolean    If true, it forces samples to be recounted.                                                   ``false``
@@ -115,7 +115,7 @@ Mono-allelic expression dictionary
 =====================  =========  ========================================================================================================================  ======
 Parameter              Type       Description                                                                                                               Default/Examples
 =====================  =========  ========================================================================================================================  ======
-run                    boolean    If true, the aberrant expression module will be run. If false, it will be ignored.                                        ``true``
+run                    boolean    If true, the mono-allelic expression module will be run. If false, it will be ignored.                                    ``true``
 groups                 list       Same as in aberrant expression.                                                                                           ``# see aberrant expression example``
 gatkIgnoreHeaderCheck  boolean    If true (recommended), it ignores the header warnings of a VCF file when performing the allelic counts                    ``true``
 padjCutoff             numeric    Same as in aberrant expression.                                                                                           ``0.05``
