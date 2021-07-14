@@ -6,7 +6,7 @@
 #'  input:
 #'   - fraser_summary: '`sm expand(config["htmlOutputPath"] + 
 #'                     "/AberrantSplicing/{dataset}--{annotation}_summary.html", 
-#'                     annotation=cfg.getGeneVersions(), dataset=cfg.AS.groups)`'
+#'                     annotation=cfg.genome.getGeneVersions(), dataset=cfg.AS.groups)`'
 #' output:
 #'  html_document
 #'---

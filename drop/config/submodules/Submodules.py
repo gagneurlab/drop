@@ -1,18 +1,22 @@
-from pathlib import Path
 from drop import utils
 from snakemake.logging import logger
+import os
+from pathlib import Path
+from wbuild.createIndex import createIndexRule
 
 
 class Submodule:
 
-    def __init__(self, config, sampleAnnotation, processedDataDir, processedResultsDir):
+    def __init__(self, config, sampleAnnotation, processedDataDir, processedResultsDir, workDir):
         self.CONFIG_KEYS = []
         self.name = "Submodule"
+        self.sampleAnnotation = sampleAnnotation
         self.processedDataDir = processedDataDir
         self.processedResultsDir = processedResultsDir
-        self.sa = sampleAnnotation
+        self.workDir = workDir
         self.dict_ = self.setDefaultKeys(config)
         self.groups = self.dict_["groups"]
+        self.run = self.dict_.get('run', True)
 
     def setDefaultKeys(self, dict_):
         dict_ = {} if dict_ is None else dict_
@@ -23,8 +27,17 @@ class Submodule:
             raise KeyError(f"{key} not defined for {self.name} config")
         return self.dict_[key]
 
-    def getWorkdir(self, str_=True):
-        return utils.returnPath(Path("Scripts") / self.name / "pipeline", str_)
+    def getWorkdir(self, hide_dir=False, str_=True):
+        if hide_dir:
+            return utils.returnPath(self.workDir / "Scripts" / ("_" + self.name) / "pipeline", str_)
+        else:
+            return utils.returnPath(self.workDir / "Scripts" / self.name / "pipeline", str_)
+
+    def getSnakefile(self):
+        if os.path.isdir(self.getWorkdir()):
+            return self.getWorkdir() + "/Snakefile"
+        else:
+            return self.getWorkdir(hide_dir=True) + "/Snakefile"
 
     def checkSubset(self, groupSubsets, warn=30, error=10):
         """
@@ -41,3 +54,40 @@ class Submodule:
                 raise ValueError(message)
             elif len(groupSubsets[group]) < warn:
                 logger.info(f'WARNING: Less than {warn} IDs in DROP_GROUP {group}')
+
+    def renameLocalDir(self):
+        work_dir_prefix = utils.returnPath(self.workDir / "Scripts", False)
+        work_dir_off = work_dir_prefix / ("_" + self.name)
+        work_dir_on = work_dir_prefix / self.name
+
+        if self.run:
+            work_dir = Path(work_dir_on / "pipeline")
+            if (os.path.isdir(work_dir_off)):
+                try:
+                    os.rename(work_dir_off, work_dir_on)
+                except:
+                    raise OSError(f"Could not rename {work_dir_off} to {work_dir_on}\n \
+                        try running 'drop update' to reset file structure\n")
+        else:
+            logger.info(f"{self.name} has been turned off in the config file")
+            work_dir = Path(work_dir_off / "pipeline")
+            if (os.path.isdir(work_dir_on)):
+                try:
+                    os.rename(work_dir_on, work_dir_off)
+                except:
+                    raise OSError(f"Could not rename {work_dir_on} to {work_dir_off}\n \
+                        try running 'drop update' to reset file structure\n")
+
+        return work_dir
+
+    def getModuleIndexFiles(self, index_name, work_dir):
+        run = self.run
+        if (run):
+            index_input, index_output, graph_file, _ = createIndexRule(
+                scriptsPath=str(work_dir),
+                index_name=index_name
+            )
+            return index_input, graph_file, index_output
+        else:
+            # dummy return of hidden pipeline directory which already exists
+            return self.getWorkdir(hide_dir=True), self.getWorkdir(hide_dir=True), self.getWorkdir(hide_dir=True)

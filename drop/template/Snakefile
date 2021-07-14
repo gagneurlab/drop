@@ -1,7 +1,8 @@
 from pathlib import Path
+import os
 import drop
 import wbuild
-from wbuild.createIndex import createIndexRule, ci
+from wbuild.createIndex import ci
 
 configfile: "config.yaml"
 
@@ -10,18 +11,24 @@ drop.checkDropVersion(projectDir)
 _, projectPaths = drop.setupPaths(projectDir)
 tmp_dir = projectPaths["tmpDir"]
 
-cfg = drop.config.DropConfig(wbuild.utils.Config())
+cfg = drop.config.DropConfig(wbuild.utils.Config(), projectDir)
 drop.installRPackages(cfg)
 sa = cfg.sampleAnnotation
 config = cfg.config_dict # legacy
 
+
+include: cfg.AE.getSnakefile()
+include: cfg.AS.getSnakefile()
+include: cfg.MAE.getSnakefile()
 include: drop.utils.getWBuildSnakefile()
-include: cfg.AE.getWorkdir() + "/Snakefile"
-include: cfg.AS.getWorkdir() + "/Snakefile"
-include: cfg.MAE.getWorkdir() + "/Snakefile"
+
+
+# don't allow the dataset wildcard to contain '--' as this is a delimiter
+wildcard_constraints:
+    dataset="((?!--).)*"
 
 rule all:
-    input: 
+    input:
         rules.aberrantExpression.output,
         rules.aberrantSplicing.output,
         rules.mae.output,

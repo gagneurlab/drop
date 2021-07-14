@@ -3,7 +3,7 @@ root:             # root directory of all intermediate output
 htmlOutputPath:   # path for HTML rendered reports
 indexWithFolderName: true # whether the root base name should be part of the index name
 
-hpoFile: null  # if null, downloads it from webserver 
+hpoFile: null  # if null, downloads it from webserver
 sampleAnnotation: # path to sample annotation (see documenation on how to create it)
 
 geneAnnotation:
@@ -13,15 +13,19 @@ geneAnnotation:
 
 genomeAssembly: hg19  # either hg19/hs37d5 or hg38/GRCh38
 exportCounts:
-    # specify which gene annotations to include and which 
+    # specify which gene annotations to include and which
     # groups to exclude when exporting counts
     geneAnnotations:
       - v29
     excludeGroups:
       - group1
+genome: # path to genome sequence in fasta format.
+    # You can define multiple reference genomes in yaml format, ncbi: path_to_ncbi, ucsc: path_to_ucsc
+    # the keywords that define the path should be in the GENOME column of the SA table
 
 aberrantExpression:
-    groups: 
+    run: true
+    groups:
         - group1
         - group2
     fpkmCutoff: 1
@@ -31,6 +35,7 @@ aberrantExpression:
     maxTestedDimensionProportion: 3
 
 aberrantSplicing:
+    run: true
     groups:
         - group1
     recount: false
@@ -46,11 +51,11 @@ aberrantSplicing:
     maxTestedDimensionProportion: 6
 
 mae:
+    run: true
     groups:
         - group1
         - group2
         - group3
-    genome:       # path to genome sequence in fasta format
     gatkIgnoreHeaderCheck: true
     padjCutoff: .05
     allelicRatioCutoff: 0.8
@@ -65,4 +70,3 @@ tools:
     gatkCmd: gatk
     bcftoolsCmd: bcftools
     samtoolsCmd: samtools
-

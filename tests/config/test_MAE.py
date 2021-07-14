@@ -1,9 +1,8 @@
 class Test_MAE_Config:
 
-    def test_config(self, demo_dir, dropConfig):
-        assert dropConfig.MAE.getWorkdir() == "Scripts/MonoallelicExpression/pipeline"
+    def test_config(self,dropConfig,demo_dir):
+        assert dropConfig.MAE.getWorkdir() == f"{demo_dir}/Scripts/MonoallelicExpression/pipeline"
         dict_ = {
-            'genome': f'{demo_dir}/Data/chr21.fa',
             'qcVcf': f'{demo_dir}/Data/qc_vcf_1000G.vcf.gz',
             'groups': ['mae'],
             'qcGroups': ['mae'],

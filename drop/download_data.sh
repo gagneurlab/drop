@@ -3,8 +3,9 @@ set -e
 
 # get data
 resource_url="https://www.cmm.in.tum.de/public/paper/drop_analysis/resource_splice_merge.tar.gz"
-tmpdir="$(dirname "$(tempfile)")"
-wget -c -O $tmpdir/resource.tar.gz $resource_url
+tmpdir=$(dirname "$(mktemp -u)")
+wget -nc -O "$tmpdir/resource.tar.gz" "$resource_url"
+
 mkdir -p Data
 if [ -z "$(ls Data)" ]; then
 	tar -zxvf "$tmpdir/resource.tar.gz" -C .

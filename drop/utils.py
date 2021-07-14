@@ -65,19 +65,31 @@ def getWBuildSnakefile(str_=True):
     return returnPath(wb_path / "wBuild.snakefile", str_=str_)
 
 
-def subsetBy(df, column, values):
+def subsetBy(df, column, values, exact_match=True):
     """
     Subset by one or more values of different columns from data frame
     :param df: data frame
     :param column: column to subset by
     :param values: values to subset by
+    :param exact_match: default True. when False match substrings. Important for subsetting drop groups
     :return: df subset by values and column
     """
     if values is None:
         return df
-    elif isinstance(values, str):
-        return df[df[column].str.contains("(^|,)" + values + "(,|$)")]
+#    elif isinstance(values, str):
+#        return df[df[column].str.contains("(^|,)" + values + "(,|$)")]
+#    else:
+#        if(values.__len__() > 1):
+#            raise ValueError(f"Values too long! Please report this. Values are: {values}.")
+    elif exact_match:
+        if isinstance(values, str):
+            return df[df[column] == values]
+        else:
+            return df[df[column].isin(values)]
+    elif isinstance(values,str):
+        return df[df[column].str.contains(values)]
     else:
-        if(values.__len__() > 1):
-            raise ValueError(f"Values too long! Please report this. Values are: {values}.")
-        return df[df[column].isin(values)]
+        # this does not work. If you have a group drop and drop_2 
+        # first group will match the second. Also if you have drop,drop_2 
+        # it will not detect on or the other. 
+        return df[df[column].str.contains("|".join(values))]

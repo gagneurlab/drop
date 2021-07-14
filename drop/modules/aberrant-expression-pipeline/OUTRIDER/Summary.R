@@ -15,6 +15,8 @@
 #'  output:
 #'   - wBhtml: '`sm config["htmlOutputPath"] + 
 #'              "/AberrantExpression/Outrider/{annotation}/Summary_{dataset}.html"`'
+#'   - res_html: '`sm config["htmlOutputPath"] + 
+#'              "/AberrantExpression/Outrider/{annotation}/OUTRIDER_results_{dataset}.tsv"`'
 #'  type: noindex
 #' output:
 #'  html_document:
@@ -125,19 +127,19 @@ if (nrow(res) > 0) {
 
 
 #' ## Results table
-#+echo=F
+
+## Save results table in the html folder and provide link to download
+file <- snakemake@output$res_html
+fwrite(res, file, sep = '\t', quote = F)
+#+ echo=FALSE, results='asis'
+cat(paste0("<a href='./", basename(file), "'>Download OUTRIDER results table</a>"))
+
 res[, pValue := format(pValue, scientific = T, digits = 2)]
 res[, padjust := format(padjust, scientific = T, digits = 2)]
-DT::datatable(res, caption = "OUTRIDER results", style = 'bootstrap', filter = 'top')
 
-#' ### Download results table
-web_dir <- snakemake@config$webDir
-if (!is.null(web_dir)) {
-  results_link <- paste0(web_dir, 
-                         "/aberrant_expression/results/", snakemake@wildcards$annotation,
-                         "/outrider/", snakemake@wildcards$dataset ,"/OUTRIDER_results.tsv")
-} else {
-  results_link <- snakemake@input$results
-}
-#' [Download OUTRIDER results table](`r results_link`)
-
+DT::datatable(
+  head(res, 1000),
+  caption = 'OUTRIDER results (up to 1,000 rows shown)',
+  options=list(scrollX=TRUE),
+  filter = 'top'
+)

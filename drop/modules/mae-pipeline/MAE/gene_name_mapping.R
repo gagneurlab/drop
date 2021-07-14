@@ -5,7 +5,7 @@
 #'  log:
 #'   - snakemake: '`sm str(tmp_dir / "MAE" / "{annotation}.Rds")`'
 #'  input:
-#'   - gtf: '`sm lambda w: cfg.getGeneAnnotationFile(w.annotation) `'
+#'   - gtf: '`sm lambda w: cfg.genome.getGeneAnnotationFile(w.annotation) `'
 #'  output:
 #'   - gene_name_mapping: '`sm cfg.getProcessedDataDir() + "/mae/gene_name_mapping_{annotation}.tsv"`'
 #'  type: script

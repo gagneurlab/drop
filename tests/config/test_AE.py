@@ -1,7 +1,7 @@
 class Test_AE_Config:
 
-    def test_config(self, dropConfig):
-        assert dropConfig.AE.getWorkdir() == "Scripts/AberrantExpression/pipeline"
+    def test_config(self, dropConfig,demo_dir):
+        assert dropConfig.AE.getWorkdir() == f"{demo_dir}/Scripts/AberrantExpression/pipeline"
         dict_ = {
             'groups': ['outrider', 'import_exp'],
             'fpkmCutoff': 1,
