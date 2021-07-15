@@ -20,6 +20,7 @@ class MAE(Submodule):
             "allelicRatioCutoff", "maxAF", "gnomAD"
         ]
         self.name = "MonoallelicExpression"
+        # if self.run is false return without doing any config/sa checks for completeness
         if not self.run:
             return
         self.qcGroups = self.dict_["qcGroups"]

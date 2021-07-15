@@ -14,6 +14,7 @@ class AE(Submodule):
             "maxTestedDimensionProportion"
         ]
         self.name = "AberrantExpression"
+        # if self.run is false return without doing any config/sa checks for completeness
         if not self.run:
             return
         self.rnaIDs = self.sampleAnnotation.subsetGroups(self.groups, assay="RNA")
