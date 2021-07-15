@@ -6,7 +6,7 @@
 #'    - snakemake: '`sm str(tmp_dir / "MAE" / "overview.Rds")`'
 #'  input:
 #'    - html: '`sm expand(config["htmlOutputPath"] + 
-#'             "/MAE/{dataset}--{annotation}_results.html",
+#'             "/MonoallelicExpression/{dataset}--{annotation}_results.html",
 #'              annotation=cfg.genome.getGeneVersions(), dataset=cfg.MAE.groups)`'
 #' output:
 #'  html_document

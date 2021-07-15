@@ -8,7 +8,7 @@
 #'    - mat_qc: '`sm cfg.getProcessedResultsDir() + 
 #'               "/mae/{dataset}/dna_rna_qc_matrix.Rds"`'
 #'  output:
-#'    - wBhtml: '`sm config["htmlOutputPath"] + "/QC/{dataset}.html"`'
+#'    - wBhtml: '`sm config["htmlOutputPath"] + "/MonoallelicExpression/QC/{dataset}.html"`'
 #'  type: noindex
 #'---
 

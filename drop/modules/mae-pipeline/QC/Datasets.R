@@ -5,8 +5,10 @@
 #'  log:
 #'   - snakemake: '`sm str(tmp_dir / "MAE" / "QC_overview.Rds")`'
 #'  input:
-#'   - html: '`sm expand(config["htmlOutputPath"] + "/QC/{dataset}.html",
-#'             dataset=cfg.MAE.qcGroups)`'
+#'   - html: '`sm expand(
+#'             config["htmlOutputPath"] + "/MonoallelicExpression/QC/{dataset}.html",
+#'             dataset=cfg.MAE.qcGroups
+#'      )`'
 #' output:
 #'  html_document
 #'---
