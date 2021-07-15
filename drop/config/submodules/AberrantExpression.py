@@ -14,6 +14,8 @@ class AE(Submodule):
             "maxTestedDimensionProportion"
         ]
         self.name = "AberrantExpression"
+        if not self.run:
+            return
         self.rnaIDs = self.sampleAnnotation.subsetGroups(self.groups, assay="RNA")
         self.extRnaIDs = self.sampleAnnotation.subsetGroups(self.groups, assay="GENE_COUNTS")
         for g in self.groups:

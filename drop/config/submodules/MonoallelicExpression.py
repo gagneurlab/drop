@@ -20,6 +20,8 @@ class MAE(Submodule):
             "allelicRatioCutoff", "maxAF", "gnomAD"
         ]
         self.name = "MonoallelicExpression"
+        if not self.run:
+            return
         self.qcGroups = self.dict_["qcGroups"]
         self.qcVcfFile = self.dict_["qcVcf"]
         self.maeIDs = self.createMaeIDS(id_sep='--')
