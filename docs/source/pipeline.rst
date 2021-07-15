@@ -24,7 +24,7 @@ Finally, a simplified dry-run can be achieved by executing
 
     snakemake --cores 1 -nq
     
-Calling ``snakemake --cores 1`` without any parameters will execute the whole workflow. Snakemake requires you to designate the number of cores when running the ``snakemake`` command.
+Calling ``snakemake --cores 1`` without any additional parameters will execute the whole workflow. Snakemake requires you to designate the number of cores when running the ``snakemake`` command.
 
 
 Parallelizing jobs
