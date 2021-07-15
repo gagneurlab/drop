@@ -127,12 +127,11 @@ qcVcf                  character  Full path to the vcf file used for VCF-BAM mat
 qcGroups               list       Same as “groups”, but for the VCF-BAM matching                                                                            ``# see aberrant expression example``
 =====================  =========  ========================================================================================================================  ======
 
-
-Modularization of the DROP pipeline
+Modularization of DROP
 -----------------------------------
-DROP was originally written to run all 3 parts modules in some capacity for each research project, however we understand that each researcher has their own preferences and goals when analyzing their data. As a result, we have implemented the ability to further control their DROP experience by setting the ``run`` variable in the config file. By default each module will be set to ``run: true`` however you can set this value to be false to stop a particular module from being run. This will be noted as a warning at the beginning of the ``snakemake`` run, and further noted by a renaming of the module in the ``Scripts/`` directory. 
+DROP allows to control which modules to run via the  ``run`` variable in the config file. By default, each module is set to ``run: true``.  Setting this value to  ``false``  stops a particular module from being run. This will be noted as a warning at the beginning of the ``snakemake`` run, and the corresponding module will be renamed in the ``Scripts/`` directory. 
 
-For example if the AberrantExpression module is set to false. The ``Scripts/AberrantExpression/`` directory will be renamed to ``Scripts/_AberrantExpression/`` which further indicates that this module will not be run.
+For example, if the AberrantExpression module is set to false, the  ``Scripts/AberrantExpression/`` directory will be renamed to ``Scripts/_AberrantExpression/`` which tells DROP not to execute this module.
 
 Creating the sample annotation table
 ------------------------------------
