@@ -1,15 +1,6 @@
 ### 20210604 klutz
 
 ### basic annotations (start, end, none, both) for full fds
-
-testFct <- function(fds){
-  message("start test function")
-  test_vector <- rep("test", times = length(rowRanges(fds, type="j")))
-  rowRanges(fds)$test = test_vector
-  message("end test functiont")
-  return(fds)
-}
-
 createFDSAnnotations <- function(fds, txdb){
   print("loading introns")
   #seqlevelsStyle(fds) <- seqlevelsStyle(txdb)[1]

@@ -1,6 +1,11 @@
 ### 20210427 karoline lutz
 ### calculate splice type for aberrant splicing junctions and frameshift
 
+#txdb <- loadDb("/data/nasif12/home_if12/lutzk/drop_demo/Output/processed_data/aberrant_expression/v29/txdb.db")
+#fds <- readRDS("/data/nasif12/home_if12/lutzk/drop_demo/Output/processed_results/aberrant_splicing/datasets/savedObjects/fraser--v29/fds-object.RDS")
+#junctions_dt <- fread("/data/nasif12/home_if12/lutzk/drop_demo/Output/processed_results/aberrant_splicing/results/v29/fraser/fraser/results_per_junction.tsv")
+
+#junctions_dt <- aberrantSpliceType(junctions_dt, fds, txdb)
 
 aberrantSpliceType <- function(junctions_dt, fds, txdb){
   print("preparing..")
@@ -228,7 +233,7 @@ compareStarts <- function(junctions_gr, i, max_lap, shift_needed, intron_ranges,
         if((end(exons[j]) - ss_start + 1)%%3 != 0){
           frs = "likely"
         }else{frs = "unlikely"}
-        ifelse(shift_needed, return(c("exonTruncation", frs, (end(exons[j]) - ss_start + 1))), return(c("exonTruncation", frs)))
+        ifelse(shift_needed, return(c("exonTruncation", frs, (-1)*(end(exons[j]) - ss_start + 1))), return(c("exonTruncation", frs)))
         #return(c("exon truncation",frs))
       }
     }
@@ -272,7 +277,9 @@ compareStarts <- function(junctions_gr, i, max_lap, shift_needed, intron_ranges,
         if(length(findOverlaps(exons, intron_ranges[secItrChoices[maxExpr]], type = "within")) == 0){
           ## clear exon skipping, only exon is skipped 
           ## calculate frameshift, skipped exon plus possible exon elongation 
-          shift = end(exons[exonChoices[1]]) - start(exons[exonChoices[1]]) + 1 + ss_start - start(intron_ranges[secItrChoices[maxExpr]])
+          
+          shift = (-1)*(end(exons[exonChoices[1]]) - start(exons[exonChoices[1]]) + 1) + ss_start - start(intron_ranges[secItrChoices[maxExpr]])
+          
           frs = ifelse(shift%%3 == 0,"unlikely","likely")
           ifelse(shift_needed, return(c("singleExonSkipping", "inconclusive", shift)), return(c("singleExonSkipping", frs)))
         }
@@ -324,7 +331,7 @@ compareEnds <- function(junctions_gr, i, max_lap, shift_needed, intron_ranges, e
         if((ss_end - start(exons[j]) + 1)%%3 != 0){
           frs = "likely"
         }else{frs = "unlikely"}
-        ifelse(shift_needed, return(c("exonTruncation",frs, (ss_end - start(exons[j]) + 1))), return(c("exonTruncation",frs)))
+        ifelse(shift_needed, return(c("exonTruncation",frs, (-1)*(ss_end - start(exons[j]) + 1))), return(c("exonTruncation",frs)))
         #return(c("exon truncation",frs))
       }
     }
@@ -366,7 +373,7 @@ compareEnds <- function(junctions_gr, i, max_lap, shift_needed, intron_ranges, e
         if(length(findOverlaps(exons, intron_ranges[secItrChoices[maxExpr]], type = "within")) == 0){
           ## clear exon skipping, only exon is skipped 
           ## calculate frameshift, skipped exon plus possible exon elongation at end
-          shift = end(exons[exonChoices[1]]) - start(exons[exonChoices[1]]) + 1 + end(intron_ranges[secItrChoices[maxExpr]]) - ss_end
+          shift = (-1)*(end(exons[exonChoices[1]]) - start(exons[exonChoices[1]]) + 1) + end(intron_ranges[secItrChoices[maxExpr]]) - ss_end
           frs = ifelse(shift%%3 == 0,"unlikely","likely")
           ifelse(shift_needed, return(c("singleExonSkipping", "inconclusive", shift)), return(c("singleExonSkipping", frs)))
         }
