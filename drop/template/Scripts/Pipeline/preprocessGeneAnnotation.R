@@ -12,10 +12,10 @@
 #'   - blacklist_19: '`sm str(projectDir / ".drop" / "helpers" / "resource" / "hg19-blacklist.v2.bed.gz")`'
 #'   - blacklist_38: '`sm str(projectDir / ".drop" / "helpers" / "resource" / "hg38-blacklist.v2.bed.gz")`'
 #'  output:
-#'   - txdb: '`sm cfg.getProcessedDataDir() + "/aberrant_expression/{annotation}/txdb.db"`'
+#'   - txdb: '`sm cfg.getProcessedDataDir() + "/preprocess/{annotation}/txdb.db"`'
+#'   - gene_name_mapping: '`sm cfg.getProcessedDataDir() + "/preprocess/{annotation}/gene_name_mapping_{annotation}.tsv"`'
 #'   - count_ranges: '`sm cfg.getProcessedDataDir() + 
 #'                    "/aberrant_expression/{annotation}/count_ranges.Rds" `'
-#'   - gene_name_mapping: '`sm cfg.getProcessedDataDir() + "/aberrant_expression/{annotation}/gene_name_mapping_{annotation}.tsv"`'
 #'  type: script
 #'---
 

@@ -136,4 +136,10 @@ cat(paste0("<a href='./", basename(file), "'>Download OUTRIDER results table</a>
 
 res[, pValue := format(pValue, scientific = T, digits = 2)]
 res[, padjust := format(padjust, scientific = T, digits = 2)]
-DT::datatable(res, caption = "OUTRIDER results", style = 'bootstrap', filter = 'top')
+
+DT::datatable(
+  head(res, 1000),
+  caption = 'OUTRIDER results (up to 1,000 rows shown)',
+  options=list(scrollX=TRUE),
+  filter = 'top'
+)

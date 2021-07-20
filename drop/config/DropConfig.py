@@ -19,12 +19,13 @@ class DropConfig:
         "aberrantExpression", "aberrantSplicing", "mae"
     ]
 
-    def __init__(self, wbuildConfig):
+    def __init__(self, wbuildConfig, workDir):
         """
         Parse wbuild/snakemake config object for DROP-specific content
         :param wbuildConfig: wBuild config object
+        :param workDir: path to project working directory
         """
-
+        self.workDir = Path(workDir)
         self.wBuildConfig = wbuildConfig
         self.config_dict = self.setDefaults(wbuildConfig.getConfig())
 
@@ -56,21 +57,23 @@ class DropConfig:
             config=self.get("aberrantExpression"),
             sampleAnnotation=self.sampleAnnotation,
             processedDataDir=self.processedDataDir,
-            processedResultsDir=self.processedResultsDir
+            processedResultsDir=self.processedResultsDir,
+            workDir=workDir
         )
-
 
         self.AS = AS(
             config=self.get("aberrantSplicing"),
             sampleAnnotation=self.sampleAnnotation,
             processedDataDir=self.processedDataDir,
-            processedResultsDir=self.processedResultsDir
+            processedResultsDir=self.processedResultsDir,
+            workDir=workDir
         )
         self.MAE = MAE(
             config=self.get("mae"),
             sampleAnnotation=self.sampleAnnotation,
             processedDataDir=self.processedDataDir,
             processedResultsDir=self.processedResultsDir,
+            workDir=workDir,
             genome=self.genome
         )
 
@@ -86,10 +89,11 @@ class DropConfig:
 
         # write sample params for each module AS not currently supported
         sampleParams = SampleParams(
-            self.AE, 
-            self.MAE, 
+            self.AE,
+            self.AS,
+            self.MAE,
             self.get("geneAnnotation"),
-            self.processedDataDir, 
+            self.processedDataDir,
             self.sampleAnnotation
         )
 

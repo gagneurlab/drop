@@ -112,5 +112,11 @@ if(nrow(res) > 0){
   res[, padjustGene := signif(padjustGene, 2)]
 }
 
-DT::datatable(res, options=list(scrollX=TRUE), escape=FALSE, filter = 'top')
+DT::datatable(
+  head(res, 1000),
+  caption = 'FRASER results (up to 1,000 rows shown)',
+  options=list(scrollX=TRUE),
+  escape=FALSE,
+  filter = 'top'
+)
 

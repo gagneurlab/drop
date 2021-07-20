@@ -8,7 +8,7 @@
 #'   - counts: '`sm cfg.getProcessedDataDir() +
 #'              "/aberrant_expression/{annotation}/outrider/{dataset}/total_counts.Rds"`'
 #'   - txdb: '`sm cfg.getProcessedDataDir() +
-#'            "/aberrant_expression/{annotation}/txdb.db"`'
+#'            "/preprocess/{annotation}/txdb.db"`'
 #'  output:
 #'   - ods: '`sm cfg.getProcessedResultsDir() +
 #'           "/aberrant_expression/{annotation}/outrider/{dataset}/ods_unfitted.Rds"`'
