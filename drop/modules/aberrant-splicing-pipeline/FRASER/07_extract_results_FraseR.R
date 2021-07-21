@@ -19,15 +19,15 @@
 #'   - fdsin: '`sm cfg.getProcessedDataDir() +
 #'                 "/aberrant_splicing/datasets/savedObjects/{dataset}/" +
 #'                 "padjBetaBinomial_theta.h5"`'
-#'   - txdb: '`sm cfg.getProcessedDataDir() + "/aberrant_expression/{annotation}/txdb.db"`'
-#'   - gene_name_mapping: '`sm cfg.getProcessedDataDir() + "/aberrant_expression/{annotation}/gene_name_mapping_{annotation}.tsv"`'
+#'   - txdb: '`sm cfg.getProcessedDataDir() + "/preprocess/{annotation}/txdb.db"`'
+#'   - gene_name_mapping: '`sm cfg.getProcessedDataDir() + "/preprocess/{annotation}/gene_name_mapping_{annotation}.tsv"`'
 #'  output:
-#'   - resultTableJunc: '`sm cfg.getProcessedResultsDir() + 
+#'   - resultTableJunc: '`sm cfg.getProcessedResultsDir() +
 #'                          "/aberrant_splicing/results/{annotation}/fraser/{dataset}/results_per_junction.tsv"`'
-#'   - resultTableGene: '`sm cfg.getProcessedResultsDir() + 
+#'   - resultTableGene: '`sm cfg.getProcessedResultsDir() +
 #'                          "/aberrant_splicing/results/{annotation}/fraser/{dataset}/results.tsv"`'
-#'   - fds: '`sm cfg.getProcessedResultsDir() + 
-#'                 "/aberrant_splicing/datasets/savedObjects/{dataset}--{annotation}/fds-object.RDS"`'                          
+#'   - fds: '`sm cfg.getProcessedResultsDir() +
+#'                 "/aberrant_splicing/datasets/savedObjects/{dataset}--{annotation}/fds-object.RDS"`'
 #'  type: script
 #'---
 
@@ -42,7 +42,7 @@ annotation    <- snakemake@wildcards$annotation
 dataset    <- snakemake@wildcards$dataset
 fdsFile    <- snakemake@input$fdsin
 workingDir <- snakemake@params$workingDir
-outputDir  <- snakemake@params$outputDir 
+outputDir  <- snakemake@params$outputDir
 assemblyVersion <- snakemake@params$assemblyVersion
 
 register(MulticoreParam(snakemake@threads))
@@ -62,7 +62,7 @@ seqlevelsStyle(orgdb$seqnames) <- seqlevelsStyle(fds)
 seqlevelsStyle(txdb) <- seqlevelsStyle(fds)
 
 # Annotate the fds with gene names
-fds <- annotateRangesWithTxDb(fds, txdb = txdb, orgDb = orgdb, feature = 'gene_name', 
+fds <- annotateRangesWithTxDb(fds, txdb = txdb, orgDb = orgdb, feature = 'gene_name',
                               featureName = 'hgnc_symbol', keytype = 'gene_id')
 
 # Extract results per junction
@@ -75,14 +75,14 @@ print('Results per junction extracted')
 saveFraserDataSet(fds, dir=outputDir)
 
 
-# Add features 
+# Add features
 if(nrow(res_junc_dt) > 0){
-  
-  # number of samples per gene and variant  
+
+  # number of samples per gene and variant
   res_junc_dt[, numSamplesPerGene := uniqueN(sampleID), by = hgncSymbol]
   res_junc_dt[, numEventsPerGene := .N, by = "hgncSymbol,sampleID"]
   res_junc_dt[, numSamplesPerJunc := uniqueN(sampleID), by = "seqnames,start,end,strand"]
-  
+
   # add colData to the results
   res_junc_dt <- merge(res_junc_dt, as.data.table(colData(fds)), by = "sampleID")
   res_junc_dt[, c("bamFile", "pairedEnd") := NULL]
@@ -95,7 +95,7 @@ if(length(res_junc) > 0){
   res_genes_dt <- resultsByGenes(res_junc) %>% as.data.table
   res_genes_dt <- merge(res_genes_dt, as.data.table(colData(fds)), by = "sampleID")
   res_genes_dt[, c("bamFile", "pairedEnd") := NULL]
-  
+
   # add HPO overlap information
   sa <- fread(snakemake@config$sampleAnnotation)
   if(!is.null(sa$HPO_TERMS)){

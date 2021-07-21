@@ -30,7 +30,7 @@ The pipeline can be run using `snakemake <snakemake.readthedocs.io/>`_ commands
 
 .. code-block:: bash
 
-    snakemake -n # dryrun
+    snakemake --cores 1 -n # dryrun
     snakemake --cores 1
 
 Initialize a project
