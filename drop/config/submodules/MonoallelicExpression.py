@@ -173,7 +173,10 @@ class MAE(Submodule):
     # look up for a sampleID genomeFiles{ncbi -> path} and sampleGenomes {sampleID -> ncbi}
     def getGenomePath(self, sampleID):
         try:
-            return self.genomeFiles[self.sampleGenomes[sampleID]]
+            if len(self.genomeFiles) == 1:
+                return list(self.genomeFiles.values())[0]
+            else:
+                return self.genomeFiles[self.sampleGenomes[sampleID]]
         except KeyError:
             raise KeyError(
                 f"The Config file has defined specific key,value for genome path "

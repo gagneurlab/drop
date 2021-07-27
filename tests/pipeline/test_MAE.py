@@ -22,7 +22,7 @@ class Test_MAE_Pipeline:
 
     @pytest.mark.usefixtures("pipeline_run")
     def test_counts(self, demo_dir):
-        cnt_file = "Output/processed_data/mae/allelic_counts/HG00103--HG00103.4.M_120208_3.csv.gz"
+        cnt_file = "Output/processed_data/mae/allelic_counts/HG00103--HG00103.csv.gz"
         r_cmd = """
                 library(data.table)
                 cnts <- fread("{}")

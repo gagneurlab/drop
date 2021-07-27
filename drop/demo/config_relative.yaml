@@ -2,13 +2,12 @@ projectTitle: Detection of RNA Outlier Pipeline
 htmlOutputPath: Output/html
 indexWithFolderName: true
 root: Output
-sampleAnnotation: Data/sample_annotation_FA.tsv
+sampleAnnotation: Data/sample_annotation.tsv
 geneAnnotation:
   v29: Data/gencode_annotation_trunc.gtf
 genomeAssembly: hg19
 genome:
   ucsc: Data/chr21.fa
-  ncbi: Data/chr21_ncbi.fa
 hpoFile: null
 random_seed: true
 exportCounts:
@@ -45,8 +44,7 @@ aberrantSplicing:
   maxTestedDimensionProportion: 6
 mae:
   groups:
-  - UDP
-  - mae_ucsc
+  - mae
   gatkIgnoreHeaderCheck: true
   padjCutoff: 0.05
   allelicRatioCutoff: 0.8
@@ -55,8 +53,7 @@ mae:
   maxVarFreqCohort: 0.04
   qcVcf: Data/qc_vcf_1000G.vcf.gz
   qcGroups:
-  - UDP
-  - mae_ucsc
+  - mae
 tools:
   gatkCmd: gatk
   bcftoolsCmd: bcftools
