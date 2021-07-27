@@ -159,7 +159,6 @@ def update():
 
 @main.command()
 def demo():
-    # TODO: check if previous project gets overwritten
     setFiles()
     removeFile("config.yaml", warn=False)
     logger.info("init...done")
@@ -174,6 +173,7 @@ def demo():
     demo_repo = Path(drop.__file__).parent / "demo"
     drop.demo.fixSampleAnnotation(demo_repo / "sample_annotation_relative.tsv",
                                   Path.cwd() / "Data" / "sample_annotation.tsv")
+    print(demo_repo,"HERE")
     drop.demo.fixConfig(demo_repo / "config_relative.yaml", Path.cwd() / "config.yaml")
 
     logger.info("demo project created")

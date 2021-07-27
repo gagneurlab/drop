@@ -1,69 +1,63 @@
 projectTitle: Detection of RNA Outlier Pipeline
 htmlOutputPath: Output/html
 indexWithFolderName: true
-
 root: Output
-sampleAnnotation: Data/sample_annotation.tsv
+sampleAnnotation: Data/sample_annotation_FA.tsv
 geneAnnotation:
-    v29: Data/gencode_annotation_trunc.gtf
+  v29: Data/gencode_annotation_trunc.gtf
 genomeAssembly: hg19
-genome: Data/chr21.fa
+genome:
+  ucsc: Data/chr21.fa
+  ncbi: Data/chr21_ncbi.fa
 hpoFile: null
-random_seed: true  # use this to fully gain reproducible data in debug mode
-
+random_seed: true
 exportCounts:
   geneAnnotations:
-    - v29
+  - v29
   excludeGroups:
-    - mae
-    - import_exp
-
+  - mae
+  - import_exp
 aberrantExpression:
-    run: true
-    groups:
-      - outrider
-      - import_exp
-    fpkmCutoff: 1
-    implementation: autoencoder
-    padjCutoff: 1
-    zScoreCutoff: 0
-    maxTestedDimensionProportion: 3
-    dassie:
-        tssWindow: 500
-        pasWindow: 1000
-
+  groups:
+  - outrider
+  - import_exp
+  fpkmCutoff: 1
+  implementation: autoencoder
+  padjCutoff: 1
+  zScoreCutoff: 0
+  maxTestedDimensionProportion: 3
+  dassie:
+    tssWindow: 500
+    pasWindow: 1000
 aberrantSplicing:
-    run: true
-    groups:
-      - fraser
-    recount: true
-    longRead: false
-    keepNonStandardChrs: true
-    filter: false
-    minExpressionInOneSample: 20
-    minDeltaPsi: 0.05
-    implementation: PCA
-    padjCutoff: 1
-    zScoreCutoff: 0
-    deltaPsiCutoff : 0.05
-    maxTestedDimensionProportion: 6
-
+  groups:
+  - fraser
+  recount: true
+  longRead: false
+  keepNonStandardChrs: true
+  filter: false
+  minExpressionInOneSample: 20
+  minDeltaPsi: 0.05
+  implementation: PCA
+  padjCutoff: 1
+  zScoreCutoff: 0
+  deltaPsiCutoff: 0.05
+  maxTestedDimensionProportion: 6
 mae:
-    run: true
-    groups:
-      - mae
-    gatkIgnoreHeaderCheck: true
-    padjCutoff: .05
-    allelicRatioCutoff: 0.8
-    addAF: false
-    maxAF: .001
-    maxVarFreqCohort: .04
-    # VCF-BAM matching
-    qcVcf: Data/qc_vcf_1000G.vcf.gz
-    qcGroups:
-      - mae
-
+  groups:
+  - UDP
+  - mae_ucsc
+  gatkIgnoreHeaderCheck: true
+  padjCutoff: 0.05
+  allelicRatioCutoff: 0.8
+  addAF: false
+  maxAF: 0.001
+  maxVarFreqCohort: 0.04
+  qcVcf: Data/qc_vcf_1000G.vcf.gz
+  qcGroups:
+  - UDP
+  - mae_ucsc
 tools:
-    gatkCmd: gatk
-    bcftoolsCmd: bcftools
-    samtoolsCmd: samtools
+  gatkCmd: gatk
+  bcftoolsCmd: bcftools
+  samtoolsCmd: samtools

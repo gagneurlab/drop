@@ -2,18 +2,16 @@
 set -e
 
 # get data
-resource_url="https://www.cmm.in.tum.de/public/paper/drop_analysis/resource.tar.gz"
+resource_url="https://github.com/nickhsmith/drop_demo_data/archive/refs/heads/main.zip"
 tmpdir="$(dirname "$(mktemp)")"
 wget -nc -P $tmpdir $resource_url
 mkdir -p Data
 if [ -z "$(ls Data)" ]; then
-	tar -zxvf "$tmpdir/resource.tar.gz" -C .
-	rm -rf Data
-	mv resource Data
+    unzip "$tmpdir/main.zip"
+    rm -rf Data
+    mv drop_demo_data-main/Data Data
+    rm -rf drop_demo_data-main
 else
     echo "Data directory not empty, is not updated"
 fi
 
-# unzip fasta
-cd ./Data
-if [ ! -f "chr21.fa" ]; then gunzip chr21.fa.gz; fi
