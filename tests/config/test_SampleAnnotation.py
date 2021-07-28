@@ -13,8 +13,8 @@ class Test_SampleAnnotation:
 
     def test_mapping(self, sampleAnnotation):
         # ID mappings/groups
-        assert sampleAnnotation.idMapping.shape == (22, 2)
-        assert sampleAnnotation.sampleFileMapping.shape == (32, 4)
+        assert sampleAnnotation.idMapping.shape == (12, 2)
+        assert sampleAnnotation.sampleFileMapping.shape == (22, 4)
         true_mapping = {'mae': 2, 'import_exp': 8, 'outrider': 10, 'fraser': 10}
         assert true_mapping == {k: len(v) for k, v in sampleAnnotation.rnaIDs.items()}
         assert true_mapping == {k: len(v) for k, v in sampleAnnotation.dnaIDs.items()}
@@ -30,6 +30,8 @@ class Test_SampleAnnotation:
     def test_filePaths(self, demo_dir, sampleAnnotation, sample_id, file_type, file_name):
         true_path = f"{demo_dir}/{file_name}"
         test_path = sampleAnnotation.getFilePath(sample_id, file_type)
+        print( true_path)
+        print(test_path)
         assert true_path == test_path
 
     @pytest.mark.parametrize(
