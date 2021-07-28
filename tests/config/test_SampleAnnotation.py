@@ -24,14 +24,12 @@ class Test_SampleAnnotation:
         [
             ("HG00096", "RNA_BAM_FILE", "Data/rna_bam/HG00096.bam"),
             ("HG00178", "GENE_COUNTS_FILE", "Data/external_geneCounts.tsv.gz"),
-            ("HG00096", "DNA_VCF_FILE", "Data/dna_vcf/demo_chr21")
+            ("HG00096", "DNA_VCF_FILE", "Data/dna_vcf/demo_chr21.vcf.gz")
         ]
     )
     def test_filePaths(self, demo_dir, sampleAnnotation, sample_id, file_type, file_name):
         true_path = f"{demo_dir}/{file_name}"
         test_path = sampleAnnotation.getFilePath(sample_id, file_type)
-        print( true_path)
-        print(test_path)
         assert true_path == test_path
 
     @pytest.mark.parametrize(
