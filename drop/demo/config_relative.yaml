@@ -17,6 +17,7 @@ exportCounts:
   - mae
   - import_exp
 aberrantExpression:
+  run: true
   groups:
   - outrider
   - import_exp
@@ -29,6 +30,7 @@ aberrantExpression:
     tssWindow: 500
     pasWindow: 1000
 aberrantSplicing:
+  run: true
   groups:
   - fraser
   recount: true
@@ -43,6 +45,7 @@ aberrantSplicing:
   deltaPsiCutoff: 0.05
   maxTestedDimensionProportion: 6
 mae:
+  run: true
   groups:
   - mae
   gatkIgnoreHeaderCheck: true

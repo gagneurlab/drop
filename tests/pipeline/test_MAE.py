@@ -29,7 +29,7 @@ class Test_MAE_Pipeline:
                 print(nrow(cnts))
                 """.format(cnt_file)
         r = runR(r_cmd, demo_dir)
-        assert "[1] 235" in r.stdout
+        assert "[1] 55" in r.stdout
 
     @pytest.mark.usefixtures("pipeline_run")
     def test_results(self, demo_dir):
@@ -40,4 +40,4 @@ class Test_MAE_Pipeline:
                 print(nrow(res))
                 """.format(results_file)
         r = runR(r_cmd, demo_dir)
-        assert "[1] 335" in r.stdout
+        assert "[1] 64" in r.stdout
