@@ -19,6 +19,8 @@
 #'                "/mae/{dataset}/MAE_results_all_{annotation}.tsv.gz"`' 
 #'   - res_signif: '`sm cfg.getProcessedResultsDir() + 
 #'                   "/mae/{dataset}/MAE_results_{annotation}.tsv"`'
+#'   - res_signif_rare: '`sm cfg.getProcessedResultsDir() + 
+#'                   "/mae/{dataset}/MAE_results_{annotation}_rare.tsv"`'
 #'   - wBhtml: '`sm config["htmlOutputPath"] +
 #'               "/MonoallelicExpression/{dataset}--{annotation}_results.html"`'
 #'  type: noindex
@@ -88,8 +90,7 @@ res[,rare := (rare | is.na(rare)) & cohort_freq <= maxCohortFreq]
 # Add significance columns
 allelicRatioCutoff <- snakemake@params$allelicRatioCutoff
 res[, MAE := padj <= snakemake@params$padjCutoff &
-      (altRatio >= allelicRatioCutoff | altRatio <= (1-allelicRatioCutoff)) &
-      rare
+      (altRatio >= allelicRatioCutoff | altRatio <= (1-allelicRatioCutoff)) 
     ] 
 res[, MAE_ALT := MAE == TRUE & altRatio >= allelicRatioCutoff]
 #'
@@ -107,6 +108,10 @@ fwrite(res, snakemake@output$res_all, sep = '\t',
 
 # Save significant results
 fwrite(res[MAE_ALT == TRUE], snakemake@output$res_signif, 
+       sep = '\t', row.names = F, quote = F)
+
+# Save significant results
+fwrite(res[MAE_ALT == TRUE & rare == TRUE], snakemake@output$res_signif_rare, 
        sep = '\t', row.names = F, quote = F)
 
 
@@ -136,8 +141,8 @@ ggplot(melt_dt, aes(variable, value)) + geom_boxplot() +
 
 #'
 #' ## Variant Frequency within Cohort Histogram
-ggplot(res,aes(x = cohort_freq)) + geom_histogram( binwidth = 0.02)  +
-  geom_vline(xintercept = maxCohortFreq +.01 ,col = "red") +
+ggplot(unique(res[,cohort_freq,by =.(gene_name, contig, position)]),aes(x = cohort_freq)) + geom_histogram( binwidth = 0.02)  +
+  geom_vline(xintercept = maxCohortFreq, col = "red") +
   xlab("Variant frequency in cohort") + ylab("Count")
 
 #' Median of each category
