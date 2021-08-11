@@ -153,13 +153,12 @@ class SampleAnnotation:
 
     ### Subsetting
 
-    def subsetSampleAnnotation(self, column, values, subset=None, exact_match=True):
+    def subsetSampleAnnotation(self, column, values, subset=None):
         """
         subset by one or more values of different columns from sample file mapping
             :param column: valid column in sample annotation
             :param values: values of column to subset
             :param subset: subset sample annotation
-            :param exact_match: whether to match substrings in the sample annotation, false allows substring matching
         """
         sa_cols = set(self.SAMPLE_ANNOTATION_COLUMNS)
         if subset is None:
@@ -174,7 +173,7 @@ class SampleAnnotation:
         # check if column is valid
         if column not in sa_cols:
             raise KeyError(f"Column '{column}' not present in sample annotation.")
-        return utils.subsetBy(subset, column, values, exact_match=exact_match)
+        return utils.subsetBy(subset, column, values)
 
     def subsetFileMapping(self, file_type=None, sample_id=None):
         """
@@ -233,10 +232,9 @@ class SampleAnnotation:
         return self.getFilePath(sampleIDs, file_type, single_file=False)
 
     # build a dictionary from the drop group and column. like getImportCounts with skipping options and dict output
-    def getGenomes(self, value, group, file_type="RNA_ID",
-                            column="GENOME", group_key="DROP_GROUP",exact_match = True,skip = False):
+    def getGenomes(self, value, group, file_type="RNA_ID", column="GENOME", group_key="DROP_GROUP", skip = False):
         """
-        :param value: values to match in the column. Must be an exact match, passed to subsetting sample annotation 
+        :param value: values to match in the column.
         :param group: a group of the group_key (DROP_GROUP) column. 
         :return: dict file_type to column
         """
@@ -245,24 +243,25 @@ class SampleAnnotation:
         if skip:
             subset = None
         else:
-            subset = self.subsetSampleAnnotation(column, value,exact_match=True)
+            subset = self.subsetSampleAnnotation(column, value)
 
         # additionally subset for the group_key and the group
-        subset = self.subsetSampleAnnotation(group_key, group, subset,exact_match=exact_match)
+        subset = self.subsetSampleAnnotation(group_key, group, subset)
 
         return {sample_id: value for sample_id in subset[file_type].tolist()}
 
     def getImportCountFiles(self, annotation, group, file_type: str = "GENE_COUNTS_FILE",
-                            annotation_key: str = "ANNOTATION", group_key: str = "DROP_GROUP", 
+                            annotation_key: str = "GENE_ANNOTATION", group_key: str = "DROP_GROUP", 
                             asSet: bool = True):
         """
-        :param annotation: annotation name as specified in config and ANNOTATION column. Can be None
-        :param group: a group of the DROP_GROUP column
+        :param annotation: annotation name as specified in config and GENE_ANNOTATION column. Can be None
+        :param group: a group of the DROP_GROUP column.
         :return: set of unique external count file names
         """
+        
         #subset for the annotation_key in the annotation group and the group_key in the group
-        subset = self.subsetSampleAnnotation(annotation_key, annotation, exact_match=exact_match)
-        subset = self.subsetSampleAnnotation(group_key, group, subset, exact_match=exact_match)
+        subset = self.subsetSampleAnnotation(annotation_key, annotation)
+        subset = self.subsetSampleAnnotation(group_key, group, subset)
             
         ans = subset[file_type].tolist()
         if asSet:

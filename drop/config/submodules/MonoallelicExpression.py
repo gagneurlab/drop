@@ -34,7 +34,7 @@ class MAE(Submodule):
         self.checkConfigSampleannotation()
 
     def checkConfigSampleannotation(self):
-        subset = self.sampleAnnotation.subsetSampleAnnotation("DROP_GROUP", self.groups, exact_match=False)
+        subset = self.sampleAnnotation.subsetSampleAnnotation("DROP_GROUP", self.groups)
 
         if len(self.genomeFiles.keys()) > 1:  # more than 1 value in config defined genome dictionary
             if "GENOME" not in subset.columns.values:  # GENOME column not defined
@@ -147,16 +147,16 @@ class MAE(Submodule):
         if len(genomeFiles) == 1:  # globally defined in the config
             globalGenome = list(genomeFiles.values())[0]
 
-            # subset SA by the drop group (not exact match) and skip the filtering by SA-GENOME column
+            # subset SA by the drop group and skip the filtering by SA-GENOME column
             genomeDict = self.sampleAnnotation.getGenomes(
                 globalGenome,
                 self.groups,
                 file_type="RNA_ID",
                 column="DROP_GROUP", group_key="DROP_GROUP",
-                exact_match=False, skip=True
+                skip=True
             )
         else:
-            # subset SA by the drop group (not exact match) and filter by SA-GENOME column. Must exactly match config key
+            # subset SA by the drop group and filter by SA-GENOME column. Must exactly match config key
             for gf in genomeFiles.keys():
                 genomeDict.update(
                     self.sampleAnnotation.getGenomes(
@@ -164,7 +164,7 @@ class MAE(Submodule):
                         self.groups,
                         file_type="RNA_ID",
                         column="GENOME", group_key="DROP_GROUP",
-                        exact_match=False, skip=False
+                        skip=False
                     )
                 )
 
