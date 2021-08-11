@@ -85,7 +85,7 @@ class SampleAnnotation:
         assay_subsets = []
         for id_, file_types in assay_mapping.items():
             for file_type in file_types:
-                if file_type not in self.sa.columns:
+                if file_type not in self.annotationTable.columns:
                     continue
                 df = self.annotationTable[[id_, file_type]].dropna().drop_duplicates().copy()
                 df.rename(columns={id_: 'ID', file_type: 'FILE_PATH'}, inplace=True)

@@ -72,8 +72,8 @@ class AS(Submodule):
         :param fileType: name of the file without extension which is to be returned
         :return: list of directories or files
         """
-        ids = self.sa.getIDsByGroup(group, assay="SPLICE_COUNT")
-        extCountFiles = self.sa.getImportCountFiles(annotation=None, group=group, 
+        ids = self.sampleAnnotation.getIDsByGroup(group, assay="SPLICE_COUNT")
+        extCountFiles = self.sampleAnnotation.getImportCountFiles(annotation=None, group=group, 
                 file_type="SPLICE_COUNTS_DIR", asSet=False)
         if fileType is not None:
             extCountFiles = np.asarray(extCountFiles)[pd.isna(extCountFiles) == False].tolist()
