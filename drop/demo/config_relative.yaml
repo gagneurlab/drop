@@ -59,7 +59,7 @@ mae:
     allelicRatioCutoff: 0.8
     addAF: false
     maxAF: .001
-    maxVarFreqCohort: .04
+    maxVarFreqCohort: 1
     # VCF-BAM matching
     qcVcf: Data/qc_vcf_1000G.vcf.gz
     qcGroups:

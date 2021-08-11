@@ -9,8 +9,7 @@ class Test_MAE_Pipeline:
         # run the MAE module using this config_MAE_norun (which should do nothing)
         run("awk -v n=3 \'/run: true/ { if (++count == n) sub(/run: true/, \"run: false\"); } 1\' \
           config.yaml > config_MAE_norun.yaml  ",demo_dir)
-        pipeline_run = run(["snakemake", "aberrantExpression", f"-j{CORES}", "--configfile", "config_MAE_norun.yaml"], demo_dir)
-        tmp = run(["snakemake", "--unlock"], demo_dir)
+        pipeline_run = run(["snakemake", "mae", f"-j{CORES}", "--configfile", "config_MAE_norun.yaml"], demo_dir)
         assert "Nothing to be done." in pipeline_run.stderr
         return pipeline_run
 

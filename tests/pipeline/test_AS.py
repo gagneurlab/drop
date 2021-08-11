@@ -10,7 +10,6 @@ class Test_AS_Pipeline:
         run("awk -v n=2 \'/run: true/ { if (++count == n) sub(/run: true/, \"run: false\"); } 1\' \
           config.yaml > config_AS_norun.yaml  ",demo_dir)
         pipeline_run = run(["snakemake", "aberrantSplicing", f"-j{CORES}", "--configfile", "config_AS_norun.yaml"], demo_dir)
-        tmp = run(["snakemake", "--unlock"], demo_dir)
         assert "Nothing to be done." in pipeline_run.stderr
         return pipeline_run
 
