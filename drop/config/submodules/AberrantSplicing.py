@@ -13,6 +13,9 @@ class AS(Submodule):
             "implementation", "padjCutoff", "zScoreCutoff", "deltaPsiCutoff", "maxTestedDimensionProportion"
         ]
         self.name = "AberrantSplicing"
+        # if self.run is false return without doing any config/sa checks for completeness
+        if not self.run:
+            return
         self.rnaIDs = self.sampleAnnotation.subsetGroups(self.groups, assay="RNA")
         self.checkSubset(self.rnaIDs)
 

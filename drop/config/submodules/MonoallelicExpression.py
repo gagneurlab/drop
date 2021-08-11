@@ -17,9 +17,12 @@ class MAE(Submodule):
         super().__init__(config, sampleAnnotation, processedDataDir, processedResultsDir, workDir)
         self.CONFIG_KEYS = [
             "groups", "genome", "qcVcf", "qcGroups", "gatkIgnoreHeaderCheck", "padjCutoff",
-            "allelicRatioCutoff", "maxAF", "gnomAD"
+            "allelicRatioCutoff", "maxAF", "gnomAD","maxVarFreqCohort"
         ]
         self.name = "MonoallelicExpression"
+        # if self.run is false return without doing any config/sa checks for completeness
+        if not self.run:
+            return
         self.qcGroups = self.dict_["qcGroups"]
         self.qcVcfFile = self.dict_["qcVcf"]
         self.maeIDs = self.createMaeIDS(id_sep='--')

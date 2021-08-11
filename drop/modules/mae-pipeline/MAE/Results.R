@@ -7,6 +7,7 @@
 #'  params:
 #'   - allelicRatioCutoff: '`sm cfg.MAE.get("allelicRatioCutoff")`'
 #'   - padjCutoff: '`sm cfg.MAE.get("padjCutoff")`'
+#'   - maxCohortFreq: '`sm cfg.MAE.get("maxVarFreqCohort")`'
 #'  input:
 #'   - mae_res: '`sm lambda w: expand(cfg.getProcessedResultsDir() + 
 #'                "/mae/samples/{id}_res.Rds", id=cfg.MAE.getMaeByGroup({w.dataset}))`'
@@ -18,6 +19,8 @@
 #'                "/mae/{dataset}/MAE_results_all_{annotation}.tsv.gz"`' 
 #'   - res_signif: '`sm cfg.getProcessedResultsDir() + 
 #'                   "/mae/{dataset}/MAE_results_{annotation}.tsv"`'
+#'   - res_signif_rare: '`sm cfg.getProcessedResultsDir() + 
+#'                   "/mae/{dataset}/MAE_results_{annotation}_rare.tsv"`'
 #'   - wBhtml: '`sm config["htmlOutputPath"] +
 #'               "/MonoallelicExpression/{dataset}--{annotation}_results.html"`'
 #'  type: noindex
@@ -77,12 +80,19 @@ res[, c('aux') := NULL]
 # Bring gene_name column front
 res <- cbind(res[, .(gene_name)], res[, -"gene_name"])
 
+# Calculate variant frequency within cohort 
+maxCohortFreq <-snakemake@params$maxCohortFreq
+res[, N_var := .N, by = .(gene_name, contig, position)]
+res[, cohort_freq := N_var / uniqueN(ID)]
+
+res[,rare := (rare | is.na(rare)) & cohort_freq <= maxCohortFreq] 
+
 # Add significance columns
 allelicRatioCutoff <- snakemake@params$allelicRatioCutoff
 res[, MAE := padj <= snakemake@params$padjCutoff &
-      (altRatio >= allelicRatioCutoff | altRatio <= (1-allelicRatioCutoff))] 
+      (altRatio >= allelicRatioCutoff | altRatio <= (1-allelicRatioCutoff)) 
+    ] 
 res[, MAE_ALT := MAE == TRUE & altRatio >= allelicRatioCutoff]
-
 #'
 #' Number of samples: `r uniqueN(res$ID)`
 #'
@@ -98,6 +108,10 @@ fwrite(res, snakemake@output$res_all, sep = '\t',
 
 # Save significant results
 fwrite(res[MAE_ALT == TRUE], snakemake@output$res_signif, 
+       sep = '\t', row.names = F, quote = F)
+
+# Save significant results
+fwrite(res[MAE_ALT == TRUE & rare == TRUE], snakemake@output$res_signif_rare, 
        sep = '\t', row.names = F, quote = F)
 
 
@@ -124,6 +138,12 @@ ggplot(melt_dt, aes(variable, value)) + geom_boxplot() +
   scale_y_log10() + theme_bw(base_size = 14) +
   labs(y = 'Heterozygous SNVs per patient', x = '') +
     annotation_logticks(sides = "l")
+
+#'
+#' ## Variant Frequency within Cohort Histogram
+ggplot(unique(res[,cohort_freq,by =.(gene_name, contig, position)]),aes(x = cohort_freq)) + geom_histogram( binwidth = 0.02)  +
+  geom_vline(xintercept = maxCohortFreq, col = "red") +
+  xlab("Variant frequency in cohort") + ylab("Count")
 
 #' Median of each category
 DT::datatable(melt_dt[, .(median = median(value, na.rm = T)), by = variable])

@@ -1,5 +1,5 @@
-# Title     : TODO
-# Objective : TODO
+# Title     : HTML Functions
+# Objective : Functions for creating pretty HTML links
 # Created by: mumichae
 # Created on: 6/21/21
 
