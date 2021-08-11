@@ -4,50 +4,53 @@
 #' wb:
 #'  log:
 #'    - snakemake: '`sm str(tmp_dir / "AS" / "{dataset}" / "01_2_splitReadsMerge.Rds")`'
-#'  params:
-#'   - setup: '`sm cfg.AS.getWorkdir() + "/config.R"`'
-#'   - workingDir: '`sm cfg.getProcessedDataDir() + "/aberrant_splicing/datasets"`'
-#'  threads: 20
+#'  threads: 10
 #'  input:
 #'   - sample_counts: '`sm lambda w: cfg.AS.getSplitCountFiles(w.dataset)`'
+#'   - fds_init:    '`sm cfg.getProcessedDataDir() + 
+#'                   "/aberrant_splicing/datasets/savedObjects/raw-{dataset}/fds-init.done"`'
 #'  output:
-#'   - countsJ: '`sm cfg.getProcessedDataDir() +
-#'                   "/aberrant_splicing/datasets/savedObjects/raw-{dataset}/rawCountsJ.h5"`'
+#'   - countsJ:  '`sm cfg.getProcessedDataDir() + 
+#'                    "/aberrant_splicing/datasets/savedObjects/raw-{dataset}/rawCountsJ.h5"`'
 #'   - gRangesSplitCounts: '`sm cfg.getProcessedDataDir() + 
-#'                          "/aberrant_splicing/datasets/cache/raw-{dataset}/gRanges_splitCounts.rds"`'
+#'                   "/aberrant_splicing/datasets/cache/raw-{dataset}/gRanges_splitCounts.rds"`'
 #'   - gRangesNonSplitCounts: '`sm cfg.getProcessedDataDir() + 
-#'                          "/aberrant_splicing/datasets/cache/raw-{dataset}/gRanges_NonSplitCounts.rds"`'
+#'                   "/aberrant_splicing/datasets/cache/raw-{dataset}/gRanges_NonSplitCounts.rds"`'
 #'   - spliceSites: '`sm cfg.getProcessedDataDir() + 
 #'                   "/aberrant_splicing/datasets/cache/raw-{dataset}/spliceSites_splitCounts.rds"`'
 #'  type: script
 #'---
 
 saveRDS(snakemake, snakemake@log$snakemake)
-source(snakemake@params$setup, echo=FALSE)
+suppressPackageStartupMessages(library(FRASER))
 
-dataset    <- snakemake@wildcards$dataset
-workingDir <- snakemake@params$workingDir
-params <- snakemake@config$aberrantSplicing
+# input
+dataset <- snakemake@wildcards$dataset
+fdsIn   <- file.path(dirname(snakemake@input$fds_init), "fds-object.RDS")
+params  <- snakemake@config$aberrantSplicing
 minExpressionInOneSample <- params$minExpressionInOneSample
+BPPARAM <- MulticoreParam(snakemake@threads)
 
+# Set number of threads including for DelayedArray operations
+register(BPPARAM)
+DelayedArray::setAutoBPPARAM(BPPARAM)
 
-register(MulticoreParam(snakemake@threads))
-# Limit number of threads for DelayedArray operations
-setAutoBPPARAM(MulticoreParam(snakemake@threads))
+# Force writing HDF5 files
+options(FRASER.maxSamplesNoHDF5=-1)
+options(FRASER.maxJunctionsNoHDF5=-1)
 
 # Read FRASER object
-fds <- loadFraserDataSet(dir=workingDir, name=paste0("raw-", dataset))
+fds <- loadFraserDataSet(file=fdsIn)
 
-# If samples are recounted, remove the merged ones
-splitCountsDir <- file.path(workingDir, "savedObjects", 
-                            paste0("raw-", dataset), 'splitCounts')
-if(params$recount == TRUE & dir.exists(splitCountsDir)){
-  unlink(splitCountsDir, recursive = TRUE)
+# enforce remerging if this script has to be run
+splitCountsDir <- file.path(workingDir(fds), "savedObjects", name(fds), "splitCounts")
+if(dir.exists(splitCountsDir)){
+    unlink(splitCountsDir, recursive=TRUE)
 }
 
 # Get and merge splitReads for all sample ids
-splitCounts <- getSplitReadCountsForAllSamples(fds=fds,
-                                               recount=FALSE)
+splitCounts <- getSplitReadCountsForAllSamples(fds=fds, outDir=splitCountsDir, recount=FALSE)
+
 # Extract, annotate and save granges
 splitCountRanges <- rowRanges(splitCounts)
 
@@ -65,7 +68,7 @@ splitCountRanges <- splitCountRanges[passed,]
 saveRDS(splitCountRanges, snakemake@output$gRangesNonSplitCounts)
 
 # Extract splitSiteCoodinates: extract donor and acceptor sites
-# take either filtered or full fds
+# take filtered splicesite map
 spliceSiteCoords <- FRASER:::extractSpliceSiteCoordinates(splitCountRanges, fds)
 saveRDS(spliceSiteCoords, snakemake@output$spliceSites)
 

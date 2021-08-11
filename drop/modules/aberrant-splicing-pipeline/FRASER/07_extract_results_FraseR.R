@@ -14,7 +14,6 @@
 #'   - assemblyVersion: '`sm cfg.genome.getBSGenomeVersion()`'
 #'  threads: 10
 #'  input:
-#'   - setup: '`sm cfg.AS.getWorkdir() + "/config.R"`'
 #'   - add_HPO_cols: '`sm str(projectDir / ".drop" / "helpers" / "add_HPO_cols.R")`'
 #'   - fdsin: '`sm cfg.getProcessedDataDir() +
 #'                 "/aberrant_splicing/datasets/savedObjects/{dataset}/" +
@@ -32,22 +31,33 @@
 #'---
 
 saveRDS(snakemake, snakemake@log$snakemake)
-source(snakemake@input$setup, echo=FALSE)
+suppressPackageStartupMessages({
+  library(FRASER)
+  library(tidyr)
+  library(AnnotationDbi)
+})
 source(snakemake@input$add_HPO_cols)
-library(AnnotationDbi)
+knitr::opts_chunk$set(fig.width=12, fig.height=8)
 
-opts_chunk$set(fig.width=12, fig.height=8)
-
-annotation    <- snakemake@wildcards$annotation
+# input
 dataset    <- snakemake@wildcards$dataset
 fdsFile    <- snakemake@input$fdsin
+BPPARAM    <- MulticoreParam(snakemake@threads)
+annotation <- snakemake@wildcards$annotation
 workingDir <- snakemake@params$workingDir
 outputDir  <- snakemake@params$outputDir
 assemblyVersion <- snakemake@params$assemblyVersion
+outResJunc <- snakemake@output$resultTableJunc
+outResGene <- snakemake@output$resultTableGene
 
-register(MulticoreParam(snakemake@threads))
-# Limit number of threads for DelayedArray operations
-setAutoBPPARAM(MulticoreParam(snakemake@threads))
+# Set number of threads including for DelayedArray operations
+register(BPPARAM)
+DelayedArray::setAutoBPPARAM(BPPARAM)
+
+# Force writing HDF5 files
+options(FRASER.maxSamplesNoHDF5=-1)
+options(FRASER.maxJunctionsNoHDF5=-1)
+
 
 # Load fds and create a new one
 fds_input <- loadFraserDataSet(dir=workingDir, name=dataset)
@@ -106,5 +116,5 @@ if(length(res_junc) > 0){
 } else res_genes_dt <- data.table()
 
 # Results
-write_tsv(res_junc_dt, file=snakemake@output$resultTableJunc)
-write_tsv(res_genes_dt, file=snakemake@output$resultTableGene)
+write.table(x=res_junc_dt,  file=outResJunc, quote=FALSE, sep='\t', row.names=FALSE)
+write.table(x=res_genes_dt, file=outResGene, quote=FALSE, sep='\t', row.names=FALSE)

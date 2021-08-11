@@ -9,7 +9,7 @@
 #'   - workingDir: '`sm cfg.getProcessedDataDir() + "/aberrant_splicing/datasets/"`'
 #'  input:
 #'   - filter: '`sm cfg.getProcessedDataDir() + 
-#'                "/aberrant_splicing/datasets/savedObjects/{dataset}/filter.done" `'
+#'                "/aberrant_splicing/datasets/savedObjects/{dataset}/filtering.done"`'
 #'  output:
 #'   - wBhtml: '`sm config["htmlOutputPath"] + 
 #'                  "/AberrantSplicing/{dataset}_countSummary.html"`'

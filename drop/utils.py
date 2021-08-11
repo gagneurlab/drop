@@ -76,11 +76,20 @@ def subsetBy(df, column, values, exact_match=True):
     """
     if values is None:
         return df
-    elif isinstance(values, str) and exact_match :
-        return df[df[column] == values]
-    elif not isinstance(values,str) and exact_match:
-        return df[df[column].isin(values)]
-    elif isinstance(values,str) and not exact_match:
+#    elif isinstance(values, str):
+#        return df[df[column].str.contains("(^|,)" + values + "(,|$)")]
+#    else:
+#        if(values.__len__() > 1):
+#            raise ValueError(f"Values too long! Please report this. Values are: {values}.")
+    elif exact_match:
+        if isinstance(values, str):
+            return df[df[column] == values]
+        else:
+            return df[df[column].isin(values)]
+    elif isinstance(values,str):
         return df[df[column].str.contains(values)]
     else:
+        # this does not work. If you have a group drop and drop_2 
+        # first group will match the second. Also if you have drop,drop_2 
+        # it will not detect on or the other. 
         return df[df[column].str.contains("|".join(values))]

@@ -4,9 +4,6 @@
 #' wb:
 #'  log:
 #'    - snakemake: '`sm str(tmp_dir / "AS" / "{dataset}" / "06_stats.Rds")`'
-#'  params:
-#'   - setup: '`sm cfg.AS.getWorkdir() + "/config.R"`'
-#'   - workingDir: '`sm cfg.getProcessedDataDir() + "/aberrant_splicing/datasets/"`'
 #'  threads: 20
 #'  input:
 #'   - fdsin:  '`sm cfg.getProcessedDataDir() + 
@@ -20,18 +17,23 @@
 #'---
 
 saveRDS(snakemake, snakemake@log$snakemake)
-source(snakemake@params$setup, echo=FALSE)
+suppressPackageStartupMessages(library(FRASER))
 
-dataset    <- snakemake@wildcards$dataset
-fdsFile    <- snakemake@input$fdsin
-workingDir <- snakemake@params$workingDir
+#+ input
+dataset  <- snakemake@wildcards$dataset
+fdsFile  <- snakemake@input$fdsin
+BPPARAM  <- MulticoreParam(snakemake@threads)
 
-register(MulticoreParam(snakemake@threads))
-# Limit number of threads for DelayedArray operations
-setAutoBPPARAM(MulticoreParam(snakemake@threads))
+# Set number of threads including for DelayedArray operations
+register(BPPARAM)
+DelayedArray::setAutoBPPARAM(BPPARAM)
+
+# Force writing HDF5 files
+options(FRASER.maxSamplesNoHDF5=-1)
+options(FRASER.maxJunctionsNoHDF5=-1)
 
 # Load Zscores data
-fds <- loadFraserDataSet(dir=workingDir, name=dataset)
+fds <- loadFraserDataSet(file=fdsFile)
 
 # Calculate stats
 for (type in psiTypes) {

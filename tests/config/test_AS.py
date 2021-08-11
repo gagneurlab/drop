@@ -3,7 +3,7 @@ class Test_AS_Config:
     def test_config(self, dropConfig,demo_dir):
         assert dropConfig.AS.getWorkdir() == f"{demo_dir}/Scripts/AberrantSplicing/pipeline"
         dict_ = {
-            'groups': ['fraser'],
+            'groups': ['fraser', 'fraser_ex'],
             'recount': True,
             'longRead': False,
             'keepNonStandardChrs': True,
