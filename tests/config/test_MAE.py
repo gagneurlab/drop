@@ -11,7 +11,7 @@ class Test_MAE_Config:
             'allelicRatioCutoff': 0.8,
             'maxAF': 0.001,
             'addAF': False,
-            'maxVarFreqCohort': 0.04,
+            'maxVarFreqCohort': 1,
             'gnomAD': False
         }
         assert dict_.items() <= dropConfig.MAE.dict_.items()
