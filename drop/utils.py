@@ -97,7 +97,7 @@ def deep_merge_dict(dict1: dict, dict2: dict, inplace: bool = False):
     
     for k, v in dict2.items():
         if isinstance(dict1.get(k), dict) and isinstance(v, dict):
-            dict1[k] = dict_merge(dict1[k], v, inplace=inplace)
+            dict1[k] = deep_merge_dict(dict1[k], v, inplace=inplace)
         elif k not in dict1:
             dict1[k] = v
         elif isinstance(dict1.get(k), list) and isinstance(v, list):
@@ -105,6 +105,6 @@ def deep_merge_dict(dict1: dict, dict2: dict, inplace: bool = False):
         elif isinstance(dict1.get(k), str) and isinstance(v, str):
             dict1[k] = [dict1.get(k), v]
         else:
-            raise Error(f"{k} has different types that can not be merged.")
+            raise TypeError(f"{k} has different types that can not be merged.")
         
     return dict1
