@@ -291,11 +291,11 @@ class SampleAnnotation:
             if "RNA" in assay:
                 utils.deep_merge_dict(groupedIDs, self.rnaIDs, inplace=True)
             elif "DNA" in assay:
-                groupedIDs = utils.deep_merge_dict(groupedIDs, self.dnaIDs)
+                utils.deep_merge_dict(groupedIDs, self.dnaIDs, inplace=True)
             elif "GENE_COUNT" in assay:
-                groupedIDs = utils.deep_merge_dict(groupedIDs, self.extGeneCountIDs)
+                utils.deep_merge_dict(groupedIDs, self.extGeneCountIDs, inplace=True)
             elif "SPLICE_COUNT" in assay:
-                groupedIDs = utils.deep_merge_dict(groupedIDs, self.extSpliceCountIDs)
+                utils.deep_merge_dict(groupedIDs, self.extSpliceCountIDs, inplace=True)
             else:
                 raise ValueError(f"'{assay}' is not a valid assay name")
         return groupedIDs
