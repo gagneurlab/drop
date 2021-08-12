@@ -25,7 +25,7 @@ class AE(Submodule):
                 please fix to only have either external count or BAM processing\n")
 
         # check number of IDs per group
-        all_ids = {g: self.rnaIDs[g] + self.extRnaIDs[g] for g in self.groups}
+        all_ids = self.sampleAnnotation.subsetGroups(self.groups, assay=["RNA", "GENE_COUNTS"])
         self.checkSubset(all_ids)
 
     def setDefaultKeys(self, dict_):

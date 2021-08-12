@@ -1,6 +1,7 @@
 from pathlib import Path
 from snakemake.logging import logger
 import wbuild
+import copy
 
 
 def returnPath(path, str_=True):
@@ -82,3 +83,28 @@ def subsetBy(df, column, values):
     
     return  df[df[column].str.contains("(^|,)" + inner_regex + "(,|$)")]
     
+def deep_merge_dict(dict1: dict, dict2: dict, inplace: bool = False):
+    """
+    Merges two dictionaries and all is children recursively
+    
+    :param dict1: dictionary to be merged into
+    :param dict2: dictionary to be merged
+    :param inplace: if False, default, a new dictionary will be returned als in-place merging is performed.
+    """
+    if not inplace:
+        dict1 = copy.deepcopy(dict1)
+        dict2 = copy.deepcopy(dict2)
+    
+    for k, v in dict2.items():
+        if isinstance(dict1.get(k), dict) and isinstance(v, dict):
+            dict1[k] = dict_merge(dict1[k], v, inplace=inplace)
+        elif k not in dict1:
+            dict1[k] = v
+        elif isinstance(dict1.get(k), list) and isinstance(v, list):
+            dict1[k] = list(dict.fromkeys(dict1[k] + v))
+        elif isinstance(dict1.get(k), str) and isinstance(v, str):
+            dict1[k] = [dict1.get(k), v]
+        else:
+            raise Error(f"{k} has different types that can not be merged.")
+        
+    return dict1

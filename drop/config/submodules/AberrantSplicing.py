@@ -19,8 +19,11 @@ class AS(Submodule):
         # if self.run is false return without doing any config/sa checks for completeness
         if not self.run:
             return
-        self.rnaIDs = self.sampleAnnotation.subsetGroups(self.groups, assay="RNA")
-        self.checkSubset(self.rnaIDs)
+        
+        self.rnaIDs   = self.sampleAnnotation.subsetGroups(self.groups, assay="RNA")
+        self.rnaExIDs = self.sampleAnnotation.subsetGroups(self.groups, assay="SPLICE_COUNT")
+        all_ids = self.sampleAnnotation.subsetGroups(self.groups, assay=["RNA", "SPLICE_COUNT"])
+        self.checkSubset(all_ids)
 
     def setDefaultKeys(self, dict_):
         super().setDefaultKeys(dict_)
