@@ -8,10 +8,12 @@
 #'   - setup: '`sm cfg.AS.getWorkdir() + "/config.R"`'
 #'   - workingDir: '`sm cfg.getProcessedDataDir() + "/aberrant_splicing/datasets"`'
 #'  input:
-#'   - countsJ:  '`sm cfg.getProcessedDataDir() + 
-#'                    "/aberrant_splicing/datasets/savedObjects/raw-{dataset}/rawCountsJ.h5"`'
-#'   - countsSS: '`sm cfg.getProcessedDataDir() + 
-#'                    "/aberrant_splicing/datasets/savedObjects/raw-{dataset}/rawCountsSS.h5"`'
+###   - countsJ:  '`sm cfg.getProcessedDataDir() + 
+###                    "/aberrant_splicing/datasets/savedObjects/raw-{dataset}/rawCountsJ.h5"`'
+###   - countsSS: '`sm cfg.getProcessedDataDir() + 
+###                    "/aberrant_splicing/datasets/savedObjects/raw-{dataset}/rawCountsSS.h5"`'
+#'   - countsSSdone: '`sm cfg.getProcessedDataDir() + 
+#'                "/aberrant_splicing/datasets/savedObjects/raw-{dataset}/merge_theta.done"`'
 #'   - gRangesSplitCounts: '`sm cfg.getProcessedDataDir() + 
 #'                          "/aberrant_splicing/datasets/cache/raw-{dataset}/gRanges_splitCounts.rds"`'
 #'   - spliceSites: '`sm cfg.getProcessedDataDir() + 
@@ -27,7 +29,7 @@ source(snakemake@params$setup, echo=FALSE)
 
 dataset    <- snakemake@wildcards$dataset
 workingDir <- snakemake@params$workingDir
-
+saveDir    <- dirname(snakemake@input$countsSSdone)
 
 # Read FRASER object
 fds <- loadFraserDataSet(dir=workingDir, name=paste0("raw-", dataset))
@@ -35,7 +37,7 @@ splitCounts_gRanges <- readRDS(snakemake@input$gRangesSplitCounts)
 spliceSiteCoords <- readRDS(snakemake@input$spliceSites)
 
 # Get splitReads and nonSplitRead counts in order to store them in FRASER object
-splitCounts_h5 <- HDF5Array::HDF5Array(snakemake@input$countsJ, "rawCountsJ")
+splitCounts_h5 <- HDF5Array::HDF5Array(file.path(saveDir, "rawCountsJ.h5"), "rawCountsJ")
 splitCounts_se <- SummarizedExperiment(
   colData = colData(fds),
   rowRanges = splitCounts_gRanges,
@@ -43,7 +45,7 @@ splitCounts_se <- SummarizedExperiment(
 )
 
 
-nonSplitCounts_h5 <- HDF5Array::HDF5Array(snakemake@input$countsSS, "rawCountsSS")
+nonSplitCounts_h5 <- HDF5Array::HDF5Array(file.path(saveDir, "rawCountsSS.h5"), "rawCountsSS")
 nonSplitCounts_se <- SummarizedExperiment(
   colData = colData(fds),
   rowRanges = spliceSiteCoords,

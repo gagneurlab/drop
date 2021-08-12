@@ -11,8 +11,8 @@
 #'  input:
 #'   - sample_counts: '`sm lambda w: cfg.AS.getSplitCountFiles(w.dataset)`'
 #'  output:
-#'   - countsJ: '`sm cfg.getProcessedDataDir() +
-#'                   "/aberrant_splicing/datasets/savedObjects/raw-{dataset}/rawCountsJ.h5"`'
+###   - countsJ: '`sm cfg.getProcessedDataDir() +
+###                   "/aberrant_splicing/datasets/savedObjects/raw-{dataset}/rawCountsJ.h5"`'
 #'   - gRangesSplitCounts: '`sm cfg.getProcessedDataDir() + 
 #'                          "/aberrant_splicing/datasets/cache/raw-{dataset}/gRanges_splitCounts.rds"`'
 #'   - gRangesNonSplitCounts: '`sm cfg.getProcessedDataDir() + 

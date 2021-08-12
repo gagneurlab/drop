@@ -13,8 +13,10 @@
 #'   - gRangesNonSplitCounts: '`sm cfg.getProcessedDataDir() + 
 #'                          "/aberrant_splicing/datasets/cache/raw-{dataset}/gRanges_NonSplitCounts.rds"`'
 #'  output:
-#'   - countsSS: '`sm cfg.getProcessedDataDir() +
-#'                   "/aberrant_splicing/datasets/savedObjects/raw-{dataset}/rawCountsSS.h5"`'
+###   - countsSS: '`sm cfg.getProcessedDataDir() +
+###                   "/aberrant_splicing/datasets/savedObjects/raw-{dataset}/rawCountsSS.h5"`'
+#'   - done:     '`sm cfg.getProcessedDataDir() + 
+#'                "/aberrant_splicing/datasets/savedObjects/raw-{dataset}/merge_theta.done"`'
 #'  type: script
 #'---
 
@@ -50,3 +52,5 @@ nonSplitCounts <- getNonSplitReadCountsForAllSamples(fds=fds,
                                                      longRead=params$longRead)
 
 message(date(), ":", dataset, " nonSplit counts done")
+
+file.create(snakemake@output$done)

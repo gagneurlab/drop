@@ -51,17 +51,22 @@ if(length(exCountIDs) > 0){
         
         ctsNames <- c("k_j", "k_theta", "n_psi3", "n_psi5", "n_theta")
         ctsFiles <- paste0(dirname(resource), "/", ctsNames, "_counts.tsv.gz")
+        
         fds <- mergeExternalData(fds=fds, countFiles=ctsFiles,
                 sampleIDs=exSampleIDs, annotation=exAnno)
     }
 }
 
-# Apply filter
+# filter for expression and write it out to disc.
+# 
+# TODO:   This will brake a rerun of step 01_5_countRNA_collect.R as it writes 
+#         out the rawCountsJ and rawCountsSS file including the external samples. 
+# 
 fds <- filterExpressionAndVariability(fds, 
-                        minExpressionInOneSample = minExpressionInOneSample,
-                        minDeltaPsi = minDeltaPsi,
-                        filter=FALSE)
-devNull <- saveFraserDataSet(fds)
+        minExpressionInOneSample = minExpressionInOneSample,
+        minDeltaPsi = minDeltaPsi,
+        filter=FALSE)
+fds <- saveFraserDataSet(fds)
 
 # Keep junctions that pass filter
 name(fds) <- dataset
