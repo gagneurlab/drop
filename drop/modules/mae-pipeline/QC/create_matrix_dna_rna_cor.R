@@ -69,7 +69,7 @@ lp <- bplapply(1:N, function(i){
   
   # Find overlaps between test and sample
   gr_res <- copy(gr_test)
-  seqlevelsStyle(gr_res) <- seqlevelsStyle(gr_sample)  # Make chr style the same
+  seqlevelsStyle(gr_res) <- seqlevelsStyle(seqlevelsInUse(gr_sample))  # Make chr style the same
   ov <- findOverlaps(gr_res, gr_sample, type = 'equal')
   mcols(gr_res)[from(ov),]$GT <- mcols(gr_sample)[to(ov),]$GT
   
