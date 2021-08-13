@@ -58,8 +58,8 @@ colData(fds)$sampleID <- as.character(colData(fds)$sampleID)
 txdb <- loadDb(snakemake@input$txdb)
 orgdb <- fread(snakemake@input$gene_name_mapping)
 
-seqlevelsStyle(orgdb$seqnames) <- seqlevelsStyle(fds)
-seqlevelsStyle(txdb) <- seqlevelsStyle(fds)
+seqlevelsStyle(orgdb$seqnames) <- seqlevelsStyle(seqlevelsInUse(fds))
+seqlevelsStyle(txdb) <- seqlevelsStyle(seqlevelsInUse(fds))
 
 # Annotate the fds with gene names
 fds <- annotateRangesWithTxDb(fds, txdb = txdb, orgDb = orgdb, feature = 'gene_name',
@@ -85,7 +85,7 @@ if(nrow(res_junc_dt) > 0){
 
   # add colData to the results
   res_junc_dt <- merge(res_junc_dt, as.data.table(colData(fds)), by = "sampleID")
-  res_junc_dt[, c("bamFile", "pairedEnd") := NULL]
+  res_junc_dt[, c("bamFile", "pairedEnd", "STRAND", "PAIRED_END") := NULL]
 } else{
   warning("The aberrant splicing pipeline gave 0 results for the ", dataset, " dataset.")
 }
