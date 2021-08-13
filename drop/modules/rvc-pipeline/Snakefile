@@ -5,17 +5,12 @@ RVC_index_input,RVC_graph_file,RVC_index_output = cfg.RVC.getModuleIndexFiles("r
 #########
 # Helper Functions
 # #######
-def getGenome(keep_ext = True):
-    if keep_ext:
-        return config["genome"]
-    else:
-        return ".".join(config["genome"].strip().split('.')[:-1])
-
 def getKnownVCFs():
     knownVCFs = []
-    for i in cfg.config_dict["rnaVariantCalling"]["knownVCFs"]:
-        knownVCFs.append(i)
+    for vcf_file in cfg.config_dict["rnaVariantCalling"]["knownVCFs"]:
+        knownVCFs.append(vcf_file)
     return knownVCFs
+
 def getHaploCallerArgs():
     return cfg.config_dict["rnaVariantCalling"]["hcArgs"]
 
@@ -29,12 +24,15 @@ def getRepeatMask(sortedName=False):
 def getMinAlt():
     return str(cfg.config_dict["rnaVariantCalling"]["minAlt"])
 
-#################################
 
+#################################
 #Define the {dataset} variable
 #make sure all of the different {datasets} are processed. As defined by the sample annotation table RNA_VARIANT_GROUPS
 rule rnaVariantCalling:
-    input:  RVC_index_input,RVC_graph_file
+    priority: 1
+    input:  RVC_index_input,RVC_graph_file,
+            expand(os.path.join(str(cfg.processedDataDir) + "/rnaVariantCalling/{dataset}_alt{minAlt}_done.txt"),
+                   dataset = cfg.RVC.groups,minAlt = getMinAlt())
     output: RVC_index_output
     run:
         if cfg.RVC.run:
@@ -54,6 +52,7 @@ rule rnaVariantCalling_dependency:
 #Define the {sample} variable
 #create the empty output file of the form: {dataset}_alt{minAlt}_done.txt
 rule allVariants:
+    priority: 2
     input:
         lambda wildcards: expand(os.path.join(
             cfg.processedDataDir,
@@ -69,6 +68,7 @@ rule allVariants:
 
 #Use the repeat_mask bedfile to filter/label variants in repeat regions
 rule masked_singleVCF_filter:
+    priority: 3
     input: 
         vcf = os.path.join(
             cfg.processedDataDir,
@@ -89,7 +89,7 @@ rule masked_singleVCF_filter:
             "{sample}.genotyped.filtered.basic" + getMinAlt() +".masked.vcf.gz")
     params:
         sample = '{sample}',
-        ref = getGenome(),
+        ref = lambda wildcards: cfg.RVC.getGenomePath(wildcards.sample),
         outDir = str(cfg.processedDataDir) + "/rnaVariantCalling/"
     log:
         str(cfg.processedDataDir) + "/logs/sample_haplocaller/" + "{sample}" + "_maskedFilterVariants.log"
@@ -100,6 +100,7 @@ rule masked_singleVCF_filter:
         """
 
 rule sortIndexRepeatMask:
+    priority: 4
     input:
         repeat_mask = getRepeatMask()
     output:
@@ -113,6 +114,7 @@ rule sortIndexRepeatMask:
 
 #Use the minAlt value to filter/label variants that do not have a minimum alternative read support
 rule basic_singleVCF_filter:
+    priority: 5
     input: 
         vcf = os.path.join(
             cfg.processedDataDir,
@@ -123,7 +125,13 @@ rule basic_singleVCF_filter:
             cfg.processedDataDir,
             "rnaVariantCalling/out/sample_haplocaller",
             "{sample}",
-            "{sample}.genotyped.filtered.vcf.gz.tbi")
+            "{sample}.genotyped.filtered.vcf.gz.tbi"),
+        bam = os.path.join(
+            cfg.processedDataDir,
+            "rnaVariantCalling/out/bam",
+            "{sample}",
+            "{sample}_Aligned.sortedByCoord.dupMarked.split.bqsr.out.bam")
+
     output:
         vcf = os.path.join(
             cfg.processedDataDir,
@@ -138,7 +146,7 @@ rule basic_singleVCF_filter:
     params:
         sample = '{sample}',
         minAlt = getMinAlt(),
-        ref = getGenome(),
+        ref = lambda wildcards: cfg.RVC.getGenomePath(wildcards.sample),
         outDir = str(cfg.processedDataDir) + "/rnaVariantCalling"
     log:
         str(cfg.processedDataDir) + "/logs/sample_haplocaller/" + "{sample}" + "_basicFilterVariants.log"
@@ -151,13 +159,14 @@ rule basic_singleVCF_filter:
 
 #Use bcftools to split the multi-sample VCF file into a VCF file for the corresponding sample. Normalize the variants to remove artifacts
 rule split_multiVCF:
+    priority: 6
     input:
         lambda wildcards: os.path.join(
             cfg.processedDataDir,
             "rnaVariantCalling/out/all_samples_haplocaller",
             cfg.RVC.batchIDs[wildcards.sample] + "_all_samples.genotyped.filtered_clean.vcf.gz")
     params:
-        ref = getGenome(),
+        ref = lambda wildcards: cfg.RVC.getGenomePath(wildcards.sample),
         sampleID = "{sample}",
 
     output:
@@ -198,6 +207,7 @@ rule split_multiVCF:
 
 #Use bcftools to left normalize variants. Variants labeled AAAG>AC can be shortened to AAG>C 
 rule leftNormalVCF:
+    priority: 7
     input:
         os.path.join(
             cfg.processedDataDir,
@@ -209,7 +219,7 @@ rule leftNormalVCF:
             "rnaVariantCalling/out/all_samples_haplocaller",
             "{dataset}_all_samples.genotyped.filtered_clean.vcf.gz")
     params:
-        ref = getGenome()
+        ref = lambda wildcards: cfg.RVC.getGenomePath(wildcards.dataset)
     shell:
         """ 
         bcftools norm -f {params.ref} {input} | bgzip -c > {output}
@@ -219,6 +229,7 @@ rule leftNormalVCF:
 
 #Use bcftools to split VCF with multiple variants on a single line into a VCF with a single variant per line. G>A,C into 2 lines G>A and G>C
 rule splitVCF:
+    priority: 8
     input:
         ancient(os.path.join(
             cfg.processedDataDir,
@@ -243,6 +254,7 @@ rule splitVCF:
 
 #Use GATK to filter variants based on the quality scores and variant frequency based on the GATK-best practices
 rule filterVCF:
+    priority: 9
     input:
         os.path.join(
         cfg.processedDataDir,
@@ -259,7 +271,7 @@ rule filterVCF:
         "rnaVariantCalling/out/all_samples_haplocaller",
         "{dataset}_all_samples.genotyped.filtered.vcf.gz.tbi"))
     params:
-        ref = getGenome(),
+        ref = lambda wildcards: cfg.RVC.getGenomePath(wildcards.dataset),
         outDir = str(cfg.processedDataDir) + "/rnaVariantCalling"
     log:
         str(cfg.processedDataDir) + "/logs/all_haplocaller/{dataset}_filterVariants.log"
@@ -273,6 +285,7 @@ rule filterVCF:
 
 #Using GATK GenotypeGVCFs to make the variant calls from the combined g.vcf files
 rule genotypeGVCFs:
+    priority: 10
     input:
         gvcf = os.path.join(
             cfg.processedDataDir,
@@ -288,7 +301,7 @@ rule genotypeGVCFs:
             "rnaVariantCalling/out/all_samples_haplocaller",
             "{dataset}_all_samples.genotyped.vcf.gz")
     params:
-        ref = getGenome(),
+        ref = lambda wildcards: cfg.RVC.getGenomePath(wildcards.dataset),
         outDir = str(cfg.processedDataDir) + "/rnaVariantCalling"
     log:
         str(cfg.processedDataDir) + "/logs/all_haplocaller/{dataset}_genotypeGVCFs.log"
@@ -301,6 +314,7 @@ rule genotypeGVCFs:
 
 #Using GATK combine the vcfs from each sample within a {dataset} into a multi-sample vcf file to improve genotyping and variant calls
 rule combineGVCFs:
+    priority: 11
     input:
         lambda wildcards: expand(
             os.path.join(
@@ -321,7 +335,7 @@ rule combineGVCFs:
         "rnaVariantCalling/out/all_samples_haplocaller",
         "{dataset}_all_samples.g.vcf.gz.tbi"))
     params:
-        ref = getGenome(),
+        ref = lambda wildcards: cfg.RVC.getGenomePath(wildcards.dataset),
         outDir = str(cfg.processedDataDir) + "/rnaVariantCalling",
         variant_list = lambda wildcards: ["--variant " + i for i in expand(
                 os.path.join(
@@ -340,6 +354,7 @@ rule combineGVCFs:
 
 #Using GATK HaplotypeCaller take the cleaned and recalibrated BAM file as input for the variant calling.
 rule haplotypeCaller:
+    priority: 12
     input:
         bam = os.path.join(
         cfg.processedDataDir,
@@ -353,7 +368,7 @@ rule haplotypeCaller:
         "{sample}",
         "{sample}.g.vcf.gz")
     params:
-        ref = getGenome(),
+        ref = lambda wildcards: cfg.RVC.getGenomePath(wildcards.sample),
         hcArgs = getHaploCallerArgs(),
         outDir = str(cfg.processedDataDir) + "/rnaVariantCalling"
     log:
@@ -369,6 +384,7 @@ rule haplotypeCaller:
 
 #Using GATK ApplyBQSR takes the frequency table and confidence scores generated by BQSR and recalculates the BAM quality scores
 rule applyBQSR:
+    priority: 13
     input:
         bam = os.path.join(
         cfg.processedDataDir, 
@@ -386,7 +402,7 @@ rule applyBQSR:
         "{sample}",
         "{sample}_Aligned.sortedByCoord.dupMarked.split.bqsr.out.bam"))
     params:
-        ref = getGenome(),
+        ref = lambda wildcards: cfg.RVC.getGenomePath(wildcards.sample),
         outDir = str(cfg.processedDataDir) + "/rnaVariantCalling"
     log:
         str(cfg.processedDataDir) + "/logs/applyBQSR/{sample}.log"
@@ -400,6 +416,7 @@ rule applyBQSR:
 
 #Using GATK BaseRecalibrator (BQSR) use the known sites (dbSNP + others) to improve read scoring
 rule bqsr:
+    priority: 14
     input:
         os.path.join(
         cfg.processedDataDir, 
@@ -407,25 +424,52 @@ rule bqsr:
         "{sample}", 
         "{sample}_Aligned.sortedByCoord.dupMarked.split.out.bam")
     output:
-        os.path.join(
-        cfg.processedDataDir,
-        "rnaVariantCalling/out/bqsr",
-        "{sample}_recal.table")
+        bqsr_table = os.path.join(
+            cfg.processedDataDir,
+            "rnaVariantCalling/out/bqsr",
+            "{sample}_recal.table")
     params:
-        ref = getGenome(),
-        known_sites =  ["--known-sites " + i for i in getKnownVCFs()],
-        outDir = str(cfg.processedDataDir) + "/rnaVariantCalling"
+        ref = lambda wildcards: cfg.RVC.getGenomePath(wildcards.sample),
+        known_sites = getKnownVCFs(),
+        outDir = str(cfg.processedDataDir) + "/rnaVariantCalling",
+        ucsc2ncbi = str(cfg.MAE.renameLocalDir())  + "/resource/chr_UCSC_NCBI.txt"
     log:
         str(cfg.processedDataDir) + "/logs/bqsr/{sample}.log"
     shell:
         """
+        bam_chr=$(samtools idxstats {input} | cut -f1 | grep "^chr" | wc -l)
+        known_sites=""
+        if [ $bam_chr -eq 0  ]
+        then
+            echo "converting known vcfs from NCBI to UCSC format"
+            for vcf in {params.known_sites}
+            do
+                bcftools annotate --rename-chrs {params.ucsc2ncbi} $vcf | bgzip > "${{vcf}}_tmp.vcf.gz"
+                tabix "${{vcf}}_tmp.vcf.gz"
+                known_sites="--known-sites ${{vcf}}_tmp.vcf.gz $known_sites"
+            done
+        else
+            for vcf in {params.known_sites} 
+            do
+                known_sites="--known-sites $vcf $known_sites"
+            done
+
+        fi
+
         gatk --java-options "-Djava.io.tmpdir={params.outDir}/tmp" BaseRecalibrator -I {input} -R {params.ref} \
-        {params.known_sites} -O {output} 2> {log}
+		$known_sites -O {output.bqsr_table} 2> {log}
+
+        for vcf in {params.known_sites} 
+            do
+                rm -f "${{vcf}}_tmp.vcf.gz"
+                rm -f "${{vcf}}_tmp.vcf.gz.tbi"
+            done
         """
 
 
 #Using GATK splitNCigarReads make use of the RNA splicing characteristic by mapping reads with large gaps to the reference. Split the RNAseq reads into subsections that will have better local alignments
 rule splitNcigar:
+    priority: 15
     input:
         bam = os.path.join(
         cfg.processedDataDir, 
@@ -439,7 +483,7 @@ rule splitNcigar:
         "{sample}", 
         "{sample}_Aligned.sortedByCoord.dupMarked.split.out.bam"))
     params:
-        ref = getGenome(),
+        ref = lambda wildcards: cfg.RVC.getGenomePath(wildcards.sample),
         outDir = str(cfg.processedDataDir) + "/rnaVariantCalling"
     log:
         str(cfg.processedDataDir) + "/logs/splitNcigar/{sample}.log"
@@ -453,6 +497,7 @@ rule splitNcigar:
 
 # Using picard ReorderSam the bam files so that they match the reference genome order.
 rule reorderBAM:
+    priority: 16
     input:
         bam = os.path.join(
         cfg.processedDataDir, 
@@ -477,8 +522,8 @@ rule reorderBAM:
             "rnaVariantCalling/out/bam", 
             "{sample}", 
             "{sample}_Aligned.sortedByCoord.dupMarked.FAorder.out.bai"),
-        ref = getGenome(),
-        ref_dict = getGenome(keep_ext =False) + ".dict" # remove me for gatk 4.0.4.0
+        ref = lambda wildcards: cfg.RVC.getGenomePath(wildcards.sample),
+        ref_dict = lambda wildcards: cfg.RVC.getGenomePath(wildcards.sample).rsplit(".",1)[0] + ".dict"
     shell:
         """
         echo "Create Sequence Dictionary"
@@ -494,6 +539,7 @@ rule reorderBAM:
 
 #Using GATK markDuplicates attempt to identify reads that are technical duplicates of biological reads. Attempts to eliminate noise introduced by library prep
 rule markDuplicates:
+    priority: 17
     input:
         bam = os.path.join(
             cfg.processedDataDir, 
@@ -528,6 +574,7 @@ rule markDuplicates:
 
 #Using samtools sort the reads based on their chromosomal coordinates
 rule sortBam:
+    priority: 18
     input:
         bam = os.path.join(
             cfg.processedDataDir, 
@@ -561,6 +608,7 @@ rule sortBam:
 
 
 rule changeHeader:
+    priority: 19
     input:
         bam = str(cfg.processedDataDir) + "/rnaVariantCalling/bam_file_links/{sample}.bam",
         bai = str(cfg.processedDataDir) + "/rnaVariantCalling/bam_file_links/{sample}.bam.bai"
@@ -599,7 +647,7 @@ rule changeHeader:
 
             if [[ $internalHeader == {wildcards.sample} ]]; then
                 echo "Internal Header $internalHeader matches {wildcards.sample}"
-		ln -s  {input.bam} {output.bam}
+                ln -s  {input.bam} {output.bam}
                 ln -s  {input.bai} {output.bai}
                 touch {output.newHeader}
                 echo "Done Linking files"
@@ -626,6 +674,7 @@ rule changeHeader:
 
 #Using samtools index the bam files if they are not already indexed, and create a soft link to the working directory for easier access
 rule indexReads:
+    priority: 20
     input:
         lambda wildcards: sa.getFilePath(wildcards.sample, "RNA_BAM_FILE")
     output:

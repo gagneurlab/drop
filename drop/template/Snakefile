@@ -16,10 +16,27 @@ drop.installRPackages(cfg)
 sa = cfg.sampleAnnotation
 config = cfg.config_dict # legacy
 
-include: cfg.AE.getSnakefile()
-include: cfg.AS.getSnakefile()
-include: cfg.MAE.getSnakefile()
-include: cfg.RVC.getSnakefile()
+conversion_dict = {
+    "AberrantExpression" : "aberrant-expression-pipeline",
+    "AberrantSplicing" : "aberrant-splicing-pipeline",
+    "MonoallelicExpression" : "mae-pipeline",
+    "rnaVariantCalling" : "rvc-pipeline"
+}
+
+def includeSnakefile(drop_module):
+    drop_module.renameLocalDir()
+    if drop_module.run:
+        include: drop_module.getSnakefile()
+        return [drop_module.name]
+    else:
+        return []
+
+modules_to_run = []
+modules_to_run += includeSnakefile(cfg.AE)
+modules_to_run += includeSnakefile(cfg.AS)
+modules_to_run += includeSnakefile(cfg.MAE)
+modules_to_run += includeSnakefile(cfg.RVC)
+
 include: drop.utils.getWBuildSnakefile()
 
 
@@ -29,11 +46,7 @@ wildcard_constraints:
 
 rule all:
     input:
-        rules.aberrantExpression.output,
-        rules.aberrantSplicing.output,
-        rules.mae.output,
-        rules.rnaVariantCalling.input,
-
+        expand(str(cfg.htmlOutputPath) + "/{pipeline}_index.html", pipeline=[conversion_dict[m] for m in modules_to_run]),
         rules.Index.output,
         dep_graph = cfg.get("htmlOutputPath") + "/dependency.done"
     shell:
@@ -59,10 +72,7 @@ rule exportCounts:
 
 rule dependencyGraph:
     input:
-        rules.aberrantExpression_dependency.output,
-        rules.aberrantSplicing_dependency.output,
-        rules.mae_dependency.output,
-        rules.rnaVariantCalling_dependency.output
+        expand(str(cfg.htmlOutputPath) + "/{pipeline}_dep.svg", pipeline=[conversion_dict[m] for m in modules_to_run])
     output: touch(cfg.get("htmlOutputPath") + "/dependency.done")
     priority: 1
 

@@ -29,7 +29,8 @@ def fixConfig(input_file, output_file):
                  "htmlOutputPath": None,
                  "sampleAnnotation": None,
                  "v29": ["geneAnnotation"],
-                 "genome": None, "qcVcf": ["mae"]}
+                 "ncbi": ["genome"], "ucsc":["genome"],
+                 "qcVcf": ["mae"]}
 
     for key, sub in path_keys.items():
         # iterate to key and entry
