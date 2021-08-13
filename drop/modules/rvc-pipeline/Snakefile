@@ -54,11 +54,16 @@ rule rnaVariantCalling_dependency:
 rule allVariants:
     priority: 2
     input:
-        lambda wildcards: expand(os.path.join(
+        sample_vcfs = lambda wildcards: expand(os.path.join(
             cfg.processedDataDir,
             "rnaVariantCalling/out/sample_haplocaller", "{sample}",
             "{sample}.genotyped.filtered.basic" + getMinAlt() +".masked.vcf.gz"),
-            sample = sa.getIDsByGroup(wildcards.dataset,assay = "RVC"))
+            sample = sa.getIDsByGroup(wildcards.dataset,assay = "RVC")),
+        batch_vcfs = expand(os.path.join(
+            cfg.processedDataDir,
+            "rnaVariantCalling/out/all_samples_haplocaller",
+            "{batch}_all_samples.genotyped.filtered_clean.vcf.gz"),
+            batch = cfg.RVC.groups)
     output:
         os.path.join(str(cfg.processedDataDir) + "/rnaVariantCalling/{dataset}_alt{minAlt}_done.txt")
     shell:
@@ -95,8 +100,27 @@ rule masked_singleVCF_filter:
         str(cfg.processedDataDir) + "/logs/sample_haplocaller/" + "{sample}" + "_maskedFilterVariants.log"
     shell:
         """
+        vcf_chr=$(zgrep -v "^#" {input.vcf} | cut -f1 | grep "^chr" | wc -l)
+        bed_chr=$(cat {input.repeat_mask} | cut -f1 | grep "^chr" | wc -l)
+
+        if [ $vcf_chr -eq 0  ] && [ $bed_chr -ne 0 ] #vcf has no chr, bed has chr
+        then
+            # remove "chr" from the bed file
+            sed -e "s/^chr//" {input.repeat_mask} > "{input.repeat_mask}_tmp_{params.sample}.bed"
+        elif [ $bed_chr -eq 0  ] && [ $vcf_chr -ne 0 ] #vcf has chr, bed has no chr
+        then
+            # add "chr" to the bed file
+            sed -e "s/^/^chr/" {input.repeat_mask} > "{input.repeat_mask}_tmp_{params.sample}.bed"
+        else
+            cp {input.repeat_mask} "{input.repeat_mask}_tmp_{params.sample}.bed"
+        fi
+
+        gatk IndexFeatureFile -I "{input.repeat_mask}_tmp_{params.sample}.bed" 
         gatk --java-options "-Djava.io.tmpdir={params.outDir}/tmp" VariantFiltration -R {params.ref} \
-        -V {input.vcf} --mask {input.repeat_mask} -O {output} 2> {log}
+        -V {input.vcf} --mask "{input.repeat_mask}_tmp_{params.sample}.bed" -O {output} 2> {log}
+
+        rm -f "{input.repeat_mask}_tmp_{params.sample}" 
+        rm -f "{input.repeat_mask}_tmp_{params.sample}.idx" 
         """
 
 rule sortIndexRepeatMask:
@@ -432,19 +456,31 @@ rule bqsr:
         ref = lambda wildcards: cfg.RVC.getGenomePath(wildcards.sample),
         known_sites = getKnownVCFs(),
         outDir = str(cfg.processedDataDir) + "/rnaVariantCalling",
-        ucsc2ncbi = str(cfg.MAE.renameLocalDir())  + "/resource/chr_UCSC_NCBI.txt"
+        ucsc2ncbi = str(cfg.MAE.renameLocalDir())  + "/resource/chr_UCSC_NCBI.txt",
+        ncbi2ucsc = str(cfg.MAE.renameLocalDir())  + "/resource/chr_NCBI_UCSC.txt"
     log:
         str(cfg.processedDataDir) + "/logs/bqsr/{sample}.log"
     shell:
         """
         bam_chr=$(samtools idxstats {input} | cut -f1 | grep "^chr" | wc -l)
+        vcf_chr=$(bcftools index --stats {params.known_sites} | cut -f1 | grep "^chr" | wc -l)
+
         known_sites=""
-        if [ $bam_chr -eq 0  ]
+        if [ $bam_chr -eq 0  ] && [ $vcf_chr -ne 0 ] #bam has no chr, vcf has chr
         then
             echo "converting known vcfs from NCBI to UCSC format"
             for vcf in {params.known_sites}
             do
                 bcftools annotate --rename-chrs {params.ucsc2ncbi} $vcf | bgzip > "${{vcf}}_tmp.vcf.gz"
+                tabix "${{vcf}}_tmp.vcf.gz"
+                known_sites="--known-sites ${{vcf}}_tmp.vcf.gz $known_sites"
+            done
+        elif [ $bam_chr -ne 0  ] && [ $vcf_chr -eq 0 ] #bam has chr, vcf has no chr
+        then
+            echo "converting known vcfs from UCSC to NCBI format"
+            for vcf in {params.known_sites}
+            do
+                bcftools annotate --rename-chrs {params.ncbi2ucsc} $vcf | bgzip > "${{vcf}}_tmp.vcf.gz"
                 tabix "${{vcf}}_tmp.vcf.gz"
                 known_sites="--known-sites ${{vcf}}_tmp.vcf.gz $known_sites"
             done
@@ -457,7 +493,7 @@ rule bqsr:
         fi
 
         gatk --java-options "-Djava.io.tmpdir={params.outDir}/tmp" BaseRecalibrator -I {input} -R {params.ref} \
-		$known_sites -O {output.bqsr_table} 2> {log}
+        $known_sites -O {output.bqsr_table} 2> {log}
 
         for vcf in {params.known_sites} 
             do
