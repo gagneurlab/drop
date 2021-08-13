@@ -53,7 +53,7 @@ if (strand == "yes") {
 bam_file <- BamFile(snakemake@input$sample_bam, yieldSize = 2e6)
 count_ranges <- readRDS(snakemake@input$count_ranges)
 # set chromosome style
-seqlevelsStyle(count_ranges) <- seqlevelsStyle(seqlevelsInUse(bam_file))
+seqlevelsStyle(count_ranges) <- seqlevelsStyle(bam_file)
 
 # show info
 message(paste("input:", snakemake@input$features))
