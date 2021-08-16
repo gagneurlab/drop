@@ -231,7 +231,7 @@ class SampleAnnotation:
 
     # build a dictionary from the drop group and column. like getImportCounts with skipping options and dict output
     def getGenomes(self, value, group, file_type="RNA_ID",
-                            column="GENOME", group_key="DROP_GROUP",exact_match = True,skip = False):
+                   column="GENOME", group_key="DROP_GROUP", exact_match=True, skip=False):
         """
         :param value: values to match in the column. Must be an exact match, passed to subsetting sample annotation 
         :param group: a group of the group_key (DROP_GROUP) column. 
@@ -242,23 +242,23 @@ class SampleAnnotation:
         if skip:
             subset = None
         else:
-            subset = self.subsetSampleAnnotation(column, value,exact_match=True)
+            subset = self.subsetSampleAnnotation(column, value, exact_match=True)
 
         # additionally subset for the group_key and the group
-        subset = self.subsetSampleAnnotation(group_key, group, subset,exact_match=exact_match)
+        subset = self.subsetSampleAnnotation(group_key, group, subset, exact_match=exact_match)
 
         return {sample_id: value for sample_id in subset[file_type].tolist()}
 
     def getImportCountFiles(self, annotation, group, file_type="GENE_COUNTS_FILE",
-                            annotation_key="GENE_ANNOTATION", group_key="DROP_GROUP",exact_match = True):
+                            annotation_key="GENE_ANNOTATION", group_key="DROP_GROUP", exact_match=True):
         """
         :param annotation: annotation name as specified in config and GENE_ANNOTATION column
         :param group: a group of the DROP_GROUP column. exact match is passed to subsetter, false allows for substring matching
         :return: set of unique external count file names
         """
-        #subset for the annotation_key in the annotation group and the group_key in the group
-        subset = self.subsetSampleAnnotation(annotation_key, annotation,exact_match=exact_match)
-        subset = self.subsetSampleAnnotation(group_key, group, subset,exact_match=exact_match)
+        # subset for the annotation_key in the annotation group and the group_key in the group
+        subset = self.subsetSampleAnnotation(annotation_key, annotation, exact_match=exact_match)
+        subset = self.subsetSampleAnnotation(group_key, group, subset, exact_match=False)
         return set(subset[file_type].tolist())
 
     def getRow(self, column, value):
