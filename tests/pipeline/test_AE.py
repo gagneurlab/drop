@@ -4,14 +4,17 @@ from tests.common import *
 class Test_AE_Pipeline:
 
     def test_pipeline_no_run(self,demo_dir):
+        flag = False
         LOGGER.info("run aberrantExpression pipeline with \'run: false\'")
         # change the first instance of "run: true" to "run: false" to turn off the AE module
         # run the AE module using this config_AE_norun (which should do nothing)
         run("awk -v n=1 \'/run: true/ { if (++count == n) sub(/run: true/, \"run: false\"); } 1\' \
           config.yaml > config_AE_norun.yaml  ",demo_dir)
-        pipeline_run = run(["snakemake", "aberrantExpression", f"-j{CORES}", "--configfile", "config_AE_norun.yaml"], demo_dir)
-        assert "Nothing to be done." in pipeline_run.stderr
-        return pipeline_run
+        try:
+            pipeline_run = run(["snakemake", "aberrantExpression", f"-j{CORES}", "--configfile", "config_AE_norun.yaml"], demo_dir)
+            raise AssertionError
+        except subprocess.CalledProcessError:
+            print("HERE")
 
 
     @pytest.fixture(scope="class")
@@ -46,7 +49,7 @@ class Test_AE_Pipeline:
                 """.format(output_dir, output_dir)
         r = runR(r_cmd, demo_dir)
         assert "class: OutriderDataSet" in r.stdout
-        assert "dim: 431 10" in r.stdout
+        assert "dim: 161 10" in r.stdout
         assert "res: 4310 15" in r.stdout
 
     def test_import_results(self, demo_dir):

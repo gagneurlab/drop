@@ -51,22 +51,14 @@ class Test_RVC_Pipeline:
 
     @pytest.mark.usefixtures("pipeline_run")
     def test_single_sample_variants(self, demo_dir):
-        result_dir = "Output/processed_data/rnaVariantCalling/out/sample_haplocaller/HG00096.1.M_111124_6"
+        result_dir = "Output/processed_data/rnaVariantCalling/out/sample_haplocaller/HG00096"
         r_cmd = """ 
                 library(data.table)
-                basic_filter <- fread(file.path("{}", "HG00096.1.M_111124_6.genotyped.filtered.basic10.vcf.gz"))
-                masked_filter <- fread(file.path("{}", "HG00096.1.M_111124_6.genotyped.filtered.basic10.masked.vcf.gz"))
+                masked_filter <- fread(file.path("{}", "HG00096.genotyped.filtered.basic10.masked.vcf.gz"))
 
-                nrow_basic <- nrow(basic_filter)
                 nrow_masked <- nrow(masked_filter)
 
-                print(nrow_basic)
-                print(nrow_basic == nrow_masked)
-                print(sum(basic_filter[,7] == "PASS"))
                 print(sum(masked_filter[,7] == "PASS"))
                 """.format(result_dir,result_dir)
         r = runR(r_cmd, demo_dir)
-        assert "[1] 3006" in r.stdout
-        assert "[1] TRUE" in r.stdout
-        assert "[1] 515" in r.stdout
         assert "[1] 482" in r.stdout
