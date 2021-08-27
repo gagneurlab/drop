@@ -25,10 +25,12 @@ class SampleParams:
     # dictionary containing the module names, and the predetermined subfolders for the processed data
     MODULE_NAMES = {"AberrantExpression": "aberrant_expression",
                     "AberrantSplicing": "aberrant_splicing",
+                    "rnaVariantCalling": "rnaVariantCalling",
                     "MonoallelicExpression": "mae"}
 
 
-    #helper object containing the relevant information for the module/param pair
+    # helper object containing the relevant information for the module/param pair
+    # each Param Helper has [include,SA columns, group,path]
     AE_countParams = ParamHelper(
                    True,
                    ["RNA_ID", "RNA_BAM_FILE","COUNT_MODE", "PAIRED_END", "COUNT_OVERLAPS", "STRAND"],
@@ -42,8 +44,8 @@ class SampleParams:
                    "merge")
 
     AE_resultParams= ParamHelper(
-                   False,
-                   ["RNA_BAM_FILE", "DNA_VCF_FILE","DROP_GROUP","COUNT_MODE", "PAIRED_END", "COUNT_OVERLAPS", "STRAND"],
+                   True,
+                   ["RNA_ID","DNA_ID","HPO_TERMS","GENE_COUNTS_FILE","GENE_ANNOTATION"],
                    True,
                    "results")
 
@@ -55,9 +57,21 @@ class SampleParams:
 
     MAE_resultParams = ParamHelper(
                    False,
-                   ["RNA_BAM_FILE", "DNA_VCF_FILE","DROP_GROUP"],
+                   ["RNA_BAM_FILE", "DNA_VCF_FILE","DROP_GROUP","RNA_VARIANT_GROUP"],
                    True,
                    "results")
+
+    RVC_sampleParams = ParamHelper(
+                   True,
+                   ["RNA_ID","RNA_BAM_FILE","RNA_VARIANT_GROUP","GENOME"],
+                   False,
+                   "samples")
+
+    RVC_batchParams = ParamHelper(
+                   True,
+                   ["RNA_ID","RNA_BAM_FILE","RNA_VARIANT_GROUP","GENOME"],
+                   True,
+                   "batches")
 
     # dictionary containing the key type of parameter and the corresponding param information object
     PARAM_COLS = {"AberrantExpression":
@@ -69,20 +83,27 @@ class SampleParams:
                   "MonoallelicExpression":
                      { "snvParams": MAE_snvParams,
                        "resultParams": MAE_resultParams
+                     },
+
+                  "rnaVariantCalling":
+                     { "sampleParams": RVC_sampleParams,
+                       "batchParams": RVC_batchParams
                      }
                  }
 
 
-    def __init__(self,AE,AS,MAE,geneAnnotation,processedDataDir, sampleAnnotation):
+    def __init__(self,AE,AS,MAE,RVC,geneAnnotation,processedDataDir, sampleAnnotation):
         """
         AE: object. AberrantExpression object as created in DropConfig.py
+        AS: object. AberrantSplicing object as created in DropConfig.py
         MAE: object. MonoallelicExpression object as created in DropConfig.py
+        RVC: object. rnaVariantCalling object as created in DropConfig.py
         annotation: dict. dictionary containing the annotation ID (version) and the path to it
         processedDataDir: string. path to the processedDataDir
         sampleAnnotation: object. SampleAnnotation object as defined by SampleAnnotation.py
         """
 
-        moduleList = [AE,AS,MAE]
+        moduleList = [AE,AS,MAE,RVC]
         self.geneAnnotation = geneAnnotation
         self.processedDataDir = processedDataDir
         self.sampleAnnotation = sampleAnnotation
@@ -97,10 +118,14 @@ class SampleParams:
         """
         for ann in self.geneAnnotation:
             for module in moduleList:
+                assay="RNA"
                 if module.name == "AberrantExpression":
                     modulePath = self.processedDataDir / self.MODULE_NAMES[module.name] / ann / "params"
                 elif module.name == "MonoallelicExpression":
                     modulePath = self.processedDataDir / self.MODULE_NAMES[module.name] / "params"
+                elif module.name == "rnaVariantCalling":
+                    modulePath = self.processedDataDir / self.MODULE_NAMES[module.name] / "params"
+                    assay="RVC"
                 elif module.name == "AberrantSplicing":
                     continue
                     #modulePath = self.processedDataDir / self.MODULE_NAMES[module.name] / "params"
@@ -108,17 +133,17 @@ class SampleParams:
 
                 paramKeys = self.PARAM_COLS[module.name].keys()
                 for paramType in paramKeys:
-
                     self.writeSampleParams(
                              module,
                              modulePath / self.PARAM_COLS[module.name][paramType].path,
                              paramType,
                              self.PARAM_COLS[module.name][paramType].sampleAnnotationColumns,
                              self.PARAM_COLS[module.name][paramType].include,
-                             self.PARAM_COLS[module.name][paramType].group
+                             self.PARAM_COLS[module.name][paramType].group,
+                             assay=assay
                          )
 
-    def writeSampleParams(self,module,path,file_suffix,param_cols,include,group_param):
+    def writeSampleParams(self,module,path,file_suffix,param_cols,include,group_param,assay="RNA"):
         """
         module: object. Drop module object, used to get drop group attributes
         path: string. path to where to write the param files
@@ -135,7 +160,7 @@ class SampleParams:
         # for each DROP_GROUP used for aberrantExpression build the list of RNA_IDs that are going to be merged for that run
         # also build a list of all RNA_IDs triggered in this run
         for group in module_groups:
-            group_IDs = self.sampleAnnotation.getIDsByGroup(group, assay="RNA") + \
+            group_IDs = self.sampleAnnotation.getIDsByGroup(group, assay=assay) + \
                           self.sampleAnnotation.getIDsByGroup(group, assay="GENE_COUNT")
             all_RNA_ids = all_RNA_ids + group_IDs
 

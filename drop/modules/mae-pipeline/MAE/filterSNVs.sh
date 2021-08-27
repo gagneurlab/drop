@@ -27,8 +27,8 @@ if [ $vcf_id != 'QC' ]; then sample_flag="-s ${vcf_id}"; fi
 $bcftools view  $vcf_file | \
     grep -vP '^##INFO=' | \
     awk -F'\t' 'BEGIN {OFS = FS} { if($1 ~ /^[^#]/){ $8 = "." }; print $0 }' | \
-    $bcftools norm -m-both | \
-    $bcftools view ${sample_flag} -m2 -M2 -v snps -O z -o $tmp
+	$bcftools norm -m-both | 
+    $bcftools view ${sample_flag} -m2 -M2 -v snps|grep -vFw "0|0" | bgzip -c > $tmp
 $bcftools index -t $tmp
 
 # compare and correct chromosome format mismatch

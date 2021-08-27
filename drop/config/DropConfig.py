@@ -101,6 +101,7 @@ class DropConfig:
             self.AE,
             self.AS,
             self.MAE,
+            self.RVC,
             self.get("geneAnnotation"),
             self.processedDataDir,
             self.sampleAnnotation

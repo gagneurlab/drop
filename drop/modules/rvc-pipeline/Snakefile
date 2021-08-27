@@ -26,8 +26,7 @@ def getMinAlt():
 
 
 #################################
-#Define the {dataset} variable
-#make sure all of the different {datasets} are processed. As defined by the sample annotation table RNA_VARIANT_GROUPS
+#make sure all of the different {datasets} and {samples} are processed. As defined by the sample annotation table RNA_VARIANT_GROUPS
 rule rnaVariantCalling:
     priority: 1
     input:  RVC_index_input,
@@ -134,15 +133,19 @@ rule masked_singleVCF_filter:
             "rnaVariantCalling/out/sample_haplocaller",
             "{sample}",
             "{sample}.genotyped.filtered.basic" + getMinAlt() +".vcf.gz.tbi"),
-        repeat_mask = getRepeatMask(sortedName = True)
+        repeat_mask = getRepeatMask(sortedName = True),
+        sample_params = os.path.join(cfg.processedDataDir, "rnaVariantCalling/params/samples" , 
+	                               "{sample}_sampleParams.csv")
     output:
-        os.path.join(
+        vcf = os.path.join(
             cfg.processedDataDir,
             "rnaVariantCalling/out/sample_haplocaller",
             "{sample}",
-            "{sample}.genotyped.filtered.basic" + getMinAlt() +".masked.vcf.gz")
+            "{sample}.genotyped.filtered.basic" + getMinAlt() +".masked.vcf.gz"),
+        tmp_repeat_mask = temp(getRepeatMask(sortedName = True) + "_tmp_{sample}.bed"),
+        tmp_repeat_mask_idx = temp(getRepeatMask(sortedName = True) + "_tmp_{sample}.bed.idx")
+
     params:
-        sample = '{sample}',
         ref = lambda wildcards: cfg.RVC.getGenomePath(wildcards.sample),
         outDir = str(cfg.processedDataDir) + "/rnaVariantCalling/"
     log:
@@ -155,21 +158,19 @@ rule masked_singleVCF_filter:
         if [ $vcf_chr -eq 0  ] && [ $bed_chr -ne 0 ] #vcf has no chr, bed has chr
         then
             # remove "chr" from the bed file
-            sed -e "s/^chr//" {input.repeat_mask} > "{input.repeat_mask}_tmp_{params.sample}.bed"
+            sed -e "s/^chr//" {input.repeat_mask} > {output.tmp_repeat_mask}
         elif [ $bed_chr -eq 0  ] && [ $vcf_chr -ne 0 ] #vcf has chr, bed has no chr
         then
             # add "chr" to the bed file
-            sed -e "s/^/^chr/" {input.repeat_mask} > "{input.repeat_mask}_tmp_{params.sample}.bed"
+            sed -e "s/^/^chr/" {input.repeat_mask} > {output.tmp_repeat_mask}
         else
-            cp {input.repeat_mask} "{input.repeat_mask}_tmp_{params.sample}.bed"
+            cp {input.repeat_mask} {output.tmp_repeat_mask}
         fi
 
-        gatk IndexFeatureFile -I "{input.repeat_mask}_tmp_{params.sample}.bed" 
+        gatk IndexFeatureFile -I "{input.repeat_mask}_tmp_{wildcards.sample}.bed" 
         gatk --java-options "-Djava.io.tmpdir={params.outDir}/tmp" VariantFiltration -R {params.ref} \
-        -V {input.vcf} --mask "{input.repeat_mask}_tmp_{params.sample}.bed" -O {output} 2> {log}
+        -V {input.vcf} --mask {output.tmp_repeat_mask} -O {output.vcf} 2> {log}
 
-        rm -f "{input.repeat_mask}_tmp_{params.sample}" 
-        rm -f "{input.repeat_mask}_tmp_{params.sample}.idx" 
         """
 
 rule sortIndexRepeatMask:
@@ -237,7 +238,7 @@ rule split_multiVCF:
         lambda wildcards: os.path.join(
             cfg.processedDataDir,
             "rnaVariantCalling/out/all_samples_haplocaller",
-            cfg.RVC.batchIDs[wildcards.sample] + "_all_samples.genotyped.filtered_clean.vcf.gz")
+            cfg.RVC.batchIDs[wildcards.sample] + "_all_samples.genotyped.filtered_clean.vcf.gz"),
     params:
         ref = lambda wildcards: cfg.RVC.getGenomePath(wildcards.sample),
         sampleID = "{sample}",
@@ -333,6 +334,7 @@ rule filterVCF:
         cfg.processedDataDir,
         "rnaVariantCalling/out/all_samples_haplocaller",
         "{dataset}_all_samples.genotyped.vcf.gz")
+
     output:
         filt_vcf = temp(os.path.join(
         cfg.processedDataDir,
@@ -368,7 +370,10 @@ rule genotypeGVCFs:
         gvcf_tbi = os.path.join(
             cfg.processedDataDir,
             "rnaVariantCalling/out/all_samples_haplocaller",
-            "{dataset}_all_samples.g.vcf.gz.tbi")
+            "{dataset}_all_samples.g.vcf.gz.tbi"),
+
+        batch_params = os.path.join(cfg.processedDataDir, "rnaVariantCalling/params/batches" , 
+	                               "{dataset}_batchParams.csv")
     output:
         os.path.join( cfg.processedDataDir,
             "rnaVariantCalling/out/all_samples_haplocaller",
@@ -389,7 +394,7 @@ rule genotypeGVCFs:
 rule combineGVCFs:
     priority: 11
     input:
-        lambda wildcards: expand(
+        gvcfs = lambda wildcards: expand(
             os.path.join(
             cfg.processedDataDir,
             "rnaVariantCalling/out/sample_haplocaller",
