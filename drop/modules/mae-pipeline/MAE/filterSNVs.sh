@@ -22,13 +22,25 @@ samtools=$8
 tmp=$(mktemp)
 
 echo 'Filter SNVs'
+
+# if not doing QC
 if [ $vcf_id != 'QC' ]; then 
+	# match the sampleID from the vcf file
     sample_flag="-s ${vcf_id}"
-    grep_pattern='grep -P "^#|0\|1|1\|0|0/1|1/0"'
+	# pattern to find the headers and heterozygous genotypes
+    grep_pattern='grep -w "^#\|^#CHROM\|0|1\|1|0\|0/1\|1/0"'
 else
+	# when doing QC we don't have a match for the sample
     sample_flag=""
+	# when doing QC we want all of our QC variants. so concat instead of grep
     grep_pattern='cat'
 fi
+
+# view the vcf file and remove the info header information and the set the INFO column to '.'
+# split any multi-allelic lines
+# pull out the sample and only the snps that have at least 2 reads supporting it
+# use the grep_pattern defined above to pull out the header and heterozygous variants
+# zip and save as tmp file
 $bcftools view  $vcf_file | \
     grep -vP '^##INFO=' | \
     awk -F'\t' 'BEGIN {OFS = FS} { if($1 ~ /^[^#]/){ $8 = "." }; print $0 }' | \
