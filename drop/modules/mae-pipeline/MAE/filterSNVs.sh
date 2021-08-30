@@ -27,7 +27,7 @@ echo 'Filter SNVs'
 if [ $vcf_id != 'QC' ]; then 
 	# match the sampleID from the vcf file
     sample_flag="-s ${vcf_id}"
-	# pattern to find the heterozygous genotypes
+	# pattern to find the headers and heterozygous genotypes
     grep_pattern='grep -w "^#\|^#CHROM\|0|1\|1|0\|0/1\|1/0"'
 else
 	# when doing QC we don't have a match for the sample
