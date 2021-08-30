@@ -11,10 +11,11 @@ class Test_RVC_Pipeline:
         # run the RVC module using this config_RVC_norun (which should do nothing)
         run("awk -v n=4 \'/run: true/ { if (++count == n) sub(/run: true/, \"run: false\"); } 1\' \
         	config.yaml > config_RVC_norun.yaml  ",demo_dir)
-        pipeline_run = run(["snakemake", "aberrantExpression", f"-j{CORES}", "--configfile", "config_RVC_norun.yaml"], demo_dir)
-        tmp = run(["snakemake", "--unlock"], demo_dir)
-        assert "Nothing to be done." in pipeline_run.stderr
-        return pipeline_run
+        try:
+            pipeline_run = run(["snakemake", "aberrantExpression", f"-j{CORES}", "--configfile", "config_RVC_norun.yaml"], demo_dir)
+            raise AssertionError
+        except subprocess.CalledProcessError:
+            print("Failed Successfully")
 
     @pytest.fixture(scope="class")
     def pipeline_run(self, demo_dir):

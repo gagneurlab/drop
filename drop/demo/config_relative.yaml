@@ -49,6 +49,7 @@ mae:
   run: true
   groups:
   - mae
+  - mae_ncbi
   gatkIgnoreHeaderCheck: true
   padjCutoff: 0.05
   allelicRatioCutoff: 0.8
@@ -58,6 +59,7 @@ mae:
   qcVcf: Data/qc_vcf_1000G.vcf.gz
   qcGroups:
   - mae
+  - mae_ncbi
 rnaVariantCalling:
   run: true
   groups:

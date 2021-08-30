@@ -14,7 +14,7 @@ class Test_AE_Pipeline:
             pipeline_run = run(["snakemake", "aberrantExpression", f"-j{CORES}", "--configfile", "config_AE_norun.yaml"], demo_dir)
             raise AssertionError
         except subprocess.CalledProcessError:
-            print("HERE")
+            print("Failed Successfully")
 
 
     @pytest.fixture(scope="class")
@@ -50,7 +50,7 @@ class Test_AE_Pipeline:
         r = runR(r_cmd, demo_dir)
         assert "class: OutriderDataSet" in r.stdout
         assert "dim: 161 10" in r.stdout
-        assert "res: 4310 15" in r.stdout
+        assert "res: 1610 15" in r.stdout
 
     def test_import_results(self, demo_dir):
         output_dir = "Output/processed_results/aberrant_expression/v29/outrider/import_exp"
@@ -65,8 +65,8 @@ class Test_AE_Pipeline:
                 """.format(output_dir, output_dir)
         r = runR(r_cmd, demo_dir)
         assert "class: OutriderDataSet" in r.stdout
-        assert "dim: 438 10" in r.stdout
-        assert "res: 4380 15" in r.stdout
+        assert "dim: 389 10" in r.stdout
+        assert "res: 3890 15" in r.stdout
 
     @pytest.fixture()
     def no_import(self, demo_dir):
