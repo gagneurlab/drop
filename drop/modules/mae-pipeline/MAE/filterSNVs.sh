@@ -20,6 +20,7 @@ bcftools=$7
 samtools=$8
 
 tmp=$(mktemp)
+tmp2=$(mktemp)
 
 echo 'Filter SNVs'
 
@@ -27,26 +28,31 @@ echo 'Filter SNVs'
 if [ $vcf_id != 'QC' ]; then 
 	# match the sampleID from the vcf file
     sample_flag="-s ${vcf_id}"
-	# pattern to find the headers and heterozygous genotypes
-    grep_pattern='grep -w "^#\|^#CHROM\|0|1\|1|0\|0/1\|1/0"'
+    sample_name="-sn ${vcf_id}"
+	# JEXL pattern to find the heterozygous genotypes
+    select_pattern="-select vc.getGenotype('${vcf_id}').isHet()"
+	
 else
 	# when doing QC we don't have a match for the sample
     sample_flag=""
-	# when doing QC we want all of our QC variants. so concat instead of grep
-    grep_pattern='cat'
+    sample_name=""
+	# when doing QC we want all of our QC variants. so don't filter based on GT
+    select_pattern=""
 fi
 
 # view the vcf file and remove the info header information and the set the INFO column to '.'
 # split any multi-allelic lines
 # pull out the sample and only the snps that have at least 2 reads supporting it
-# use the grep_pattern defined above to pull out the header and heterozygous variants
+# use the select_pattern defined above to pull out the heterozygous variants used for MAE
 # zip and save as tmp file
 $bcftools view  $vcf_file | \
     grep -vP '^##INFO=' | \
     awk -F'\t' 'BEGIN {OFS = FS} { if($1 ~ /^[^#]/){ $8 = "." }; print $0 }' | \
     $bcftools norm -m-both | \
-    $bcftools view ${sample_flag} -m2 -M2 -v snps | \
-    eval ${grep_pattern} |bgzip -c > $tmp
+    $bcftools view ${sample_flag} -m2 -M2 -v snps > $tmp
+
+gatk SelectVariants -V $tmp ${sample_name} ${select_pattern} -O $tmp2
+bgzip -c $tmp2 > $tmp
 $bcftools index -t $tmp
 
 # compare and correct chromosome format mismatch
