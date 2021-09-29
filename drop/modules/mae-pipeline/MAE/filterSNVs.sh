@@ -50,7 +50,8 @@ $bcftools view  $vcf_file | \
     awk -F'\t' 'BEGIN {OFS = FS} { if($1 ~ /^[^#]/){ $8 = "." }; print $0 }' | \
     $bcftools norm -m-both | \
     $bcftools view ${sample_flag} -m2 -M2 -v snps > $tmp
-    gatk SelectVariants -V $tmp ${sample_name} ${select_pattern} -O $tmp2
+
+gatk SelectVariants -V $tmp ${sample_name} ${select_pattern} -O $tmp2
 bgzip -c $tmp2 > $tmp
 $bcftools index -t $tmp
 
