@@ -7,7 +7,7 @@
 #'  params:
 #'   - setup: '`sm cfg.AS.getWorkdir() + "/config.R"`'
 #'  input:
-#'   - annotation: '`sm cfg.getProcessedDataDir() + "/aberrant_expression/{annotation}/txdb.db"`'
+#'   - annotation: '`sm cfg.getProcessedDataDir() + "/preprocess/{annotation}/txdb.db"`'
 #'   - fds_theta: '`sm cfg.getProcessedDataDir() + 
 #'                    "/aberrant_splicing/datasets/savedObjects/raw-{dataset}/theta.h5"`'
 #'  output:
