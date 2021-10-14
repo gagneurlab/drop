@@ -10,15 +10,14 @@ class Test_AS_Pipeline:
         run("awk -v n=2 \'/run: true/ { if (++count == n) sub(/run: true/, \"run: false\"); } 1\' \
           config.yaml > config_AS_norun.yaml  ",demo_dir)
         try:
-            pipeline_run = run(["snakemake", "aberrantSplicing", f"-j{CORES}", "--configfile", "config_AS_norun.yaml"], demo_dir)
-            raise AssertionError
+            pipeline_run = run(["snakemake", "aberrantSplicing", f"-c{CORES}", "--configfile", "config_AS_norun.yaml"], demo_dir)
         except subprocess.CalledProcessError:
             print("Failed Successfully")
 
     @pytest.fixture(scope="class")
     def pipeline_run(self, demo_dir):
         LOGGER.info("run aberrant splicing pipeline")
-        pipeline_run = run(f"snakemake aberrantSplicing --cores {CORES}", demo_dir)
+        pipeline_run = run(f"snakemake aberrantSplicing -c{CORES}", demo_dir)
 
         assert "Finished job 0." in pipeline_run.stderr
         return pipeline_run

@@ -10,14 +10,14 @@ class Test_MAE_Pipeline:
         run("awk -v n=3 \'/run: true/ { if (++count == n) sub(/run: true/, \"run: false\"); } 1\' \
           config.yaml > config_MAE_norun.yaml  ",demo_dir)
         try:
-            pipeline_run = run(["snakemake", "mae", f"-j{CORES}", "--configfile", "config_MAE_norun.yaml"], demo_dir)
+            pipeline_run = run(["snakemake", "mae", f"-c{CORES}", "--configfile", "config_MAE_norun.yaml"], demo_dir)
         except subprocess.CalledProcessError:
             print("Failed Successfully")
 
     @pytest.fixture(scope="class")
     def pipeline_run(self, demo_dir):
         LOGGER.info("run MAE pipeline")
-        pipeline_run = run(f"snakemake mae --cores {CORES}", demo_dir)
+        pipeline_run = run(f"snakemake mae -c{CORES}", demo_dir)
         assert "Finished job 0." in pipeline_run.stderr
         return pipeline_run
 
