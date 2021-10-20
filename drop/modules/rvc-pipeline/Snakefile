@@ -554,15 +554,19 @@ rule bqsr:
                 known_sites="--known-sites ${{vcf}}_tmp.vcf.gz $known_sites"
             done
         else
+            echo "chromosome styles match"
             for vcf in {params.known_sites} 
             do
                 known_sites="--known-sites ${{vcf}}_tmp.vcf.gz $known_sites"
+				echo "cp $vcf ${{vcf}}_tmp.vcf.gz"
+				cp $vcf ${{vcf}}_tmp.vcf.gz
+				cp ${{vcf}}.tbi ${{vcf}}_tmp.vcf.gz.tbi
             done
 
         fi
 
         gatk --java-options "-Djava.io.tmpdir={params.outDir}/tmp" BaseRecalibrator -I {input} -R {params.ref} \
-        $known_sites -O {output.bqsr_table} 2> {log}
+        ${{known_sites}} -O {output.bqsr_table} 2> {log}
 
         for vcf in {params.known_sites} 
             do
