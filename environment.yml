@@ -8,3 +8,6 @@ dependencies:
   - drop
   - flake8
   - bioconductor-bsgenome.hsapiens.ucsc.hg19
+  - bcftools >=1.9
+  - samtools >=1.9
+  - wbuild >=1.8
