@@ -10,4 +10,4 @@ dependencies:
   - bioconductor-bsgenome.hsapiens.ucsc.hg19
   - samtools>=1.9
   - bcftools>=1.9
-  - wbuild>1.8
+  - wbuild>=1.8
