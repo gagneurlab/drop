@@ -19,8 +19,7 @@ class Test_RVC_Pipeline:
     @pytest.fixture(scope="class")
     def pipeline_run(self, demo_dir):
         LOGGER.info("run RVC pipeline")
-        print("HERE")
-        pipeline_run = run(["snakemake", "rnaVariantCalling", f"-c{CORES}"], demo_dir)
+        pipeline_run = run([f"snakemake rnaVariantCalling -c{CORES}"], demo_dir)
         assert "Finished job 0." in pipeline_run.stderr
         return pipeline_run
 
