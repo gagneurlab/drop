@@ -556,7 +556,7 @@ rule bqsr:
         else
             for vcf in {params.known_sites} 
             do
-                known_sites="--known-sites $vcf $known_sites"
+                known_sites="--known-sites ${{vcf}}_tmp.vcf.gz $known_sites"
             done
 
         fi
