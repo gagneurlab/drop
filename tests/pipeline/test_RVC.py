@@ -12,6 +12,7 @@ class Test_RVC_Pipeline:
         run("awk -v n=4 \'/run: true/ { if (++count == n) sub(/run: true/, \"run: false\"); } 1\' \
         	config.yaml > config_RVC_norun.yaml  ",demo_dir)
         try:
+            pipeline_run = run(["snakemake", "rnaVariantCalling", f"-np", "--configfile", "config_RVC_norun.yaml"], demo_dir)
             pipeline_run = run(["snakemake", "rnaVariantCalling", f"-c{CORES}", "--configfile", "config_RVC_norun.yaml"], demo_dir)
         except subprocess.CalledProcessError:
             print("Failed Successfully")
