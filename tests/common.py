@@ -2,7 +2,7 @@ import pytest
 import subprocess
 import logging
 
-CORES = "2"
+CORES = "1"
 LOGGER = logging.getLogger(__name__)
 
 
