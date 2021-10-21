@@ -135,7 +135,7 @@ rule masked_singleVCF_filter:
             "{sample}.genotyped.filtered.basic" + getMinAlt() +".vcf.gz.tbi"),
         repeat_mask = getRepeatMask(sortedName = True),
         sample_params = os.path.join(cfg.processedDataDir, "rnaVariantCalling/params/samples" , 
-	                               "{sample}_sampleParams.csv")
+                                    "{sample}_sampleParams.csv")
     output:
         vcf = os.path.join(
             cfg.processedDataDir,
@@ -373,7 +373,7 @@ rule genotypeGVCFs:
             "{dataset}_all_samples.g.vcf.gz.tbi"),
 
         batch_params = os.path.join(cfg.processedDataDir, "rnaVariantCalling/params/batches" , 
-	                               "{dataset}_batchParams.csv")
+                                    "{dataset}_batchParams.csv")
     output:
         os.path.join( cfg.processedDataDir,
             "rnaVariantCalling/out/all_samples_haplocaller",
@@ -558,9 +558,8 @@ rule bqsr:
             for vcf in {params.known_sites} 
             do
                 known_sites="--known-sites ${{vcf}}_tmp.vcf.gz $known_sites"
-				echo "cp $vcf ${{vcf}}_tmp.vcf.gz"
-				cp $vcf ${{vcf}}_tmp.vcf.gz
-				cp ${{vcf}}.tbi ${{vcf}}_tmp.vcf.gz.tbi
+                cp $vcf ${{vcf}}_tmp.vcf.gz
+                cp ${{vcf}}.tbi ${{vcf}}_tmp.vcf.gz.tbi
             done
 
         fi
