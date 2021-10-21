@@ -511,11 +511,16 @@ rule applyBQSR:
 rule bqsr:
     priority: 14
     input:
-        os.path.join(
-        cfg.processedDataDir, 
-        "rnaVariantCalling/out/bam", 
-        "{sample}", 
-        "{sample}_Aligned.sortedByCoord.dupMarked.split.out.bam")
+        bam = os.path.join(
+                cfg.processedDataDir, 
+                "rnaVariantCalling/out/bam", 
+                "{sample}", 
+                "{sample}_Aligned.sortedByCoord.dupMarked.split.out.bam")
+        bai = os.path.join(
+                cfg.processedDataDir, 
+                "rnaVariantCalling/out/bam", 
+                "{sample}", 
+                "{sample}_Aligned.sortedByCoord.dupMarked.split.out.bai")
     output:
         bqsr_table = os.path.join(
             cfg.processedDataDir,
@@ -527,8 +532,6 @@ rule bqsr:
         outDir = str(cfg.processedDataDir) + "/rnaVariantCalling",
         ucsc2ncbi = str(cfg.MAE.renameLocalDir())  + "/resource/chr_UCSC_NCBI.txt",
         ncbi2ucsc = str(cfg.MAE.renameLocalDir())  + "/resource/chr_NCBI_UCSC.txt"
-    log:
-        str(cfg.processedDataDir) + "/logs/bqsr/{sample}.log"
     shell:
         """
         bam_chr=$(samtools idxstats {input} | cut -f1 | grep "^chr" | wc -l)
@@ -565,7 +568,7 @@ rule bqsr:
         fi
 
         gatk --java-options "-Djava.io.tmpdir={params.outDir}/tmp" BaseRecalibrator -I {input} -R {params.ref} \
-        ${{known_sites}} -O {output.bqsr_table} 2> {log}
+        ${{known_sites}} -O {output.bqsr_table} 
 
         for vcf in {params.known_sites} 
             do
