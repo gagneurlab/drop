@@ -3,8 +3,8 @@ class Test_RVC_Config:
         assert dropConfig.RVC.getWorkdir() == demo_dir + "/Scripts/rnaVariantCalling/pipeline"
         dict_ = {
             'groups': ['batch_0','batch_1'],
-            'knownVCFs': ['Data/high_confidence_snps_test.vcf.gz', 'Data/high_confidence_indels_test.vcf.gz', 'Data/dbSNP_chr21_test.vcf.gz'],
-            'repeat_mask': 'Data/repeat_mask_chr21_test.bed',
+            'knownVCFs': [f'{demo_dir}/Data/high_confidence_snps_test.vcf.gz', f'{demo_dir}/Data/high_confidence_indels_test.vcf.gz', f'{demo_dir}/Data/dbSNP_chr21_test.vcf.gz'],
+            'repeat_mask': f'{demo_dir}/Data/repeat_mask_chr21_test.bed',
             'hcArgs': '',
             'minAlt': 10
         }
