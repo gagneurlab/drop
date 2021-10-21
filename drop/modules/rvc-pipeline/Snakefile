@@ -169,7 +169,7 @@ rule masked_singleVCF_filter:
 
         gatk IndexFeatureFile -I "{input.repeat_mask}_tmp_{wildcards.sample}.bed" 
         gatk --java-options "-Djava.io.tmpdir={params.outDir}/tmp" VariantFiltration -R {params.ref} \
-        -V {input.vcf} --mask {output.tmp_repeat_mask} -O {output.vcf} 2> {log}
+        -V {input.vcf} --mask {output.tmp_repeat_mask} -O {output.vcf} --tmp-dir "{params.outDir}/tmp" 2> {log}
 
         """
 
@@ -227,7 +227,8 @@ rule basic_singleVCF_filter:
     shell:
         """
         gatk --java-options "-Djava.io.tmpdir={params.outDir}/tmp" VariantFiltration -R {params.ref} \
-        -V {input.vcf} --filter-name minAlt --filter-expression "vc.getGenotype('{params.sample}').getAD().1 < {params.minAlt}" -O {output.vcf} 2> {log}
+        -V {input.vcf} --filter-name minAlt --filter-expression "vc.getGenotype('{params.sample}').getAD().1 < {params.minAlt}" \
+		--tmp-dir "{params.outDir}/tmp" -O {output.vcf} 2> {log}
         """
 
 
@@ -354,7 +355,7 @@ rule filterVCF:
         """
         gatk --java-options "-Djava.io.tmpdir={params.outDir}/tmp" VariantFiltration -R {params.ref} -V {input} \
         -window 35 -cluster 3 --filter-name FS --filter-expression "FS > 30.0" \
-        --filter-name QD --filter-expression "QD < 2.0" -O {output.filt_vcf} 2> {log}
+        --filter-name QD --filter-expression "QD < 2.0" --tmp-dir "{params.outDir}/tmp" -O {output.filt_vcf} 2> {log}
         """
 
 
@@ -386,7 +387,7 @@ rule genotypeGVCFs:
     shell:
         """
         gatk --java-options "-Djava.io.tmpdir={params.outDir}/tmp" GenotypeGVCFs -R {params.ref} \
-        --variant {input.gvcf} -O {output} 2> {log}
+        --variant {input.gvcf} --tmp-dir "{params.outDir}/tmp" -O {output} 2> {log}
         """
 
 
@@ -427,7 +428,7 @@ rule combineGVCFs:
     shell:
         """
         gatk --java-options "-Djava.io.tmpdir={params.outDir}/tmp" CombineGVCFs -R {params.ref} \
-         {params.variant_list} -O {output.gvcf} 2> {log}
+         {params.variant_list} --tmp-dir "{params.outDir}/tmp" -O {output.gvcf} 2> {log}
         """
 
 
@@ -462,7 +463,7 @@ rule haplotypeCaller:
         gatk --java-options "-Djava.io.tmpdir={params.outDir}/tmp" HaplotypeCaller -R {params.ref} -I {input.bam} \
         --dont-use-soft-clipped-bases -stand-call-conf 20.0 \
         --output-mode EMIT_ALL_CONFIDENT_SITES \
-        -ERC GVCF {params.hcArgs} -O {output} 2> {log}
+        -ERC GVCF {params.hcArgs} --tmp-dir "{params.outDir}/tmp" -O {output} 2> {log}
         """
 
 
@@ -503,7 +504,7 @@ rule applyBQSR:
         """
         gatk --java-options "-Djava.io.tmpdir={params.outDir}/tmp" ApplyBQSR  \
         -R {params.ref} -I {input.bam} --bqsr-recal-file {input.table} \
-        --add-output-sam-program-record --use-original-qualities -O {output.bam} 2> {log}
+        --add-output-sam-program-record --use-original-qualities --tmp-dir "{params.outDir}/tmp" -O {output.bam} 2> {log}
         """
 
 
@@ -568,7 +569,7 @@ rule bqsr:
         fi
 
         gatk --java-options "-Djava.io.tmpdir={params.outDir}/tmp" BaseRecalibrator -I {input.bam} -R {params.ref} \
-        ${{known_sites}} -O {output.bqsr_table} 
+        ${{known_sites}} --tmp-dir "{params.outDir}/tmp" -O {output.bqsr_table} 
 
         for vcf in {params.known_sites} 
             do
@@ -607,7 +608,7 @@ rule splitNcigar:
         """
         gatk --java-options "-Djava.io.tmpdir={params.outDir}/tmp" SplitNCigarReads \
         -R {params.ref} -I {input.bam} -fixNDN \
-        -O {output.bam} 2> {log}
+        -O {output.bam} --tmp-dir "{params.outDir}/tmp" 2> {log}
         #-RMQT 60 -U ALLOW_N_CIGAR_READS --allow_potentially_misencoded_quality_scores 2> {log}
         """
 
