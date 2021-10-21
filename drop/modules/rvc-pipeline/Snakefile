@@ -515,7 +515,7 @@ rule bqsr:
                 cfg.processedDataDir, 
                 "rnaVariantCalling/out/bam", 
                 "{sample}", 
-                "{sample}_Aligned.sortedByCoord.dupMarked.split.out.bam")
+                "{sample}_Aligned.sortedByCoord.dupMarked.split.out.bam"),
         bai = os.path.join(
                 cfg.processedDataDir, 
                 "rnaVariantCalling/out/bam", 
@@ -534,7 +534,7 @@ rule bqsr:
         ncbi2ucsc = str(cfg.MAE.renameLocalDir())  + "/resource/chr_NCBI_UCSC.txt"
     shell:
         """
-        bam_chr=$(samtools idxstats {input} | cut -f1 | grep "^chr" | wc -l)
+        bam_chr=$(samtools idxstats {input.bam} | cut -f1 | grep "^chr" | wc -l)
         vcf_chr=$(bcftools index --stats {params.known_sites} | cut -f1 | grep "^chr" | wc -l)
 
         known_sites=""
@@ -567,7 +567,7 @@ rule bqsr:
 
         fi
 
-        gatk --java-options "-Djava.io.tmpdir={params.outDir}/tmp" BaseRecalibrator -I {input} -R {params.ref} \
+        gatk --java-options "-Djava.io.tmpdir={params.outDir}/tmp" BaseRecalibrator -I {input.bam} -R {params.ref} \
         ${{known_sites}} -O {output.bqsr_table} 
 
         for vcf in {params.known_sites} 
