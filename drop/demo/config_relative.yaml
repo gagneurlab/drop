@@ -62,6 +62,7 @@ rnaVariantCalling:
   run: true
   groups:
   - batch_0
+  - batch_1
   knownVCFs:
   - Data/high_confidence_snps_test.vcf.gz
   - Data/high_confidence_indels_test.vcf.gz
