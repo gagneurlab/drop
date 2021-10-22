@@ -38,7 +38,7 @@ saveRDS(count_ranges, snakemake@output$count_ranges)
 # Get a gene annotation table
 gtf_dt <- import(snakemake@input$gtf) %>% as.data.table
 if (!"gene_name" %in% colnames(gtf_dt)) {
-  gtf_dt[gene_name := gene_id]
+  gtf_dt[, gene_name := gene_id]
 }
 gtf_dt <- gtf_dt[type == 'gene']
 
