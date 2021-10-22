@@ -40,4 +40,4 @@ jobs:
       run: |
         micromamba install pytest
         pip install -r tests/requirements.txt
-        pytest  tests/pipeline/test_RVC.py
+        pytest 
