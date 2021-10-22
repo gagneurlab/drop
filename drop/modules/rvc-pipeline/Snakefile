@@ -95,18 +95,18 @@ rule countVariants:
             "{sample}_variant_counts.txt")
     shell:
         """
-        total_variants=$(zgrep -v "#" {input.sample_vcfs} | wc -l)
-        pass_variants=$(zgrep -v "#" {input.sample_vcfs} |grep -P "PASS|\tMask\t" | wc -l)
-        pass_mask_variants=$(zgrep -v "#" {input.sample_vcfs} |grep -w "PASS" | wc -l)
+        total_variants=$(zgrep -vc "#" {input.sample_vcfs})
+        pass_variants=$(zgrep -v "#" {input.sample_vcfs} |grep -c -P "PASS|\tMask\t")
+        pass_mask_variants=$(zgrep -v "#" {input.sample_vcfs} |grep -wc "PASS")
 
-        hom_total_variants=$(($(zgrep -v "#" {input.sample_vcfs} | grep -w -F "1/1" |wc -l) + 
-                              $(zgrep -v "#" {input.sample_vcfs} | grep -w -F "1|1" |wc -l)))
+        hom_total_variants=$(($(zgrep -v "#" {input.sample_vcfs} | grep -wc -F "1/1") + 
+                              $(zgrep -v "#" {input.sample_vcfs} | grep -wc -F "1|1")))
 
-        hom_pass_variants=$(($(zgrep -v "#" {input.sample_vcfs} | grep -w -F "1/1" |grep -P "PASS|\tMask\t" |wc -l) + 
-                             $(zgrep -v "#" {input.sample_vcfs} | grep -w -F "1|1" |grep -P "PASS|\tMask\t" |wc -l)))
+        hom_pass_variants=$(($(zgrep -v "#" {input.sample_vcfs} | grep -w -F "1/1" |grep -c -P "PASS|\tMask\t" ) + 
+                             $(zgrep -v "#" {input.sample_vcfs} | grep -w -F "1|1" |grep -c -P "PASS|\tMask\t" )))
 
-        hom_pass_mask_variants=$(($(zgrep -v "#" {input.sample_vcfs} | grep -w -F "1/1" |grep -w "PASS" |wc -l) + 
-                             $(zgrep -v "#" {input.sample_vcfs} | grep -w -F "1|1" |grep -w "PASS" |wc -l)))
+        hom_pass_mask_variants=$(($(zgrep -v "#" {input.sample_vcfs} | grep -w -F "1/1" |grep -wc "PASS") + 
+                             $(zgrep -v "#" {input.sample_vcfs} | grep -w -F "1|1" |grep -wc "PASS")))
 
         echo "Sample,GT,variants called,\
 variants passing filter,\
@@ -152,14 +152,14 @@ rule masked_singleVCF_filter:
         str(cfg.processedDataDir) + "/logs/sample_haplocaller/" + "{sample}" + "_maskedFilterVariants.log"
     shell:
         """
-        vcf_chr=$(zgrep -v "^#" {input.vcf} | cut -f1 | grep "^chr" | wc -l)
-        bed_chr=$(cat {input.repeat_mask} | cut -f1 | grep "^chr" | wc -l)
+        vcf_chr_{wildcards.sample}=$(zgrep -v "^#" {input.vcf} | cut -f1 | grep -c "^chr" ||true )
+        bed_chr_{wildcards.sample}=$(cat {input.repeat_mask} | cut -f1 | grep -c "^chr" ||true  )
 
-        if [ $vcf_chr -eq 0  ] && [ $bed_chr -ne 0 ] #vcf has no chr, bed has chr
+        if [ $vcf_chr_{wildcards.sample} -eq 0  ] && [ $bed_chr_{wildcards.sample} -ne 0 ] #vcf has no chr, bed has chr
         then
             # remove "chr" from the bed file
             sed -e "s/^chr//" {input.repeat_mask} > {output.tmp_repeat_mask}
-        elif [ $bed_chr -eq 0  ] && [ $vcf_chr -ne 0 ] #vcf has chr, bed has no chr
+        elif [ $bed_chr_{wildcards.sample} -eq 0  ] && [ $vcf_chr_{wildcards.sample} -ne 0 ] #vcf has chr, bed has no chr
         then
             # add "chr" to the bed file
             sed -e "s/^/^chr/" {input.repeat_mask} > {output.tmp_repeat_mask}
@@ -276,7 +276,7 @@ rule split_multiVCF:
         bcftools norm -m-both {output.toDel_tmp} > {output.toDel_split}
         echo "remove redundant variant info AAAG>AC == AAG>C and remove empty variant calls"
         bcftools norm -f {params.ref}  {output.toDel_split} |grep -w -v "*"|grep -w -v "0/0" |bgzip -c > {output.vcf}
-        tabix -p vcf {output.vcf}
+        tabix -f -p vcf {output.vcf}
         """
 
 
@@ -298,7 +298,7 @@ rule leftNormalVCF:
     shell:
         """ 
         bcftools norm -f {params.ref} {input} | bgzip -c > {output}
-        tabix -p vcf {output}
+        tabix -f -p vcf {output}
          """
 
 
@@ -527,6 +527,8 @@ rule bqsr:
             cfg.processedDataDir,
             "rnaVariantCalling/out/bqsr",
             "{sample}_recal.table")
+    log:
+        str(cfg.processedDataDir) + "/logs/bqsr/{sample}.log"
     params:
         ref = lambda wildcards: cfg.RVC.getGenomePath(wildcards.sample),
         known_sites = getKnownVCFs(),
@@ -535,46 +537,49 @@ rule bqsr:
         ncbi2ucsc = str(cfg.MAE.renameLocalDir())  + "/resource/chr_NCBI_UCSC.txt"
     shell:
         """
-        bam_chr=$(samtools idxstats {input.bam} | cut -f1 | grep "^chr" | wc -l)
-        vcf_chr=$(bcftools index --stats {params.known_sites} | cut -f1 | grep "^chr" | wc -l)
+        bam_chr_{wildcards.sample}=$(samtools idxstats {input.bam} | cut -f1 | grep -c "^chr" || true)
+        vcf_chr_{wildcards.sample}=$(bcftools index --stats {params.known_sites} | cut -f1 | grep -c "^chr" || true)
+
+        echo $bam_chr_{wildcards.sample} > {log}
+        echo $vcf_chr_{wildcards.sample} >> {log}
 
         known_sites=""
-        if [ $bam_chr -eq 0  ] && [ $vcf_chr -ne 0 ] #bam has no chr, vcf has chr
+        if [ $bam_chr_{wildcards.sample} -eq 0  ] && [ $vcf_chr_{wildcards.sample} -ne 0 ] #bam has no chr, vcf has chr
         then
             echo "converting known vcfs from NCBI to UCSC format"
             for vcf in {params.known_sites}
             do
-                bcftools annotate --rename-chrs {params.ucsc2ncbi} $vcf | bgzip > "${{vcf}}_tmp.vcf.gz"
-                tabix "${{vcf}}_tmp.vcf.gz"
-                known_sites="--known-sites ${{vcf}}_tmp.vcf.gz $known_sites"
+                bcftools annotate --rename-chrs {params.ucsc2ncbi} $vcf | bgzip > "${{vcf}}_{wildcards.sample}_tmp.vcf.gz"
+                tabix -f "${{vcf}}_{wildcards.sample}_tmp.vcf.gz"
+                known_sites="--known-sites ${{vcf}}_{wildcards.sample}_tmp.vcf.gz $known_sites"
             done
-        elif [ $bam_chr -ne 0  ] && [ $vcf_chr -eq 0 ] #bam has chr, vcf has no chr
+        elif [ $bam_chr_{wildcards.sample} -ne 0  ] && [ $vcf_chr_{wildcards.sample} -eq 0 ] #bam has chr, vcf has no chr
         then
             echo "converting known vcfs from UCSC to NCBI format"
             for vcf in {params.known_sites}
             do
-                bcftools annotate --rename-chrs {params.ncbi2ucsc} $vcf | bgzip > "${{vcf}}_tmp.vcf.gz"
-                tabix "${{vcf}}_tmp.vcf.gz"
-                known_sites="--known-sites ${{vcf}}_tmp.vcf.gz $known_sites"
+                bcftools annotate --rename-chrs {params.ncbi2ucsc} $vcf | bgzip > "${{vcf}}_{wildcards.sample}_tmp.vcf.gz"
+                tabix -f "${{vcf}}_{wildcards.sample}_tmp.vcf.gz"
+                known_sites="--known-sites ${{vcf}}_{wildcards.sample}_tmp.vcf.gz $known_sites"
             done
         else
             echo "chromosome styles match"
             for vcf in {params.known_sites} 
             do
-                known_sites="--known-sites ${{vcf}}_tmp.vcf.gz $known_sites"
-                cp $vcf ${{vcf}}_tmp.vcf.gz
-                cp ${{vcf}}.tbi ${{vcf}}_tmp.vcf.gz.tbi
+                known_sites="--known-sites ${{vcf}}_{wildcards.sample}_tmp.vcf.gz $known_sites"
+                cp $vcf ${{vcf}}_{wildcards.sample}_tmp.vcf.gz
+                cp ${{vcf}}.tbi ${{vcf}}_{wildcards.sample}_tmp.vcf.gz.tbi
             done
 
         fi
 
         gatk --java-options "-Djava.io.tmpdir={resources.tmpdir}" BaseRecalibrator -I {input.bam} -R {params.ref} \
-        ${{known_sites}} -O {output.bqsr_table} 
+        ${{known_sites}} -O {output.bqsr_table}  2>> {log}
 
         for vcf in {params.known_sites} 
             do
-                rm -f "${{vcf}}_tmp.vcf.gz"
-                rm -f "${{vcf}}_tmp.vcf.gz.tbi"
+                rm -f "${{vcf}}_{wildcards.sample}_tmp.vcf.gz"
+                rm -f "${{vcf}}_{wildcards.sample}_tmp.vcf.gz.tbi"
             done
         """
 
