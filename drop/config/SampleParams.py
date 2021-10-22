@@ -25,12 +25,10 @@ class SampleParams:
     # dictionary containing the module names, and the predetermined subfolders for the processed data
     MODULE_NAMES = {"AberrantExpression": "aberrant_expression",
                     "AberrantSplicing": "aberrant_splicing",
-                    "rnaVariantCalling": "rnaVariantCalling",
                     "MonoallelicExpression": "mae"}
 
 
-    # helper object containing the relevant information for the module/param pair
-    # each Param Helper has [include,SA columns, group,path]
+    #helper object containing the relevant information for the module/param pair
     AE_countParams = ParamHelper(
                    True,
                    ["RNA_ID", "RNA_BAM_FILE","COUNT_MODE", "PAIRED_END", "COUNT_OVERLAPS", "STRAND"],
@@ -44,8 +42,8 @@ class SampleParams:
                    "merge")
 
     AE_resultParams= ParamHelper(
-                   True,
-                   ["RNA_ID","DNA_ID","HPO_TERMS","GENE_COUNTS_FILE","GENE_ANNOTATION"],
+                   False,
+                   ["RNA_BAM_FILE", "DNA_VCF_FILE","DROP_GROUP","COUNT_MODE", "PAIRED_END", "COUNT_OVERLAPS", "STRAND"],
                    True,
                    "results")
 
@@ -57,21 +55,9 @@ class SampleParams:
 
     MAE_resultParams = ParamHelper(
                    False,
-                   ["RNA_BAM_FILE", "DNA_VCF_FILE","DROP_GROUP","RNA_VARIANT_GROUP"],
+                   ["RNA_BAM_FILE", "DNA_VCF_FILE","DROP_GROUP"],
                    True,
                    "results")
-
-    RVC_sampleParams = ParamHelper(
-                   True,
-                   ["RNA_ID","RNA_BAM_FILE","RNA_VARIANT_GROUP","GENOME"],
-                   False,
-                   "samples")
-
-    RVC_batchParams = ParamHelper(
-                   True,
-                   ["RNA_ID","RNA_BAM_FILE","RNA_VARIANT_GROUP","GENOME"],
-                   True,
-                   "batches")
 
     # dictionary containing the key type of parameter and the corresponding param information object
     PARAM_COLS = {"AberrantExpression":
@@ -83,27 +69,20 @@ class SampleParams:
                   "MonoallelicExpression":
                      { "snvParams": MAE_snvParams,
                        "resultParams": MAE_resultParams
-                     },
-
-                  "rnaVariantCalling":
-                     { "sampleParams": RVC_sampleParams,
-                       "batchParams": RVC_batchParams
                      }
                  }
 
 
-    def __init__(self,AE,AS,MAE,RVC,geneAnnotation,processedDataDir, sampleAnnotation):
+    def __init__(self,AE,AS,MAE,geneAnnotation,processedDataDir, sampleAnnotation):
         """
         AE: object. AberrantExpression object as created in DropConfig.py
-        AS: object. AberrantSplicing object as created in DropConfig.py
         MAE: object. MonoallelicExpression object as created in DropConfig.py
-        RVC: object. rnaVariantCalling object as created in DropConfig.py
         annotation: dict. dictionary containing the annotation ID (version) and the path to it
         processedDataDir: string. path to the processedDataDir
         sampleAnnotation: object. SampleAnnotation object as defined by SampleAnnotation.py
         """
 
-        moduleList = [AE,AS,MAE,RVC]
+        moduleList = [AE,AS,MAE]
         self.geneAnnotation = geneAnnotation
         self.processedDataDir = processedDataDir
         self.sampleAnnotation = sampleAnnotation
@@ -118,14 +97,10 @@ class SampleParams:
         """
         for ann in self.geneAnnotation:
             for module in moduleList:
-                assay="RNA"
                 if module.name == "AberrantExpression":
                     modulePath = self.processedDataDir / self.MODULE_NAMES[module.name] / ann / "params"
                 elif module.name == "MonoallelicExpression":
                     modulePath = self.processedDataDir / self.MODULE_NAMES[module.name] / "params"
-                elif module.name == "rnaVariantCalling":
-                    modulePath = self.processedDataDir / self.MODULE_NAMES[module.name] / "params"
-                    assay="RVC"
                 elif module.name == "AberrantSplicing":
                     continue
                     #modulePath = self.processedDataDir / self.MODULE_NAMES[module.name] / "params"
@@ -133,17 +108,17 @@ class SampleParams:
 
                 paramKeys = self.PARAM_COLS[module.name].keys()
                 for paramType in paramKeys:
+
                     self.writeSampleParams(
                              module,
                              modulePath / self.PARAM_COLS[module.name][paramType].path,
                              paramType,
                              self.PARAM_COLS[module.name][paramType].sampleAnnotationColumns,
                              self.PARAM_COLS[module.name][paramType].include,
-                             self.PARAM_COLS[module.name][paramType].group,
-                             assay=assay
+                             self.PARAM_COLS[module.name][paramType].group
                          )
 
-    def writeSampleParams(self,module,path,file_suffix,param_cols,include,group_param,assay="RNA"):
+    def writeSampleParams(self,module,path,file_suffix,param_cols,include,group_param):
         """
         module: object. Drop module object, used to get drop group attributes
         path: string. path to where to write the param files
@@ -160,7 +135,7 @@ class SampleParams:
         # for each DROP_GROUP used for aberrantExpression build the list of RNA_IDs that are going to be merged for that run
         # also build a list of all RNA_IDs triggered in this run
         for group in module_groups:
-            group_IDs = self.sampleAnnotation.getIDsByGroup(group, assay=assay) + \
+            group_IDs = self.sampleAnnotation.getIDsByGroup(group, assay="RNA") + \
                           self.sampleAnnotation.getIDsByGroup(group, assay="GENE_COUNT")
             all_RNA_ids = all_RNA_ids + group_IDs
 
@@ -203,8 +178,8 @@ class SampleParams:
 
             # replace any strings of nan with "NA"
             current_SA = sa_df.loc[sa_df["RNA_ID"].isin(ID),param_cols].reset_index(drop = True)
-            current_SA = current_SA.replace("nan","NA").fillna(value = "NA")
-            old_SA = pd.read_csv(true_filename).reset_index(drop = True).fillna(value = "NA")
+            current_SA = current_SA.replace("nan","NA").fillna(value = "NA").astype(str)
+            old_SA = pd.read_csv(true_filename).reset_index(drop = True).fillna(value = "NA").astype(str)
 
             if current_SA.equals(old_SA):
                 pass
@@ -212,7 +187,8 @@ class SampleParams:
                 # if they're different remove the existing file and rename TEMP to the desired file. Updating to the current SA table
                 logger.info("{} Param Files do not match. Updating to current Sample Annotation\n".format(filename))
                 current_SA.to_csv(true_filename, index = False,header = True,na_rep = "NA")
+
         # if the param file doesn't exist, just write to the desired file
         else:
-            #logger.info("{} Param File did not already exist. Writing it\n".format(filename))
+            logger.info("{} Param File did not already exist. Writing it\n".format(filename))
             sa_df.loc[sa_df["RNA_ID"].isin(ID),param_cols].to_csv(true_filename, index = False,header = True,na_rep = "NA")
