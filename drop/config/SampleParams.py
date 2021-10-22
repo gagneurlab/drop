@@ -214,5 +214,5 @@ class SampleParams:
                 current_SA.to_csv(true_filename, index = False,header = True,na_rep = "NA")
         # if the param file doesn't exist, just write to the desired file
         else:
-            logger.info("{} Param File did not already exist. Writing it\n".format(filename))
+            #logger.info("{} Param File did not already exist. Writing it\n".format(filename))
             sa_df.loc[sa_df["RNA_ID"].isin(ID),param_cols].to_csv(true_filename, index = False,header = True,na_rep = "NA")
