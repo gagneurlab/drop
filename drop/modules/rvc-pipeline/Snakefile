@@ -373,9 +373,12 @@ rule genotypeGVCFs:
         batch_params = os.path.join(cfg.processedDataDir, "rnaVariantCalling/params/batches" ,
                                     "{dataset}_batchParams.csv")
     output:
-        temp(os.path.join( cfg.processedDataDir,
+        vcf = temp(os.path.join( cfg.processedDataDir,
             "rnaVariantCalling/out/all_samples_haplocaller",
-            "{dataset}_all_samples.genotyped.vcf.gz"))
+            "{dataset}_all_samples.genotyped.vcf.gz")),
+        tbi = temp(os.path.join( cfg.processedDataDir,
+            "rnaVariantCalling/out/all_samples_haplocaller",
+            "{dataset}_all_samples.genotyped.vcf.gz.tbi"))
     params:
         ref = lambda wildcards: cfg.RVC.getGenomePath(wildcards.dataset),
     log:
@@ -383,7 +386,7 @@ rule genotypeGVCFs:
     shell:
         """
         gatk --java-options "-Djava.io.tmpdir={resources.tmpdir}" GenotypeGVCFs -R {params.ref} \
-        --variant {input.gvcf} -O {output} 2> {log}
+        --variant {input.gvcf} -O {output.vcf} 2> {log}
         """
 
 
