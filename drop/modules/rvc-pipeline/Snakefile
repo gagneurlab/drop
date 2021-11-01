@@ -282,21 +282,25 @@ rule split_multiVCF:
 rule leftNormalVCF:
     priority: 7
     input:
-        os.path.join(
+        vcf = os.path.join(
             cfg.processedDataDir,
             "rnaVariantCalling/out/all_samples_haplocaller",
-            "{dataset}" + "_all_samples.genotyped.filtered.split.vcf.gz")
+            "{dataset}" + "_all_samples.genotyped.filtered.split.vcf.gz"),
     output:
-        os.path.join(
+        vcf = os.path.join(
             cfg.processedDataDir,
             "rnaVariantCalling/out/all_samples_haplocaller",
-            "{dataset}_all_samples.genotyped.filtered_clean.vcf.gz")
+            "{dataset}_all_samples.genotyped.filtered_clean.vcf.gz"),
+        tbi = os.path.join(
+            cfg.processedDataDir,
+            "rnaVariantCalling/out/all_samples_haplocaller",
+            "{dataset}_all_samples.genotyped.filtered_clean.vcf.gz.tbi")
     params:
         ref = lambda wildcards: cfg.RVC.getGenomePath(wildcards.dataset)
     shell:
         """
-        bcftools norm -f {params.ref} {input} | bgzip -c > {output}
-        tabix -f -p vcf {output}
+        bcftools norm -f {params.ref} {input.vcf} | bgzip -c > {output.vcf}
+        tabix -f -p vcf {output.vcf}
          """
 
 
@@ -304,10 +308,14 @@ rule leftNormalVCF:
 rule splitVCF:
     priority: 8
     input:
-        ancient(os.path.join(
+        vcf = ancient(os.path.join(
             cfg.processedDataDir,
             "rnaVariantCalling/out/all_samples_haplocaller",
-            "{dataset}_all_samples.genotyped.filtered.vcf.gz"))
+            "{dataset}_all_samples.genotyped.filtered.vcf.gz")),
+        tbi = ancient(os.path.join(
+            cfg.processedDataDir,
+            "rnaVariantCalling/out/all_samples_haplocaller",
+            "{dataset}_all_samples.genotyped.filtered.vcf.gz.tbi"))
     output:
         split_vcf = temp(os.path.join(
             cfg.processedDataDir,
@@ -320,7 +328,7 @@ rule splitVCF:
                 "{dataset}" + "_DELETE_ME"))
     shell:
         """
-        bcftools norm -m-both {input} > {output.toDel}
+        bcftools norm -m-both {input.vcf} > {output.toDel}
         grep -v -w "*" {output.toDel} |bgzip -c > {output.split_vcf}
         """
 
@@ -329,10 +337,14 @@ rule splitVCF:
 rule filterVCF:
     priority: 9
     input:
-        os.path.join(
+        vcf = os.path.join(
         cfg.processedDataDir,
         "rnaVariantCalling/out/all_samples_haplocaller",
-        "{dataset}_all_samples.genotyped.vcf.gz")
+        "{dataset}_all_samples.genotyped.vcf.gz"),
+        tbi = os.path.join(
+        cfg.processedDataDir,
+        "rnaVariantCalling/out/all_samples_haplocaller",
+        "{dataset}_all_samples.genotyped.vcf.gz.tbi")
 
     output:
         filt_vcf = temp(os.path.join(
@@ -350,7 +362,7 @@ rule filterVCF:
         str(cfg.processedDataDir) + "/logs/all_haplocaller/{dataset}_filterVariants.log"
     shell:
         """
-        gatk --java-options "-Djava.io.tmpdir={resources.tmpdir}" VariantFiltration -R {params.ref} -V {input} \
+        gatk --java-options "-Djava.io.tmpdir={resources.tmpdir}" VariantFiltration -R {params.ref} -V {input.vcf} \
         -window 35 -cluster 3 --filter-name FS --filter-expression "FS > 30.0" \
         --filter-name QD --filter-expression "QD < 2.0" -O {output.filt_vcf} 2> {log}
         """
