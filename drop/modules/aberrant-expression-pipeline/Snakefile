@@ -20,7 +20,7 @@ rule aberrantExpression_dependency:
 rule aberrantExpression_bamStats:
     input:
         bam = lambda wildcards: sa.getFilePath(wildcards.sampleID, "RNA_BAM_FILE"),
-        ucsc2ncbi =AE_WORKDIR / "resource" / "chr_UCSC_NCBI.txt"
+        ucsc2ncbi = cfg.workDir  / "Scripts/Pipeline/chr_UCSC_NCBI.txt"
     output:
         cfg.processedDataDir / "aberrant_expression" / "{annotation}" / "coverage" / "{sampleID}.tsv"
     params:
