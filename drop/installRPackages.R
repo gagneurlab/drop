@@ -24,7 +24,6 @@ if (file.exists(args[1])){
 }
 installed <- as.data.table(installed.packages())
 
-Sys.unsetenv("GITHUB_PAT")
 for (pckg_name in packages$package) {
     package_dt <- packages[package == pckg_name]
     pckg_name <- gsub(".*/", "", pckg_name)
