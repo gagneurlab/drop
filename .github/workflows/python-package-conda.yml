@@ -7,8 +7,7 @@ jobs:
     runs-on: ubuntu-latest
 #    container:
 #      image: mambaorg/micromamba:latest
-    env:
-        GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
+
     steps:
     - uses: actions/checkout@v2
 
