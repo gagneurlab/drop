@@ -27,5 +27,5 @@ echo "${sample_id},0/1,$(($total_variants - $hom_total_variants)),\
 $(($pass_variants - $hom_pass_variants)),\
 $(($pass_mask_variants - $hom_pass_mask_variants))" >> $output_counts
 
-echo "${output_counts},1/1,$hom_total_variants,$hom_pass_variants,$hom_pass_mask_variants" >> $output_counts
+echo "${sample_id},1/1,$hom_total_variants,$hom_pass_variants,$hom_pass_mask_variants" >> $output_counts
 

@@ -1,7 +1,6 @@
 RVC_WORKDIR = cfg.RVC.renameLocalDir()
 RVC_index_input,RVC_graph_file,RVC_index_output = cfg.RVC.getModuleIndexFiles("rvc-pipeline",RVC_WORKDIR)
 
-
 #########
 # Helper Functions
 # #######
@@ -23,7 +22,6 @@ def getRepeatMask(sortedName=False):
 
 def getMinAlt():
     return str(cfg.config_dict["rnaVariantCalling"]["minAlt"])
-
 
 #################################
 #make sure all of the different {datasets} and {samples} are processed. As defined by the sample annotation table RNA_VARIANT_GROUPS
@@ -100,7 +98,7 @@ rule countVariants:
         """
 
 #Use the repeat_mask bedfile to filter/label variants in repeat regions
-rule masked_singleVCF_filter:
+rule maskSingleVCF:
     priority: 3
     input:
         vcf = os.path.join(
@@ -115,41 +113,21 @@ rule masked_singleVCF_filter:
             "{sample}.genotyped.filtered.basic" + getMinAlt() +".vcf.gz.tbi"),
         repeat_mask = getRepeatMask(sortedName = True),
         sample_params = os.path.join(cfg.processedDataDir, "rnaVariantCalling/params/samples" ,
-                                    "{sample}_sampleParams.csv")
+                                    "{sample}_sampleParams.csv"),
+        script = str(RVC_WORKDIR) + "/GATK_BASH/maskSingleVCF.sh"
     output:
         vcf = os.path.join(
             cfg.processedDataDir,
             "rnaVariantCalling/out/sample_haplocaller",
             "{sample}",
-            "{sample}.genotyped.filtered.basic" + getMinAlt() +".masked.vcf.gz"),
-        tmp_repeat_mask = temp(getRepeatMask(sortedName = True) + "_tmp_{sample}.bed"),
-        tmp_repeat_mask_idx = temp(getRepeatMask(sortedName = True) + "_tmp_{sample}.bed.idx")
-
+            "{sample}.genotyped.filtered.basic" + getMinAlt() +".masked.vcf.gz")
     params:
         ref = lambda wildcards: cfg.RVC.getGenomePath(wildcards.sample),
     log:
         str(cfg.processedDataDir) + "/rnaVariantCalling/logs/sample_haplocaller/" + "{sample}" + "_maskedFilterVariants.log"
     shell:
         """
-        vcf_chr_{wildcards.sample}=$(zgrep -v "^#" {input.vcf} | cut -f1 | grep -c "^chr" ||true )
-        bed_chr_{wildcards.sample}=$(cat {input.repeat_mask} | cut -f1 | grep -c "^chr" ||true  )
-
-        if [ $vcf_chr_{wildcards.sample} -eq 0  ] && [ $bed_chr_{wildcards.sample} -ne 0 ] #vcf has no chr, bed has chr
-        then
-            # remove "chr" from the bed file
-            sed -e "s/^chr//" {input.repeat_mask} > {output.tmp_repeat_mask}
-        elif [ $bed_chr_{wildcards.sample} -eq 0  ] && [ $vcf_chr_{wildcards.sample} -ne 0 ] #vcf has chr, bed has no chr
-        then
-            # add "chr" to the bed file
-            sed -e "s/^/^chr/" {input.repeat_mask} > {output.tmp_repeat_mask}
-        else
-            cp {input.repeat_mask} {output.tmp_repeat_mask}
-        fi
-
-        gatk IndexFeatureFile -I "{input.repeat_mask}_tmp_{wildcards.sample}.bed"
-        gatk --java-options "-Djava.io.tmpdir={resources.tmpdir}" VariantFiltration -R {params.ref} \
-        -V {input.vcf} --mask {output.tmp_repeat_mask} -O {output.vcf} 2> {log}
-
+        {input.script} {input.vcf} {input.repeat_mask} {params.ref} {resources.tmpdir} {log} {output.vcf}
         """
 
 rule sortIndexRepeatMask:
@@ -206,7 +184,7 @@ rule basic_singleVCF_filter:
         """
         gatk --java-options "-Djava.io.tmpdir={resources.tmpdir}" VariantFiltration -R {params.ref} \
         -V {input.vcf} --filter-name minAlt --filter-expression "vc.getGenotype('{params.sample}').getAD().1 < {params.minAlt}" \
-		-O {output.vcf} 2> {log}
+        -O {output.vcf} 2> {log}
         """
 
 
@@ -217,11 +195,10 @@ rule split_multiVCF:
         lambda wildcards: os.path.join(
             cfg.processedDataDir,
             "rnaVariantCalling/out/all_samples_haplocaller",
-            cfg.RVC.batchIDs[wildcards.sample] + "_all_samples.genotyped.filtered_clean.vcf.gz"),
+            cfg.RVC.batchIDs[wildcards.sample] + "_all_samples.genotyped.filtered_clean.vcf.gz")
     params:
         ref = lambda wildcards: cfg.RVC.getGenomePath(wildcards.sample),
-        sampleID = "{sample}",
-
+        sampleID = "{sample}"
     output:
         vcf = temp(os.path.join(
             cfg.processedDataDir,
@@ -233,27 +210,19 @@ rule split_multiVCF:
             cfg.processedDataDir,
             "rnaVariantCalling/out/sample_haplocaller",
             "{sample}",
-            "{sample}.genotyped.filtered.vcf.gz.tbi")),
-        toDel_split = temp(os.path.join(
-            cfg.processedDataDir,
-            "rnaVariantCalling/out/sample_haplocaller",
-            "{sample}",
-            "{sample}.genotyped.filtered.vcf.gz.split")),
-        toDel_tmp = temp(os.path.join(
-            cfg.processedDataDir,
-            "rnaVariantCalling/out/sample_haplocaller",
-            "{sample}",
-            "{sample}.genotyped.filtered.vcf.gz.tmp"))
+            "{sample}.genotyped.filtered.vcf.gz.tbi"))
     log:
         str(cfg.processedDataDir) + "/rnaVariantCalling/logs/sample_haplocaller/{sample}.single_vcf.log"
     shell:
         """
         echo "reading multi-sample vcf into single sample vcf"
-        bcftools view -c1 -Oz -s {params.sampleID} -o {output.toDel_tmp} {input}
         echo "split multi-line variants into single lines. Remove those that are artifacts"
-        bcftools norm -m-both {output.toDel_tmp} > {output.toDel_split}
         echo "remove redundant variant info AAAG>AC == AAG>C and remove empty variant calls"
-        bcftools norm -f {params.ref}  {output.toDel_split} |grep -w -v "*"|grep -w -v "0/0" |bgzip -c > {output.vcf}
+
+        bcftools view -c1 -Oz -s {params.sampleID} {input} | \
+        bcftools norm -m-both | \
+        bcftools norm -f {params.ref}  |grep -w -v "*"|grep -w -v "0/0" |bgzip -c > {output.vcf}
+
         tabix -f -p vcf {output.vcf}
         """
 
@@ -535,6 +504,13 @@ rule splitNcigar:
         "rnaVariantCalling/out/bam",
         "{sample}",
         "{sample}_Aligned.sortedByCoord.dupMarked.FAorder.out.bam"),
+        bai = os.path.join(
+        cfg.processedDataDir,
+        "rnaVariantCalling/out/bam",
+        "{sample}",
+        "{sample}_Aligned.sortedByCoord.dupMarked.FAorder.out.bai"),
+        fai = lambda wildcards: str(cfg.RVC.getGenomePath(wildcards.sample)) + ".fai",
+        dict = lambda wildcards: cfg.genome.getFastaDict(cfg.RVC.getGenomePath(wildcards.sample))
     output:
         bam = temp(os.path.join(
         cfg.processedDataDir,
@@ -547,7 +523,7 @@ rule splitNcigar:
         "{sample}",
         "{sample}_Aligned.sortedByCoord.dupMarked.split.out.bai"))
     params:
-        ref = lambda wildcards: cfg.RVC.getGenomePath(wildcards.sample),
+        ref = lambda wildcards: cfg.RVC.getGenomePath(wildcards.sample)
     log:
         str(cfg.processedDataDir) + "/rnaVariantCalling/logs/splitNcigar/{sample}.log"
     shell:
@@ -567,6 +543,7 @@ rule reorderBAM:
         "rnaVariantCalling/out/bam",
         "{sample}",
         "{sample}_Aligned.sortedByCoord.dupMarked.out.bam"),
+        dict = lambda wildcards: cfg.genome.getFastaDict(cfg.RVC.getGenomePath(wildcards.sample))
     output:
         bam = temp(os.path.join(
             cfg.processedDataDir,
@@ -578,25 +555,11 @@ rule reorderBAM:
             cfg.processedDataDir,
             "rnaVariantCalling/out/bam",
             "{sample}",
-            "{sample}_Aligned.sortedByCoord.dupMarked.FAorder.out.bam.bai"))
-    params:
-        tmp_bai = os.path.join(
-            cfg.processedDataDir,
-            "rnaVariantCalling/out/bam",
-            "{sample}",
-            "{sample}_Aligned.sortedByCoord.dupMarked.FAorder.out.bai"),
-        ref = lambda wildcards: cfg.RVC.getGenomePath(wildcards.sample),
-        ref_dict = lambda wildcards: cfg.RVC.getGenomePath(wildcards.sample).rsplit(".",1)[0] + ".dict"
+            "{sample}_Aligned.sortedByCoord.dupMarked.FAorder.out.bai"))
     shell:
         """
-        echo "Create Sequence Dictionary"
-        if [ ! -f "{params.ref_dict}" ]; then
-            gatk CreateSequenceDictionary -R {params.ref}
-        fi
         echo "ReorderSam"
-        gatk ReorderSam -I {input.bam} -O {output.bam} --SEQUENCE_DICTIONARY {params.ref_dict} -S true --CREATE_INDEX true # remove me for gatk4.0.4.0
-        echo "mv {params.tmp_bai} {output.bai}"
-        mv {params.tmp_bai} {output.bai}
+        gatk ReorderSam -I {input.bam} -O {output.bam} --SEQUENCE_DICTIONARY {input.dict} -S true --CREATE_INDEX true 
         """
 
 #Using GATK markDuplicates attempt to identify reads that are technical duplicates of biological reads. Attempts to eliminate noise introduced by library prep
@@ -721,6 +684,32 @@ rule indexReads:
         """
         {input.script} {input.bam} {log} {output.bam} {output.bai}
         """
+rule prepFasta_fa:
+    priority: 20
+    input:
+        "{path_to_fasta}.fa" 
+    output:
+        dict = "{path_to_fasta}.dict" ,
+        fai = "{path_to_fasta}.fa.fai"
+    shell:
+        """
+        samtools faidx {input} -o {output.fai}
+        gatk CreateSequenceDictionary -R {input} -O {output.dict}
+        """
+
+rule prepFasta_fasta:
+    priority: 20
+    input:
+        "{path_to_fasta}.fasta"
+    output:
+        dict = "{path_to_fasta}.dict" ,
+        fai = "{path_to_fasta}.fasta.fai"
+    shell:
+        """
+        samtools faidx {input} -o {output.fai}
+        gatk CreateSequenceDictionary -R {input} -O {output.dict}
+        """
+
 
 # MUST UNCOMMENT indexReads
 #rule readGroups:

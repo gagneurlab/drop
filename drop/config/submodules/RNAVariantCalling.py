@@ -15,10 +15,9 @@ class RVC(Submodule):
         # genomeFiles{config_name -> path} from config and sampleGenomes {sampleID -> config_name} from SA
         self.genomeFiles = genome.reference
         self.sampleGenomes = self.setGenomeDict(self.genomeFiles,group_key="RNA_VARIANT_GROUP")
- 
+
         #update sampleGenomes dict with key for the batch itself
         self.sampleGenomes.update(self.check_batch_genome())
-
 
     # check each batch for one reference file per batch
     def check_batch_genome(self):
@@ -57,4 +56,3 @@ class RVC(Submodule):
         setKey(dict_, None, "hcArgs", "")
         setKey(dict_, None, "minAlt", 3)
         return dict_
-
