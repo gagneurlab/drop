@@ -76,3 +76,29 @@ rule dependencyGraph:
 
 rule publish_local:
     shell: "rsync -Ort {config[htmlOutputPath]} {config[webDir]}"
+
+rule prepFasta_fa:
+    priority: 20
+    input:
+        "{path_to_ref}.fa"
+    output:
+        dict = "{path_to_ref}.dict" ,
+        fai = "{path_to_ref}.fa.fai"
+    shell:
+        """
+        samtools faidx {input} -o {output.fai}
+        gatk CreateSequenceDictionary -R {input} -O {output.dict}
+        """
+
+rule prepFasta_fasta:
+    priority: 20
+    input:
+        "{path_to_ref}.fasta"
+    output:
+        dict = "{path_to_ref}.dict" ,
+        fai = "{path_to_ref}.fasta.fai"
+    shell:
+        """
+        samtools faidx {input} -o {output.fai}
+        gatk CreateSequenceDictionary -R {input} -O {output.dict}
+        """

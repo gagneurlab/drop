@@ -684,32 +684,6 @@ rule indexReads:
         """
         {input.script} {input.bam} {log} {output.bam} {output.bai}
         """
-rule prepFasta_fa:
-    priority: 20
-    input:
-        "{path_to_fasta}.fa" 
-    output:
-        dict = "{path_to_fasta}.dict" ,
-        fai = "{path_to_fasta}.fa.fai"
-    shell:
-        """
-        samtools faidx {input} -o {output.fai}
-        gatk CreateSequenceDictionary -R {input} -O {output.dict}
-        """
-
-rule prepFasta_fasta:
-    priority: 20
-    input:
-        "{path_to_fasta}.fasta"
-    output:
-        dict = "{path_to_fasta}.dict" ,
-        fai = "{path_to_fasta}.fasta.fai"
-    shell:
-        """
-        samtools faidx {input} -o {output.fai}
-        gatk CreateSequenceDictionary -R {input} -O {output.dict}
-        """
-
 
 # MUST UNCOMMENT indexReads
 #rule readGroups:
