@@ -53,5 +53,7 @@ if (params$filter == TRUE) {
     message(paste("filtered to", nrow(fds), "junctions"))
 }
 
+seqlevels(fds) <- seqlevelsInUse(fds)
+colData(fds)$sampleID <- as.character(colData(fds)$sampleID)
 fds <- saveFraserDataSet(fds)
 file.create(snakemake@output$done)

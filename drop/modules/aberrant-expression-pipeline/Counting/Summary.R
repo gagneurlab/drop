@@ -7,8 +7,7 @@
 #'  input: 
 #'    - ods: '`sm cfg.getProcessedResultsDir() +
 #'            "/aberrant_expression/{annotation}/outrider/{dataset}/ods_unfitted.Rds"`'
-#'    - bam_cov: '`sm cfg.getProcessedDataDir() +
-#'                "/aberrant_expression/{annotation}/outrider/{dataset}/bam_coverage.tsv"`'
+#'    - bam_cov: '`sm rules.aberrantExpression_mergeBamStats.output`'
 #'  output:
 #'   - wBhtml: '`sm config["htmlOutputPath"] +
 #'              "/AberrantExpression/Counting/{annotation}/Summary_{dataset}.html"`'

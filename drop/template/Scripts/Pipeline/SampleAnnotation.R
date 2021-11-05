@@ -57,8 +57,8 @@ if(any(sa$aux1 == F)){
 }
 
 #' Check for nonexistent VCF files
-if('DNA_VCF_FILE' %in% colnames(sa)){
-  sa[, aux1 := file.exists(DNA_VCF_FILE) | is.na(DNA_ID)]
+if(! all(sa[,is.na(DNA_VCF_FILE)])){
+  sa[, aux1 := file.exists(DNA_VCF_FILE)]
   if(any(sa$aux1 == F)){
     print('The following VCF files do not exist: ')
     DT::datatable(sa[aux1 == F])

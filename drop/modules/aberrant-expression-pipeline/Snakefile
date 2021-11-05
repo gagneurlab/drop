@@ -22,7 +22,7 @@ rule aberrantExpression_bamStats:
         bam = lambda wildcards: sa.getFilePath(wildcards.sampleID, "RNA_BAM_FILE"),
         ucsc2ncbi = cfg.workDir  / "Scripts/Pipeline/chr_UCSC_NCBI.txt"
     output:
-        cfg.processedDataDir / "aberrant_expression" / "{annotation}" / "coverage" / "{sampleID}.tsv"
+        cfg.processedDataDir / "aberrant_expression" / "bam_stats" / "{sampleID}.txt"
     params:
         samtools = config["tools"]["samtoolsCmd"]
     shell:
@@ -44,11 +44,12 @@ rule aberrantExpression_bamStats:
 
 rule aberrantExpression_mergeBamStats:
     input:
-        lambda w: expand(cfg.getProcessedDataDir() +
-            "/aberrant_expression/{{annotation}}/coverage/{sampleID}.tsv",
-            sampleID=sa.getIDsByGroup(w.dataset), assay="RNA")
+        lambda w: expand(
+            rules.aberrantExpression_bamStats.output[0],
+            sampleID=sa.getIDsByGroup(w.dataset, assay="RNA")
+        )
     output:
-        cfg.getProcessedDataDir() + "/aberrant_expression/{annotation}/outrider/{dataset}/bam_coverage.tsv"
+        cfg.processedDataDir / "aberrant_expression" / "bam_stats" / "{dataset}.tsv"
     params:
         exIDs = lambda w: sa.getIDsByGroup(w.dataset, assay="GENE_COUNT")
     run:
