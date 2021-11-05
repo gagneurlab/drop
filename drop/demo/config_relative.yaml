@@ -64,10 +64,10 @@ rnaVariantCalling:
   - batch_0
   - batch_1
   knownVCFs:
-  - Data/high_confidence_snps_test.vcf.gz
-  - Data/high_confidence_indels_test.vcf.gz
-  - Data/dbSNP_chr21_test.vcf.gz
-  repeat_mask: Data/repeat_mask_chr21_test.bed
+  - Data/high_confidence_snps.vcf.gz
+  - Data/high_confidence_indels.vcf.gz
+  - Data/dbSNP_chr21.vcf.gz
+  repeat_mask: Data/repeat_mask_chr21.bed
   hcArgs: null
   minAlt: 10
 tools:
