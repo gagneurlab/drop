@@ -36,6 +36,7 @@ while read header ; do
         ln -s  $input_bam $output_bam
         ln -s  $input_bai $output_bai
         echo "Done Linking files"
+		samtools view -H $input_bam > $output_newHeader
     else
         echo "WARNING"
         echo "Internal Header is designated: $internalHeader" |tee $log
