@@ -47,10 +47,6 @@ rule all:
         expand(str(cfg.htmlOutputPath) + "/{pipeline}_index.html", pipeline=[conversion_dict[m] for m in modules_to_run]),
         rules.Index.output,
         dep_graph = cfg.get("htmlOutputPath") + "/dependency.done"
-    shell:
-        """
-        rm {input.dep_graph}
-        """
 
 rule sampleAnnotation:
     input: rules.Pipeline_SampleAnnotation_R.output
