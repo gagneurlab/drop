@@ -33,8 +33,8 @@ while read header ; do
         echo "Internal Header $internalHeader matches $sample" |tee $log
         echo "Internal Header is designated: $internalHeader"  |tee -a $log
         echo "SampleID is $sample" |tee -a $log
-        ln -s  $input_bam $output_bam
-        ln -s  $input_bai $output_bai
+        ln -f  $input_bam $output_bam
+        ln -f  $input_bai $output_bai
         echo "Done Linking files"
 		samtools view -H $input_bam > $output_newHeader
     else
