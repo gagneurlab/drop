@@ -70,3 +70,10 @@ fi
 # using the tmp known_sites vcf use BaseRecalibrator
 gatk --java-options -Djava.io.tmpdir=${tmpdir} BaseRecalibrator -I $input_bam -R $ref \
 $known_sites -O $output_bqsr_table 2>&1 | tee -a $log
+
+for tmpfile in $known_sites
+do
+    if [ $tmpfile != "--known-sites" ]; then
+        rm -f $tmpfile
+    fi
+done
