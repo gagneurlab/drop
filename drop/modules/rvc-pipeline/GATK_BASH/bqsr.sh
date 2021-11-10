@@ -12,8 +12,6 @@
 # 8 {resources.tmpdir}
 # 9 {output.bqsr_table}
 
-echo $arr
-
 input_bam=$1
 input_bai=$2
 ref=$3
@@ -66,6 +64,8 @@ else
 
 fi
 
+echo "starting BaseRecalibrator"
 # using the tmp known_sites vcf use BaseRecalibrator
 gatk --java-options -Djava.io.tmpdir=${tmpdir} BaseRecalibrator -I $input_bam -R $ref \
 $known_sites -O $output_bqsr_table 2>&1 | tee -a $log
+
