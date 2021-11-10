@@ -12,6 +12,8 @@
 # 8 {resources.tmpdir}
 # 9 {output.bqsr_table}
 
+echo $arr
+
 input_bam=$1
 input_bai=$2
 ref=$3
@@ -59,10 +61,7 @@ else
     for vcf in $known_vcf_files
     # for each vcf file copy vcf and index into a tmp file
     do
-		tmp_vcf=$(mktemp)
-        cp $vcf ${tmp_vcf}.gz
-        cp ${vcf}.tbi ${tmp_vcf}.gz.tbi
-        known_sites="--known-sites ${tmp_vcf}.gz $known_sites"
+        known_sites="--known-sites ${vcf} $known_sites"
     done
 
 fi
@@ -70,10 +69,3 @@ fi
 # using the tmp known_sites vcf use BaseRecalibrator
 gatk --java-options -Djava.io.tmpdir=${tmpdir} BaseRecalibrator -I $input_bam -R $ref \
 $known_sites -O $output_bqsr_table 2>&1 | tee -a $log
-
-for tmpfile in $known_sites
-do
-    if [ $tmpfile != "--known-sites" ]; then
-        rm -f $tmpfile
-    fi
-done
