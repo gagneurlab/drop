@@ -48,6 +48,7 @@ $bcftools view  $vcf_file | \
     grep -vP '^##INFO=' | \
     awk -F'\t' 'BEGIN {OFS = FS} { if($1 ~ /^[^#]/){ $8 = "." }; print $0 }' | \
     $bcftools norm -m-both | \
+    $bcftools norm -d both | \
     $bcftools view ${sample_flag} -m2 -M2 -v snps > $tmp
 
 # use the select_pattern defined above to pull out the heterozygous variants used for MAE
