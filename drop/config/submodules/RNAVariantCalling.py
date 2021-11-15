@@ -9,6 +9,9 @@ class RVC(Submodule):
             "groups","KGsnps", "millsIndels", "dbSNP","repeat_mask","hcArgs","minAlt"
         ]
         self.name = "rnaVariantCalling"
+        # if self.run is false return without doing any config/sa checks for completeness
+        if not self.run:
+            return
         self.rnaIDs = self.sampleAnnotation.subsetGroups(self.groups, assay="RVC")
         self.batchIDs = self.setBatchDict()
         self.batch_genome = {}
