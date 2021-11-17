@@ -165,7 +165,7 @@ Creating the sample annotation table
 ------------------------------------
 
 For a detailed explanation of the columns of the sample annotation, please refer to
-Box 3 of the `DROP manuscript <https://www.nature.com/articles/s41596-020-00462-5>`_.
+Box 3 of the `DROP manuscript <https://rdcu.be/cdMmF>`_. 
 
 Each row of the sample annotation table corresponds to a unique pair of RNA and DNA
 samples derived from the same individual. An RNA assay can belong to one or more DNA
