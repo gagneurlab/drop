@@ -30,6 +30,7 @@ The config file is in `YAML <https://docs.ansible.com/ansible/latest/reference_a
 
 
 Now we describe the different parameters needed in DROP.
+When providing a path to a file or directory, please provide the *full system path*. 
 
 Global parameters
 +++++++++++++++++
