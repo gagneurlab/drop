@@ -22,6 +22,11 @@ samtools=$8
 tmp=$(mktemp)
 tmp2=$(mktemp)
 
+canonical_chr="chr1,chr2,chr3,chr4,chr5,chr6,chr7,chr8,chr9,chr10,\
+chr11,chr12,chr13,chr14,chr15,chr16,chr17,chr18,chr19,chr20,\
+chr21,chr22,chrX,chrY,chrM,\
+1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,X,Y,MT"
+
 echo 'Filter SNVs'
 
 # if not doing QC, check for sampleID and select heterozygous variants for MAE
@@ -44,7 +49,7 @@ fi
 # view the vcf file and remove the info header information and the set the INFO column to '.'
 # split any multi-allelic lines
 # pull out the sample and only the snps that have at least 2 reads supporting it
-$bcftools view  $vcf_file | \
+$bcftools view  $vcf_file -r $canonical_chr | \
     grep -vP '^##INFO=' | \
     awk -F'\t' 'BEGIN {OFS = FS} { if($1 ~ /^[^#]/){ $8 = "." }; print $0 }' | \
     $bcftools norm -m-both | \
