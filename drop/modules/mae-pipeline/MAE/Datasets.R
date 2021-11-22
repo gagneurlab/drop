@@ -24,7 +24,7 @@ devNull <- sapply(datasets, function(name){
     cat(paste0(
       "<h1>Dataset: ", name, "</h1>",
       "<p>",
-      "</br>", "<a href='MAE/", name, "--", version, "_results.html'   >MAE results</a>",
+      "</br>", "<a href='MonoallelicExpression/", name, "--", version, "_results.html'   >MAE results</a>",
       "</br>", "</p>"
     ))
   })

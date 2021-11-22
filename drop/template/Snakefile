@@ -4,8 +4,6 @@ import drop
 import wbuild
 from wbuild.createIndex import ci
 
-configfile: "config.yaml"
-
 projectDir = Path.cwd().resolve()
 drop.checkDropVersion(projectDir)
 _, projectPaths = drop.setupPaths(projectDir)
