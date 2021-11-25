@@ -32,8 +32,14 @@ implementation <- snakemake@config$aberrantExpression$implementation
 mp <- snakemake@config$aberrantExpression$maxTestedDimensionProportion
 register(MulticoreParam(snakemake@threads))
 
-## subset filtered and estimate
+## subset filtered
 ods <- ods[mcols(ods)$passedFilter,] 
+
+# add gene ranges to rowData
+gr <- unlist(endoapply(rowRanges(ods), range))
+if(length(gr) > 0)
+    rowData(ods) <- cbind(rowData(ods), DataFrame(as.data.table(gr)))
+
 ods <- estimateSizeFactors(ods)
 
 ## find optimal encoding dimension
