@@ -36,5 +36,9 @@ ods <- filterExpression(ods, gtfFile=txdb, filter=FALSE,
 # add column for genes with at least 1 gene
 rowData(ods)$counted1sample = rowSums(assay(ods)) > 0
 
+# add gene ranges
+gr <- unlist(endoapply(rowRanges(ods), range))
+rowData(ods) <- cbind(rowData(ods), DataFrame(as.data.table(gr)))
+
 # Save the ods before filtering to preserve the original number of genes
 saveRDS(ods, snakemake@output$ods)
