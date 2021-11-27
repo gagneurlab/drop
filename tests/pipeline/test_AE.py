@@ -10,7 +10,7 @@ class Test_AE_Pipeline:
         run("awk -v n=1 \'/run: true/ { if (++count == n) sub(/run: true/, \"run: false\"); } 1\' \
           config.yaml > config_AE_norun.yaml  ",demo_dir)
         pipeline_run = run(["snakemake", "aberrantExpression", f"-j{CORES}", "--configfile", "config_AE_norun.yaml"], demo_dir)
-        assert "Nothing to be done." in pipeline_run.stderr
+        assert "Nothing to be done" in pipeline_run.stderr
         return pipeline_run
 
 
