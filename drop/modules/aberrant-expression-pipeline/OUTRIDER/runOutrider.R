@@ -37,8 +37,11 @@ ods <- ods[mcols(ods)$passedFilter,]
 
 # add gene ranges to rowData
 gr <- unlist(endoapply(rowRanges(ods), range))
-if(length(gr) > 0)
-    rowData(ods) <- cbind(rowData(ods), DataFrame(as.data.table(gr)))
+if(length(gr) > 0){
+    rd <- rowData(ods)
+    rowRanges(ods) <- gr
+    rowData(ods) <- rd
+}
 
 ods <- estimateSizeFactors(ods)
 
