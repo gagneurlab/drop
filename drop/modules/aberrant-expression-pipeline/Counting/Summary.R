@@ -90,8 +90,8 @@ p_sf_cov <- ggplot(coverage_dt, aes(read_count, size_factors)) +
   ylim(c(0,NA)) +
   theme_cowplot() +
   background_grid() +
-  labs(title = 'Size Factors vs. Read Count Ratio',
-       x = 'Read Count Ratio', y = 'Size Factors')
+  labs(title = 'Size Factors vs. Read Counts',
+       x = 'Read Counts', y = 'Size Factors')
 
 #+ sizeFactors, fig.height=6, fig.width=12
 plot_grid(p_sf, p_sf_cov)
