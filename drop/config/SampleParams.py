@@ -32,41 +32,48 @@ class SampleParams:
     # helper object containing the relevant information for the module/param pair
     # each Param Helper has [include,SA columns, group,path]
     AE_countParams = ParamHelper(
+    # include the following columns (in the list), don't group the samples by DROP/RVC group, and use the suffix _counts
                    True,
                    ["RNA_ID", "RNA_BAM_FILE","COUNT_MODE", "PAIRED_END", "COUNT_OVERLAPS", "STRAND"],
                    False,
                    "counts")
 
+    # include the following columns (in the list), group the samples by DROP/RVC group, and use the suffix _merge
     AE_mergeParams = ParamHelper(
                    True,
                    ["RNA_ID", "RNA_BAM_FILE","COUNT_MODE", "PAIRED_END", "COUNT_OVERLAPS", "STRAND"],
                    True,
                    "merge")
 
+    # include the following columns (in the list), group the samples by DROP/RVC group, and use the suffix _results
     AE_resultParams= ParamHelper(
                    True,
                    ["RNA_ID","DNA_ID","HPO_TERMS","GENE_COUNTS_FILE","GENE_ANNOTATION"],
                    True,
                    "results")
 
+    # include the following columns (in the list), don't group the samples by DROP/RVC group, and use the suffix _snvs
     MAE_snvParams = ParamHelper(
                    True,
                    ["RNA_ID","DNA_ID","RNA_BAM_FILE", "DNA_VCF_FILE","GENOME"],
                    False,
                    "snvs")
 
+    # exclude the following columns (in the list), group the samples by DROP/RVC group, and use the suffix _results
     MAE_resultParams = ParamHelper(
                    False,
-                   ["RNA_BAM_FILE", "DNA_VCF_FILE","DROP_GROUP","RNA_VARIANT_GROUP"],
+                   ["DROP_GROUP","RNA_VARIANT_GROUP"],
                    True,
                    "results")
 
+    # include the following columns (in the list), don't group the samples by DROP/RVC group, and use the suffix _samples
     RVC_sampleParams = ParamHelper(
                    True,
                    ["RNA_ID","RNA_BAM_FILE","RNA_VARIANT_GROUP","GENOME"],
                    False,
                    "samples")
 
+    # include the following columns (in the list), group the samples by DROP/RVC group, and call it batches
     RVC_batchParams = ParamHelper(
                    True,
                    ["RNA_ID","RNA_BAM_FILE","RNA_VARIANT_GROUP","GENOME"],

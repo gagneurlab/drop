@@ -28,6 +28,8 @@ class SampleAnnotation:
         self.idMapping = self.createIdMapping()
         self.sampleFileMapping = self.createSampleFileMapping()
 
+        # if RNA_VARIANT_GROUP exists, continue by setting the rnaIDs
+        # catch key errors and print that this column does not exist and set variant IDs to {}
         try:
             self.rnaIDs_RVC = self.createGroupIds(file_type="RNA_BAM_FILE", sep=',',group_key = "RNA_VARIANT_GROUP")
         except KeyError:
@@ -48,26 +50,30 @@ class SampleAnnotation:
             "PAIRED_END": bool, "COUNT_MODE": str, "COUNT_OVERLAPS": bool, "STRAND": str, "GENOME": str, "RNA_VARIANT_GROUP":str
         }
         annotationTable = pd.read_csv(self.file, sep=sep, index_col=False)
+
+        # check if any "required" columns are missing. If so look to see which ones
         missing_cols = [x for x in self.SAMPLE_ANNOTATION_COLUMNS if x not in annotationTable.columns.values]
         if len(missing_cols) > 0:
+            # if the missing columns are RNA_VARIANT_GROUP or GENOME (optional coumns) remove them
             if "RNA_VARIANT_GROUP" in missing_cols:
                 # deal with missing columns in data types, remove it to fix checks later
                 del data_types["RNA_VARIANT_GROUP"]
                 self.SAMPLE_ANNOTATION_COLUMNS.remove("RNA_VARIANT_GROUP")
                 missing_cols.remove("RNA_VARIANT_GROUP")
-
             if "GENOME" in missing_cols:
                 # deal with missing columns in data types, remove it to fix checks later
                 del data_types["GENOME"]
                 self.SAMPLE_ANNOTATION_COLUMNS.remove("GENOME")
                 missing_cols.remove("GENOME")
 
+            # if the missing columns are GENE_ANNOTATION see if the old ANNOTATION column header is there. use that and warn the user
             if "GENE_ANNOTATION" in missing_cols and "ANNOTATION" in annotationTable.columns.values:
                 logger.info(
                     "WARNING: GENE_ANNOTATION must be a column in the sample annotation table, ANNOTATION is the old column name and will be deprecated in the future\n")
                 annotationTable["GENE_ANNOTATION"] = annotationTable.pop("ANNOTATION")
                 missing_cols.remove("GENE_ANNOTATION")
 
+            # if there are still missing columns, print the required ones that aren't present
             if len(missing_cols) > 0:
                 raise ValueError(f"Incorrect columns in sample annotation file. Missing:\n{missing_cols}")
 
@@ -246,8 +252,8 @@ class SampleAnnotation:
     def getGenomes(self, value, group, file_type="RNA_ID",
                             column="GENOME", group_key="DROP_GROUP",exact_match = True,skip = False):
         """
-        :param value: values to match in the column. Must be an exact match, passed to subsetting sample annotation 
-        :param group: a group of the group_key (DROP_GROUP) column. 
+        :param value: values to match in the column. Must be an exact match, passed to subsetting sample annotation
+        :param group: a group of the group_key (DROP_GROUP) column.
         :return: dict file_type to column
         """
 

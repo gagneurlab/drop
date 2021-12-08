@@ -22,8 +22,11 @@ class RVC(Submodule):
         #update sampleGenomes dict with key for the batch itself
         self.sampleGenomes.update(self.check_batch_genome())
 
-    # check each batch for one reference file per batch
     def check_batch_genome(self):
+    """
+    raise an error if a batch as definied by the sample annotation column RNA_VARIANT_GROUP contains more than one genome
+    as defined by the sample annotation column GENOME
+    """
         ref_genomes = dict()
         for batch in self.sampleAnnotation.rnaIDs_RVC:
             if batch in self.groups:
@@ -38,6 +41,10 @@ class RVC(Submodule):
         return ref_genomes
 
     def setBatchDict(self):
+    """
+    build a dictionary that connects the RNAID to the batch value. sample1 -> batch0 as defined by the sample annotation table
+    each sample can only belong to a single batch. sample1 -> batch0 sample1 -> batch1
+    """
         if not self.run:
             return {}
         if (len(self.rnaIDs.items()) < 1): raise ValueError("No RNA IDs found in the group, can not create dictionary")
