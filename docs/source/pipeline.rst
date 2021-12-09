@@ -84,7 +84,7 @@ Updating DROP
 +++++++++++++
 Every time a project is initialized, a temporary folder ``.drop`` will be created in the project folder.
 If a new version of drop is installed, the ``.drop`` folder has to be updated for each project that has been
-initialized using an older version. `drop update` will also reset the local project's `Scripts/` directory to match the installed version, so be sure to save any additional scripts or analysis in another location.
+initialized using an older version. `drop update` will also reset the local project's `Scripts/` directory to match the installed version, so be sure to save any additional scripts or analyses in another location.
 
 To do this run:
 
