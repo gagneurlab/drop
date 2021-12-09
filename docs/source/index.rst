@@ -21,7 +21,7 @@ Quickstart
 
 DROP is available on `bioconda <https://anaconda.org/bioconda/drop>`_.
 We recommend using a dedicated conda environment. (installation time: ~ 10min)
-We have found that `mamba` instead of `conda` provides more reliable and faster dependency solving.
+Use `mamba` instead of `conda` as it provides more reliable and faster dependency solving.
 
 .. code-block:: bash
 
