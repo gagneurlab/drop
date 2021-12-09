@@ -149,7 +149,7 @@ knownVCFs              list       Filepaths where each item in the list is path 
                                                                                                                                                                                                          ``- known_indels.vcf``
 
 repeat_mask            character  Location of the RepeatMask .bed file.                                                                                                                                  ``path/to/RepeatMask.bed``
-minAlt                 numeric    Integer describing the minimum required reads that support the alternative allele. We recommend using a minimum of 3 if further filtering on your own. 10 otherwise.   ``3``
+minAlt                 numeric    Integer describing the minimum required reads that support the alternative allele. We recommend a minimum of 3 if further filtering on your own. 10 otherwise.   ``3``
 hcArgs                 character  String describing additional arguments for GATK haplocaller. For expert tuning.                                                                                        ``""``
 
 =====================  =========  =====================================================================================================================================================================  =========
@@ -250,7 +250,7 @@ EXT-2R          BLOOD                          /path/to/externalCounts.tsv.gz  g
 Files to download
 -----------------
 
-Two different files can be downloaded from our `public repository <https://www.cmm.in.tum.de/public/paper/drop_analysis/resource/>`_.
+The following files can be downloaded from our `public repository <https://www.cmm.in.tum.de/public/paper/drop_analysis/resource/>`_.
 
 1. VCF file containing different positions to be used to match DNA with RNA files.
 The file name is ``qc_vcf_1000G_{genome_build}.vcf.gz``. One file is available for each
