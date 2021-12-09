@@ -17,6 +17,7 @@ exportCounts:
   excludeGroups:
   - mae
   - import_exp
+  
 aberrantExpression:
   run: true
   groups:
@@ -27,9 +28,7 @@ aberrantExpression:
   padjCutoff: 1
   zScoreCutoff: 0
   maxTestedDimensionProportion: 3
-  dassie:
-    tssWindow: 500
-    pasWindow: 1000
+
 aberrantSplicing:
   run: true
   groups:
@@ -45,6 +44,7 @@ aberrantSplicing:
   zScoreCutoff: 0
   deltaPsiCutoff: 0.05
   maxTestedDimensionProportion: 6
+  
 mae:
   run: true
   groups:
@@ -58,6 +58,7 @@ mae:
   qcVcf: Data/qc_vcf_1000G.vcf.gz
   qcGroups:
   - mae
+  
 rnaVariantCalling:
   run: true
   groups:
@@ -70,6 +71,7 @@ rnaVariantCalling:
   repeat_mask: Data/repeat_mask_chr21.bed
   hcArgs: null
   minAlt: 10
+  
 tools:
   gatkCmd: gatk
   bcftoolsCmd: bcftools
