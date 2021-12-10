@@ -69,6 +69,7 @@ rnaVariantCalling:
   - Data/high_confidence_indels.vcf.gz
   - Data/dbSNP_chr21.vcf.gz
   repeat_mask: Data/repeat_mask_chr21.bed
+  createSingleVCF: false
   hcArgs: null
   minAlt: 10
   

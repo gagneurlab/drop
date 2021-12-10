@@ -6,6 +6,7 @@ class Test_RVC_Config:
             'knownVCFs': [f'{demo_dir}/Data/high_confidence_snps.vcf.gz', f'{demo_dir}/Data/high_confidence_indels.vcf.gz', f'{demo_dir}/Data/dbSNP_chr21.vcf.gz'],
             'repeat_mask': f'{demo_dir}/Data/repeat_mask_chr21.bed',
             'hcArgs': '',
+            'createSingleVCF': False,
             'minAlt': 10
         }
         print(dropConfig.RVC.dict_.items())

@@ -27,8 +27,8 @@ class Test_RVC_Pipeline:
     @pytest.mark.usefixtures("pipeline_run")
     # count the number of variant calls in batch0 before splitting
     def test_variants_batch(self, demo_dir):
-        vcf_file0 = f"{demo_dir}/Output/processed_data/rnaVariantCalling/out/all_samples_haplocaller/batch_0_all_samples.genotyped.filtered_clean.vcf.gz"
-        vcf_file1 = f"{demo_dir}/Output/processed_data/rnaVariantCalling/out/all_samples_haplocaller/batch_1_all_samples.genotyped.filtered_clean.vcf.gz"
+        vcf_file0 = f"{demo_dir}/Output/processed_data/rnaVariantCalling/out/all_samples_haplocaller/batch_0/batch_0_v29.annotated.vcf.gz"
+        vcf_file1 = f"{demo_dir}/Output/processed_data/rnaVariantCalling/out/all_samples_haplocaller/batch_1/batch_1_v29.annotated.vcf.gz"
         r_cmd = """ 
                 library(data.table)
                 vcf0  <- fread("{}")
@@ -41,17 +41,3 @@ class Test_RVC_Pipeline:
         r = runR(r_cmd, demo_dir)
         assert "[1] 585" in r.stdout
         assert "[1] 812" in r.stdout
-
-    @pytest.mark.usefixtures("pipeline_run")
-    def test_single_sample_variants(self, demo_dir):
-        result_dir = f"{demo_dir}/Output/processed_data/rnaVariantCalling/out/sample_haplocaller/HG00096"
-        r_cmd = """ 
-                library(data.table)
-                masked_filter <- fread(file.path("{}", "HG00096.genotyped.filtered.basic10.masked.vcf.gz"))
-
-                paste("Masked:",nrow(masked_filter[grepl("Mask",FILTER)]))
-                paste("Passed:",nrow(masked_filter[FILTER == "PASS"]))
-                """.format(result_dir,result_dir)
-        r = runR(r_cmd, demo_dir)
-        assert '[1] "Masked: 28"'  in r.stdout
-        assert '[1] "Passed: 120"' in r.stdout
