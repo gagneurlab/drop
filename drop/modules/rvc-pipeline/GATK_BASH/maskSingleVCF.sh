@@ -19,7 +19,7 @@ tmpdir=$4
 log=$5
 output_vcf=$6
 
-tmp_bed=$(:ktemp)
+tmp_bed=$(mktemp)
 tmp_bed="${tmp_bed}.bed"
 
 vcf_chr=$(zgrep -v "^#" $input_vcf | cut -f1 | grep -c "^chr" ||true )

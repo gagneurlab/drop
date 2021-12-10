@@ -7,15 +7,15 @@
 #'  input:
 #'    - vcfFilesBatch: '`sm expand(cfg.getProcessedDataDir() +
 #'                      "/rnaVariantCalling/out/all_samples_haplocaller/" + 
-#'                      "{batchID}_all_samples.genotyped.filtered_clean.vcf.gz",
-#'                  batchID=cfg.RVC.groups)`'
+#'                      "{dataset}/{dataset}.processed.vcf.gz",
+#'                  dataset=cfg.RVC.groups)`'
 #'    - countFiles: '`sm expand(cfg.getProcessedDataDir() +
 #'                      "/rnaVariantCalling/out/sample_haplocaller/" + 
 #'                      "{sample}/{sample}_variant_counts.txt",
 #'                  sample=cfg.RVC.batchIDs,min_alt=getMinAlt())`'
 #'    - vcfFilesMasked: '`sm expand(cfg.getProcessedDataDir() +
 #'                      "/rnaVariantCalling/out/sample_haplocaller/" + 
-#'                      "{sample}/{sample}.genotyped.filtered.basic{min_alt}.masked.vcf.gz",
+#'                      "{sample}/{sample}.vcf.gz",
 #'                  sample=cfg.RVC.batchIDs,min_alt=getMinAlt())`'
 #' output:
 #'   html_document:
