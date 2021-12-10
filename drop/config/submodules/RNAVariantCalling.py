@@ -12,12 +12,12 @@ class RVC(Submodule):
         # if self.run is false return without doing any config/sa checks for completeness
         if not self.run:
             return
-        self.rnaIDs = self.sampleAnnotation.subsetGroups(self.groups, assay="RVC")
+        self.rnaIDs = self.sampleAnnotation.subsetGroups(self.groups)
         self.batchIDs = self.setBatchDict()
         self.batch_genome = {}
         # genomeFiles{config_name -> path} from config and sampleGenomes {sampleID -> config_name} from SA
         self.genomeFiles = genome.reference
-        self.sampleGenomes = self.setGenomeDict(self.genomeFiles,group_key="RNA_VARIANT_GROUP")
+        self.sampleGenomes = self.setGenomeDict(self.genomeFiles)
 
         #update sampleGenomes dict with key for the batch itself
         self.sampleGenomes.update(self.check_batch_genome())
@@ -28,10 +28,10 @@ class RVC(Submodule):
         as defined by the sample annotation column GENOME
         """
         ref_genomes = dict()
-        for batch in self.sampleAnnotation.rnaIDs_RVC:
+        for batch in self.sampleAnnotation.rnaIDs:
             if batch in self.groups:
                 ref_genomes[batch] = set()
-                for sample in self.sampleAnnotation.rnaIDs_RVC[batch]:
+                for sample in self.sampleAnnotation.rnaIDs[batch]:
                     ref_genomes[batch].add(self.sampleGenomes[sample])
                 if len(ref_genomes[batch]) != 1:
                     raise ValueError(f"The reference genome files {ref_genomes} within a batch must be the same")
@@ -60,7 +60,7 @@ class RVC(Submodule):
         super().setDefaultKeys(dict_)
         setKey = utils.setKey
         dict_ = utils.checkKeys(dict_, keys=["repeat_mask"], check_files=True)
-        groups = setKey(dict_, None, "groups", self.sampleAnnotation.getGroups(assay="RVC"))
+        groups = setKey(dict_, None, "groups", self.sampleAnnotation.getGroups())
         setKey(dict_, None, "knownVCFs", [])
         setKey(dict_, None, "repeat_mask", "")
         setKey(dict_, None, "hcArgs", "")

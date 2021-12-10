@@ -9,14 +9,10 @@
 #'                      "/rnaVariantCalling/out/all_samples_haplocaller/" + 
 #'                      "{dataset}/{dataset}.processed.vcf.gz",
 #'                  dataset=cfg.RVC.groups)`'
-#'    - countFiles: '`sm expand(cfg.getProcessedDataDir() +
-#'                      "/rnaVariantCalling/out/sample_haplocaller/" + 
-#'                      "{sample}/{sample}_variant_counts.txt",
-#'                  sample=cfg.RVC.batchIDs,min_alt=getMinAlt())`'
 #'    - vcfFilesMasked: '`sm expand(cfg.getProcessedDataDir() +
 #'                      "/rnaVariantCalling/out/sample_haplocaller/" + 
 #'                      "{sample}/{sample}.vcf.gz",
-#'                  sample=cfg.RVC.batchIDs,min_alt=getMinAlt())`'
+#'                  sample=cfg.RVC.batchIDs)`'
 #' output:
 #'   html_document:
 #'    code_folding: hide
@@ -29,16 +25,3 @@ library(ggplot2)
 
 saveRDS(snakemake, snakemake@log$snakemake)
 
-#+ eval=TRUE, echo=FALSE
-plot_table <- lapply(snakemake@input$countFiles,
-  function(x){
-  tmp_variants <- fread(x,sep = ",")
-  }
-)
-
-plot_table <- rbindlist(plot_table)
-plot_table$GT <- as.factor(plot_table$GT)
-ggplot(melt(plot_table,measure.vars = 3:5),aes(x = variable, y= value,fill=GT)) + geom_boxplot() + 
-  ylab("Number of Variants") + xlab("")
-
-DT::datatable(plot_table, filter = 'top')

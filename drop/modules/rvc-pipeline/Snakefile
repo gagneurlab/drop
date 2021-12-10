@@ -45,7 +45,7 @@ rule rnaVariantCalling:
             expand(os.path.join(
                 cfg.processedDataDir,
                 "rnaVariantCalling/out/all_samples_haplocaller", "{dataset}",
-                "{dataset}.{annotation}.vcf.gz"),
+                "{dataset}_{annotation}.annotated.vcf.gz"),
                 annotation = cfg.get("geneAnnotation"), dataset = cfg.RVC.groups)
     output: RVC_index_output
     run:
@@ -160,12 +160,12 @@ rule simpleAnnotateVCF:
             cfg.processedDataDir,
             "rnaVariantCalling/out/all_samples_haplocaller",
             "{dataset}",
-            "{dataset}.{annotation}.vcf.gz"),
+            "{dataset}_{annotation}.annotated.vcf.gz"),
         vcf_tabix = os.path.join(
             cfg.processedDataDir,
             "rnaVariantCalling/out/all_samples_haplocaller",
             "{dataset}",
-            "{dataset}.{annotation}.vcf.gz.tbi"),
+            "{dataset}_{annotation}.annotated.vcf.gz.tbi"),
         temp_bed = temp(os.path.join(
             cfg.processedDataDir,
             "rnaVariantCalling/out/all_samples_haplocaller",
@@ -341,7 +341,7 @@ rule combineGVCFs:
             "rnaVariantCalling/out/sample_haplocaller",
             "{sample}",
             "{sample}.g.vcf.gz"
-            ), sample = sa.getIDsByGroup(wildcards.dataset,assay = "RVC"))
+            ), sample = sa.getIDsByGroup(wildcards.dataset))
     output:
         gvcf = os.path.join(
             cfg.processedDataDir,
@@ -362,7 +362,7 @@ rule combineGVCFs:
             "rnaVariantCalling/out/sample_haplocaller",
             "{sample}",
             "{sample}.g.vcf.gz"
-            ), sample = sa.getIDsByGroup(wildcards.dataset,assay = "RVC"))]
+            ), sample = sa.getIDsByGroup(wildcards.dataset))]
     log:
         str(cfg.processedDataDir) + "/rnaVariantCalling/logs/all_haplocaller/{dataset}_combineGVCF.log"
     shell:

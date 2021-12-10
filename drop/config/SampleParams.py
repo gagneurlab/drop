@@ -61,8 +61,8 @@ class SampleParams:
 
     # exclude the following columns (in the list), group the samples by DROP/RVC group, and use the suffix _results
     MAE_resultParams = ParamHelper(
-                   False,
-                   ["DROP_GROUP","RNA_VARIANT_GROUP"],
+                   True,
+                   ["RNA_ID","DNA_ID","DROP_GROUP","RNA_BAM_FILE", "DNA_VCF_FILE","GENOME"],
                    True,
                    "results")
 
@@ -125,14 +125,12 @@ class SampleParams:
         """
         for ann in self.geneAnnotation:
             for module in moduleList:
-                assay="RNA"
                 if module.name == "AberrantExpression":
                     modulePath = self.processedDataDir / self.MODULE_NAMES[module.name] / ann / "params"
                 elif module.name == "MonoallelicExpression":
                     modulePath = self.processedDataDir / self.MODULE_NAMES[module.name] / "params"
                 elif module.name == "rnaVariantCalling":
                     modulePath = self.processedDataDir / self.MODULE_NAMES[module.name] / "params"
-                    assay="RVC"
                 elif module.name == "AberrantSplicing":
                     continue
                     #modulePath = self.processedDataDir / self.MODULE_NAMES[module.name] / "params"
@@ -147,10 +145,9 @@ class SampleParams:
                              self.PARAM_COLS[module.name][paramType].sampleAnnotationColumns,
                              self.PARAM_COLS[module.name][paramType].include,
                              self.PARAM_COLS[module.name][paramType].group,
-                             assay=assay
                          )
 
-    def writeSampleParams(self,module,path,file_suffix,param_cols,include,group_param,assay="RNA"):
+    def writeSampleParams(self,module,path,file_suffix,param_cols,include,group_param):
         """
         module: object. Drop module object, used to get drop group attributes
         path: string. path to where to write the param files
@@ -164,10 +161,10 @@ class SampleParams:
         sa_df = self.sampleAnnotation.annotationTable
 
         all_RNA_ids = []
-        # for each DROP_GROUP used for aberrantExpression build the list of RNA_IDs that are going to be merged for that run
+        # for each DROP_GROUP used for each module build the list of RNA_IDs that are going to be merged for that run
         # also build a list of all RNA_IDs triggered in this run
         for group in module_groups:
-            group_IDs = self.sampleAnnotation.getIDsByGroup(group, assay=assay) + \
+            group_IDs = self.sampleAnnotation.getIDsByGroup(group) + \
                           self.sampleAnnotation.getIDsByGroup(group, assay="GENE_COUNT")
             all_RNA_ids = all_RNA_ids + group_IDs
 

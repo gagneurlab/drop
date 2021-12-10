@@ -28,13 +28,6 @@ class SampleAnnotation:
         self.idMapping = self.createIdMapping()
         self.sampleFileMapping = self.createSampleFileMapping()
 
-        # if RNA_VARIANT_GROUP exists, continue by setting the rnaIDs
-        # catch key errors and print that this column does not exist and set variant IDs to {}
-        try:
-            self.rnaIDs_RVC = self.createGroupIds(file_type="RNA_BAM_FILE", sep=',',group_key = "RNA_VARIANT_GROUP")
-        except KeyError:
-            logger.info("RNA_VARIANT_GROUP not in annotation table, can not create RVC IDs")
-            self.rnaIDs_RVC = {}
         self.rnaIDs = self.createGroupIds(file_type="RNA_BAM_FILE", sep=',')
         self.dnaIDs = self.createGroupIds(file_type="DNA_VCF_FILE", sep=',')
         # external counts
@@ -301,8 +294,6 @@ class SampleAnnotation:
         for assay in assays:
             if "RNA" in assay:
                 groupedIDs.update(self.rnaIDs)
-            elif "RVC" in assay:
-                groupedIDs.update(self.rnaIDs_RVC)
             elif "DNA" in assay:
                 groupedIDs.update(self.dnaIDs)
             elif "GENE_COUNT" in assay:
