@@ -12,7 +12,7 @@ class SampleAnnotation:
     FILE_TYPES = ["RNA_BAM_FILE", "DNA_VCF_FILE", "GENE_COUNTS_FILE"]
     SAMPLE_ANNOTATION_COLUMNS = FILE_TYPES + [
         "RNA_ID", "DNA_ID", "DROP_GROUP", "GENE_ANNOTATION",
-        "PAIRED_END", "COUNT_MODE", "COUNT_OVERLAPS", "STRAND", "GENOME", "RNA_VARIANT_GROUP"
+        "PAIRED_END", "COUNT_MODE", "COUNT_OVERLAPS", "STRAND", "GENOME"
     ]
 
     def __init__(self, file, root, genome):
@@ -40,19 +40,14 @@ class SampleAnnotation:
         """
         data_types = {
             "RNA_ID": str, "DNA_ID": str, "DROP_GROUP": str, "GENE_ANNOTATION": str,
-            "PAIRED_END": bool, "COUNT_MODE": str, "COUNT_OVERLAPS": bool, "STRAND": str, "GENOME": str, "RNA_VARIANT_GROUP":str
+            "PAIRED_END": bool, "COUNT_MODE": str, "COUNT_OVERLAPS": bool, "STRAND": str, "GENOME": str
         }
         annotationTable = pd.read_csv(self.file, sep=sep, index_col=False)
 
         # check if any "required" columns are missing. If so look to see which ones
         missing_cols = [x for x in self.SAMPLE_ANNOTATION_COLUMNS if x not in annotationTable.columns.values]
         if len(missing_cols) > 0:
-            # if the missing columns are RNA_VARIANT_GROUP or GENOME (optional coumns) remove them
-            if "RNA_VARIANT_GROUP" in missing_cols:
-                # deal with missing columns in data types, remove it to fix checks later
-                del data_types["RNA_VARIANT_GROUP"]
-                self.SAMPLE_ANNOTATION_COLUMNS.remove("RNA_VARIANT_GROUP")
-                missing_cols.remove("RNA_VARIANT_GROUP")
+            # if the missing columns is GENOME (optional coumns) remove them
             if "GENOME" in missing_cols:
                 # deal with missing columns in data types, remove it to fix checks later
                 del data_types["GENOME"]

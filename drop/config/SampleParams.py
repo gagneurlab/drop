@@ -69,14 +69,14 @@ class SampleParams:
     # include the following columns (in the list), don't group the samples by DROP/RVC group, and use the suffix _samples
     RVC_sampleParams = ParamHelper(
                    True,
-                   ["RNA_ID","RNA_BAM_FILE","RNA_VARIANT_GROUP","GENOME"],
+                   ["RNA_ID","RNA_BAM_FILE","DROP_GROUP","GENOME"],
                    False,
                    "samples")
 
     # include the following columns (in the list), group the samples by DROP/RVC group, and call it batches
     RVC_batchParams = ParamHelper(
                    True,
-                   ["RNA_ID","RNA_BAM_FILE","RNA_VARIANT_GROUP","GENOME"],
+                   ["RNA_ID","RNA_BAM_FILE","DROP_GROUP","GENOME"],
                    True,
                    "batches")
 

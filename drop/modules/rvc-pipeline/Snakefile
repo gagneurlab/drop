@@ -34,7 +34,7 @@ def createSingleVCF():
         return []
         
 #################################
-#make sure all of the different {dataset} and {sample} are processed. As defined by the sample annotation table RNA_VARIANT_GROUPS
+#make sure all of the different {dataset} and {sample} are processed. As defined by the sample annotation table DROP_GROUP
 rule rnaVariantCalling:
     priority: 1
     input:  RVC_index_input,

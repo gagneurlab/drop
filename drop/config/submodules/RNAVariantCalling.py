@@ -24,7 +24,7 @@ class RVC(Submodule):
 
     def check_batch_genome(self):
         """
-        raise an error if a batch as definied by the sample annotation column RNA_VARIANT_GROUP contains more than one genome
+        raise an error if a batch as definied by the sample annotation column contains more than one genome
         as defined by the sample annotation column GENOME
         """
         ref_genomes = dict()
@@ -52,7 +52,7 @@ class RVC(Submodule):
         setKey = utils.setKey
         for key,values in self.rnaIDs.items():
             for v in values:
-                if(v) in dict_.keys(): raise ValueError("RNA IDs must be unique to the RNA Variant Calling group, can not have an RNA_ID point to multiple RNA_VARIANT_GROUPs")
+                if(v) in dict_.keys(): raise ValueError("RNA IDs must be unique to the RNA Variant Calling group, can not have an RNA_ID point to multiple DROP_GROUP groups")
                 setKey(dict_, None, v ,key)
         return dict_
 
