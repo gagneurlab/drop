@@ -42,7 +42,7 @@ if (snakemake@config$mae$addAF == TRUE) {
     # obtain the assembly from the config
     genome_assembly <- snakemake@config$genomeAssembly
     rmae <- add_gnomAD_AF(rmae, genome_assembly = genome_assembly,
-        max_af_cutoff = snakemake@config$mae$maxAF)
+        max_af_cutoff = snakemake@config$mae$maxAF, populations = c("AF", "AF_afr", "AF_amr", "AF_eas", "AF_nfe"))
 } else {
     rmae[, rare := NA]
 }
