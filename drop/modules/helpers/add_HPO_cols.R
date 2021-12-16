@@ -17,6 +17,7 @@ add_HPO_cols <- function(RES, sample_id_col = 'sampleID',
   # Get HPO terms of all genes
   f2 <- merge(RES[, .(sampleID, hgncSymbol)], 
             hpo_dt[,.(hgncSymbol, HPO_id, HPO_label)], by = 'hgncSymbol')
+  sa[, HPO_TERMS := gsub(', ', ',', HPO_TERMS)]
   
   if(nrow(f2) > 0){
     f3 <- merge(f2, sa[,.(RNA_ID, HPO_TERMS)], by.x = 'sampleID', by.y = 'RNA_ID')
