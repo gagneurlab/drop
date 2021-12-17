@@ -88,7 +88,7 @@ mcols(fds, type="ss")$annotatedJunction <-  "none"
 res_junc <- results(fds,
                     padjCutoff=snakemake@params$padjCutoff,
                     zScoreCutoff=snakemake@params$zScoreCutoff,
-                    deltaPsiCutoff=snakemake@params$deltaPsiCutoff,
+                    deltaPsiCutoff=snakemake@params$deltaPsiCutof,
                     additionalColumns="annotatedJunction")
 res_junc_dt   <- as.data.table(res_junc)
 print('Results per junction extracted')
@@ -127,6 +127,11 @@ if(length(res_junc) > 0){
   }
 } else res_genes_dt <- data.table()
 
+
+# Add the annotation
+#res_junc_dt <- createAnnotation(res_junc_dt, fds, txdb)
+#print(res_junc_dt)
+
 # Calculate splice types and frameshift
 res_junc_dt <- aberrantSpliceType(res_junc_dt, fds, txdb)
 
@@ -139,6 +144,7 @@ res_junc_dt <- addUTRLabels(res_junc_dt, txdb)
 
 # Add blacklist labels
 if(assemblyVersion == 37){
+  print("version 37")
   blacklist_gr <- import(snakemake@input$blacklist_19, format = "BED")
 }else{
   blacklist_gr <- import(snakemake@input$blacklist_38, format = "BED")
