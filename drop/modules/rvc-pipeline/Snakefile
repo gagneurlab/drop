@@ -169,7 +169,12 @@ rule simpleAnnotateVCF:
             "{annotation}.bed"))
     shell:
         """
-        cut -f1,4,5,9 {input.gtf} > {output.temp_bed}
+        if [[ {input.gtf} == *.gz ]];
+        then
+            zcat {input.gtf} | cut -f1,4,5,9 > {output.temp_bed}
+        else
+            cut -f1,4,5,9 {input.gtf} > {output.temp_bed}
+        fi
         bcftools annotate -a {output.temp_bed} -c CHROM,FROM,TO,GENE \
           -h <(echo '##INFO=<ID=GENE,Number=1,Type=String,Description="Gene name">') {input.vcf}|bgzip > {output.vcf}
         tabix {output.vcf}
