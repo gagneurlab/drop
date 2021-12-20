@@ -22,8 +22,8 @@ output_vcf=$6
 tmp_bed=$(mktemp)
 tmp_bed="${tmp_bed}.bed"
 
-vcf_chr=$(zgrep -v "^#" $input_vcf | cut -f1 | grep -c "^chr" ||true )
-bed_chr=$(cat $repeat_mask | cut -f1 | grep -c "^chr" ||true  )
+vcf_chr=$(zgrep -v "^#" $input_vcf | cut -f1 | grep -w -c -E "^chr[1-9]$|^chr[1][0-9]$|^chr[2][0-2]$" ||true )
+bed_chr=$(cat $repeat_mask | cut -f1 | grep -w -c -E "^chr[1-9]$|^chr[1][0-9]$|^chr[2][0-2]$" ||true  )
 
 if [ $vcf_chr -eq 0  ] && [ $bed_chr -ne 0 ] #vcf has no chr, bed has chr
 then

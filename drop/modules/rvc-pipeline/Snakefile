@@ -150,7 +150,8 @@ rule simpleAnnotateVCF:
             "rnaVariantCalling/out/all_samples_haplocaller",
             "{dataset}",
             "{dataset}.processed.vcf.gz"),
-        gtf = lambda wildcards: cfg.genome.getGeneAnnotationFile(wildcards.annotation)
+        gtf = lambda wildcards: cfg.genome.getGeneAnnotationFile(wildcards.annotation),
+        script = str(RVC_WORKDIR) + "/GATK_BASH/simpleAnnotation.sh"
     output:
         vcf = os.path.join(
             cfg.processedDataDir,
@@ -162,22 +163,9 @@ rule simpleAnnotateVCF:
             "rnaVariantCalling/out/all_samples_haplocaller",
             "{dataset}",
             "{dataset}_{annotation}.annotated.vcf.gz.tbi"),
-        temp_bed = temp(os.path.join(
-            cfg.processedDataDir,
-            "rnaVariantCalling/out/all_samples_haplocaller",
-            "{dataset}",
-            "{annotation}.bed"))
     shell:
         """
-        if [[ {input.gtf} == *.gz ]];
-        then
-            zcat {input.gtf} | cut -f1,4,5,9 > {output.temp_bed}
-        else
-            cut -f1,4,5,9 {input.gtf} > {output.temp_bed}
-        fi
-        bcftools annotate -a {output.temp_bed} -c CHROM,FROM,TO,GENE \
-          -h <(echo '##INFO=<ID=GENE,Number=1,Type=String,Description="Gene name">') {input.vcf}|bgzip > {output.vcf}
-        tabix {output.vcf}
+        {input.script} {input.vcf} {input.gtf} {output.vcf}
         """
 
 rule maskMultiVCF:

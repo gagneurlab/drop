@@ -27,8 +27,8 @@ output_bqsr_table=$9
 # the known_sites files are in the same chr format.
 # Use || true to avoid erros on an empty grep search
 
-bam_chr=$(samtools idxstats $input_bam | cut -f1 | grep -c "^chr" || true)
-vcf_chr=$(bcftools index --stats $known_sites_array | cut -f1 | grep -c "^chr" || true)
+bam_chr=$(samtools idxstats $input_bam | cut -f1 | grep -w -c -E "^chr[1-9]$|^chr[1][0-9]$|^chr[2][0-2]$" || true)
+vcf_chr=$(bcftools index --stats $known_sites_array | cut -f1 | grep -w -c -E "^chr[1-9]$|^chr[1][0-9]$|^chr[2][0-2]$" || true)
 
 known_vcf_files=${known_sites_array[@]}
 
