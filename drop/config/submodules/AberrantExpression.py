@@ -31,6 +31,7 @@ class AE(Submodule):
     def setDefaultKeys(self, dict_):
         super().setDefaultKeys(dict_)
         setKey = utils.setKey
+        setKey(dict_, None, "run", False)
         setKey(dict_, None, "groups", self.sampleAnnotation.getGroups(assay="RNA"))
         setKey(dict_, None, "fpkmCutoff", 1)
         setKey(dict_, None, "implementation", "autoencoder")

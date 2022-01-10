@@ -60,7 +60,7 @@ class RVC(Submodule):
         super().setDefaultKeys(dict_)
         setKey = utils.setKey
         setKey(dict_, None, "run", False)
-        groups = setKey(dict_, None, "groups", self.sampleAnnotation.getGroups())
+        setKey(dict_, None, "groups", self.sampleAnnotation.getGroups())
         setKey(dict_, None, "knownVCFs", [])
         setKey(dict_, None, "repeat_mask", "")
         setKey(dict_, None, "hcArgs", "")

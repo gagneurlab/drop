@@ -92,7 +92,7 @@ class MAE(Submodule):
     def setDefaultKeys(self, dict_):
         super().setDefaultKeys(dict_)
         setKey = utils.setKey
-        dict_ = utils.checkKeys(dict_, keys=["qcVcf"], check_files=True)
+        setKey(dict_, None, "run", False)
         groups = setKey(dict_, None, "groups", self.sampleAnnotation.getGroups(assay="DNA"))
         setKey(dict_, None, "qcGroups", groups)
         setKey(dict_, None, "gatkIgnoreHeaderCheck", True)
@@ -102,6 +102,8 @@ class MAE(Submodule):
         setKey(dict_, None, "addAF", False)
         setKey(dict_, None, "maxVarFreqCohort", 0.04)
         setKey(dict_, None, "gnomAD", False)
+        if dict_["run"]:
+            dict_ = utils.checkKeys(dict_, keys=["qcVcf"], check_files=True)
         return dict_
 
     def createMaeIDS(self, id_sep='--'):
