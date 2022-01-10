@@ -75,16 +75,16 @@ mae:
       - mae
 
 rnaVariantCalling:
-  run: true
+  run: false
   groups:
   - batch_0
   knownVCFs:
   - Data/high_confidence_snps_test.vcf.gz
   - Data/high_confidence_indels_test.vcf.gz
-  - Data/dbSNP_chr21_test.vcf.gz
-  repeat_mask: Data/repeat_mask_chr21_test.bed
+  - Data/dbSNP.vcf.gz
+  repeat_mask: Data/repeat_mask.bed
   hcArgs: 
-  minAlt: 5
+  minAlt: 3
 
 
 tools:
