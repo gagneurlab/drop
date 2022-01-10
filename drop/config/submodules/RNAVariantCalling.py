@@ -6,7 +6,7 @@ class RVC(Submodule):
     def __init__(self, config, sampleAnnotation, processedDataDir, processedResultsDir,workDir,genome):
         super().__init__(config, sampleAnnotation, processedDataDir, processedResultsDir,workDir)
         self.CONFIG_KEYS = [
-            "groups","KGsnps", "millsIndels", "dbSNP","repeat_mask","hcArgs","createSingleVCF","minAlt"
+            "run","groups","KGsnps", "millsIndels", "dbSNP","repeat_mask","hcArgs","createSingleVCF","minAlt"
         ]
         self.name = "rnaVariantCalling"
         # if self.run is false return without doing any config/sa checks for completeness
@@ -59,11 +59,14 @@ class RVC(Submodule):
     def setDefaultKeys(self, dict_):
         super().setDefaultKeys(dict_)
         setKey = utils.setKey
-        dict_ = utils.checkKeys(dict_, keys=["repeat_mask"], check_files=True)
+        setKey(dict_, None, "run", False)
         groups = setKey(dict_, None, "groups", self.sampleAnnotation.getGroups())
         setKey(dict_, None, "knownVCFs", [])
         setKey(dict_, None, "repeat_mask", "")
         setKey(dict_, None, "hcArgs", "")
         setKey(dict_, None, "minAlt", 3)
         setKey(dict_, None, "createSingleVCF", False)
+
+        if dict_["run"]:
+            dict_ = utils.checkKeys(dict_, keys=["repeat_mask","knownVCFs"], check_files=True)
         return dict_

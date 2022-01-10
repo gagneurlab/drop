@@ -5,14 +5,12 @@
 #'  log:
 #'    - snakemake: '`sm str(tmp_dir / "RVC" / "Overview.Rds")`'
 #'  input:
-#'    - vcfFilesBatch: '`sm expand(cfg.getProcessedDataDir() +
-#'                      "/rnaVariantCalling/out/all_samples_haplocaller/" + 
-#'                      "{dataset}/{dataset}.processed.vcf.gz",
-#'                  dataset=cfg.RVC.groups)`'
-#'    - vcfFilesMasked: '`sm expand(cfg.getProcessedDataDir() +
-#'                      "/rnaVariantCalling/out/sample_haplocaller/" + 
-#'                      "{sample}/{sample}.vcf.gz",
-#'                  sample=cfg.RVC.batchIDs)`'
+#'    - singleVCF: '`sm createSingleVCF() `'
+#'    - annotatedVCF: '`sm expand(os.path.join(
+#'                        cfg.processedResultsDir,
+#'                        "rnaVariantCalling/out/batch_vcfs", "{dataset}",
+#'                        "{dataset}_{annotation}.annotated.vcf.gz"), 
+#'                    annotation = cfg.get("geneAnnotation"), dataset = cfg.RVC.groups) `'
 #' output:
 #'   html_document:
 #'    code_folding: hide

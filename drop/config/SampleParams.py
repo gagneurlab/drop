@@ -110,15 +110,44 @@ class SampleParams:
         sampleAnnotation: object. SampleAnnotation object as defined by SampleAnnotation.py
         """
 
-        moduleList = [AE,AS,MAE,RVC]
+        moduleList = [x for x in [AE,AS,MAE,RVC] if x.run]
         self.geneAnnotation = geneAnnotation
         self.processedDataDir = processedDataDir
         self.sampleAnnotation = sampleAnnotation
 
         # loop through each module and write the sample parameters
-        self.writeAllSampleParams(moduleList)
+        self.writeSAtableSampleParams(moduleList)
+        self.writeConfigSampleParams(moduleList)
 
-    def writeAllSampleParams(self,moduleList):
+    def writeConfigSampleParams(self,moduleList):
+        """
+        moduleList: list. list containing module objects to loop through
+        """
+        for module in moduleList:
+            config_dict = module.dict_
+            format_dict = {key:str(config_dict[key]) for key in config_dict}
+            current_config = pd.DataFrame.from_dict(format_dict,orient = "index",columns = ["value"])
+            moduleCSV = self.processedDataDir / self.MODULE_NAMES[module.name] / "params" / "config" 
+            moduleCSV.mkdir(parents = True,exist_ok = True)
+            filename = f"{str(moduleCSV)}/{module.name}_config.tsv"
+
+            # if a file by the desired name exists.
+            if os.path.isfile(filename):
+                old_config = pd.read_csv(filename,sep = "\t",index_col = 0).fillna(value = "").astype(str)
+                if current_config.equals(old_config):
+                    pass
+                else:
+                    # if they're different remove the existing file and rename TEMP to the desired file. Updating to the current SA table
+                    logger.info(f"{filename} Param Files do not match. Updating to current Sample Annotation\n")
+                    current_config.to_csv(filename, sep = "\t", index = True, header = True,na_rep = "")
+
+            else:
+                #logger.info("{} Param File did not already exist. Writing it\n".format(filename))
+                current_config.to_csv(filename, sep = "\t", index = True, header = True,na_rep = "")
+
+
+
+    def writeSAtableSampleParams(self,moduleList):
         """
         moduleList: list. list containing module objects to loop through
         using the dictionary and helpers defined above, loop through each module and param pair and write the sample param file
@@ -199,7 +228,7 @@ class SampleParams:
             param_cols = [col for col in sa_df.columns if col not in param_cols]
 
         # designate the TEMP and final param file names
-        true_filename = "{path}/{filename}".format(path = path, filename = filename)
+        true_filename = f"{path}/{filename}"
 
 
         # if a file by the desired name exists.
@@ -214,7 +243,7 @@ class SampleParams:
                 pass
             else:
                 # if they're different remove the existing file and rename TEMP to the desired file. Updating to the current SA table
-                logger.info("{} Param Files do not match. Updating to current Sample Annotation\n".format(filename))
+                logger.info(f"{filename} Param Files do not match. Updating to current Sample Annotation\n")
                 current_SA.to_csv(true_filename, index = False,header = True,na_rep = "NA")
         # if the param file doesn't exist, just write to the desired file
         else:

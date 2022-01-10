@@ -84,7 +84,7 @@ rnaVariantCalling:
   - Data/dbSNP_chr21_test.vcf.gz
   repeat_mask: Data/repeat_mask_chr21_test.bed
   hcArgs: 
-  minAlt: 10
+  minAlt: 5
 
 
 tools:
