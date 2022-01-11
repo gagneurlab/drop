@@ -123,7 +123,8 @@ class DropConfig:
         :return: config dictionary with defaults
         """
         # check mandatory keys
-        config_dict = utils.checkKeys(config_dict, keys=["htmlOutputPath", "root", "sampleAnnotation"],
+        config_dict = utils.checkKeys(config_dict, keys=["htmlOutputPath", "root"])
+        config_dict = utils.checkKeys(config_dict, keys=["sampleAnnotation"],
                                       check_files=True)
         config_dict["geneAnnotation"] = utils.checkKeys(config_dict["geneAnnotation"], keys=None, check_files=True)
 
