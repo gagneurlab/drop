@@ -124,7 +124,8 @@ rule sortIndexRepeatMask:
     shell:
         """
         sort -k1,2 -V {input.repeat_mask} > {output.sorted_repeat_mask}
-        gatk IndexFeatureFile -I {output.sorted_repeat_mask}
+        gatk --java-options "-Djava.io.tmpdir={resources.tmpdir}" IndexFeatureFile \
+        -I {output.sorted_repeat_mask}
         """
 
 rule simpleAnnotateVCF:
@@ -311,8 +312,8 @@ rule genotypeGVCFs:
         str(cfg.processedDataDir) + "/rnaVariantCalling/logs/all_haplocaller/{dataset}_genotypeGVCFs.log"
     shell:
         """
-        gatk --java-options "-Djava.io.tmpdir={resources.tmpdir}" GenotypeGVCFs -R {params.ref} \
-        --variant {input.gvcf} -O {output.vcf} 2> {log}
+        gatk --java-options "-Djava.io.tmpdir={resources.tmpdir}" GenotypeGVCFs \
+        -R {params.ref} --variant {input.gvcf} -O {output.vcf} 2> {log}
         """
 
 
@@ -351,8 +352,8 @@ rule combineGVCFs:
         str(cfg.processedDataDir) + "/rnaVariantCalling/logs/all_haplocaller/{dataset}_combineGVCF.log"
     shell:
         """
-        gatk --java-options "-Djava.io.tmpdir={resources.tmpdir}" CombineGVCFs -R {params.ref} \
-         {params.variant_list} -O {output.gvcf} 2> {log}
+        gatk --java-options "-Djava.io.tmpdir={resources.tmpdir}" CombineGVCFs \
+        -R {params.ref} {params.variant_list} -O {output.gvcf} 2> {log}
         """
 
 
@@ -382,8 +383,8 @@ rule haplotypeCaller:
         str(cfg.processedDataDir) + "/rnaVariantCalling/logs/all_haplocaller/{sample}.log"
     shell:
         """
-        gatk --java-options "-Djava.io.tmpdir={resources.tmpdir}" HaplotypeCaller -R {params.ref} -I {input.bam} \
-        --dont-use-soft-clipped-bases -stand-call-conf 20.0 \
+        gatk --java-options "-Djava.io.tmpdir={resources.tmpdir}" HaplotypeCaller \
+        -R {params.ref} -I {input.bam} --dont-use-soft-clipped-bases -stand-call-conf 20.0 \
         --output-mode EMIT_ALL_CONFIDENT_SITES \
         -ERC GVCF {params.hcArgs} -O {output} 2> {log}
         """
@@ -524,7 +525,8 @@ rule reorderBAM:
     shell:
         """
         echo "ReorderSam"
-        gatk ReorderSam -I {input.bam} -O {output.bam} --SEQUENCE_DICTIONARY {input.dict} -S true --CREATE_INDEX true 
+        gatk --java-options "-Djava.io.tmpdir={resources.tmpdir}" ReorderSam \
+        -I {input.bam} -O {output.bam} --SEQUENCE_DICTIONARY {input.dict} -S true --CREATE_INDEX true 
         """
 
 #Using GATK markDuplicates attempt to identify reads that are technical duplicates of biological reads. Attempts to eliminate noise introduced by library prep
@@ -557,7 +559,8 @@ rule markDuplicates:
         str(cfg.processedDataDir) + "/rnaVariantCalling/logs/markDuplicates/{sample}.log"
     shell:
         """
-        gatk MarkDuplicates -I {input.bam} -O {output.bam} \
+        gatk MarkDuplicates \
+        -I {input.bam} -O {output.bam} \
         -M {params.metrics} --CREATE_INDEX true \
         --TMP_DIR "{resources.tmpdir}" \
         --VALIDATION_STRINGENCY SILENT 2> {log}
