@@ -7,7 +7,7 @@ class Test_RVC_Config:
             'repeat_mask': f'{demo_dir}/Data/repeat_mask_chr21.bed',
             'hcArgs': '',
             'createSingleVCF': False,
-            'minAlt': 10
+            'minAlt': 3
         }
         print(dropConfig.RVC.dict_.items())
         assert dict_.items() <= dropConfig.RVC.dict_.items()

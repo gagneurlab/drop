@@ -27,8 +27,8 @@ class Test_RVC_Pipeline:
     @pytest.mark.usefixtures("pipeline_run")
     # count the number of variant calls in batch0 before splitting
     def test_variants_batch(self, demo_dir):
-        vcf_file0 = f"{demo_dir}/Output/processed_data/rnaVariantCalling/out/all_samples_haplocaller/batch_0/batch_0_v29.annotated.vcf.gz"
-        vcf_file1 = f"{demo_dir}/Output/processed_data/rnaVariantCalling/out/all_samples_haplocaller/batch_1/batch_1_v29.annotated.vcf.gz"
+        vcf_file0 = f"{demo_dir}/Output/processed_results/rnaVariantCalling/out/batch_vcfs/batch_0/batch_0_v29.annotated.vcf.gz"
+        vcf_file1 = f"{demo_dir}/Output/processed_results/rnaVariantCalling/out/batch_vcfs/batch_1/batch_1_v29.annotated.vcf.gz"
         r_cmd = """ 
                 library(data.table)
                 vcf0  <- fread("{}")
