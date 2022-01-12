@@ -2,7 +2,7 @@
 ## required packages
 message("Load packages")
 suppressPackageStartupMessages({
-    library(markdown)
+    library(rmarkdown)
     library(knitr)
     library(devtools)
     library(yaml)
