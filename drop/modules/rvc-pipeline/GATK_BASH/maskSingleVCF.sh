@@ -32,7 +32,7 @@ then
 elif [ $bed_chr -eq 0  ] && [ $vcf_chr -ne 0 ] #vcf has chr, bed has no chr
 then
     # add "chr" to the bed file
-    sed -e "s/^/^chr/" $repeat_mask > $tmp_bed
+    sed -e "s/^/chr/" $repeat_mask > $tmp_bed
 else
     cp $repeat_mask $tmp_bed
 fi
