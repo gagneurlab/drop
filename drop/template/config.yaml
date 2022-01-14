@@ -75,16 +75,18 @@ mae:
       - mae
 
 rnaVariantCalling:
-  run: false
-  groups:
-  - batch_0
-  knownVCFs:
-  - Data/high_confidence_snps_test.vcf.gz
-  - Data/high_confidence_indels_test.vcf.gz
-  - Data/dbSNP.vcf.gz
-  repeat_mask: Data/repeat_mask.bed
-  hcArgs: 
-  minAlt: 3
+    run: false
+    groups:
+        - batch_0
+    knownVCFs:
+        - Data/high_confidence_snps_test.vcf.gz
+        - Data/high_confidence_indels_test.vcf.gz
+        - Data/dbSNP.vcf.gz
+    repeat_mask: Data/repeat_mask.bed
+    maxAF: .001
+    maxVarFreqCohort: .04
+    hcArgs: 
+    minAlt: 3
 
 
 tools:

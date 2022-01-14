@@ -70,6 +70,8 @@ rnaVariantCalling:
   - Data/dbSNP_chr21.vcf.gz
   repeat_mask: Data/repeat_mask_chr21.bed
   createSingleVCF: false
+  maxAF: 0.001
+  maxVarFreqCohort: 1
   hcArgs: null
   minAlt: 3
   
