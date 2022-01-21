@@ -2,7 +2,7 @@ package	version
 devtools
 gagneurlab/OUTRIDER	1.6.1
 c-mertes/FRASER	1.2.1
-gagneurlab/tMAE	1.0.2
+gagneurlab/tMAE	1.0.3
 VariantAnnotation	
 rmarkdown	
 knitr	
