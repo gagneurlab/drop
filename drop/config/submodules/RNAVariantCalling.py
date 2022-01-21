@@ -65,8 +65,9 @@ class RVC(Submodule):
         setKey(dict_, None, "knownVCFs", [])
         setKey(dict_, None, "repeat_mask", "")
         setKey(dict_, None, "hcArgs", "")
-        setKey(dict_, None, "maxAF",0.001 )
-        setKey(dict_, None, "maxVarFreqCohort",0.04 )
+        setKey(dict_, None, "addAF", False)
+        setKey(dict_, None, "maxAF", 0.001 )
+        setKey(dict_, None, "maxVarFreqCohort", 0.04 )
         setKey(dict_, None, "minAlt", 3)
         setKey(dict_, None, "createSingleVCF", False)
 
