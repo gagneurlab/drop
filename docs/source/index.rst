@@ -24,7 +24,7 @@ We recommend using a dedicated conda environment. (installation time: ~ 10min)
 
 .. code-block:: bash
 
-    conda install -c conda-forge -c bioconda drop
+    mamba install -c conda-forge -c bioconda drop
 
 Test installation with demo project
 
