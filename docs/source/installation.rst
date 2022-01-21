@@ -12,7 +12,7 @@ We recommend using a dedicated conda environment (here: ``drop_env``) for instal
 
 .. code-block:: bash
 
-    conda create -n drop_env -c conda-forge -c bioconda drop
+    mamba create -n drop_env -c conda-forge -c bioconda drop
 
 Installation time: ~ 10min
 
