@@ -81,16 +81,17 @@ rvar[, N := 1:.N, by = aux]
 r_other <- rvar[N > 1, .(other_names = paste(gene_name, collapse = ',')), by = aux]
 res <- merge(res_annot, r_other, by = 'aux', sort = FALSE, all.x = TRUE) 
 res[, c('aux') := NULL]
+res <- res[, .SD[1], by = .(ID, contig, position)]
 
 # Bring gene_name column front
 res <- cbind(res[, .(gene_name)], res[, -"gene_name"])
 
 # Calculate variant frequency within cohort 
-maxCohortFreq <-snakemake@params$maxCohortFreq
+maxCohortFreq <- snakemake@params$maxCohortFreq
 res[, N_var := .N, by = .(gene_name, contig, position)]
-res[, cohort_freq := N_var / uniqueN(ID)]
+res[, cohort_freq := round(N_var / uniqueN(ID), 3)]
 
-res[,rare := (rare | is.na(rare)) & cohort_freq <= maxCohortFreq] 
+res[, rare := (rare | is.na(rare)) & cohort_freq <= maxCohortFreq] 
 
 # Add significance columns
 allelicRatioCutoff <- snakemake@params$allelicRatioCutoff
@@ -108,6 +109,7 @@ res[, MAE_ALT := MAE == TRUE & altRatio >= allelicRatioCutoff]
 #+echo=F
 
 # Save full results zipped
+res[, altRatio := round(altRatio, 3)]
 fwrite(res, snakemake@output$res_all, sep = '\t', 
        row.names = F, quote = F, compress = 'gzip')
 

@@ -15,8 +15,6 @@ class Test_AE_Pipeline:
         except subprocess.CalledProcessError:
             print("Failed Successfully")
 
-
-
     @pytest.fixture(scope="class")
     def pipeline_run(self, demo_dir):
         LOGGER.info("run aberrant expression pipeline...")
