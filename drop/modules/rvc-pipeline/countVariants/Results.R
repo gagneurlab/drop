@@ -21,7 +21,6 @@ library(data.table)
 library(ggplot2)
 library(VariantAnnotation)
 library(tMAE)
-source("~/projects/smith/drop_work/tMAE/R/add_gnomAD_AF.R")
 library(dplyr)
 library(GenomicScores)
 
@@ -51,17 +50,17 @@ if (snakemake@config$rnaVariantCalling$addAF){
   #tMAE code for adding gnomad frequency
   max_af_cutoff <- snakemake@config$rnaVariantCalling$maxAF
   pops <- c('AF', 'AF_afr', 'AF_amr', 'AF_eas', 'AF_nfe', 'AF_popmax')
-  scoring_table <- score_gnomAD_GR(granges(vcf),genome_assembly = snakemake@config$genomeAssembly)
-  colnames(scoring_table) <- pops
-  res <- cbind(dt, scoring_table) %>% as.data.table()
+  maf_dt <- add_gnomAD_AF(granges(vcf),genome_assembly = snakemake@config$genomeAssembly) %>% as.data.table()
 
   # Compute the MAX_AF based on all provided population columns
   # return -1 if only NAs are present (to avoid a warning)
-  res$MAX_AF <- apply(res[, ..pops], 1, 
+  maf_dt$MAX_AF <- apply(maf_dt[, ..pops], 1, 
                     FUN=function(x){ max(x, -1, na.rm=TRUE) })
 
   # Replace Inf/-1 with NA
-  res[is.infinite(MAX_AF) | MAX_AF == -1, MAX_AF := NA]
+  maf_dt[is.infinite(MAX_AF) | MAX_AF == -1, MAX_AF := NA]
+  
+  res <- cbind(dt,maf_dt[,"MAX_AF"])
   
   # calculate variant frequency within the cohort
   max_var_freq_cutoff <- snakemake@config$rnaVariantCalling$maxVarFreqCohort
@@ -75,8 +74,7 @@ if (snakemake@config$rnaVariantCalling$addAF){
   #Reorder FILTER
   res$FILTER <- factor(res$FILTER,levels = c("Seq_filter","Mask","minALT","Mask;minALT","PASS_common","PASS_rare"))
 
-  # drop populations and AF
-  res[,(pops) := NULL]
+  # drop AF and cohortFreq for plotting
   res[,MAX_AF := NULL]
   res[,cohortFreq := NULL]
 

@@ -41,4 +41,4 @@ class Test_MAE_Pipeline:
                 print(nrow(res))
                 """.format(results_file)
         r = runR(r_cmd, demo_dir)
-        assert "[1] 98\n" in r.stdout
+        assert "[1] 66\n" in r.stdout
