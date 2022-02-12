@@ -12,7 +12,6 @@ class Test_MAE_Config:
             'maxAF': 0.001,
             'addAF': False,
             'maxVarFreqCohort': 1,
-            'gnomAD': False
         }
         assert dict_.items() <= dropConfig.MAE.dict_.items()
 
