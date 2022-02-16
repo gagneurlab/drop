@@ -298,7 +298,7 @@ class SampleAnnotation:
         return groupedIDs
 
     def getGroups(self, assay="RNA"):
-        return self.getGroupedIDs(assay).keys()
+        return list(self.getGroupedIDs(assay).keys())
 
     def getIDsByGroup(self, group, assay="RNA"):
         try:
