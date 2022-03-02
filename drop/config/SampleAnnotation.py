@@ -258,7 +258,7 @@ class SampleAnnotation:
         """
         #subset for the annotation_key in the annotation group and the group_key in the group
         subset = self.subsetSampleAnnotation(annotation_key, annotation,exact_match=exact_match)
-        subset = self.subsetSampleAnnotation(group_key, group, subset,exact_match=exact_match)
+        subset = self.subsetSampleAnnotation(group_key, group, subset,exact_match=False)
         return set(subset[file_type].tolist())
 
     def getRow(self, column, value):
