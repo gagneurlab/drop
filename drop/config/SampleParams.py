@@ -41,7 +41,7 @@ class SampleParams:
     # include the following columns (in the list), group the samples by DROP/RVC group, and use the suffix _merge
     AE_mergeParams = ParamHelper(
                    True,
-                   ["RNA_ID", "RNA_BAM_FILE","COUNT_MODE", "PAIRED_END", "COUNT_OVERLAPS", "STRAND"],
+                   ["RNA_ID", "RNA_BAM_FILE","GENE_COUNTS_FILE","COUNT_MODE", "PAIRED_END", "COUNT_OVERLAPS", "STRAND","GENE_ANNOTATION"],
                    True,
                    "merge")
 
