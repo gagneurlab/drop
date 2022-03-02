@@ -37,7 +37,7 @@ class SampleParams:
 
     AE_mergeParams = ParamHelper(
                    True,
-                   ["RNA_ID", "RNA_BAM_FILE","COUNT_MODE", "PAIRED_END", "COUNT_OVERLAPS", "STRAND"],
+                   ["RNA_ID", "RNA_BAM_FILE","GENE_COUNTS_FILE","COUNT_MODE", "PAIRED_END", "COUNT_OVERLAPS", "STRAND","GENE_ANNOTATION"],
                    True,
                    "merge")
 
