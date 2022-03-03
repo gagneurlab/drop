@@ -41,7 +41,10 @@ def installRPackages(config: DropConfig = None):
         response.check_returncode()
 
         pkg_mafdb_name = config.genome.getMafDbName()
-        if pkg_mafdb_name is not None and config.get("mae").get('addAF') is True:
+
+        check_mae = config.get("mae").get("run") and config.get("mae").get("addAF")
+
+        if pkg_mafdb_name is not None and check_mae:
             response = subprocess.run(["Rscript", script, pkg_mafdb_name], stderr=subprocess.STDOUT)
             response.check_returncode()
 
