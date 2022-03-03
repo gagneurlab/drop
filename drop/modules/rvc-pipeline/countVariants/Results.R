@@ -15,6 +15,7 @@
 #'  type: noindex
 #'---
 
+
 #+ echo=FALSE
 library(data.table)
 library(ggplot2)
@@ -56,6 +57,7 @@ DT::datatable(
     options=list(scrollY=TRUE),
     filter = 'top')
 
+
 ggplot(res_plot, aes(x = FILTER, y = N,col = GT)) +
        geom_boxplot() +
        geom_text(data = res_plot[,median(N),by=c("FILTER","GT")],
@@ -65,13 +67,12 @@ ggplot(res_plot, aes(x = FILTER, y = N,col = GT)) +
 # Split res
 res_plot[grepl("PASS",FILTER),FILTER := "PASS"]
 res_plot[!grepl("PASS",FILTER),FILTER := "FILTERED"]
-res_plot_sum <- res_plot[,sum(N),by = .(FILTER,variable,GT)]
 
-#' ## PASS/FAIL split of variant calls by GT. FAIL includes all filters + rare and cohort cutoffs
-#' ### FAIL includes all filters + rare and cohort cutoffs
+res_plot_summary <- res_plot[,sum(N),by = .(FILTER,variable,GT)]
+
 # Plot only Pass/Fail split
-ggplot(res_plot_sum, aes(x = FILTER, y = V1,col = GT)) +
+ggplot(res_plot_summary, aes(x = FILTER, y = V1,col = GT)) +
        geom_boxplot() +
-       geom_text(data = res_plot_sum[,median(V1),by=c("FILTER","GT")],
+       geom_text(data = res_plot[,median(V1),by=c("FILTER","GT")],
            mapping = aes(x=FILTER,y= V1,label = V1, vjust = -0.5),position = position_dodge(0.9),show.legend = F,size = 3.5) +
        ylab("Variants per sample") + scale_x_discrete(guide = guide_axis(n.dodge = 2))
