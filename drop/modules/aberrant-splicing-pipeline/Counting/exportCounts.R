@@ -6,6 +6,7 @@
 #'    - snakemake: '`sm str(tmp_dir / "AS" / "{dataset}" / "{genomeAssembly}--{annotation}_export.Rds")`'
 #'  params:
 #'   - setup: '`sm cfg.AS.getWorkdir() + "/config.R"`'
+
 #'  input:
 #'   - annotation: '`sm cfg.getProcessedDataDir() + "/preprocess/{annotation}/txdb.db"`'
 #'   - fds_theta: '`sm cfg.getProcessedDataDir() + 
@@ -18,6 +19,7 @@
 
 saveRDS(snakemake, snakemake@log$snakemake)
 source(snakemake@params$setup, echo=FALSE)
+
 library(AnnotationDbi)
 
 # 
