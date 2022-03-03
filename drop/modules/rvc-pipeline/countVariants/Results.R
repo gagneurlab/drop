@@ -57,7 +57,7 @@ DT::datatable(
     options=list(scrollY=TRUE),
     filter = 'top')
 
-
+#' ### Breakdown of variants by GT
 ggplot(res_plot, aes(x = FILTER, y = N,col = GT)) +
        geom_boxplot() +
        geom_text(data = res_plot[,median(N),by=c("FILTER","GT")],
@@ -70,7 +70,7 @@ res_plot[!grepl("PASS",FILTER),FILTER := "FILTERED"]
 
 res_plot_summary <- res_plot[,sum(N),by = .(FILTER,variable,GT)]
 
-# Plot only Pass/Fail split
+#' ### Plot only Pass/Fail split
 ggplot(res_plot_summary, aes(x = FILTER, y = V1,col = GT)) +
        geom_boxplot() +
        geom_text(data = res_plot_summary[,median(V1),by=c("FILTER","GT")],
