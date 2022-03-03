@@ -35,17 +35,12 @@ def checkKeys(dict_, keys=None, check_files=False):
         if key not in dict_.keys():
             raise KeyError(f"{key} is mandatory but missing")
 
-        if check_files:
-            existing = checkFileExists(dict_[key])
-            # get real path
-            if type(dict_[key]) == str:
-                if len(existing) != 1:
-                    raise FileExistsError(dict_[key])
-                dict_[key] = str(Path(dict_[key]).expanduser())
-            elif type(dict_[key]) == list:
-                if len(existing) < len(dict_[key]):
-                    raise FileExistsError(set(dict_[key]) - set(existing))
-                dict_[key] = [str(Path(f).expanduser()) for f in dict_[key]]
+    if check_files:
+        filename = Path(dict_[key])
+        if not filename.exists():
+            raise FileExistsError(filename)
+        # get real path
+        dict_[key] = str(filename.expanduser())
     return dict_
 
 

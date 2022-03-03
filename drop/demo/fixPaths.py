@@ -28,26 +28,17 @@ def fixConfig(input_file, output_file):
     path_keys = {"root": None,
                  "htmlOutputPath": None,
                  "sampleAnnotation": None,
-                 "v29": "geneAnnotation",
-                 "ncbi": "genome", "ucsc":"genome",
-                 "qcVcf": "mae",
-                 "knownVCFs":"rnaVariantCalling",
-                 "repeat_mask":"rnaVariantCalling"
-                 }
+                 "v29": ["geneAnnotation"],
+                 "genome": None, "qcVcf": ["mae"]}
 
     for key, sub in path_keys.items():
         # iterate to key and entry
         dict_ = config
         if sub is not None:
-            dict_ = dict_[sub]
-            # set absolute path
-            if type(dict_[key]) == str:
-                dict_[key] = str(Path(dict_[key]).resolve())
-            elif type(dict_[key]) == list:
-                dict_[key] = [str(Path(x).resolve()) for x in dict_[key]]
-
-        else:
-            dict_[key] = str(Path(dict_[key]).resolve())
+            for x in sub:
+                dict_ = dict_[x]
+        # set absolute path
+        dict_[key] = str(Path(dict_[key]).resolve())
 
     with open(output_file, "w") as f:
         yaml.safe_dump(config.copy(), f, default_flow_style=False, sort_keys=False)

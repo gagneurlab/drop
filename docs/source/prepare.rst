@@ -10,19 +10,19 @@ The config file is in `YAML <https://docs.ansible.com/ansible/latest/reference_a
 
     # A boolean is binary and can be true of false
     boolean_var: true    # or false
-
+    
     # A string is a text. Quotation marks are not needed.
-    string_var: whatever text
+    string_var: whatever text  
 
     # A numeric can be an integer or a real number. A dot separates a decimal.
     numeric_var: 0.05
-
+    
     # A list is a collection of elements of the same type.
     list_var:
       - element_1   # elements are indented
       - element_2
 
-    # A dictionary contains key-value pairs. It is a collection of multiple
+    # A dictionary contains key-value pairs. It is a collection of multiple 
     #    elements where the key is a string and the value any type.
     dictionary_var:
       key_1: value_1
@@ -51,7 +51,7 @@ genome               dictionary  (Optional) Multiple fasta files can be specifie
 geneAnnotation       dictionary  A key-value list of the annotation name (key) and the full path to the GTF file (value). More than one annotation file can be provided.  ``anno1: /path/to/gtf1.gtf``
 
                                                                                                                                                                           ``anno2: /path/to/gtf2.gtf``
-hpoFile              character   Full path of the file containing HPO terms. If ``null`` (default), it reads it from our webserver. Refer to :ref:`filesdownload`.        ``/path/to/hpo_file.tsv``
+hpoFile              character   Full path of the file containing HPO terms. If ``null`` (default), it reads it from our webserver. Refer to :ref:`filesdownload`.        ``/path/to/hpo_file.tsv``                                           
 tools                dictionary  A key-value list of different commands (key) and the command (value) to run them                                                         ``gatkCmd: gatk``
 
                                                                                                                                                                           ``bcftoolsCmd: bcftools``
@@ -99,7 +99,7 @@ groups                        list       Same as in aberrant expression.        
 minIds                        numeric    Same as in aberrant expression.                                                               ``1``
 recount                       boolean    If true, it forces samples to be recounted.                                                   ``false``
 longRead                      boolean    Set to true only if counting Nanopore or PacBio long reads.                                   ``false``
-keepNonStandardChrs           boolean    Set to true if non standard chromosomes are to be kept for further analysis.                  ``true``
+keepNonStandardChrs           boolean    Set to true if non standard chromosomes are to be kept for further analysis.                  ``true``                        
 filter                        boolean    If false, no filter is applied. We recommend filtering.                                       ``true``
 minExpressionInOneSample      numeric    The minimal read count in at least one sample required for an intron to pass the filter.      ``20``
 minDeltaPsi                   numeric    The minimal variation (in delta psi) required for an intron to pass the filter.               ``0.05``
@@ -123,44 +123,16 @@ padjCutoff             numeric    Same as in aberrant expression.               
 allelicRatioCutoff     numeric    A number between [0.5, 1) indicating the maximum allelic ratio allele1/(allele1+allele2) for the test to be significant.  ``0.8``
 addAF                  boolean    Whether or not to add the allele frequencies from gnomAD                                                                  ``true``
 maxAF                  numeric    Maximum allele frequency (of the minor allele) cut-off. Variants with AF equal or below this number are considered rare.  ``0.001``
-maxVarFreqCohort       numeric    Maximum variant frequency among the cohort.                                                                               ``0.05``
+maxVarFreqCohort       numeric    Maximum variant frequency among the cohort.                                                                               ``0.05``      
 qcVcf                  character  Full path to the vcf file used for VCF-BAM matching. Refer to :ref:`filesdownload`.                                       ``/path/to/qc_vcf.vcf.gz``
 qcGroups               list       Same as “groups”, but for the VCF-BAM matching                                                                            ``# see aberrant expression example``
 =====================  =========  ========================================================================================================================  ======
 
-
-RNA Variant Calling dictionary
-++++++++++++++++++++++++++++++++++
-RNA Variant Calling may be useful for researchers who do not have access to variant calls from genomic data. While variant calling from WES and WGS technologies may be more traditional (and reliable), we have found that variant calling from RNA-Seq data can provide additional evidence for the underlying causes of aberrant expression or splicing.
-The RNA variant calling process uses information from multiple samples (as designated by the ``groups`` variable) to improve the variant calling process. However, the larger the group size, the more costly the computation is in terms of time and resources. When building the sample annotation table, take this into account. For the most accurate variant calls include many samples in each ``DROP_GROUP`` group, but in order to speed up computation, separate samples into many groups.
-
-=====================  =========  =====================================================================================================================================================================  =========
-Parameter              Type       Description                                                                                                                                                                    Default/Examples
-=====================  =========  =====================================================================================================================================================================  =========
-groups                 list       groups that should be executed in this module. If not specified or ``null`` all groups are used.                                                           ``- group1``
-
-
-                                                                                                                                                                                                         ``- group2``
-
-knownVCFs              list       Filepaths where each item in the list is path to a vcf file. Each vcf file describes known variants. We recommend using dbSNP as well as resources described by GATK.  ``- dbSNP.vcf``
-
-                                                                                                                                                                                                         ``- known_SNPs.vcf``
-
-                                                                                                                                                                                                         ``- known_indels.vcf``
-
-repeat_mask            character  Location of the RepeatMask .bed file.                                                                                                                                  ``path/to/RepeatMask.bed``
-minAlt                 numeric    Integer describing the minimum required reads that support the alternative allele. We recommend a minimum of 3 if further filtering on your own. 10 otherwise.   ``3``
-hcArgs                 character  String describing additional arguments for GATK haplocaller. For expert tuning.                                                                                        ``""``
-
-=====================  =========  =====================================================================================================================================================================  =========
-
-
 Modularization of DROP
 -----------------------------------
-DROP allows to control which modules to run via the  ``run`` variable in the config file. By default, each module is set to ``run: true``.  Setting this value to  ``false``  stops a particular module from being run. This will be noted as a warning at the beginning of the ``snakemake`` run, and the corresponding module will be renamed in the ``Scripts/`` directory.
+DROP allows to control which modules to run via the  ``run`` variable in the config file. By default, each module is set to ``run: true``.  Setting this value to  ``false``  stops a particular module from being run. This will be noted as a warning at the beginning of the ``snakemake`` run, and the corresponding module will be renamed in the ``Scripts/`` directory. 
 
 For example, if the AberrantExpression module is set to false, the  ``Scripts/AberrantExpression/`` directory will be renamed to ``Scripts/_AberrantExpression/`` which tells DROP not to execute this module.
-
 
 Creating the sample annotation table
 ------------------------------------
@@ -172,31 +144,31 @@ Each row of the sample annotation table corresponds to a unique pair of RNA and 
 samples derived from the same individual. An RNA assay can belong to one or more DNA
 assays, and vice-versa. If so, they must be specified in different rows. The required
 columns are ``RNA_ID``, ``RNA_BAM_FILE`` and ``DROP_GROUP``, plus other module-specific
-ones (see DROP manuscript).
+ones (see DROP manuscript). 
 
 The following columns describe the RNA-seq experimental setup:
-``PAIRED_END``, ``STRAND``, ``COUNT_MODE`` and ``COUNT_OVERLAPS``. They affect the
-counting procedures of the aberrant expression and splicing modules. For a detailed
+``PAIRED_END``, ``STRAND``, ``COUNT_MODE`` and ``COUNT_OVERLAPS``. They affect the 
+counting procedures of the aberrant expression and splicing modules. For a detailed 
 explanation, refer to the documentation of `HTSeq <https://htseq.readthedocs.io/en/latest/>`_.
 
 To run the MAE module, the columns ``DNA_ID`` and ``DNA_VCF_FILE`` are needed.
 
-In case external counts are included, add a new row for each sample from those
+In case external counts are included, add a new row for each sample from those 
 files (or a subset if not all samples are needed). Add the columns: ``GENE_COUNTS_FILE``,
 ``GENE_ANNOTATON``, ``SPLIT_COUNTS_FILE`` and ``NON_SPLIT_COUNTS_FILE``. See examples below.
 
 In case RNA-seq BAM files belong to different genome assemblies (eg, ncbi, ucsc), multiple
-reference genome fasta files can be specified. Add a column called `GENOME` that
+reference genome fasta files can be specified. Add a column called `GENOME` that  
 contains, for each sample, the key from the `genome` parameter in the config file that
 matches its genome assembly (eg, ncbi or ucsc).
 
 
-The sample annotation file must be saved in the tab-separated values (tsv) format. The
-column order does not matter. Also, it does not matter where it is stored, as the path is
+The sample annotation file must be saved in the tab-separated values (tsv) format. The 
+column order does not matter. Also, it does not matter where it is stored, as the path is 
 specified in the config file. Here we provide some examples on how to deal with certain
 situations. For simplicity, we do not include all possible columns in the examples.
 
-Example of RNA replicates
+Example of RNA replicates 
 ++++++++++++++++++++++++++++++++++
 
 ======  ======  ==========  ===================  ==
@@ -206,7 +178,7 @@ S10R_B  S10G    BLOOD       /path/to/S10R_B.BAM  /path/to/S10G.vcf.gz
 S10R_M  S10G    MUSCLE      /path/to/S10R_M.BAM  /path/to/S10G.vcf.gz
 ======  ======  ==========  ===================  ==
 
-Example of DNA replicates
+Example of DNA replicates 
 ++++++++++++++++++++++++++++++++++
 
 ======  ======  ==========  =================  ==
@@ -231,7 +203,7 @@ External count matrices
 
 In case counts from external matrices are to be integrated into the analysis,
 the file must be specified in the GENE_COUNTS_FILE column. A new row must be
-added for each sample from the count matrix that should be included in the
+added for each sample from the count matrix that should be included in the 
 analysis. An RNA_BAM_FILE must not be specified. The DROP_GROUP of the local
 and external samples that are to be analyzed together must be the same.
 Similarly, the GENE_ANNOTATION of the external counts and the key of the `geneAnnotation`
@@ -240,7 +212,7 @@ parameter from the config file must match.
 ======  ======  ==========  =================  ==============================  ==
 RNA_ID  DNA_ID  DROP_GROUP  RNA_BAM_FILE       GENE_COUNTS_FILE                GENE_ANNOTATION
 ======  ======  ==========  =================  ==============================  ==
-S10R    S10G    BLOOD       /path/to/S10R.BAM
+S10R    S10G    BLOOD       /path/to/S10R.BAM  
 EXT-1R          BLOOD                          /path/to/externalCounts.tsv.gz  gencode34
 EXT-2R          BLOOD                          /path/to/externalCounts.tsv.gz  gencode34
 ======  ======  ==========  =================  ==============================  ==
@@ -250,23 +222,19 @@ EXT-2R          BLOOD                          /path/to/externalCounts.tsv.gz  g
 Files to download
 -----------------
 
-The following files can be downloaded from our `public repository <https://www.cmm.in.tum.de/public/paper/drop_analysis/resource/>`_.
+Two different files can be downloaded from our `public repository <https://www.cmm.in.tum.de/public/paper/drop_analysis/resource/>`_. 
 
 1. VCF file containing different positions to be used to match DNA with RNA files.
-The file name is ``qc_vcf_1000G_{genome_build}.vcf.gz``. One file is available for each
-genome build (hg19/hs37d5 and hg38/GRCh38). Download it together with the corresponding .tbi file.
+The file name is ``qc_vcf_1000G_{genome_build}.vcf.gz``. One file is available for each 
+genome build (hg19/hs37d5 and hg38/GRCh38). Download it together with the corresponding .tbi file. 
 Indicate the full path to the vcf file in the ``qcVcf`` key in the mono-allelic expression dictionary.
 This file is only needed for the MAE module. Otherwise, write ``null`` in the ``qcVcf`` key.
 
-2. Text file containing the relations between genes and phenotypes encoded as HPO terms.
+2. Text file containing the relations between genes and phenotypes encoded as HPO terms. 
 The file name is ``hpo_genes.tsv.gz``.
 Download it and indicate the full path to it in the ``hpoFile`` key.
 The file is only needed in case HPO terms are specified in the sample annotation.
 Otherwise, write ``null`` in the ``hpoFile`` key.
-
-3. For the RNA-Seq variant calling module, known variants should be used to calibrate variant and sequencing scores.
-These can be downloaded for hg19 at our `public repository <https://www.cmm.in.tum.de/public/paper/drop_analysis/resource/>`
-and for hg38 through the Broad Institute's `resource bundle <https://gatk.broadinstitute.org/hc/en-us/articles/360035890811-Resource-bundle>`
 
 .. _advancedoptions:
 
@@ -286,17 +254,17 @@ Also, the number of threads allowed for a computational step can be modified.
     Any changes made to the R code need to be updated with ``drop update`` in the project directory.
 
 The aberrant expression and splicing modules use a denoising autoencoder to
-correct for sample covariation. This process reduces the fitting space to a
+correct for sample covariation. This process reduces the fitting space to a 
 dimension smaller than the number of samples N. The encoding dimension is optimized.
-We recommend the search space to be at most N/3 for the aberrant expression,
-and N/6 for the aberrant splicing case. Nevertheless, the user can specify the
+We recommend the search space to be at most N/3 for the aberrant expression, 
+and N/6 for the aberrant splicing case. Nevertheless, the user can specify the 
 denominator with the parameter ``maxTestedDimensionProportion``.
 
 DROP allows that BAM files from RNA-seq from samples belonging to the same `DROP_GROUP`
-were aligned to different genome assemblies from the same build (eg, some to ucsc
-and others to ncbi, but all to either hg19 or hg38). If so, for the aberrant
+were aligned to different genome assemblies from the same build (eg, some to ucsc 
+and others to ncbi, but all to either hg19 or hg38). If so, for the aberrant 
 expression and splicing modules, no special configuration is needed.
-For the MAE and rnaVariantCalling module, the different fasta files must be specified as a dictionary in
+For the MAE module, the different fasta files must be specified as a dictionary in 
 the `genome` parameter of the config file, and, for each sample, the corresponding
 key of the `genome` dictionary must be specified in the `GENOME` column of the
 sample annotation.
@@ -304,3 +272,4 @@ In additon, DROP allows that BAM files from RNA-seq were aligned to one genome
 assembly (eg ucsc) and the corresponding VCF files from DNA sequencing to another
 genome assembly (eg ncbi). If so, the assembly of the reference genome fasta file
 must correspond to the one of the BAM file from RNA-seq.
+

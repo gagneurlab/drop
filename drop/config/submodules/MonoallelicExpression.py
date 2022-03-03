@@ -17,7 +17,7 @@ class MAE(Submodule):
         super().__init__(config, sampleAnnotation, processedDataDir, processedResultsDir, workDir)
         self.CONFIG_KEYS = [
             "groups", "genome", "qcVcf", "qcGroups", "gatkIgnoreHeaderCheck", "padjCutoff",
-            "allelicRatioCutoff", "maxAF", "maxVarFreqCohort"
+            "allelicRatioCutoff", "maxAF", "gnomAD","maxVarFreqCohort"
         ]
         self.name = "MonoallelicExpression"
         # if self.run is false return without doing any config/sa checks for completeness
@@ -92,7 +92,7 @@ class MAE(Submodule):
     def setDefaultKeys(self, dict_):
         super().setDefaultKeys(dict_)
         setKey = utils.setKey
-        setKey(dict_, None, "run", False)
+        dict_ = utils.checkKeys(dict_, keys=["qcVcf"], check_files=True)
         groups = setKey(dict_, None, "groups", self.sampleAnnotation.getGroups(assay="DNA"))
         setKey(dict_, None, "qcGroups", groups)
         setKey(dict_, None, "gatkIgnoreHeaderCheck", True)
@@ -101,8 +101,7 @@ class MAE(Submodule):
         setKey(dict_, None, "maxAF", .001)
         setKey(dict_, None, "addAF", False)
         setKey(dict_, None, "maxVarFreqCohort", 0.04)
-        if dict_["run"]:
-            dict_ = utils.checkKeys(dict_, keys=["qcVcf"], check_files=True)
+        setKey(dict_, None, "gnomAD", False)
         return dict_
 
     def createMaeIDS(self, id_sep='--'):
@@ -141,3 +140,45 @@ class MAE(Submodule):
         if id == 'QC':
             return self.qcVcfFile
         return self.sampleAnnotation.getFilePath(id, 'DNA_VCF_FILE')
+
+    # map out the samples in the group to the corresponding genome defined in SA
+    def setGenomeDict(self, genomeFiles):
+        genomeDict = {}
+        if len(genomeFiles) == 1:  # globally defined in the config
+            globalGenome = list(genomeFiles.values())[0]
+
+            # subset SA by the drop group (not exact match) and skip the filtering by SA-GENOME column
+            genomeDict = self.sampleAnnotation.getGenomes(
+                globalGenome,
+                self.groups,
+                file_type="RNA_ID",
+                column="DROP_GROUP", group_key="DROP_GROUP",
+                exact_match=False, skip=True
+            )
+        else:
+            # subset SA by the drop group (not exact match) and filter by SA-GENOME column. Must exactly match config key
+            for gf in genomeFiles.keys():
+                genomeDict.update(
+                    self.sampleAnnotation.getGenomes(
+                        gf,
+                        self.groups,
+                        file_type="RNA_ID",
+                        column="GENOME", group_key="DROP_GROUP",
+                        exact_match=False, skip=False
+                    )
+                )
+
+        return genomeDict
+
+    # look up for a sampleID genomeFiles{ncbi -> path} and sampleGenomes {sampleID -> ncbi}
+    def getGenomePath(self, sampleID):
+        try:
+            if len(self.genomeFiles) == 1:
+                return list(self.genomeFiles.values())[0]
+            else:
+                return self.genomeFiles[self.sampleGenomes[sampleID]]
+        except KeyError:
+            raise KeyError(
+                f"The Config file has defined specific key,value for genome path "
+                f"but the SA table does not match for sample {sampleID}"
+            )
