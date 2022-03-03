@@ -53,8 +53,7 @@ dt$cohortFreq <- apply(dt[,1:ncol(vcf)],1,function(x){
   1-sum(x == "0/0")/length(x) })
 
 
-#if (snakemake@config$rnaVariantCalling$addAF){
-if (FALSE){
+if (snakemake@config$rnaVariantCalling$addAF){
   #tMAE code for adding gnomad frequency
   max_af_cutoff <- snakemake@config$rnaVariantCalling$maxAF
   pops <- c('AF', 'AF_afr', 'AF_amr', 'AF_eas', 'AF_nfe', 'AF_popmax')
