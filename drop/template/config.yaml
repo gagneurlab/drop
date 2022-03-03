@@ -6,22 +6,18 @@ indexWithFolderName: true # whether the root base name should be part of the ind
 hpoFile: null  # if null, downloads it from webserver
 sampleAnnotation: # path to sample annotation (see documenation on how to create it)
 
-root: Output
-sampleAnnotation: Data/sample_annotation.tsv
 geneAnnotation:
-    v29: Data/gencode_annotation_trunc.gtf
-genomeAssembly: hg19
-genome: Data/chr21.fa
+    # multiple annotations with custom names are possible
+    # <annotation_name> : <path to gencode v29 annotation>
+    v29:  /path/to/gencode29.gtf.gz # example
 
-hpoFile: null
-random_seed: true  # just for demo data, remove for proper analysis
-
+genomeAssembly: hg19  # either hg19/hs37d5 or hg38/GRCh38
 exportCounts:
     # specify which gene annotations to include and which
     # groups to exclude when exporting counts
     geneAnnotations:
       - v29
-    excludeGroups
+    excludeGroups:
       - group1
 genome: # path to genome sequence in fasta format.
     # You can define multiple reference genomes in yaml format, ncbi: path_to_ncbi, ucsc: path_to_ucsc
@@ -34,27 +30,24 @@ aberrantExpression:
         - group2
     fpkmCutoff: 1
     implementation: autoencoder
-    padjCutoff: 1
+    padjCutoff: 0.05
     zScoreCutoff: 0
     maxTestedDimensionProportion: 3
-    dassie:
-        tssWindow: 500
-        pasWindow: 1000
 
 aberrantSplicing:
     run: true
     groups:
-      - fraser
-    recount: true
+        - group1
+    recount: false
     longRead: false
     keepNonStandardChrs: true
-    filter: false
+    filter: true
     minExpressionInOneSample: 20
     minDeltaPsi: 0.05
     implementation: PCA
-    padjCutoff: 1
+    padjCutoff: 0.05
     zScoreCutoff: 0
-    deltaPsiCutoff : 0.05
+    deltaPsiCutoff: 0.3
     maxTestedDimensionProportion: 6
 
 mae:
@@ -68,27 +61,10 @@ mae:
     allelicRatioCutoff: 0.8
     addAF: false
     maxAF: .001
-    maxVarFreqCohort: .04
+    maxVarFreqCohort: .05
     # VCF-BAM matching
-    qcVcf: Data/qc_vcf_1000G.vcf.gz
-    qcGroups:
-      - mae
-
-rnaVariantCalling:
-    run: false
-    groups:
-        - batch_0
-    knownVCFs:
-        - high_confidence_snps_test.vcf.gz
-        - high_confidence_indels_test.vcf.gz
-        - dbSNP.vcf.gz
-    repeat_mask: Data/repeat_mask.bed
-    addAF: true
-    maxAF: .001
-    maxVarFreqCohort: .04
-    hcArgs: 
-    minAlt: 3
-
+    qcVcf:        # path to common variant file e.g. qc_vcf_1000G.vcf.gz
+    qcGroups: mae
 
 tools:
     gatkCmd: gatk

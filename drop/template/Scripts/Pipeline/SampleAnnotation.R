@@ -94,5 +94,4 @@ if(!is.null(sa$HPO_TERMS) & !all(is.na(sa$HPO_TERMS)) & ! all(sa$HPO_TERMS == ''
   
   fwrite(sa2, snakemake@output$hpoOverlap,
          na = NA, sep = "\t", row.names = F, quote = F)
-  }
-
+}
