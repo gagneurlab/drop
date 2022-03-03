@@ -5,10 +5,11 @@
 #'  log:
 #'   - snakemake: '`sm str(tmp_dir / "AE" / "{annotation}" / "{dataset}" / "merge.Rds")`'
 #'  params:
-#'    - exCountIDs: '`sm lambda w: sa.getIDsByGroup(w.dataset, assay="GENE_COUNT")`'
+#'   - exCountIDs: '`sm lambda w: sa.getIDsByGroup(w.dataset, assay="GENE_COUNT")`'
 #'  input: 
-#'    - counts: '`sm lambda w: cfg.AE.getCountFiles(w.annotation, w.dataset)`'
-#'    - input_params: '`sm cfg.getProcessedDataDir() + "/aberrant_expression/{annotation}/params/merge/{dataset}_mergeParams.csv"`'
+#'   - counts: '`sm lambda w: cfg.AE.getCountFiles(w.annotation, w.dataset)`'
+#'   - count_ranges: '`sm cfg.getProcessedDataDir() + "/aberrant_expression/{annotation}/count_ranges.Rds" `'
+#'   - input_params: '`sm cfg.getProcessedDataDir() + "/aberrant_expression/{annotation}/params/merge/{dataset}_mergeParams.csv"`'
 #'  output:
 #'    - counts: '`sm cfg.getProcessedDataDir() +
 #'               "/aberrant_expression/{annotation}/outrider/{dataset}/total_counts.Rds"`'
@@ -26,6 +27,7 @@ suppressPackageStartupMessages({
 })
 
 register(MulticoreParam(snakemake@threads))
+count_ranges <- readRDS(snakemake@input$count_ranges)
 
 # Read counts
 counts_list <- bplapply(snakemake@input$counts, function(f){
@@ -50,8 +52,8 @@ if( length(unique(row_names_objects)) > 1 ){
 merged_assays <- do.call(cbind, counts_list)
 total_counts <- SummarizedExperiment(assays=list(counts=merged_assays))
 
-# total_counts <- do.call(cbind, counts_list)
-rownames(total_counts) <- rownames(counts_list[[1]])
+# assign ranges
+rowRanges(total_counts) <- count_ranges
 
 # Add sample annotation data (colData)
 sample_anno <- fread(snakemake@config$sampleAnnotation)
