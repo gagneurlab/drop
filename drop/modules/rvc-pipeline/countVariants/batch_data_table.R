@@ -5,7 +5,9 @@
 #'  log:
 #'    - snakemake: '`sm str(tmp_dir / "RVC" / "{dataset}" / "{annotation}_RVC_data_table.Rds")`'
 #'  input:
-#'   - configParams: 'rnaVariantCalling/params/config/rnaVariantCalling_config.tsv'
+#'   - configParams: '`sm os.path.join(
+#'                        cfg.processedDataDir,
+#'                        "rnaVariantCalling/params/config/rnaVariantCalling_config.tsv")`'
 #'   - annotatedVCF: '`sm os.path.join(
 #'                        cfg.processedResultsDir,
 #'                        "rnaVariantCalling/out/batch_vcfs", "{dataset}",
