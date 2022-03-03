@@ -38,7 +38,6 @@ htmlDir <- snakemake@params$htmlDir
 results_links <- sapply(
   annotations, function(v) build_link_list(
     file_paths = file.path(htmlDir, paste0(datasets, '--', v, '_summary.html')),
-
     captions = datasets
   )
 )
@@ -49,9 +48,7 @@ results_links <- sapply(
 #' **Gene annotations:** `r paste(annotations, collapse = ', ')`
 #'
 #' ## RVC results
-#' `r display_text(caption = 'Gene annotation version ', links = results_links)`
+#' `r display_text(caption = 'Gene annotation:', links = results_links)`
 #'
 #' ## Files
 #' * [annotated VCFs](`r file.path(snakemake@config$root, 'processed_results/rnaVariantCalling/out/batch_vcfs/')`)
-#'
-#' ## Analyze Individual Results
