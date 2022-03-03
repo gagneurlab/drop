@@ -71,9 +71,7 @@ def copyModuleCode(repoPaths, projectPaths):
     repo_map = {
         "aberrant-expression-pipeline": "AberrantExpression",
         "aberrant-splicing-pipeline": "AberrantSplicing",
-        "mae-pipeline": "MonoallelicExpression",
-        "rvc-pipeline": "rnaVariantCalling"
-
+        "mae-pipeline": "MonoallelicExpression"
     }
 
     import sys

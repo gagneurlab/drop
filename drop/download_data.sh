@@ -2,13 +2,14 @@
 set -e
 
 # get data
-resource_url="https://github.com/nickhsmith/drop_demo_data/archive/refs/heads/main.zip"
+resource_url="https://www.cmm.in.tum.de/public/paper/drop_analysis/resource.tar.gz"
 tmpdir="$(dirname "$(mktemp)")"
 wget -nc -P $tmpdir $resource_url
+mkdir -p Data
 if [ -z "$(ls Data)" ]; then
-	unzip "$tmpdir/main.zip" 
-	mv drop_demo_data-main/Data Data
-	rm -rf drop_demo_data-main
+	tar -zxvf "$tmpdir/resource.tar.gz" -C .
+	rm -rf Data
+	mv resource Data
 else
     echo "Data directory not empty, is not updated"
 fi

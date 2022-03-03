@@ -16,16 +16,16 @@ class Test_AE_Config:
     def test_getCountsFiles(self, demo_dir, dropConfig):
         counts_dir = f"{demo_dir}/Output/processed_data/aberrant_expression/v29/counts"
         counts_files = [
-            'HG00103.Rds',
-            'HG00096.Rds',
-            'HG00106.Rds',
-            'HG00116.Rds',
-            'HG00111.Rds',
-            'HG00149.Rds',
-            'HG00176.Rds',
-            'HG00150.Rds',
-            'HG00126.Rds',
-            'HG00132.Rds'
+            'HG00103.4.M_120208_3.Rds',
+            'HG00096.1.M_111124_6.Rds',
+            'HG00106.4.M_120208_5.Rds',
+            'HG00116.2.M_120131_1.Rds',
+            'HG00111.2.M_111215_4.Rds',
+            'HG00149.1.M_111124_6.Rds',
+            'HG00176.4.M_120208_2.Rds',
+            'HG00150.4.M_120208_7.Rds',
+            'HG00126.1.M_111124_8.Rds',
+            'HG00132.2.M_111215_4.Rds'
         ]
         counts_files_true = [f"{counts_dir}/{f}" for f in counts_files]
         counts_files_true.sort()
@@ -48,7 +48,6 @@ class Test_AE_Config:
             'PAIRED_END': True,
             'COUNT_OVERLAPS': True
         }
-        print(dropConfig.AE.getCountParams("HG00103"))
-        assert params == dropConfig.AE.getCountParams("HG00103")
+        assert params == dropConfig.AE.getCountParams("HG00103.4.M_120208_3")
 
 

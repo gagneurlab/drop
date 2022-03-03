@@ -13,13 +13,13 @@ def demo_dir(tmpdir_factory):
     :param testdirectory: inherits from pytest-testdirectory
     :return: demo directory
     """
-    run_dir =tmpdir_factory.mktemp("demo_dir")
+    run_dir = tmpdir_factory.mktemp("demo_dir")
     LOGGER.info(f"\n create demo dir: {run_dir}")
     r = run(["drop", "demo"], run_dir, stdout=subprocess.DEVNULL)
     assert "demo project created" in r.stderr
     yield run_dir
     LOGGER.info("\n remove demo directory")
-    #run_dir.remove()
+    run_dir.remove()
 
 
 @pytest.fixture(scope="session", autouse=True)

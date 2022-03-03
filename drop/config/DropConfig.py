@@ -16,8 +16,7 @@ class DropConfig:
         # global parameters
         "root", "sampleAnnotation", "geneAnnotation", "genomeAssembly", "exportCounts", "tools", "hpoFile","genome",
         # modules
-        "aberrantExpression", "aberrantSplicing", "mae","rnaVariantCalling"
-
+        "aberrantExpression", "aberrantSplicing", "mae"
     ]
 
     def __init__(self, wbuildConfig, workDir):
@@ -77,14 +76,6 @@ class DropConfig:
             workDir=workDir,
             genome=self.genome
         )
-        self.RVC = RVC(
-            config=self.get("rnaVariantCalling"),
-            sampleAnnotation=self.sampleAnnotation,
-            processedDataDir=self.processedDataDir,
-            processedResultsDir=self.processedResultsDir,
-            workDir=workDir,
-            genome=self.genome
-        )
 
         # counts export
         self.exportCounts = ExportCounts(
@@ -101,7 +92,6 @@ class DropConfig:
             self.AE,
             self.AS,
             self.MAE,
-            self.RVC,
             self.get("geneAnnotation"),
             self.processedDataDir,
             self.sampleAnnotation
@@ -112,9 +102,6 @@ class DropConfig:
         utils.setKey(self.config_dict, None, "aberrantExpression", self.AE.dict_)
         utils.setKey(self.config_dict, None, "aberrantSplicing", self.AS.dict_)
         utils.setKey(self.config_dict, None, "mae", self.MAE.dict_)
-        utils.setKey(self.config_dict, None, "rnaVariantCalling", self.RVC.dict_)
-
-
 
     def setDefaults(self, config_dict):
         """
@@ -123,8 +110,7 @@ class DropConfig:
         :return: config dictionary with defaults
         """
         # check mandatory keys
-        config_dict = utils.checkKeys(config_dict, keys=["htmlOutputPath", "root"])
-        config_dict = utils.checkKeys(config_dict, keys=["sampleAnnotation"],
+        config_dict = utils.checkKeys(config_dict, keys=["htmlOutputPath", "root", "sampleAnnotation"],
                                       check_files=True)
         config_dict["geneAnnotation"] = utils.checkKeys(config_dict["geneAnnotation"], keys=None, check_files=True)
 
@@ -133,7 +119,6 @@ class DropConfig:
         setKey = utils.setKey
         setKey(config_dict, None, "fileRegex", r".*\.(R|md)")
         setKey(config_dict, None, "genomeAssembly", "hg19")
-
         hpo_url = 'https://www.cmm.in.tum.de/public/paper/drop_analysis/resource/hpo_genes.tsv.gz'
         setKey(config_dict, None, "hpoFile", hpo_url)
 
@@ -141,8 +126,6 @@ class DropConfig:
         setKey(config_dict, None, "aberrantExpression", dict())
         setKey(config_dict, None, "aberrantSplicing", dict())
         setKey(config_dict, None, "mae", dict())
-        setKey(config_dict, None, "rnaVariantCalling", dict())
-
         setKey(config_dict, None, "exportCounts", dict())
 
         # Legacy check: If mae still defines genome print warning, otherwise use the
