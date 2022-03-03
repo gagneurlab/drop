@@ -30,20 +30,19 @@ res_plot[,MAX_AF := NULL]
 res_plot[,cohortFreq := NULL]
 res_plot[,VARIANT := NULL]
 
-#' ## Variant Calling Table: PASS
+#' ## Variant Calling Tables
 DT::datatable(
     head(res[grepl("PASS", FILTER)], 1000),
     caption = 'Variants called from RNA (up to 1,000 rows shown)',
     options=list(scrollX=TRUE),
     filter = 'top')
 
-#' ## Variant Calling Table: RARE
 if (!all(is.na(res$MAX_AF))) {
-DT::datatable(
-    head(res[FILTER == "PASS_rare"], 1000),
-    caption = 'Rare Variants called from RNA (up to 1,000 rows shown)',
-    options=list(scrollX=TRUE),
-    filter = 'top')
+    DT::datatable(
+        head(res[FILTER == "PASS_rare"], 1000),
+        caption = 'Rare Variants called from RNA (up to 1,000 rows shown)',
+        options=list(scrollX=TRUE),
+        filter = 'top')
 }
 
 # melt filters by GT. Exclude reference calls

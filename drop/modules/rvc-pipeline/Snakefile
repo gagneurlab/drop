@@ -326,7 +326,9 @@ rule combineGVCFs:
             "rnaVariantCalling/out/sample_vcfs",
             "{sample}",
             "{sample}.g.vcf.gz"
-            ), sample = sa.getIDsByGroup(wildcards.dataset))
+            ), sample = sa.getIDsByGroup(wildcards.dataset)),
+        batch_params = os.path.join(cfg.processedDataDir, "rnaVariantCalling/params/batches" ,
+                                    "{dataset}_batchParams.csv")
     output:
         gvcf = os.path.join(
             cfg.processedDataDir,
