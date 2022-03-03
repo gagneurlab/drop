@@ -120,4 +120,3 @@ DT::datatable(
   escape=FALSE,
   filter = 'top'
 )
-

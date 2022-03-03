@@ -42,29 +42,34 @@ class SampleAnnotation:
             "RNA_ID": str, "DNA_ID": str, "DROP_GROUP": str, "GENE_ANNOTATION": str,
             "PAIRED_END": bool, "COUNT_MODE": str, "COUNT_OVERLAPS": bool, "STRAND": str, "GENOME": str
         }
-        sa = pd.read_csv(self.file, sep=sep, index_col=False)
-        missing_cols = [x for x in self.SAMPLE_ANNOTATION_COLUMNS if x not in sa.columns.values]
+        annotationTable = pd.read_csv(self.file, sep=sep, index_col=False)
+
+        # check if any "required" columns are missing. If so look to see which ones
+        missing_cols = [x for x in self.SAMPLE_ANNOTATION_COLUMNS if x not in annotationTable.columns.values]
         if len(missing_cols) > 0:
+            # if the missing columns is GENOME (optional coumns) remove them
             if "GENOME" in missing_cols:
                 # deal with missing columns in data types, remove it to fix checks later
                 del data_types["GENOME"]
                 self.SAMPLE_ANNOTATION_COLUMNS.remove("GENOME")
                 missing_cols.remove("GENOME")
 
-            if "GENE_ANNOTATION" in missing_cols and "ANNOTATION" in sa.columns.values:
+            # if the missing columns are GENE_ANNOTATION see if the old ANNOTATION column header is there. use that and warn the user
+            if "GENE_ANNOTATION" in missing_cols and "ANNOTATION" in annotationTable.columns.values:
                 logger.info(
                     "WARNING: GENE_ANNOTATION must be a column in the sample annotation table, ANNOTATION is the old column name and will be deprecated in the future\n")
-                sa["GENE_ANNOTATION"] = sa.pop("ANNOTATION")
+                annotationTable["GENE_ANNOTATION"] = annotationTable.pop("ANNOTATION")
                 missing_cols.remove("GENE_ANNOTATION")
 
+            # if there are still missing columns, print the required ones that aren't present
             if len(missing_cols) > 0:
                 raise ValueError(f"Incorrect columns in sample annotation file. Missing:\n{missing_cols}")
 
-        sa = sa.astype(data_types)
+        annotationTable = annotationTable.astype(data_types)
         # remove unwanted characters
-        sa["DROP_GROUP"] = sa["DROP_GROUP"].str.replace(" ", "").str.replace("(|)", "", regex=True)
+        annotationTable["DROP_GROUP"] = annotationTable["DROP_GROUP"].str.replace(" ", "").str.replace("(|)", "", regex=True)
 
-        return sa
+        return annotationTable
 
     #### Construction
 
@@ -105,6 +110,7 @@ class SampleAnnotation:
             missing = set(file_mapping["FILE_PATH"]) - set(existing)
             logger.info(f"WARNING: {len(missing)} files missing in samples annotation. Ignoring...")
             logger.debug(f"Missing files: {missing}")
+
             file_mapping = file_mapping[file_mapping["FILE_PATH"].isin(existing)]
 
         # write file mapping
@@ -113,6 +119,7 @@ class SampleAnnotation:
 
     def createGroupIds(self, group_key="DROP_GROUP", file_type=None, sep=','):
         """
+
         :param group_key: name of group column in sample annotation
         :param file_type: name of file column e.g. "RNA_BAM_FILE", "DNA_VCF_FILE"
         :param sep: separator of multiple groups in group column
@@ -233,8 +240,8 @@ class SampleAnnotation:
     def getGenomes(self, value, group, file_type="RNA_ID",
                             column="GENOME", group_key="DROP_GROUP",exact_match = True,skip = False):
         """
-        :param value: values to match in the column. Must be an exact match, passed to subsetting sample annotation 
-        :param group: a group of the group_key (DROP_GROUP) column. 
+        :param value: values to match in the column. Must be an exact match, passed to subsetting sample annotation
+        :param group: a group of the group_key (DROP_GROUP) column.
         :return: dict file_type to column
         """
 
@@ -291,7 +298,7 @@ class SampleAnnotation:
         return groupedIDs
 
     def getGroups(self, assay="RNA"):
-        return self.getGroupedIDs(assay).keys()
+        return list(self.getGroupedIDs(assay).keys())
 
     def getIDsByGroup(self, group, assay="RNA"):
         try:
