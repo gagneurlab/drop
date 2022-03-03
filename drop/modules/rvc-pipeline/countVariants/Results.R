@@ -73,6 +73,6 @@ res_plot_summary <- res_plot[,sum(N),by = .(FILTER,variable,GT)]
 # Plot only Pass/Fail split
 ggplot(res_plot_summary, aes(x = FILTER, y = V1,col = GT)) +
        geom_boxplot() +
-       geom_text(data = res_plot[,median(V1),by=c("FILTER","GT")],
+       geom_text(data = res_plot_summary[,median(V1),by=c("FILTER","GT")],
            mapping = aes(x=FILTER,y= V1,label = V1, vjust = -0.5),position = position_dodge(0.9),show.legend = F,size = 3.5) +
        ylab("Variants per sample") + scale_x_discrete(guide = guide_axis(n.dodge = 2))
