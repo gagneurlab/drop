@@ -107,7 +107,6 @@ if(nrow(res) > 0){
   res[, pValue := signif(pValue, 3)]
   res[, padjust := signif(padjust, 3)]
   res[, deltaPsi := signif(deltaPsi, 2)]
-  res[, zscore := signif(zScore, 2)]
   res[, psiValue := signif(psiValue, 2)]
   res[, pValueGene := signif(pValueGene, 2)]
   res[, padjustGene := signif(padjustGene, 2)]

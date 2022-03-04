@@ -46,7 +46,6 @@ aberrantSplicing:
     minDeltaPsi: 0.05
     implementation: PCA
     padjCutoff: 0.05
-    zScoreCutoff: 0
     deltaPsiCutoff: 0.3
     maxTestedDimensionProportion: 6
 

@@ -8,7 +8,6 @@
 #'   - workingDir: '`sm cfg.getProcessedDataDir() + "/aberrant_splicing/datasets/"`'
 #'   - outputDir: '`sm cfg.getProcessedResultsDir() + "/aberrant_splicing/datasets/"`'
 #'   - padjCutoff: '`sm cfg.AS.get("padjCutoff")`'
-#'   - zScoreCutoff: '`sm cfg.AS.get("zScoreCutoff")`'
 #'   - deltaPsiCutoff: '`sm cfg.AS.get("deltaPsiCutoff")`'
 #'   - hpoFile: '`sm cfg.get("hpoFile")`'
 #'  threads: 10
@@ -65,7 +64,6 @@ fds <- saveFraserDataSet(fds_input, dir=outputDir, name = paste(dataset, annotat
 # Extract results per junction
 res_junc <- results(fds,
                     padjCutoff=snakemake@params$padjCutoff,
-                    zScoreCutoff=snakemake@params$zScoreCutoff,
                     deltaPsiCutoff=snakemake@params$deltaPsiCutoff)
 res_junc_dt   <- as.data.table(res_junc)
 print('Results per junction extracted')

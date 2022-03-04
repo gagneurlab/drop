@@ -10,7 +10,7 @@ class AS(Submodule):
         super().__init__(config, sampleAnnotation, processedDataDir, processedResultsDir, workDir)
         self.CONFIG_KEYS = [
             "groups", "recount", "longRead", "filter", "minExpressionInOneSample", "minDeltaPsi",
-            "implementation", "padjCutoff", "zScoreCutoff", "deltaPsiCutoff", "maxTestedDimensionProportion"
+            "implementation", "padjCutoff", "deltaPsiCutoff", "maxTestedDimensionProportion"
         ]
         self.name = "AberrantSplicing"
         # if self.run is false return without doing any config/sa checks for completeness
@@ -31,8 +31,7 @@ class AS(Submodule):
         setKey(dict_, None, "minDeltaPsi", 0)
         setKey(dict_, None, "implementation", "PCA")
         setKey(dict_, None, "padjCutoff", 0.05)
-        setKey(dict_, None, "zScoreCutoff", 0.05)
-        setKey(dict_, None, "deltaPsiCutoff", 0.05)
+        setKey(dict_, None, "deltaPsiCutoff", 0.3)
         setKey(dict_, None, "maxTestedDimensionProportion", 6)
         return dict_
 
