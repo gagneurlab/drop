@@ -6,6 +6,8 @@
 #'    - snakemake: '`sm str(tmp_dir / "AS" / "{dataset}--{annotation}" / "FRASER_summary.Rds")`'
 #'  params:
 #'   - setup: '`sm cfg.AS.getWorkdir() + "/config.R"`'
+#'   - padjCutoff: '`sm cfg.AS.get("padjCutoff")`'
+#'   - deltaPsiCutoff: '`sm cfg.AS.get("deltaPsiCutoff")`'
 #'  input:
 #'   - fdsin: '`sm cfg.getProcessedResultsDir() + 
 #'                 "/aberrant_splicing/datasets/savedObjects/{dataset}--{annotation}/fds-object.RDS"`'
