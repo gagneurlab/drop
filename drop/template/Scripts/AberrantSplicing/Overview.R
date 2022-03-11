@@ -39,8 +39,8 @@ count_links <- build_link_list(
 )
 
 results_links <- sapply(
-  annotations, function(v) build_link_list(
-    file_paths = file.path(htmlDir, paste0(datasets, '--', v, '_summary.html')),
+  annotations, function(x) build_link_list(
+    file_paths = file.path(htmlDir, paste0(datasets, '--', x, '_summary.html')),
     captions = datasets
   )
 )

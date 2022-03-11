@@ -10,8 +10,7 @@
 #'                        "rnaVariantCalling/out/data_tables", "{dataset}",
 #'                        "{dataset}_{annotation}_data_table.Rds")`'
 #'  output:
-#'   - wBhtml: '`sm config["htmlOutputPath"] +
-#'               "/rnaVariantCalling/{dataset}--{annotation}_summary.html"`'
+#'   - wBhtml: '`sm config["htmlOutputPath"] + "/rnaVariantCalling/{annotation}/Summary_{dataset}.html"`'
 #'  type: noindex
 #'---
 

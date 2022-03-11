@@ -126,6 +126,12 @@ class SampleParams:
         for module in moduleList:
             config_dict = module.dict_
             format_dict = {key:str(config_dict[key]) for key in config_dict}
+
+            # additional hard coded keys for global settings
+            format_dict["geneAnnotation"] = self.geneAnnotation
+            format_dict["processedDataDir"] = self.processedDataDir
+            format_dict["sampleAnnotation"] = self.sampleAnnotation
+
             current_config = pd.DataFrame.from_dict(format_dict,orient = "index",columns = ["value"])
             moduleCSV = self.processedDataDir / self.MODULE_NAMES[module.name] / "params" / "config" 
             moduleCSV.mkdir(parents = True,exist_ok = True)
