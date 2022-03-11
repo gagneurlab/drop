@@ -1,4 +1,5 @@
 options(repos=structure(c(CRAN="https://cloud.r-project.org")), warn = -1)
+options(timeout=900)
 
 if (!requireNamespace('BiocManager', quietly = TRUE)) {
     install.packages('BiocManager')
