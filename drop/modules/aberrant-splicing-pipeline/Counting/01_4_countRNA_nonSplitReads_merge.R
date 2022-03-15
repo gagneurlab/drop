@@ -5,10 +5,10 @@
 #'  log:
 #'    - snakemake: '`sm str(tmp_dir / "AS" / "{dataset}" / "01_4_nonSplitReadsMerge.Rds")`'
 #'  params:
-#'   - setup: '`sm cfg.AS.getWorkdir() + "/config.R"`'
 #'   - workingDir: '`sm cfg.getProcessedDataDir() + "/aberrant_splicing/datasets"`'
 #'  threads: 20
 #'  input:
+#'   - setup: '`sm cfg.AS.getWorkdir() + "/config.R"`'
 #'   - sample_counts:  '`sm lambda w: cfg.AS.getNonSplitCountFiles(w.dataset)`'
 #'   - gRangesNonSplitCounts: '`sm cfg.getProcessedDataDir() + 
 #'                          "/aberrant_splicing/datasets/cache/raw-{dataset}/gRanges_NonSplitCounts.rds"`'
@@ -19,7 +19,7 @@
 #'---
 
 saveRDS(snakemake, snakemake@log$snakemake)
-source(snakemake@params$setup, echo=FALSE)
+source(snakemake@input$setup, echo=FALSE)
 
 dataset    <- snakemake@wildcards$dataset
 workingDir <- snakemake@params$workingDir

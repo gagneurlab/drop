@@ -5,10 +5,10 @@
 #'  log:
 #'   - snakemake: '`sm str(tmp_dir / "AS" / "{dataset}" / "02_PSIcalc.Rds")`'
 #'  params:
-#'   - setup: '`sm cfg.AS.getWorkdir() + "/config.R"`'
 #'   - workingDir: '`sm cfg.getProcessedDataDir() + "/aberrant_splicing/datasets/"`'
 #'  threads: 30
 #'  input:
+#'   - setup: '`sm cfg.AS.getWorkdir() + "/config.R"`'
 #'   - counting_done: '`sm cfg.getProcessedDataDir() + 
 #'                "/aberrant_splicing/datasets/savedObjects/raw-{dataset}/counting.done" `'
 #'  output:
@@ -18,7 +18,7 @@
 #'--- 
 
 saveRDS(snakemake, snakemake@log$snakemake)
-source(snakemake@params$setup, echo=FALSE)
+source(snakemake@input$setup, echo=FALSE)
 
 dataset    <- snakemake@wildcards$dataset
 workingDir <- snakemake@params$workingDir

@@ -18,6 +18,13 @@
 #'   - fdsin: '`sm cfg.getProcessedDataDir() +
 #'                 "/aberrant_splicing/datasets/savedObjects/{dataset}/" +
 #'                 "padjBetaBinomial_theta.h5"`'
+#'   - spliceTypeSetup: '`sm cfg.AS.getWorkdir() + "/spliceTypeConfig.R"`'
+#'   - addAnnotation:  '`sm cfg.AS.getWorkdir() + "/fds_annotation.R"`'
+#'   - addSpliceType: '`sm cfg.AS.getWorkdir() + "/spliceType_frameshift_annotation.R"`'
+#'   - subtypes: '`sm cfg.AS.getWorkdir() + "/subtypes_exonSkipping_inconclusive.R"`'
+#'   - annotate_blacklist: '`sm str(projectDir / ".drop" / "helpers" / "annotate_blacklist.R")`'
+#'   - blacklist_19: '`sm str(projectDir / ".drop" / "helpers" / "resource" / "hg19-blacklist.v2.bed.gz")`'
+#'   - blacklist_38: '`sm str(projectDir / ".drop" / "helpers" / "resource" / "hg38-blacklist.v2.bed.gz")`'
 #'   - txdb: '`sm cfg.getProcessedDataDir() + "/preprocess/{annotation}/txdb.db"`'
 #'   - gene_name_mapping: '`sm cfg.getProcessedDataDir() + "/preprocess/{annotation}/gene_name_mapping_{annotation}.tsv"`'
 #'  output:
@@ -33,6 +40,11 @@
 saveRDS(snakemake, snakemake@log$snakemake)
 source(snakemake@input$setup, echo=FALSE)
 source(snakemake@input$add_HPO_cols)
+source(snakemake@input$spliceTypeSetup, echo=FALSE)
+source(snakemake@input$addAnnotation)
+source(snakemake@input$addSpliceType)
+source(snakemake@input$subtypes)
+source(snakemake@input$annotate_blacklist)
 library(AnnotationDbi)
 
 annotation    <- snakemake@wildcards$annotation
@@ -62,14 +74,23 @@ fds_input <- annotateRangesWithTxDb(fds_input, txdb = txdb, orgDb = orgdb,
 
 fds <- saveFraserDataSet(fds_input, dir=outputDir, name = paste(dataset, annotation, sep = '--'), rewrite = TRUE)
 
+# Add the junction annotations to the fds
+fds <- createFDSAnnotations(fds, txdb)
+#print(rowRanges(fds,type="j"))
+
+mcols(fds, type="ss")$annotatedJunction <-  "none"
+#print(rowRanges(fds, type="ss"))
+
 # Extract results per junction
 res_junc <- results(fds,
                     padjCutoff=snakemake@params$padjCutoff,
                     zScoreCutoff=snakemake@params$zScoreCutoff,
-                    deltaPsiCutoff=snakemake@params$deltaPsiCutoff)
+                    deltaPsiCutoff=snakemake@params$deltaPsiCutof,
+                    additionalColumns="annotatedJunction")
 res_junc_dt   <- as.data.table(res_junc)
 print('Results per junction extracted')
 saveFraserDataSet(fds, dir=outputDir)
+#print(res_junc_dt)
 
 
 # Add features
@@ -88,6 +109,7 @@ if(nrow(res_junc_dt) > 0){
   warning("The aberrant splicing pipeline gave 0 results for the ", dataset, " dataset.")
 }
 
+
 # Aggregate results by gene
 if(length(res_junc) > 0){
   res_genes_dt <- resultsByGenes(res_junc) %>% as.data.table
@@ -103,6 +125,30 @@ if(length(res_junc) > 0){
     }
   }
 } else res_genes_dt <- data.table()
+
+
+# Add the annotation
+#res_junc_dt <- createAnnotation(res_junc_dt, fds, txdb)
+#print(res_junc_dt)
+
+# Calculate splice types and frameshift
+res_junc_dt <- aberrantSpliceType(res_junc_dt, fds, txdb)
+
+# Add the subtypes for exonSkipping and inconclusive
+res_junc_dt <- checkExonSkipping(res_junc_dt, txdb)
+res_junc_dt <- checkInconclusive(res_junc_dt, txdb)
+
+# Add UTR labels
+res_junc_dt <- addUTRLabels(res_junc_dt, txdb)
+
+# Add blacklist labels
+if(assemblyVersion == 37){
+  print("version 37")
+  blacklist_gr <- import(snakemake@input$blacklist_19, format = "BED")
+}else{
+  blacklist_gr <- import(snakemake@input$blacklist_38, format = "BED")
+}
+res_junc_dt <- addBlacklistLabels(res_junc_dt, blacklist_gr, "splicing")
 
 # Results
 write_tsv(res_junc_dt, file=snakemake@output$resultTableJunc)

@@ -5,10 +5,10 @@
 #'  log:
 #'    - snakemake: '`sm str(tmp_dir / "AS" / "{dataset}" / "00_defineDataset.Rds")`'
 #'  params:
-#'    - setup: '`sm cfg.AS.getWorkdir() + "/config.R"`'
 #'    - ids: '`sm lambda w: sa.getIDsByGroup(w.dataset, assay="RNA")`'
 #'    - fileMappingFile: '`sm cfg.getRoot() + "/file_mapping.csv"`'
 #'  input:
+#'    - setup: '`sm cfg.AS.getWorkdir() + "/config.R"`'
 #'    - sampleAnnoFile: '`sm config["sampleAnnotation"]`'
 #'  output:
 #'    - colData: '`sm cfg.getProcessedDataDir() + 
@@ -23,7 +23,7 @@
 #'---
 
 saveRDS(snakemake, snakemake@log$snakemake)
-source(snakemake@params$setup, echo=FALSE)
+source(snakemake@input$setup, echo=FALSE)
 
 #+ input
 outFile       <- snakemake@output$colData

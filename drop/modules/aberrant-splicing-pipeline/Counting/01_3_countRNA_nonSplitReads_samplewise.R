@@ -5,9 +5,9 @@
 #'  log:
 #'    - snakemake: '`sm str(tmp_dir / "AS" / "{dataset}" / "nonsplitReads" / "{sample_id}.Rds")`'
 #'  params:
-#'   - setup: '`sm cfg.AS.getWorkdir() + "/config.R"`'
 #'   - workingDir: '`sm cfg.getProcessedDataDir() + "/aberrant_splicing/datasets"`'
 #'  input:
+#'   - setup: '`sm cfg.AS.getWorkdir() + "/config.R"`'
 #'   - spliceSites: '`sm cfg.getProcessedDataDir() + 
 #'                   "/aberrant_splicing/datasets/cache/raw-{dataset}/spliceSites_splitCounts.rds"`'
 #'  output:
@@ -18,7 +18,7 @@
 #'---
 
 saveRDS(snakemake, snakemake@log$snakemake)
-source(snakemake@params$setup, echo=FALSE)
+source(snakemake@input$setup, echo=FALSE)
 
 dataset    <- snakemake@wildcards$dataset
 colDataFile <- snakemake@input$colData

@@ -4,9 +4,8 @@
 #' wb:
 #'  log:
 #'    - snakemake: '`sm str(tmp_dir / "AS" / "{dataset}--{annotation}" / "FRASER_summary.Rds")`'
-#'  params:
-#'   - setup: '`sm cfg.AS.getWorkdir() + "/config.R"`'
 #'  input:
+#'   - setup: '`sm cfg.AS.getWorkdir() + "/config.R"`'
 #'   - fdsin: '`sm cfg.getProcessedResultsDir() + 
 #'                 "/aberrant_splicing/datasets/savedObjects/{dataset}--{annotation}/fds-object.RDS"`'
 #'   - results: '`sm cfg.getProcessedResultsDir() + 
@@ -20,7 +19,7 @@
 #'---
 
 saveRDS(snakemake, snakemake@log$snakemake)
-source(snakemake@params$setup, echo=FALSE)
+source(snakemake@input$setup, echo=FALSE)
 
 suppressPackageStartupMessages({
   library(cowplot)

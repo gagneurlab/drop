@@ -5,10 +5,10 @@
 #'  log:
 #'    - snakemake: '`sm str(tmp_dir / "AS" / "{dataset}" / "05_fit.Rds")`'
 #'  params:
-#'   - setup: '`sm cfg.AS.getWorkdir() + "/config.R"`'
 #'   - workingDir: '`sm cfg.getProcessedDataDir() + "/aberrant_splicing/datasets/"`'
 #'  threads: 20
 #'  input:
+#'   - setup: '`sm cfg.AS.getWorkdir() + "/config.R"`'
 #'   - hyper: '`sm cfg.getProcessedDataDir() + 
 #'                "/aberrant_splicing/datasets/savedObjects/{dataset}/hyper.done" `'
 #'  output:
@@ -18,7 +18,7 @@
 #'---
 
 saveRDS(snakemake, snakemake@log$snakemake)
-source(snakemake@params$setup, echo=FALSE)
+source(snakemake@input$setup, echo=FALSE)
 
 dataset    <- snakemake@wildcards$dataset
 workingDir <- snakemake@params$workingDir
