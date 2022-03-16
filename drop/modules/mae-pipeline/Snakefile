@@ -27,8 +27,7 @@ rule create_dict:
 	    """
 		for fasta in {input}
 		  do
-		  if [ -f "${{fasta%.*}}.dict" ]; then
-          else
+		  if [ ! -f "${{fasta%.*}}.dict" ]; then
 		    gatk CreateSequenceDictionary --REFERENCE $fasta
           fi
 		done
