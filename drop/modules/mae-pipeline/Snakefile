@@ -28,9 +28,7 @@ rule create_dict:
 		for fasta in {input}
 		  do
 		  if [ -f "${{fasta%.*}}.dict" ]; then
-            echo "${{fasta%.*}}.dict exists."
           else
-            echo "${{fasta%.*}}.dict does not exist."
 		    gatk CreateSequenceDictionary --REFERENCE $fasta
           fi
 		done
