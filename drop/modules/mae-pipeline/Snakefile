@@ -20,8 +20,15 @@ rule mae_dependency:
 rule sampleQC:
     input: cfg.getHtmlFromScript(MAE_WORKDIR / "QC" / "Datasets.R")
 
-rule create_dict:
+rule create_dict_fa:
     input:  "{fasta_file_base}.fa"
+    output: "{fasta_file_base}.dict"
+    params:
+        gatk = cfg.getTool("gatkCmd"),
+    shell: "{params.gatk} CreateSequenceDictionary --REFERENCE {input}"
+
+rule create_dict_fasta:
+    input:  "{fasta_file_base}.fasta"
     output: "{fasta_file_base}.dict"
     params:
         gatk = cfg.getTool("gatkCmd"),
