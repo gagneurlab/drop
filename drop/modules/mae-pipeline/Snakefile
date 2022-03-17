@@ -29,7 +29,7 @@ rule create_dict:
 		  do
 		  if [ ! -f "${{fasta%.*}}.dict" ]; then
 		    gatk CreateSequenceDictionary --REFERENCE $fasta
-          fi
+                  fi
 		done
 		"""
 
