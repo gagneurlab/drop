@@ -53,16 +53,16 @@ snakemake aberrantExpression --cores 10
 The following publicly-available datasets of gene counts can be used as controls.
 Please cite as instructed for each dataset.
 
-* 154 non-strand specific fibroblasts, build hg19, Technical University of Munich: [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.4646822.svg)](https://doi.org/10.5281/zenodo.4646822)
+* 154 non strand-specific fibroblasts, build hg19, Technical University of Munich: [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.4646822.svg)](https://doi.org/10.5281/zenodo.4646822)
 
-* 269 strand specific fibroblasts, build hg19, Technical University of Munich: [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.4646826.svg)](https://doi.org/10.5281/zenodo.4646826)
+* 269 strand-specific fibroblasts, build hg19, Technical University of Munich: [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.4646826.svg)](https://doi.org/10.5281/zenodo.4646826)
 
-* 49 tissues, each containing hundreds of samples, non-strand specific, build hg19, GTEx: [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.5596755.svg)](https://doi.org/10.5281/zenodo.5596755)
+* 49 tissues, each containing hundreds of samples, non strand-specific, build hg19, GTEx: [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.5596755.svg)](https://doi.org/10.5281/zenodo.5596755)
 
-* 49 tissues, each containing hundreds of samples, non-strand specific, build hg38, GTEx: [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.6078396.svg)](https://doi.org/10.5281/zenodo.6078396)
+* 49 tissues, each containing hundreds of samples, non strand-specific, build hg38, GTEx: [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.6078396.svg)](https://doi.org/10.5281/zenodo.6078396)
 
-* 139 strand specific fibroblasts, build hg19, Baylor College of Medicine: [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.3963473.svg)](https://doi.org/10.5281/zenodo.3963473)
+* 139 strand-specific fibroblasts, build hg19, Baylor College of Medicine: [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.3963473.svg)](https://doi.org/10.5281/zenodo.3963473)
 
-* 125 strand specific blood, build hg19, Baylor College of Medicine: [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.3963470.svg)](https://doi.org/10.5281/zenodo.3963470)
+* 125 strand-specific blood, build hg19, Baylor College of Medicine: [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.3963470.svg)](https://doi.org/10.5281/zenodo.3963470)
 
 If you want to contribute with your own count matrices, please contact us: yepez at in.tum.de
