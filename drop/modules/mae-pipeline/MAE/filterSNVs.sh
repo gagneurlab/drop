@@ -50,11 +50,12 @@ fi
 # view the vcf file and remove the info header information and the set the INFO column to '.'
 # split any multi-allelic lines
 # pull out the sample and only the snps that have at least 2 reads supporting it
+# Using bcftools -Ou to speed up processing
 $bcftools view  $vcf_file -r $canonical_chr | \
     grep -vP '^##INFO=' | \
     awk -F'\t' 'BEGIN {OFS = FS} { if($1 ~ /^[^#]/){ $8 = "." }; print $0 }' | \
-    $bcftools norm -m-both | \
-    $bcftools norm -d both | \
+    $bcftools norm -Ou -m-both | \
+    $bcftools norm -Ou -d both | \
     $bcftools view ${sample_flag} -m2 -M2 -v snps > $tmp
 
 # use the select_pattern defined above to pull out the heterozygous variants used for MAE
