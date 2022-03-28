@@ -37,7 +37,7 @@ class SampleParams:
 
     AE_mergeParams = ParamHelper(
                    True,
-                   ["RNA_ID", "RNA_BAM_FILE","COUNT_MODE", "PAIRED_END", "COUNT_OVERLAPS", "STRAND"],
+                   ["RNA_ID", "RNA_BAM_FILE","GENE_COUNTS_FILE","COUNT_MODE", "PAIRED_END", "COUNT_OVERLAPS", "STRAND","GENE_ANNOTATION"],
                    True,
                    "merge")
 
@@ -178,8 +178,8 @@ class SampleParams:
 
             # replace any strings of nan with "NA"
             current_SA = sa_df.loc[sa_df["RNA_ID"].isin(ID),param_cols].reset_index(drop = True)
-            current_SA = current_SA.replace("nan","NA").fillna(value = "NA")
-            old_SA = pd.read_csv(true_filename).reset_index(drop = True).fillna(value = "NA")
+            current_SA = current_SA.replace("nan","NA").fillna(value = "NA").astype(str)
+            old_SA = pd.read_csv(true_filename).reset_index(drop = True).fillna(value = "NA").astype(str)
 
             if current_SA.equals(old_SA):
                 pass

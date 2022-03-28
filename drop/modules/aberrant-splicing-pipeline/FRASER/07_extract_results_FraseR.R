@@ -11,7 +11,6 @@
 #'   - zScoreCutoff: '`sm cfg.AS.get("zScoreCutoff")`'
 #'   - deltaPsiCutoff: '`sm cfg.AS.get("deltaPsiCutoff")`'
 #'   - hpoFile: '`sm cfg.get("hpoFile")`'
-#'   - assemblyVersion: '`sm cfg.genome.getBSGenomeVersion()`'
 #'  threads: 10
 #'  input:
 #'   - setup: '`sm cfg.AS.getWorkdir() + "/config.R"`'
@@ -36,14 +35,11 @@ source(snakemake@input$setup, echo=FALSE)
 source(snakemake@input$add_HPO_cols)
 library(AnnotationDbi)
 
-opts_chunk$set(fig.width=12, fig.height=8)
-
 annotation    <- snakemake@wildcards$annotation
 dataset    <- snakemake@wildcards$dataset
 fdsFile    <- snakemake@input$fdsin
 workingDir <- snakemake@params$workingDir
 outputDir  <- snakemake@params$outputDir
-assemblyVersion <- snakemake@params$assemblyVersion
 
 register(MulticoreParam(snakemake@threads))
 # Limit number of threads for DelayedArray operations
@@ -51,19 +47,20 @@ setAutoBPPARAM(MulticoreParam(snakemake@threads))
 
 # Load fds and create a new one
 fds_input <- loadFraserDataSet(dir=workingDir, name=dataset)
-fds <- saveFraserDataSet(fds_input, dir=outputDir, name = paste(dataset, annotation, sep = '--'), rewrite = TRUE)
-colData(fds)$sampleID <- as.character(colData(fds)$sampleID)
 
 # Read annotation and match the chr style
 txdb <- loadDb(snakemake@input$txdb)
 orgdb <- fread(snakemake@input$gene_name_mapping)
 
-seqlevelsStyle(orgdb$seqnames) <- seqlevelsStyle(seqlevelsInUse(fds))
-seqlevelsStyle(txdb) <- seqlevelsStyle(seqlevelsInUse(fds))
+seqlevels_fds <- seqlevelsStyle(fds_input)[1]
+seqlevelsStyle(orgdb$seqnames) <- seqlevels_fds
+seqlevelsStyle(txdb) <- seqlevels_fds
 
-# Annotate the fds with gene names
-fds <- annotateRangesWithTxDb(fds, txdb = txdb, orgDb = orgdb, feature = 'gene_name',
-                              featureName = 'hgnc_symbol', keytype = 'gene_id')
+# Annotate the fds with gene names and save it as a new object
+fds_input <- annotateRangesWithTxDb(fds_input, txdb = txdb, orgDb = orgdb, 
+                                    feature = 'gene_name', featureName = 'hgnc_symbol', keytype = 'gene_id')
+
+fds <- saveFraserDataSet(fds_input, dir=outputDir, name = paste(dataset, annotation, sep = '--'), rewrite = TRUE)
 
 # Extract results per junction
 res_junc <- results(fds,
@@ -85,7 +82,8 @@ if(nrow(res_junc_dt) > 0){
 
   # add colData to the results
   res_junc_dt <- merge(res_junc_dt, as.data.table(colData(fds)), by = "sampleID")
-  res_junc_dt[, c("bamFile", "pairedEnd", "STRAND", "PAIRED_END") := NULL]
+  res_junc_dt[, c("bamFile", "pairedEnd") := NULL]
+  setnames(res_junc_dt, 'STRAND', 'STRAND_SPECIFIC')  # otherwise it's confusing with the 'strand' column from the junction
 } else{
   warning("The aberrant splicing pipeline gave 0 results for the ", dataset, " dataset.")
 }
@@ -95,7 +93,8 @@ if(length(res_junc) > 0){
   res_genes_dt <- resultsByGenes(res_junc) %>% as.data.table
   res_genes_dt <- merge(res_genes_dt, as.data.table(colData(fds)), by = "sampleID")
   res_genes_dt[, c("bamFile", "pairedEnd") := NULL]
-
+  setnames(res_genes_dt, 'STRAND', 'STRAND_SPECIFIC')
+  
   # add HPO overlap information
   sa <- fread(snakemake@config$sampleAnnotation)
   if(!is.null(sa$HPO_TERMS)){

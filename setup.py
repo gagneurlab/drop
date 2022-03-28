@@ -21,9 +21,10 @@ for (path, directories, filenames) in os.walk('drop/'):
 
 setuptools.setup(
     name="drop",
-    version="1.1.0",
-    author="Michaela Müller, Daniela Klaproth-Andrade, Vicente Yépez, Christian Mertes",
-    author_email="mumichae@in.tum.de",
+    version="1.1.4",
+
+    author="Vicente A. Yépez, Michaela Müller, Nicholas H. Smith, Daniela Klaproth-Andrade, Luise Schuller, Ines Scheller, Christian Mertes <mertes@in.tum.de>, Julien Gagneur <gagneur@in.tum.de>",
+    author_email="yepez@in.tum.de",
     description="Detection of RNA Outlier Pipeline",
     long_description=long_description,
     long_description_content_type="text/markdown",

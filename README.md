@@ -3,7 +3,7 @@
 [![Version](https://img.shields.io/github/v/release/gagneurlab/drop?include_prereleases)](https://github.com/gagneurlab/drop/releases)
 [![Version](https://readthedocs.org/projects/gagneurlab-drop/badge/?version=latest)](https://gagneurlab-drop.readthedocs.io/en/latest)
 
-The manuscript is now available in [Nature Protocols](https://www.nature.com/articles/s41596-020-00462-5). [SharedIt link.](https://rdcu.be/cdMmF)
+The manuscript is available in [Nature Protocols](https://www.nature.com/articles/s41596-020-00462-5). [SharedIt link.](https://rdcu.be/cdMmF)
 
 <img src="drop_sticker.png" alt="drop logo" width="200" class="center"/>
 
@@ -11,7 +11,7 @@ The manuscript is now available in [Nature Protocols](https://www.nature.com/art
 DROP is available on [bioconda](https://anaconda.org/bioconda/drop).
 We recommend using a dedicated conda environment. (installation time: ~ 10min)
 ```
-conda install -c conda-forge -c bioconda drop
+mamba install -c conda-forge -c bioconda drop
 ```
 
 Test installation with demo project
@@ -53,12 +53,16 @@ snakemake aberrantExpression --cores 10
 The following publicly-available datasets of gene counts can be used as controls.
 Please cite as instructed for each dataset.
 
-* 154 non-strand specific fibroblasts, Technical University of Munich: [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.4646823.svg)](https://doi.org/10.5281/zenodo.4646823)
+* 154 non-strand specific fibroblasts, build hg19, Technical University of Munich: [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.4646822.svg)](https://doi.org/10.5281/zenodo.4646822)
 
-* 269 strand specific fibroblasts, Technical University of Munich: [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.4646827.svg)](https://doi.org/10.5281/zenodo.4646827)
+* 269 strand specific fibroblasts, build hg19, Technical University of Munich: [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.4646826.svg)](https://doi.org/10.5281/zenodo.4646826)
 
-* 139 strand specific fibroblasts, Baylor College of Medicine: [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.3963473.svg)](https://doi.org/10.5281/zenodo.3963473)
+* 49 tissues, each containing hundreds of samples, non-strand specific, build hg19, GTEx: [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.5596755.svg)](https://doi.org/10.5281/zenodo.5596755)
 
-* 125 strand specific blood, Baylor College of Medicine: [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.3963469.svg)](https://doi.org/10.5281/zenodo.3963469)
+* 49 tissues, each containing hundreds of samples, non-strand specific, build hg38, GTEx: [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.6078396.svg)](https://doi.org/10.5281/zenodo.6078396)
+
+* 139 strand specific fibroblasts, build hg19, Baylor College of Medicine: [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.3963473.svg)](https://doi.org/10.5281/zenodo.3963473)
+
+* 125 strand specific blood, build hg19, Baylor College of Medicine: [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.3963470.svg)](https://doi.org/10.5281/zenodo.3963470)
 
 If you want to contribute with your own count matrices, please contact us: yepez at in.tum.de

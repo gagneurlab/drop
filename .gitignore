@@ -8,6 +8,7 @@ Output/
 # python package temp files
 .ipynb_checkpoints*
 __pycache__*
+*pyc
 *.egg-info*
 .eggs*
 dist/*

@@ -1,7 +1,8 @@
 package	version
+devtools
 gagneurlab/OUTRIDER	1.6.1
 c-mertes/FRASER	1.4.1
-mumichae/tMAE	1.0.0
+gagneurlab/tMAE	1.0.4
 VariantAnnotation	
 rmarkdown	
 knitr	
@@ -12,4 +13,3 @@ data.table
 dplyr	
 tidyr	
 magrittr	
-devtools

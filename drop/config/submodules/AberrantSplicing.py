@@ -28,6 +28,7 @@ class AS(Submodule):
     def setDefaultKeys(self, dict_):
         super().setDefaultKeys(dict_)
         setKey = utils.setKey
+        setKey(dict_, None, "run", False)
         setKey(dict_, None, "groups", self.sampleAnnotation.getGroups(assay="RNA"))
         setKey(dict_, None, "recount", False)
         setKey(dict_, None, "longRead", False)

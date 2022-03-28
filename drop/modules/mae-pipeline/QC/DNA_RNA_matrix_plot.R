@@ -25,16 +25,17 @@ suppressPackageStartupMessages({
 #'
 #' ## Plot DNA - RNA matching matrix
 qc_mat <- readRDS(snakemake@input$mat_qc)
-hist(qc_mat, xlab = '% of overlapping variants from DNA and RNA', main = '')
+# hist(qc_mat, xlab = '% of overlapping variants from DNA and RNA', main = '')
 melt_mat <- as.data.table(reshape2::melt(qc_mat))
 
 #' Logarithmic scale of the y axis provides a better visualization
 identityCutoff <- .85
 
-ggplot(melt_mat, aes(value)) + geom_histogram(fill = 'cadetblue4', bins = 25) + 
+ggplot(melt_mat, aes(value)) + geom_histogram(fill = 'cadetblue4', binwidth = 0.05, center = .025) + 
   theme_bw(base_size = 14) + 
-    labs(x = '% of matching DNA - RNA variants', y = 'Count') + 
-  scale_y_log10()  + xlim(c(NA,1)) + annotation_logticks(sides = "l") + 
+  labs(x = 'Proportion of matching DNA-RNA variants', y = 'DNA-RNA combinations') + 
+  scale_y_log10() + annotation_logticks(sides = "l") + 
+  expand_limits(x=c(0,1)) +
   geom_vline(xintercept=identityCutoff, linetype='dashed', color = 'firebrick')
 
 #' ## Identify matching samples
@@ -43,9 +44,9 @@ ggplot(melt_mat, aes(value)) + geom_histogram(fill = 'cadetblue4', bins = 25) +
 #' 
 #' Number of samples that match with another: `r length(qc_mat[qc_mat > identityCutoff])`
 #'
-#' Median of matching samples value: `r median(qc_mat[qc_mat > identityCutoff])`
+#' Median of matching samples value: `r round(median(qc_mat[qc_mat > identityCutoff]), 2)`
 #'
-#' Median of not matching samples value: `r median(qc_mat[qc_mat < identityCutoff])`
+#' Median of not matching samples value: `r round(median(qc_mat[qc_mat < identityCutoff]), 2)`
 #'
 
 sa <- fread(snakemake@config$sampleAnnotation)[, .(DNA_ID, RNA_ID)]
