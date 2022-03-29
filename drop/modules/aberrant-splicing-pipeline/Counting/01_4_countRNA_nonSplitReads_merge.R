@@ -6,17 +6,17 @@
 #'    - snakemake: '`sm str(tmp_dir / "AS" / "{dataset}" / "01_4_nonSplitReadsMerge.Rds")`'
 #'  params:
 #'   - setup: '`sm cfg.AS.getWorkdir() + "/config.R"`'
-#'   - workingDir: '`sm cfg.getProcessedDataDir() + "/aberrant_splicing/datasets"`'
+#'   - workingDir: '`sm cfg.getProcessedDataDir() + "/aberrant_splicing/datasets/fromBam"`'
 #'  threads: 20
 #'  input:
 #'   - sample_counts:  '`sm lambda w: cfg.AS.getNonSplitCountFiles(w.dataset)`'
 #'   - gRangesNonSplitCounts: '`sm cfg.getProcessedDataDir() + 
-#'                          "/aberrant_splicing/datasets/cache/raw-{dataset}/gRanges_NonSplitCounts.rds"`'
+#'                          "/aberrant_splicing/datasets/fromBam/cache/raw-{dataset}/gRanges_NonSplitCounts.rds"`'
 #'  output:
 ###   - countsSS: '`sm cfg.getProcessedDataDir() +
-###                   "/aberrant_splicing/datasets/savedObjects/raw-{dataset}/rawCountsSS.h5"`'
+###                   "/aberrant_splicing/datasets/fromBam/savedObjects/raw-{dataset}/rawCountsSS.h5"`'
 #'   - done:     '`sm cfg.getProcessedDataDir() + 
-#'                "/aberrant_splicing/datasets/savedObjects/raw-{dataset}/merge_theta.done"`'
+#'                "/aberrant_splicing/datasets/fromBam/savedObjects/raw-{dataset}/merge_theta.done"`'
 #'  type: script
 #'---
 

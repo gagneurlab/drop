@@ -6,14 +6,14 @@
 #'    - snakemake: '`sm str(tmp_dir / "AS" / "{dataset}" / "05_fit.Rds")`'
 #'  params:
 #'   - setup: '`sm cfg.AS.getWorkdir() + "/config.R"`'
-#'   - workingDir: '`sm cfg.getProcessedDataDir() + "/aberrant_splicing/datasets/"`'
+#'   - workingDir: '`sm cfg.getProcessedDataDir() + "/aberrant_splicing/datasets/merged/"`'
 #'  threads: 20
 #'  input:
 #'   - hyper: '`sm cfg.getProcessedDataDir() + 
-#'                "/aberrant_splicing/datasets/savedObjects/{dataset}/hyper.done" `'
+#'                "/aberrant_splicing/datasets/merged/savedObjects/{dataset}/hyper.done" `'
 #'  output:
 #'   - fdsout: '`sm cfg.getProcessedDataDir() + 
-#'                  "/aberrant_splicing/datasets/savedObjects/{dataset}/predictedMeans_theta.h5"`'
+#'                  "/aberrant_splicing/datasets/merged/savedObjects/{dataset}/predictedMeans_theta.h5"`'
 #'  type: script
 #'---
 

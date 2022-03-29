@@ -6,14 +6,14 @@
 #'   - snakemake: '`sm str(tmp_dir / "AS" / "{dataset}" / "02_PSIcalc.Rds")`'
 #'  params:
 #'   - setup: '`sm cfg.AS.getWorkdir() + "/config.R"`'
-#'   - workingDir: '`sm cfg.getProcessedDataDir() + "/aberrant_splicing/datasets/"`'
+#'   - workingDir: '`sm cfg.getProcessedDataDir() + "/aberrant_splicing/datasets/fromBam/"`'
 #'  threads: 30
 #'  input:
 #'   - counting_done: '`sm cfg.getProcessedDataDir() + 
-#'                "/aberrant_splicing/datasets/savedObjects/raw-{dataset}/counting.done" `'
+#'                "/aberrant_splicing/datasets/fromBam/savedObjects/raw-{dataset}/counting.done" `'
 #'  output:
 #'  - theta:     '`sm cfg.getProcessedDataDir() +
-#'                    "/aberrant_splicing/datasets/savedObjects/raw-{dataset}/theta.h5"`'
+#'                    "/aberrant_splicing/datasets/fromBam/savedObjects/raw-{dataset}/theta.h5"`'
 #'  type: script
 #'--- 
 

@@ -6,15 +6,15 @@
 #'    - snakemake: '`sm str(tmp_dir / "AS" / "{dataset}" / "01_0_init.Rds")`'
 #'  params:
 #'   - setup: '`sm cfg.AS.getWorkdir() + "/config.R"`'
-#'   - workingDir: '`sm cfg.getProcessedDataDir() + "/aberrant_splicing/datasets"`'
+#'   - workingDir: '`sm cfg.getProcessedDataDir() + "/aberrant_splicing/datasets/fromBam"`'
 #'  input:
 #'    - colData: '`sm cfg.getProcessedDataDir() + 
 #'                    "/aberrant_splicing/annotations/{dataset}.tsv"`'
 #'  output:
 #'   - fdsobj:  '`sm cfg.getProcessedDataDir() + 
-#'                   "/aberrant_splicing/datasets/savedObjects/raw-{dataset}/fds-object.RDS"`'
+#'                   "/aberrant_splicing/datasets/fromBam/savedObjects/raw-{dataset}/fds-object.RDS"`'
 #'   - done_fds: '`sm cfg.getProcessedDataDir() + 
-#'                "/aberrant_splicing/datasets/cache/raw-{dataset}/fds.done" `'
+#'                "/aberrant_splicing/datasets/fromBam/cache/raw-{dataset}/fds.done" `'
 #'  type: script
 #'---
 

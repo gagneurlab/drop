@@ -8,7 +8,7 @@
 #'   - setup: '`sm cfg.AS.getWorkdir() + "/config.R"`'
 #'  input:
 #'   - fdsin: '`sm cfg.getProcessedResultsDir() + 
-#'                 "/aberrant_splicing/datasets/savedObjects/{dataset}--{annotation}/fds-object.RDS"`'
+#'                 "/aberrant_splicing/datasets/merged/savedObjects/{dataset}--{annotation}/fds-object.RDS"`'
 #'   - results: '`sm cfg.getProcessedResultsDir() + 
 #'                   "/aberrant_splicing/results/{annotation}/fraser/{dataset}/results.tsv"`'
 #'  output:

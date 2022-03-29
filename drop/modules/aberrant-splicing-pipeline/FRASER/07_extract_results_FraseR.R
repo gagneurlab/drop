@@ -5,8 +5,8 @@
 #'  log:
 #'    - snakemake: '`sm str(tmp_dir / "AS" / "{dataset}--{annotation}" / "07_results.Rds")`'
 #'  params:
-#'   - workingDir: '`sm cfg.getProcessedDataDir() + "/aberrant_splicing/datasets/"`'
-#'   - outputDir: '`sm cfg.getProcessedResultsDir() + "/aberrant_splicing/datasets/"`'
+#'   - workingDir: '`sm cfg.getProcessedDataDir() + "/aberrant_splicing/datasets/merged/"`'
+#'   - outputDir: '`sm cfg.getProcessedResultsDir() + "/aberrant_splicing/datasets/merged/"`'
 #'   - padjCutoff: '`sm cfg.AS.get("padjCutoff")`'
 #'   - zScoreCutoff: '`sm cfg.AS.get("zScoreCutoff")`'
 #'   - deltaPsiCutoff: '`sm cfg.AS.get("deltaPsiCutoff")`'
@@ -16,7 +16,7 @@
 #'   - setup: '`sm cfg.AS.getWorkdir() + "/config.R"`'
 #'   - add_HPO_cols: '`sm str(projectDir / ".drop" / "helpers" / "add_HPO_cols.R")`'
 #'   - fdsin: '`sm cfg.getProcessedDataDir() +
-#'                 "/aberrant_splicing/datasets/savedObjects/{dataset}/" +
+#'                 "/aberrant_splicing/datasets/merged/savedObjects/{dataset}/" +
 #'                 "padjBetaBinomial_theta.h5"`'
 #'   - txdb: '`sm cfg.getProcessedDataDir() + "/preprocess/{annotation}/txdb.db"`'
 #'   - gene_name_mapping: '`sm cfg.getProcessedDataDir() + "/preprocess/{annotation}/gene_name_mapping_{annotation}.tsv"`'
@@ -26,7 +26,7 @@
 #'   - resultTableGene: '`sm cfg.getProcessedResultsDir() +
 #'                          "/aberrant_splicing/results/{annotation}/fraser/{dataset}/results.tsv"`'
 #'   - fds: '`sm cfg.getProcessedResultsDir() +
-#'                 "/aberrant_splicing/datasets/savedObjects/{dataset}--{annotation}/fds-object.RDS"`'
+#'                 "/aberrant_splicing/datasets/merged/savedObjects/{dataset}--{annotation}/fds-object.RDS"`'
 #'  type: script
 #'---
 

@@ -6,13 +6,13 @@
 #'    - snakemake: '`sm str(tmp_dir / "AS" / "{dataset}" / "splitReads" / "{sample_id}.Rds")`'
 #'  params:
 #'   - setup: '`sm cfg.AS.getWorkdir() + "/config.R"`'
-#'   - workingDir: '`sm cfg.getProcessedDataDir() + "/aberrant_splicing/datasets"`'
+#'   - workingDir: '`sm cfg.getProcessedDataDir() + "/aberrant_splicing/datasets/fromBam"`'
 #'  input:
 #'   - done_fds: '`sm cfg.getProcessedDataDir() + 
-#'                "/aberrant_splicing/datasets/cache/raw-{dataset}/fds.done"`'
+#'                "/aberrant_splicing/datasets/fromBam/cache/raw-{dataset}/fds.done"`'
 #'  output:
 #'   - done_sample_splitCounts: '`sm cfg.getProcessedDataDir() + 
-#'                "/aberrant_splicing/datasets/cache/raw-{dataset}"
+#'                "/aberrant_splicing/datasets/fromBam/cache/raw-{dataset}"
 #'                +"/sample_tmp/splitCounts/sample_{sample_id}.done"`'
 #'  threads: 3
 #'  type: script

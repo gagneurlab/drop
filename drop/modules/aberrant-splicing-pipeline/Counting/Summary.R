@@ -6,10 +6,10 @@
 #'    - snakemake: '`sm str(tmp_dir / "AS" / "{dataset}" / "CountSummary.Rds")`'
 #'  params:
 #'   - setup: '`sm cfg.AS.getWorkdir() + "/config.R"`'
-#'   - workingDir: '`sm cfg.getProcessedDataDir() + "/aberrant_splicing/datasets/"`'
+#'   - workingDir: '`sm cfg.getProcessedDataDir() + "/aberrant_splicing/datasets/merged/"`'
 #'  input:
 #'   - filter: '`sm cfg.getProcessedDataDir() + 
-#'                "/aberrant_splicing/datasets/savedObjects/{dataset}/filter.done" `'
+#'                "/aberrant_splicing/datasets/merged/savedObjects/{dataset}/filter.done" `'
 #'  output:
 #'   - wBhtml: '`sm config["htmlOutputPath"] + 
 #'                  "/AberrantSplicing/{dataset}_countSummary.html"`'

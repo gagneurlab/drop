@@ -6,21 +6,17 @@
 #'    - snakemake: '`sm str(tmp_dir / "AS" / "{dataset}" / "01_5_collect.Rds")`'
 #'  params:
 #'   - setup: '`sm cfg.AS.getWorkdir() + "/config.R"`'
-#'   - workingDir: '`sm cfg.getProcessedDataDir() + "/aberrant_splicing/datasets"`'
+#'   - workingDir: '`sm cfg.getProcessedDataDir() + "/aberrant_splicing/datasets/fromBam"`'
 #'  input:
-###   - countsJ:  '`sm cfg.getProcessedDataDir() + 
-###                    "/aberrant_splicing/datasets/savedObjects/raw-{dataset}/rawCountsJ.h5"`'
-###   - countsSS: '`sm cfg.getProcessedDataDir() + 
-###                    "/aberrant_splicing/datasets/savedObjects/raw-{dataset}/rawCountsSS.h5"`'
-#'   - countsSSdone: '`sm cfg.getProcessedDataDir() + 
-#'                "/aberrant_splicing/datasets/savedObjects/raw-{dataset}/merge_theta.done"`'
-#'   - gRangesSplitCounts: '`sm cfg.getProcessedDataDir() + 
-#'                          "/aberrant_splicing/datasets/cache/raw-{dataset}/gRanges_splitCounts.rds"`'
-#'   - spliceSites: '`sm cfg.getProcessedDataDir() + 
-#'                   "/aberrant_splicing/datasets/cache/raw-{dataset}/spliceSites_splitCounts.rds"`'
+#'    - countsSSdone: '`sm cfg.getProcessedDataDir() + 
+#'                          "/aberrant_splicing/datasets/fromBam/savedObjects/raw-{dataset}/merge_theta.done"`'
+#'    - gRangesSplitCounts: '`sm cfg.getProcessedDataDir() + 
+#'                          "/aberrant_splicing/datasets/fromBam/cache/raw-{dataset}/gRanges_splitCounts.rds"`'
+#'    - spliceSites: '`sm cfg.getProcessedDataDir() + 
+#'                          "/aberrant_splicing/datasets/fromBam/cache/raw-{dataset}/spliceSites_splitCounts.rds"`'
 #'  output:
 #'   - counting_done: '`sm cfg.getProcessedDataDir() + 
-#'                "/aberrant_splicing/datasets/savedObjects/raw-{dataset}/counting.done" `'
+#'                          "/aberrant_splicing/datasets/fromBam/savedObjects/raw-{dataset}/counting.done" `'
 #'  type: script
 #'---
 

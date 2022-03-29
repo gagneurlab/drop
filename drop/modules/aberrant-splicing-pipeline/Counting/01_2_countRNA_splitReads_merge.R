@@ -6,19 +6,19 @@
 #'    - snakemake: '`sm str(tmp_dir / "AS" / "{dataset}" / "01_2_splitReadsMerge.Rds")`'
 #'  params:
 #'   - setup: '`sm cfg.AS.getWorkdir() + "/config.R"`'
-#'   - workingDir: '`sm cfg.getProcessedDataDir() + "/aberrant_splicing/datasets"`'
+#'   - workingDir: '`sm cfg.getProcessedDataDir() + "/aberrant_splicing/datasets/fromBam"`'
 #'  threads: 20
 #'  input:
 #'   - sample_counts: '`sm lambda w: cfg.AS.getSplitCountFiles(w.dataset)`'
 #'  output:
-###   - countsJ: '`sm cfg.getProcessedDataDir() +
-###                   "/aberrant_splicing/datasets/savedObjects/raw-{dataset}/rawCountsJ.h5"`'
+#'   - countsJ: '`sm cfg.getProcessedDataDir() +
+#'                          "/aberrant_splicing/datasets/fromBam/savedObjects/raw-{dataset}/rawCountsJ.h5"`'
 #'   - gRangesSplitCounts: '`sm cfg.getProcessedDataDir() + 
-#'                          "/aberrant_splicing/datasets/cache/raw-{dataset}/gRanges_splitCounts.rds"`'
+#'                          "/aberrant_splicing/datasets/fromBam/cache/raw-{dataset}/gRanges_splitCounts.rds"`'
 #'   - gRangesNonSplitCounts: '`sm cfg.getProcessedDataDir() + 
-#'                          "/aberrant_splicing/datasets/cache/raw-{dataset}/gRanges_NonSplitCounts.rds"`'
+#'                          "/aberrant_splicing/datasets/fromBam/cache/raw-{dataset}/gRanges_NonSplitCounts.rds"`'
 #'   - spliceSites: '`sm cfg.getProcessedDataDir() + 
-#'                   "/aberrant_splicing/datasets/cache/raw-{dataset}/spliceSites_splitCounts.rds"`'
+#'                   "/aberrant_splicing/datasets/fromBam/cache/raw-{dataset}/spliceSites_splitCounts.rds"`'
 #'  type: script
 #'---
 

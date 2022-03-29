@@ -6,17 +6,18 @@
 #'    - snakemake: '`sm str(tmp_dir / "AS" / "{dataset}" / "03_filter.Rds")`'
 #'  params:
 #'   - setup: '`sm cfg.AS.getWorkdir() + "/config.R"`'
-#'   - workingDir: '`sm cfg.getProcessedDataDir() + "/aberrant_splicing/datasets/"`'
+#'   - workingDirIn: '`sm cfg.getProcessedDataDir() + "/aberrant_splicing/datasets/fromBam/"`'
+#'   - workingDirOut: '`sm cfg.getProcessedDataDir() + "/aberrant_splicing/datasets/merged/"`'
 #'   - exCountIDs: '`sm lambda w: sa.getIDsByGroup(w.dataset, assay="SPLICE_COUNT")`'
 #'  input:
 #'   - theta:  '`sm cfg.getProcessedDataDir()+
-#'                  "/aberrant_splicing/datasets/savedObjects/raw-{dataset}/theta.h5"`'
+#'                  "/aberrant_splicing/datasets/fromBam/savedObjects/raw-{dataset}/theta.h5"`'
 #'   - exCounts: '`sm lambda w: cfg.AS.getExternalCounts(w.dataset, "k_j_counts")`'
 #'  output:
 #'   - fds: '`sm cfg.getProcessedDataDir() +
-#'                "/aberrant_splicing/datasets/savedObjects/{dataset}/fds-object.RDS"`'
+#'                "/aberrant_splicing/datasets/merged/savedObjects/{dataset}/fds-object.RDS"`'
 #'   - done: '`sm cfg.getProcessedDataDir() + 
-#'                "/aberrant_splicing/datasets/savedObjects/{dataset}/filter.done" `'
+#'                "/aberrant_splicing/datasets/merged/savedObjects/{dataset}/filter.done" `'
 #'  threads: 3
 #'  type: script
 #'---
@@ -28,7 +29,8 @@ opts_chunk$set(fig.width=12, fig.height=8)
 
 # input
 dataset    <- snakemake@wildcards$dataset
-workingDir <- snakemake@params$workingDir
+workingDirIn <- snakemake@params$workingDirIn
+workingDirOut <- snakemake@params$workingDirOut
 params     <- snakemake@config$aberrantSplicing
 exCountIDs <- snakemake@params$exCountIDs
 exCountFiles <- snakemake@input$exCounts
@@ -36,7 +38,9 @@ sample_anno_file <- snakemake@config$sampleAnnotation
 minExpressionInOneSample <- params$minExpressionInOneSample
 minDeltaPsi <- params$minDeltaPsi
 
-fds <- loadFraserDataSet(dir=workingDir, name=paste0("raw-", dataset))
+fds <- loadFraserDataSet(dir=workingDirIn, name=paste0("raw-", dataset))
+workingDir(fds) <- workingDirOut
+fds <- saveFraserDataSet(fds,dir = workingDirOut, name=paste0("raw-", dataset))
 
 register(MulticoreParam(snakemake@threads))
 # Limit number of threads for DelayedArray operations
@@ -66,7 +70,9 @@ fds <- filterExpressionAndVariability(fds,
         minExpressionInOneSample = minExpressionInOneSample,
         minDeltaPsi = minDeltaPsi,
         filter=FALSE)
-fds <- saveFraserDataSet(fds)
+
+message("save new fraser object", workingDirOut)
+fds <- saveFraserDataSet(fds,dir=workingDirOut)
 
 # Keep junctions that pass filter
 name(fds) <- dataset
@@ -78,5 +84,5 @@ if (params$filter == TRUE) {
 
 seqlevels(fds) <- seqlevelsInUse(fds)
 colData(fds)$sampleID <- as.character(colData(fds)$sampleID)
-fds <- saveFraserDataSet(fds)
+fds <- saveFraserDataSet(fds,dir = workingDirOut)
 file.create(snakemake@output$done)
