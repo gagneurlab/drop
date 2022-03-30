@@ -39,8 +39,6 @@ minExpressionInOneSample <- params$minExpressionInOneSample
 minDeltaPsi <- params$minDeltaPsi
 
 fds <- loadFraserDataSet(dir=workingDirIn, name=paste0("raw-", dataset))
-workingDir(fds) <- workingDirOut
-fds <- saveFraserDataSet(fds,dir = workingDirOut, name=paste0("raw-", dataset))
 
 register(MulticoreParam(snakemake@threads))
 # Limit number of threads for DelayedArray operations
@@ -48,6 +46,10 @@ setAutoBPPARAM(MulticoreParam(snakemake@threads))
 
 # Add external data if provided by dataset
 if(length(exCountIDs) > 0){
+    message("create new merged fraser object")
+    workingDir(fds) <- workingDirOut
+    fds <- saveFraserDataSet(fds,dir = workingDirOut, name=paste0("raw-", dataset))
+
     for(resource in unique(exCountFiles)){
         exSampleIDs <- exCountIDs[exCountFiles == resource]
         exAnno <- fread(sample_anno_file, key="RNA_ID")[J(exSampleIDs)]
@@ -59,6 +61,13 @@ if(length(exCountIDs) > 0){
         fds <- mergeExternalData(fds=fds, countFiles=ctsFiles,
                 sampleIDs=exSampleIDs, annotation=exAnno)
     }
+} else {
+    message("symLink fraser dir")
+    file.symlink(paste0(workingDirIn, "savedObjects/","raw-", dataset),
+                 paste0(workingDirOut, "savedObjects/","raw-", dataset))
+    
+    workingDir(fds) <- workingDirOut
+    name(fds) <- paste0("raw-", dataset)
 }
 
 # filter for expression and write it out to disc.
@@ -71,8 +80,7 @@ fds <- filterExpressionAndVariability(fds,
         minDeltaPsi = minDeltaPsi,
         filter=FALSE)
 
-message("save new fraser object", workingDirOut)
-fds <- saveFraserDataSet(fds,dir=workingDirOut)
+devNull <- saveFraserDataSet(fds,dir = workingDirOut)
 
 # Keep junctions that pass filter
 name(fds) <- dataset
