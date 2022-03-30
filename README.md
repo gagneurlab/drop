@@ -11,7 +11,7 @@ The manuscript is available in [Nature Protocols](https://www.nature.com/article
 DROP is available on [bioconda](https://anaconda.org/bioconda/drop).
 We recommend using a dedicated conda environment. (installation time: ~ 10min)
 ```
-mamba install -c conda-forge -c bioconda drop
+mamba create -n drop_env -c conda-forge -c bioconda drop
 ```
 
 Test installation with demo project
