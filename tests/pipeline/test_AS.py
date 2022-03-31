@@ -38,7 +38,7 @@ class Test_AS_Pipeline:
     def test_counts(self, demo_dir):
         annotation = "v29"
         dataset = "fraser"
-        cnt_file = f"Output/processed_results/aberrant_splicing/datasets/savedObjects/{dataset}--{annotation}/fds-object.RDS"
+        cnt_file = f"Output/processed_results/aberrant_splicing/datasets/merged/savedObjects/{dataset}--{annotation}/fds-object.RDS"
         r_cmd = """
             library(FRASER)
             fds <- loadFraserDataSet(file="{}")

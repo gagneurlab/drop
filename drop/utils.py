@@ -81,7 +81,7 @@ def subsetBy(df, column, values):
     if not isinstance(values, str) :
         inner_regex = "(" + "|".join(values) + ")"
     
-    return  df[df[column].str.contains("(^|,)" + inner_regex + "(,|$)")]
+    return  df[df[column].str.contains("(?:^|,)" + inner_regex + "(?:,|$)")]
     
 def deep_merge_dict(dict1: dict, dict2: dict, inplace: bool = False):
     """
