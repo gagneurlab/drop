@@ -21,6 +21,7 @@ samtools=$8
 
 tmp=$(mktemp)
 tmp2=$(mktemp)
+tmp3=$(mktemp)
 
 canonical_chr="chr1,chr2,chr3,chr4,chr5,chr6,chr7,chr8,chr9,chr10,\
 chr11,chr12,chr13,chr14,chr15,chr16,chr17,chr18,chr19,chr20,\
@@ -57,11 +58,15 @@ $bcftools view  $vcf_file -r $canonical_chr | \
     $bcftools view ${sample_flag} -m2 -M2 -v snps > $tmp
 
 # use the select_pattern defined above to pull out the heterozygous variants used for MAE
-gatk SelectVariants -V $tmp ${sample_name} ${select_pattern} -O $tmp2
+gatk SelectVariants -V $tmp ${sample_name} ${select_pattern} -O ${tmp2}
+gatk SelectVariants --restrict-alleles-to BIALLELIC -V $tmp2 -O ${tmp3}
 
 # zip and save as tmp file
-bgzip -c $tmp2 > $tmp
+bgzip -c $tmp3 > $tmp
 $bcftools index -t $tmp
+
+rm -f $tmp2
+rm -f $tmp3
 
 # compare and correct chromosome format mismatch
 bam_chr=$($samtools idxstats ${bam_file} | cut -f1 | grep "^chr" | wc -l)
