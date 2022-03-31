@@ -12,7 +12,8 @@ def test_pipeline_no_run(demo_dir):
     # change all "run: true" config values to "run: false" and save result into new config file
     # runthe pipeline with each module turned off
     run("sed 's/run: true/run: false/g' config.yaml > config_norun.yaml  ",demo_dir)
-    pipeline_run = run(["snakemake",  f"-j{CORES}", "--configfile", "config_norun.yaml"], demo_dir)
+    pipeline_run = run(f"snakemake --until Index --cores {CORES} --configfile config_norun.yaml", demo_dir)
+    pipeline_run = run(f"snakemake --cores {CORES} --configfile config_norun.yaml", demo_dir)
     assert "Finished job 0." in pipeline_run.stderr
     return pipeline_run
 
