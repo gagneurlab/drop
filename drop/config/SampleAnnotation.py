@@ -142,7 +142,7 @@ class SampleAnnotation:
         groups = set(groups)
 
         # collect IDs per group
-        grouped = {gr: df[df[group_key].str.contains(f'(^|{sep}){gr}({sep}|$)')][assay_id].tolist()
+        grouped = {gr: df[df[group_key].str.contains(f'(?:^|{sep}){gr}(?:{sep}|$)')][assay_id].tolist()
                    for gr in groups}
         # remove groups labeled as None
         grouped = {gr: list(set(ids)) for gr, ids in grouped.items() if gr is not None}
