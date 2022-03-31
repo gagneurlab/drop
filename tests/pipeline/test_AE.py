@@ -70,7 +70,7 @@ class Test_AE_Pipeline:
         LOGGER.info("dryrun without import counts...")
 
         # adapt config
-        run("sed '/import_exp/d' tests/pipeline/test_pipeline.py > config_noimp.yaml", demo_dir)
+        run("sed '/import_exp/d' config.yaml > config_noimp.yaml", demo_dir)
 
         yield demo_dir
 
