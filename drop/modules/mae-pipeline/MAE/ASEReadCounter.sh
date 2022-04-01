@@ -53,6 +53,7 @@ else
   printf "%s\n" "" "ERROR: BAM file doesn't contain Read Group Tag" \
   " RG doesn't exist, it can be added using -" \
   "   gatk AddOrReplaceGroups -R /path/to/reference -I /your/input.bam -O /your/output.bam --QUIET true" \
+  " https://gatk.broadinstitute.org/hc/en-us/articles/360037226472-AddOrReplaceReadGroups-Picard-" \
   " Try rerunning this module using the BAM with RG tags"
   exit 1
 fi
