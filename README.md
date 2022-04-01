@@ -49,6 +49,12 @@ This shows you the rules of all subworkflows. Omit `-n` and specify the number o
 snakemake aberrantExpression --cores 10
 ```
 
+## Citation
+
+If you use DROP in research, please cite our [manuscript](https://www.nature.com/articles/s41596-020-00462-5).
+
+Furthermore, if you use the aberrant expression module, also cite [OUTRIDER](https://doi.org/10.1016/j.ajhg.2018.10.025), and if you use the aberrant splicing module, also cite [FRASER](https://www.nature.com/articles/s41467-020-20573-7).
+
 ## Datasets
 The following publicly-available datasets of gene counts can be used as controls.
 Please cite as instructed for each dataset.
