@@ -32,9 +32,20 @@ suppressPackageStartupMessages({
 })
 
 ods <- readRDS(snakemake@input$ods)
+
+has_external <- !(all(ods@colData$GENE_COUNTS_FILE == "") || is.null(ods@colData$GENE_COUNTS_FILE))
+if(has_external){
+    ods@colData$isExternal <- ods@colData$GENE_COUNTS_FILE != ""
+}else{
+    ods@colData$isExternal <- FALSE
+}
+
+cnts_mtx_local <- counts(ods, normalized = F)[,!ods@colData$isExternal]
 cnts_mtx <- counts(ods, normalized = F)
 
-#' Number of samples: `r ncol(ods)`
+#' ## Number of samples:  
+#' Local (fromBam): `r sum(!ods@colData$isExternal)`  
+#' External: `r sum(ods@colData$isExternal)`  
 #' 
 #' # Count Quality Control
 #' 
@@ -44,7 +55,8 @@ bam_coverage <- fread(snakemake@input$bam_cov)
 bam_coverage[, sampleID := as.character(sampleID)]
 coverage_dt <- merge(bam_coverage,
                      data.table(sampleID = colnames(ods),
-                                read_count = colSums(cnts_mtx)),
+                                read_count = colSums(cnts_mtx),
+                                isExternal = ods@colData$isExternal),
                      by = "sampleID", sort = FALSE)
 # read count
 setorder(coverage_dt, read_count)
@@ -60,15 +72,15 @@ coverage_dt[, size_factors := sizeFactors(ods)]
 setorder(coverage_dt, size_factors)
 coverage_dt[, sf_rank := 1:.N]
 
-p_depth <- ggplot(coverage_dt, aes(count_rank, read_count)) +
-  geom_point() +
+p_depth <- ggplot(coverage_dt, aes(x = count_rank, y = read_count,col= isExternal )) +
+  geom_point(size = 3,show.legend = has_external) +
   theme_cowplot() +
   background_grid() +
   labs(title = "Obtained Read Counts", x="Sample Rank", y = "Reads Counted") +
   ylim(c(0,NA))
 
-p_frac <- ggplot(coverage_dt, aes(frac_rank, counted_frac)) +
-  geom_point() +
+p_frac <- ggplot(coverage_dt, aes(x = frac_rank, y = counted_frac)) +
+  geom_point(size = 3,show.legend = has_external) +
   theme_cowplot() +
   background_grid() +
   labs(title = "Obtained Read Count Ratio", x = "Sample Rank", 
@@ -76,17 +88,17 @@ p_frac <- ggplot(coverage_dt, aes(frac_rank, counted_frac)) +
   ylim(c(0,NA))
 
 #+ QC, fig.height=6, fig.width=12
-plot_grid(p_depth, p_frac)
+plot_grid(p_depth, p_frac) 
 
-p_sf <- ggplot(coverage_dt, aes(sf_rank, size_factors)) +
-  geom_point() +
+p_sf <- ggplot(coverage_dt, aes(sf_rank, size_factors,col = isExternal)) +
+  geom_point(size = 3,show.legend = has_external) +
   ylim(c(0,NA)) +
   theme_cowplot() +
   background_grid() +
   labs(title = 'Size Factors', x = 'Sample Rank', y = 'Size Factors')
 
-p_sf_cov <- ggplot(coverage_dt, aes(read_count, size_factors)) +
-  geom_point() +
+p_sf_cov <- ggplot(coverage_dt, aes(read_count, size_factors,col = isExternal)) +
+  geom_point(size = 3,show.legend = has_external) +
   ylim(c(0,NA)) +
   theme_cowplot() +
   background_grid() +
@@ -97,18 +109,40 @@ p_sf_cov <- ggplot(coverage_dt, aes(read_count, size_factors)) +
 plot_grid(p_sf, p_sf_cov)
 
 #' # Filtering
+#' **all_local**: A pre-filtered summary of counts using only the local (from BAM) counts. Omitted if no external counts  
+#' **all**: A pre-filtered summary of counts using only the merged local (from BAM) and external counts  
+#' **passed_FPKM**: Passes the user defined FPKM cutoff in at least 5% of genes  
+#' **min_1**: minimum of 1 read expressed in 5% of genes  
+#' **min_10**: minimum of 10 reads expressed in 5% of genes  
+
 quant <- .95
-filter_mtx <- list(
-  all = cnts_mtx,
-  passed_FPKM = cnts_mtx[rowData(ods)$passedFilter,],
-  min_1 = cnts_mtx[rowQuantiles(cnts_mtx, probs = quant) > 1, ],
-  min_10 = cnts_mtx[rowQuantiles(cnts_mtx, probs = quant) > 10, ]
-)
-filter_dt <- lapply(names(filter_mtx), function(filter_name) {
-  mtx <- filter_mtx[[filter_name]]
-  data.table(gene_ID = rownames(mtx), median_counts = rowMeans(mtx), filter = filter_name)
-}) %>% rbindlist
-filter_dt[, filter := factor(filter, levels = c('all', 'passed_FPKM', 'min_1', 'min_10'))]
+
+if(has_external){
+    filter_mtx <- list(
+      local = cnts_mtx_local,
+      all = cnts_mtx,
+      passed_FPKM = cnts_mtx[rowData(ods)$passedFilter,],
+      min_1 = cnts_mtx[rowQuantiles(cnts_mtx, probs = quant) > 1, ],
+      min_10 = cnts_mtx[rowQuantiles(cnts_mtx, probs = quant) > 10, ]
+    )
+    filter_dt <- lapply(names(filter_mtx), function(filter_name) {
+      mtx <- filter_mtx[[filter_name]]
+      data.table(gene_ID = rownames(mtx), median_counts = rowMeans(mtx), filter = filter_name)
+    }) %>% rbindlist
+    filter_dt[, filter := factor(filter, levels = c('local', 'all', 'passed_FPKM', 'min_1', 'min_10'))]
+} else{
+    filter_mtx <- list(
+      all = cnts_mtx,
+      passed_FPKM = cnts_mtx[rowData(ods)$passedFilter,],
+      min_1 = cnts_mtx[rowQuantiles(cnts_mtx, probs = quant) > 1, ],
+      min_10 = cnts_mtx[rowQuantiles(cnts_mtx, probs = quant) > 10, ]
+    )
+    filter_dt <- lapply(names(filter_mtx), function(filter_name) {
+      mtx <- filter_mtx[[filter_name]]
+      data.table(gene_ID = rownames(mtx), median_counts = rowMeans(mtx), filter = filter_name)
+    }) %>% rbindlist
+    filter_dt[, filter := factor(filter, levels = c('all', 'passed_FPKM', 'min_1', 'min_10'))]
+}
 
 binwidth <- .2
 p_hist <- ggplot(filter_dt, aes(x = median_counts, fill = filter)) +
@@ -136,19 +170,20 @@ p_dens <- ggplot(filter_dt, aes(x = median_counts, col = filter)) +
 plot_grid(p_hist, p_dens)
 
 #+ expressedGenes, fig.height=6, fig.width=8
-plotExpressedGenes(ods) +
+plotExpressedGenes(ods) + 
   theme_cowplot() +
   background_grid(major = "y")
 
 expressed_genes <- as.data.table(colData(ods))
 expressed_genes <- expressed_genes[, .(expressedGenes, unionExpressedGenes,
                                        intersectionExpressedGenes, passedFilterGenes,
-                                       expressedGenesRank)]
+                                       expressedGenesRank,isExternal)]
 
 #+echo=F
-rank_1 <- expressed_genes[expressedGenesRank == 1]
-#' **Rank 1:**
-#' `r as.character(rank_1$expressedGenes)` expressed genes
+rank_1 <- expressed_genes[,.SD[expressedGenesRank == min(expressedGenesRank)],by = isExternal]
+#' **Rank 1:**  
+#' Local Rank 1: `r as.character(rank_1[(!isExternal),expressedGenes])` expressed genes  
+#' External Rank 1: `r if(has_external){as.character(rank_1[(isExternal),expressedGenes])}else{as.character(0)}` expressed genes  
 #+echo=F
 rank_n <- expressed_genes[expressedGenesRank == .N]
 #' **Rank `r rank_n$expressedGenesRank`:**  
