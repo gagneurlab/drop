@@ -16,14 +16,14 @@ exportCounts:
     - v29
   excludeGroups:
     - mae
-    - import_exp
-    - fraser_ex
+    - outrider_external
+    - fraser_external
 
 aberrantExpression:
     run: true
     groups:
       - outrider
-      - import_exp
+      - outrider_external
     fpkmCutoff: 1
     implementation: autoencoder
     padjCutoff: 1
@@ -37,7 +37,7 @@ aberrantSplicing:
     run: true
     groups:
       - fraser
-      - fraser_ex
+      - fraser_external
     recount: true
     longRead: false
     keepNonStandardChrs: true
