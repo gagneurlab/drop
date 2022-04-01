@@ -33,33 +33,33 @@ workingDirLocal <- snakemake@params$workingDirLocal
 fdsLocal <- loadFraserDataSet(dir=workingDirLocal, name=paste0("raw-", dataset))
 fdsMerge <- loadFraserDataSet(dir=workingDir, name=paste0("raw-", dataset))
 
-has_external <- !(all(is.na(fds@colData$SPLICE_COUNTS_DIR)) || is.null(fds@colData$SPLICE_COUNTS_DIR))
+has_external <- !(all(is.na(fdsMerge@colData$SPLICE_COUNTS_DIR)) || is.null(fdsMerge@colData$SPLICE_COUNTS_DIR))
 if(has_external){
-    fds@colData$isExternal <- !is.na(fds@colData$SPLICE_COUNTS_DIR)
+    fdsMerge@colData$isExternal <- !is.na(fdsMerge@colData$SPLICE_COUNTS_DIR)
 }else{
-    fds@colData$isExternal <- FALSE
+    fdsMerge@colData$isExternal <- FALSE
 }
 
 #' ## Number of samples:   
-#' Local (fromBam): `r sum(!fds@colData$isExternal)`  
-#' External: `r sum(fds@colData$isExternal)`  
+#' Local (fromBam): `r sum(!fdsMerge@colData$isExternal)`  
+#' External: `r sum(fdsMerge@colData$isExternal)`  
 #' 
 #' ### Number of introns (psi5 or psi3):  
 #' Local (fromBam): `r length(rowRanges(fdsLocal, type = "psi5"))`  
-#' Merged : `r length(rowRanges(fdsMerged, type = "psi5"))`  
+#' Merged : `r length(rowRanges(fdsMerge, type = "psi5"))`  
 #' 
 #' ### Number of splice sites (theta): 
 #' Local (fromBam): `r length(rowRanges(fdsLocal, type = "theta"))`  
-#' Merged: `r length(rowRanges(fdsMerged, type = "theta"))`  
+#' Merged: `r length(rowRanges(fdsMerge, type = "theta"))`  
 #' 
 #' Introns that passed filter (after merging)
-table(mcols(fdsMerged, type="j")[,"passed"])
+table(mcols(fdsMerge, type="j")[,"passed"])
 
 #' ## Expression filtering
 #' Min expression cutoff: `r snakemake@config$aberrantSplicing$minExpressionInOneSample`
-plotFilterExpression(fds) + theme_cowplot(font_size = 16)
+plotFilterExpression(fdsMerge) + theme_cowplot(font_size = 16)
 
 #' ## Variability filtering
 #' Variability cutoff: `r snakemake@config$aberrantSplicing$minDeltaPsi`
-plotFilterVariability(fds) + theme_cowplot(font_size = 16)
+plotFilterVariability(fdsMerge) + theme_cowplot(font_size = 16)
 
