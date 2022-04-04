@@ -50,7 +50,7 @@ class Test_AE_Pipeline:
         assert "res: 4310 15" in r.stdout
 
     def test_import_results(self, demo_dir):
-        output_dir = "Output/processed_results/aberrant_expression/v29/outrider/import_exp"
+        output_dir = "Output/processed_results/aberrant_expression/v29/outrider/outrider_external"
         r_cmd = """
                 # ods object
                 ods <- readRDS(file.path("{}", "ods.Rds"))
@@ -70,7 +70,7 @@ class Test_AE_Pipeline:
         LOGGER.info("dryrun without import counts...")
 
         # adapt config
-        run("sed '/import_exp/d' config.yaml > config_noimp.yaml", demo_dir)
+        run("sed '/outrider_external/d' config.yaml > config_noimp.yaml", demo_dir)
 
         yield demo_dir
 

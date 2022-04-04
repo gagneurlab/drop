@@ -3,7 +3,7 @@ class Test_AE_Config:
     def test_config(self, dropConfig,demo_dir):
         assert dropConfig.AE.getWorkdir() == f"{demo_dir}/Scripts/AberrantExpression/pipeline"
         dict_ = {
-            'groups': ['outrider', 'import_exp'],
+            'groups': ['outrider', 'outrider_external'],
             'fpkmCutoff': 1,
             'implementation': 'autoencoder',
             'padjCutoff': 1,
@@ -37,7 +37,7 @@ class Test_AE_Config:
         counts_files_true = counts_files_true[2:]
         counts_files_true.append(f"{demo_dir}/Data/external_count_data/geneCounts.tsv.gz")
         counts_files_true.sort()
-        counts_files_test = dropConfig.AE.getCountFiles(annotation="v29", group="import_exp")
+        counts_files_test = dropConfig.AE.getCountFiles(annotation="v29", group="outrider_external")
         counts_files_test.sort()
         assert counts_files_true == counts_files_test
 
