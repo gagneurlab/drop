@@ -73,14 +73,14 @@ setorder(coverage_dt, size_factors)
 coverage_dt[, sf_rank := 1:.N]
 
 p_depth <- ggplot(coverage_dt, aes(x = count_rank, y = read_count,col= isExternal )) +
-  geom_point(size = 3,show.legend = has_external) +
+  geom_point(palette = "Dark2",size = 3,show.legend = has_external) +
   theme_cowplot() +
   background_grid() +
   labs(title = "Obtained Read Counts", x="Sample Rank", y = "Reads Counted") +
   ylim(c(0,NA))
 
 p_frac <- ggplot(coverage_dt, aes(x = frac_rank, y = counted_frac)) +
-  geom_point(size = 3,show.legend = has_external) +
+  geom_point(palette = "Dark2",size = 3,show.legend = has_external) +
   theme_cowplot() +
   background_grid() +
   labs(title = "Obtained Read Count Ratio", x = "Sample Rank", 
@@ -91,14 +91,14 @@ p_frac <- ggplot(coverage_dt, aes(x = frac_rank, y = counted_frac)) +
 plot_grid(p_depth, p_frac) 
 
 p_sf <- ggplot(coverage_dt, aes(sf_rank, size_factors,col = isExternal)) +
-  geom_point(size = 3,show.legend = has_external) +
+  geom_point(palette = "Dark2",size = 3,show.legend = has_external) +
   ylim(c(0,NA)) +
   theme_cowplot() +
   background_grid() +
   labs(title = 'Size Factors', x = 'Sample Rank', y = 'Size Factors')
 
 p_sf_cov <- ggplot(coverage_dt, aes(read_count, size_factors,col = isExternal)) +
-  geom_point(size = 3,show.legend = has_external) +
+  geom_point(palette = "Dark2",size = 3,show.legend = has_external) +
   ylim(c(0,NA)) +
   theme_cowplot() +
   background_grid() +
@@ -169,25 +169,17 @@ p_dens <- ggplot(filter_dt, aes(x = median_counts, col = filter)) +
 #+ meanCounts, fig.height=6, fig.width=12
 plot_grid(p_hist, p_dens)
 
-#+ expressedGenes, fig.height=6, fig.width=8
-plotExpressedGenes(ods) + 
-  theme_cowplot() +
-  background_grid(major = "y")
-
 expressed_genes <- as.data.table(colData(ods))
 expressed_genes <- expressed_genes[, .(expressedGenes, unionExpressedGenes,
                                        intersectionExpressedGenes, passedFilterGenes,
                                        expressedGenesRank,isExternal)]
 
-#+echo=F
-rank_1 <- expressed_genes[,.SD[expressedGenesRank == min(expressedGenesRank)],by = isExternal]
-#' **Rank 1:**  
-#' Local Rank 1: `r as.character(rank_1[(!isExternal),expressedGenes])` expressed genes  
-#' External Rank 1: `r if(has_external){as.character(rank_1[(isExternal),expressedGenes])}else{as.character(0)}` expressed genes  
-#+echo=F
-rank_n <- expressed_genes[expressedGenesRank == .N]
-#' **Rank `r rank_n$expressedGenesRank`:**  
-#' `r as.character(rank_n$expressedGenes)` expressed genes  
-#' `r as.character(rank_n$unionExpressedGenes)` expressed genes (union)  
-#' `r as.character(rank_n$intersectionExpressedGenes)` expressed genes (intersection)  
-#' `r as.character(rank_n$passedFilterGenes)` genes passed the filter
+#+ expressedGenes, fig.height=6, fig.width=8
+exp_plot <- plotExpressedGenes(ods) + 
+  theme_cowplot() +
+  background_grid(major = "y")
+external_shapes_plot <- ggplot(melt(expressed_genes,id.vars = c("expressedGenesRank","isExternal")),
+  aes(x = expressedGenesRank, y = value, col = variable, shape = isExternal)) + geom_point()
+exp_plot +external_shapes_plot
+
+DT::datatable(expressed_genes)
