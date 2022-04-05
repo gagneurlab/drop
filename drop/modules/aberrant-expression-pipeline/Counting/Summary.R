@@ -72,44 +72,48 @@ coverage_dt[, size_factors := sizeFactors(ods)]
 setorder(coverage_dt, size_factors)
 coverage_dt[, sf_rank := 1:.N]
 
-p_depth <- ggplot(coverage_dt, aes(x = count_rank, y = read_count,col= isExternal )) +
-  geom_point(palette = "Dark2",size = 3,show.legend = has_external) +
+p_depth <- ggplot(coverage_dt, aes(x = count_rank, y = read_count, col= isExternal )) +
+  geom_point(size = 3,show.legend = has_external) +
   theme_cowplot() +
   background_grid() +
   labs(title = "Obtained Read Counts", x="Sample Rank", y = "Reads Counted") +
-  ylim(c(0,NA))
+  ylim(c(0,NA)) +
+  scale_color_brewer(palette="Dark2")
 
-p_frac <- ggplot(coverage_dt, aes(x = frac_rank, y = counted_frac)) +
-  geom_point(palette = "Dark2",size = 3,show.legend = has_external) +
+p_frac <- ggplot(coverage_dt, aes(x = frac_rank, y = counted_frac, col = isExternal)) +
+  geom_point(size = 3,show.legend = has_external) +
   theme_cowplot() +
   background_grid() +
   labs(title = "Obtained Read Count Ratio", x = "Sample Rank", 
        y = "Percent Reads Counted") +
-  ylim(c(0,NA))
+  ylim(c(0,NA)) +
+  scale_color_brewer(palette="Dark2")
 
 #+ QC, fig.height=6, fig.width=12
 plot_grid(p_depth, p_frac) 
 
-p_sf <- ggplot(coverage_dt, aes(sf_rank, size_factors,col = isExternal)) +
-  geom_point(palette = "Dark2",size = 3,show.legend = has_external) +
+p_sf <- ggplot(coverage_dt, aes(sf_rank, size_factors, col = isExternal)) +
+  geom_point(size = 3,show.legend = has_external) +
   ylim(c(0,NA)) +
   theme_cowplot() +
   background_grid() +
-  labs(title = 'Size Factors', x = 'Sample Rank', y = 'Size Factors')
+  labs(title = 'Size Factors', x = 'Sample Rank', y = 'Size Factors') +
+  scale_color_brewer(palette="Dark2")
 
-p_sf_cov <- ggplot(coverage_dt, aes(read_count, size_factors,col = isExternal)) +
-  geom_point(palette = "Dark2",size = 3,show.legend = has_external) +
+p_sf_cov <- ggplot(coverage_dt, aes(read_count, size_factors, col = isExternal)) +
+  geom_point(size = 3,show.legend = has_external) +
   ylim(c(0,NA)) +
   theme_cowplot() +
   background_grid() +
   labs(title = 'Size Factors vs. Read Counts',
-       x = 'Read Counts', y = 'Size Factors')
+       x = 'Read Counts', y = 'Size Factors') +
+  scale_color_brewer(palette="Dark2")
 
 #+ sizeFactors, fig.height=6, fig.width=12
 plot_grid(p_sf, p_sf_cov)
 
 #' # Filtering
-#' **all_local**: A pre-filtered summary of counts using only the local (from BAM) counts. Omitted if no external counts  
+#' **local**: A pre-filtered summary of counts using only the local (from BAM) counts. Omitted if no external counts  
 #' **all**: A pre-filtered summary of counts using only the merged local (from BAM) and external counts  
 #' **passed_FPKM**: Passes the user defined FPKM cutoff in at least 5% of genes  
 #' **min_1**: minimum of 1 read expressed in 5% of genes  
@@ -169,17 +173,21 @@ p_dens <- ggplot(filter_dt, aes(x = median_counts, col = filter)) +
 #+ meanCounts, fig.height=6, fig.width=12
 plot_grid(p_hist, p_dens)
 
-expressed_genes <- as.data.table(colData(ods))
-expressed_genes <- expressed_genes[, .(expressedGenes, unionExpressedGenes,
-                                       intersectionExpressedGenes, passedFilterGenes,
-                                       expressedGenesRank,isExternal)]
+exp_genes_cols <- c(`Expressed\ngenes` = "expressedGenes", 
+                    `Union of\nexpressed genes` = "unionExpressedGenes", 
+                    `Intersection of\nexpressed genes` = "intersectionExpressedGenes", 
+                    `Genes passed\nfiltering` = "passedFilterGenes", Rank = "expressedGenesRank",
+                    `Is External` = "isExternal")
+
+expressed_genes <- as.data.table(colData(ods)[,exp_genes_cols])
+colnames(expressed_genes) <- names(exp_genes_cols)
 
 #+ expressedGenes, fig.height=6, fig.width=8
-exp_plot <- plotExpressedGenes(ods) + 
+plotExpressedGenes(ods) + 
   theme_cowplot() +
-  background_grid(major = "y")
-external_shapes_plot <- ggplot(melt(expressed_genes,id.vars = c("expressedGenesRank","isExternal")),
-  aes(x = expressedGenesRank, y = value, col = variable, shape = isExternal)) + geom_point()
-exp_plot +external_shapes_plot
+  background_grid(major = "y") +
+  geom_point(data =melt(expressed_genes,id.vars = c("Rank","Is External")),
+             aes(x = Rank, y = value, col = variable, shape = `Is External`),show.legend = has_external)
 
-DT::datatable(expressed_genes)
+#' ### Expressed Genes by 
+DT::datatable(expressed_genes[order(Rank)],rownames = F)
