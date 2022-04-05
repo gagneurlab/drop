@@ -44,16 +44,41 @@ if(has_external){
 #' Local (fromBam): `r sum(!fdsMerge@colData$isExternal)`  
 #' External: `r sum(fdsMerge@colData$isExternal)`  
 #' 
-#' ### Number of introns (psi5 or psi3):  
+#' ## Using external counts
+#' External counts introduce some complexity into the problem of counting junctions
+#' because it is ambiguous whether or not a junction is not counted (because there are no reads)
+#' compared to filtered and not present due to legal/personal sharing reasons. As a result,
+#' after merging the local (fromBam) counts and the external counts, only the junctions that are exactly
+#' the same in both remain. As a result it is likely that the number of junctions will decrease after a merge.
+#' 
+#' 
+#' ### Number of introns (psi5 or psi3) before filtering:  
 #' Local (fromBam): `r length(rowRanges(fdsLocal, type = "psi5"))`  
 #' Merged : `r length(rowRanges(fdsMerge, type = "psi5"))`  
 #' 
-#' ### Number of splice sites (theta): 
+#' ### Number of splice sites (theta) before filtering: 
 #' Local (fromBam): `r length(rowRanges(fdsLocal, type = "theta"))`  
 #' Merged: `r length(rowRanges(fdsMerge, type = "theta"))`  
 #' 
-#' Introns that passed filter (after merging)
-table(mcols(fdsMerge, type="j")[,"passed"])
+
+#' ## Comparison of local and external counts  
+externalCountIDs <- colData(fdsMerge)[colData(fdsMerge)[,"isExternal"],"sampleID"]
+localCountIDs <- colData(fdsMerge)[!colData(fdsMerge)[,"isExternal"],"sampleID"]
+
+cts <- K(fdsMerge,"psi5")
+ctsLocal<- cts[,localCountIDs]
+ctsExt<- cts[,externalCountIDs]
+
+rowlgmLocal <- rowMeans(log(ctsLocal + 1))
+rowlgmExt <- rowMeans(log(ctsExt + 1))
+
+dt <- data.table("Local log mean counts" = rowlgmLocal,
+                 "External log mean counts" = rowlgmExt)
+                 
+ggplot(dt,aes(x = `Local log mean counts`, y= `External log mean counts`)) +
+   geom_point() + theme_cowplot(font_size = 16) +
+   geom_abline(slope = 1, intercept =0) +
+   scale_color_brewer(palette="Dark2") 
 
 #' ## Expression filtering
 #' Min expression cutoff: `r snakemake@config$aberrantSplicing$minExpressionInOneSample`
@@ -63,3 +88,5 @@ plotFilterExpression(fdsMerge) + theme_cowplot(font_size = 16)
 #' Variability cutoff: `r snakemake@config$aberrantSplicing$minDeltaPsi`
 plotFilterVariability(fdsMerge) + theme_cowplot(font_size = 16)
 
+#' Introns that passed filter (after merging)
+table(mcols(fdsMerge, type="j")[,"passed"])

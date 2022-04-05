@@ -58,6 +58,9 @@ if(length(exCountIDs) > 0){
         ctsNames <- c("k_j", "k_theta", "n_psi3", "n_psi5", "n_theta")
         ctsFiles <- paste0(dirname(resource), "/", ctsNames, "_counts.tsv.gz")
         
+        # Merging external counts restricts the junctions to those that 
+        # are only present in both the counted (fromBam) junctions AND the 
+        # junctions from the external counts.
         fds <- mergeExternalData(fds=fds, countFiles=ctsFiles,
                 sampleIDs=exSampleIDs, annotation=exAnno)
     }
