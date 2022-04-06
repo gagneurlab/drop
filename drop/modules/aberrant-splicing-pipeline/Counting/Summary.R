@@ -61,7 +61,8 @@ if(has_external){
 #' Merged: `r length(rowRanges(fdsMerge, type = "theta"))`  
 #' 
 
-#' ## Comparison of local and external counts  
+#' ### Comparison of local and external counts  
+if(has_external){
 externalCountIDs <- colData(fdsMerge)[colData(fdsMerge)[,"isExternal"],"sampleID"]
 localCountIDs <- colData(fdsMerge)[!colData(fdsMerge)[,"isExternal"],"sampleID"]
 
@@ -79,6 +80,9 @@ ggplot(dt,aes(x = `Local log mean counts`, y= `External log mean counts`)) +
    geom_point() + theme_cowplot(font_size = 16) +
    geom_abline(slope = 1, intercept =0) +
    scale_color_brewer(palette="Dark2") 
+}else{
+	print("No external counts, comparison is ommitted")
+}
 
 #' ## Expression filtering
 #' Min expression cutoff: `r snakemake@config$aberrantSplicing$minExpressionInOneSample`

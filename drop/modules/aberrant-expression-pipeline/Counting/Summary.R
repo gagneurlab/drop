@@ -189,5 +189,9 @@ plotExpressedGenes(ods) +
   geom_point(data =melt(expressed_genes,id.vars = c("Rank","Is External")),
              aes(x = Rank, y = value, col = variable, shape = `Is External`),show.legend = has_external)
 
-#' ### Expressed Genes by 
-DT::datatable(expressed_genes[order(Rank)],rownames = F)
+#' ### Expressed Genes
+if(has_external){
+    DT::datatable(expressed_genes[order(Rank)],rownames = F)
+} else{
+    DT::datatable(expressed_genes[order(Rank),-"is External"],rownames = F)
+}
