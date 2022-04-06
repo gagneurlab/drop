@@ -44,7 +44,7 @@ if(has_external){
 #' Local (fromBam): `r sum(!fdsMerge@colData$isExternal)`  
 #' External: `r sum(fdsMerge@colData$isExternal)`  
 #' 
-#' ## Using external counts
+#' ### Using external counts
 #' External counts introduce some complexity into the problem of counting junctions
 #' because it is ambiguous whether or not a junction is not counted (because there are no reads)
 #' compared to filtered and not present due to legal/personal sharing reasons. As a result,

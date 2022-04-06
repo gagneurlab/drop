@@ -29,6 +29,10 @@ suppressPackageStartupMessages({
 #+ input
 dataset    <- snakemake@wildcards$dataset
 annotation <- snakemake@wildcards$annotation
+padj_cutoff <- snakemake@config$aberrantSplicing$padjCutoff
+zScore_cutoff <- snakemake@config$aberrantSplicing$zScoreCutoff
+deltaPsi_cutoff <- snakemake@config$aberrantSplicing$deltaPsiCutoff
+
 
 fds <- loadFraserDataSet(file=snakemake@input$fdsin)
 
@@ -53,11 +57,12 @@ for(type in psiTypes){
 }
 
 #' ## Aberrantly spliced genes per sample
-plotAberrantPerSample(fds, aggregate=TRUE, main=dataset_title) + 
+plotAberrantPerSample(fds, padjCutoff = padj_cutoff, zScoreCutoff = zScore_cutoff, deltaPsiCutoff = deltaPsi_cutoff,
+                      aggregate=TRUE, main=dataset_title) + 
   theme_cowplot(font_size = 16) +
   theme(legend.position = "top")
 
-#' ## Batch Correlation: Samples x samples
+#' ## Batch Correlation: samples x samples
 topN <- 30000
 topJ <- 10000
 for(type in psiTypes){

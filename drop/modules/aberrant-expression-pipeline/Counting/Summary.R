@@ -173,6 +173,7 @@ p_dens <- ggplot(filter_dt, aes(x = median_counts, col = filter)) +
 #+ meanCounts, fig.height=6, fig.width=12
 plot_grid(p_hist, p_dens)
 
+#' ### Expressed Genes
 exp_genes_cols <- c(`Expressed\ngenes` = "expressedGenes", 
                     `Union of\nexpressed genes` = "unionExpressedGenes", 
                     `Intersection of\nexpressed genes` = "intersectionExpressedGenes", 
@@ -189,7 +190,6 @@ plotExpressedGenes(ods) +
   geom_point(data =melt(expressed_genes,id.vars = c("Rank","Is External")),
              aes(x = Rank, y = value, col = variable, shape = `Is External`),show.legend = has_external)
 
-#' ### Expressed Genes
 if(has_external){
     DT::datatable(expressed_genes[order(Rank)],rownames = F)
 } else{

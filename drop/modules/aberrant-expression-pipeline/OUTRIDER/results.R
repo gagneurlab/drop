@@ -31,7 +31,8 @@ suppressPackageStartupMessages({
 })
 
 ods <- readRDS(snakemake@input$ods)
-res <- results(ods, all = TRUE)
+res <- results(ods, padjCutoff = snakemake@params$padjCutoff,
+			   zScoreCutoff = snakemake@params$zScoreCutoff, all = TRUE)
 
 # Add fold change
 res[, foldChange := round(2^l2fc, 2)]
