@@ -98,7 +98,7 @@ g2
 #+ eval=TRUE, echo=FALSE
 qc_groups <- sort(snakemake@params$qc_groups)
 qc_links <- build_link_list(
-    file_paths = file.path(htmlDir, paste0('QC', qc_groups, '.html')),
+    file_paths = file.path(htmlDir, paste0('QC/', qc_groups, '.html')),
     captions = qc_groups
 )
 
