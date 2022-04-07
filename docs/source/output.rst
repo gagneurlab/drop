@@ -83,5 +83,15 @@ tab at the top of the screen. Following that the Overview tab contains links to 
             - rare: if ``add_AF`` is set to true in ``config.yaml`` must meet minimum AF set by ``max_AF``. Additionally it must meet the inner-cohort frequency ``maxVarFreqCohort`` cutoff
         - histogram of inner cohort frequency
         - summary of cascade plots and results table
-        
-        
+- Files
+    - Allelic counts
+        - a directory containing the allelic counts of heterozygous variants
+    - Results data tables of each sample (.Rds)
+        - Rds objects containing the full results table regardless of MAE status
+    - Significant MAE results tables
+        - For each mae group
+            - a link to the results tsv file. Only contains MAE results for the alternative allele
+- Quality Control
+    - QC Overview
+        - For each mae group QC checks for DNA/RNA matching
+            

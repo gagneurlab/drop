@@ -70,6 +70,23 @@ table_links <- sapply(
 #' `r display_text(caption = 'Significant MAE results tables ', links = table_links)`
 
 
+#' ## Quality Control: VCF-BAM Matching
+#+ eval=TRUE, echo=FALSE
+qc_groups <- sort(snakemake@params$qc_groups)
+qc_links <- build_link_list(
+    file_paths = file.path(htmlDir, paste0('QC/', qc_groups, '.html')),
+    captions = qc_groups
+)
+
+qc_matrix_links <- build_link_list(
+    file_paths = file.path(snakemake@input$qc_matrix),
+    captions = qc_groups
+)
+
+#' `r display_text(caption = 'QC Overview ', links = qc_links)`
+#' `r display_text(caption = 'DNA-RNA matrix ', links = qc_matrix_links)`
+#'
+
 #+ eval=TRUE, echo=TRUE
 #' ## Analyze Individual Results
 # Read the first results table
@@ -93,20 +110,3 @@ g1
 #' ### Alternative vs Reference plot
 #+echo=F
 g2
-
-#' ## Quality Control: VCF-BAM Matching
-#+ eval=TRUE, echo=FALSE
-qc_groups <- sort(snakemake@params$qc_groups)
-qc_links <- build_link_list(
-    file_paths = file.path(htmlDir, paste0('QC/', qc_groups, '.html')),
-    captions = qc_groups
-)
-
-qc_matrix_links <- build_link_list(
-    file_paths = file.path(snakemake@input$qc_matrix),
-    captions = qc_groups
-)
-
-#' `r display_text(caption = 'QC Overview ', links = qc_links)`
-#' `r display_text(caption = 'DNA-RNA matrix ', links = qc_matrix_links)`
-#'
