@@ -55,8 +55,8 @@ mae:
     groups:
       - mae
     gatkIgnoreHeaderCheck: true
-    padjCutoff: .05
-    allelicRatioCutoff: 0.8
+    padjCutoff: .5
+    allelicRatioCutoff: 0.7
     addAF: false
     maxAF: .001
     maxVarFreqCohort: 1
