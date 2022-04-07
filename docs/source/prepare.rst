@@ -148,7 +148,7 @@ For example, if the AberrantExpression module is set to false, the  ``Scripts/Ab
 Creating the sample annotation table
 ------------------------------------
 For a detailed explanation of the columns of the sample annotation, please refer to
-Box 3 of the `DROP manuscript <https://rdcu.be/cdMmF>`_. 
+Box 3 of the `DROP manuscript <https://rdcu.be/cdMmF>`_. Although some information has been updated since puplication, please use this documentation as the preferred syntax/formatting.
 
 Each row of the sample annotation table corresponds to a unique pair of RNA and DNA
 samples derived from the same individual. An RNA assay can belong to one or more DNA
@@ -188,7 +188,8 @@ files (or a subset if not all samples are needed). Add the columns: ``GENE_COUNT
 (for aberrant expression), ``GENE_ANNOTATON``, and ``SPLICE_COUNTS_DIR`` (for aberrant splicing).
 These columns should remain empty for samples processed locally (from ``RNA_BAM``).
 
-### Aberrant Expression
+Aberrant Expression
+####################
 Using external counts for aberrant expression forces you to use the exact same gene annotation for each
 external sample as well as using the same gene annotation file specified in the config file
 ``Global parameters`` section. This is to avoid potential mismatching on counting, 2 different gene
@@ -202,7 +203,8 @@ The other columns should remain empty.
 Using ``exportCounts`` generates the sharable ``GENE_COUNTS_FILE`` file in the appropriate
 ``ROOT_DIR/Output/processed_results/exported_counts/`` sub-directory.
 
-### Aberrant Splicing
+Aberrant Splicing
+##################
 Using external counts for aberrant splicing reduces the number of introns processed to only those
 that are exactly the same between the local and external junctions. Because rare junctions may be 
 personally identifiable the ``exportCounts`` command only exports regions canonically mentioned in the gtf file.
@@ -224,7 +226,8 @@ Using ``exportCounts`` generates the necessary files in the appropriate
 - n_psi5_counts.tsv.gz  
 - n_theta_counts.tsv.gz  
 
-### Publicly available DROP external counts
+Publicly available DROP external counts
+#######################################
 You can find different sets of publicly available external counts to add to your
 analysis on our github page  <https://github.com/gagneurlab/drop/#datasets>
 
