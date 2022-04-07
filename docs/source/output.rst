@@ -94,4 +94,6 @@ tab at the top of the screen. Following that the Overview tab contains links to 
 - Quality Control
     - QC Overview
         - For each mae group QC checks for DNA/RNA matching
-            
+- Analyze Individual Results
+    - An example analaysis that can be run using the Rds objects linked in the files subsection
+    - performed on the first mae sample
