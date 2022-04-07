@@ -86,12 +86,12 @@ if(is.null(res_sample$rare)){
   g2 <- plotAllelicCounts(res_sample, rare_column = 'rare')
 }
 
-#+echo=F
 #' ### MA plot: fold change vs RNA coverage
+#+echo=F
 g1
 
-#+echo=F
 #' ### Alternative vs Reference plot
+#+echo=F
 g2
 
 #' ## Quality Control: VCF-BAM Matching
