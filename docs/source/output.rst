@@ -4,7 +4,7 @@ Results and Output of DROP
 DROP is intended to help researchers use RNA-Seq data in order to detect genes with aberrant expression,
 aberrant splicing and mono-allelic expression. By simplifying the workflow process we hope to provide
 easy to read and interpret html files and output files. This section is dedicated to explaining the relevant
-results files. We will use the results of the ``demo`` to explain the files generated.:: bash
+results files. We will use the results of the ``demo`` to explain the files generated.::
 
     #install drop
     mamba create -n drop_env -c conda-forge -c bioconda drop
