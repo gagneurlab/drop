@@ -32,7 +32,7 @@ class Test_MAE_Pipeline:
         assert "[1] 235" in r.stdout
 
     @pytest.mark.usefixtures("pipeline_run")
-    def test_results(self, demo_dir):
+    def test_all_results(self, demo_dir):
         results_file = "Output/processed_results/mae/mae/MAE_results_all_v29.tsv.gz"
         r_cmd = """
                 library(data.table)
@@ -41,3 +41,14 @@ class Test_MAE_Pipeline:
                 """.format(results_file)
         r = runR(r_cmd, demo_dir)
         assert "[1] 253" in r.stdout
+
+    @pytest.mark.usefixtures("pipeline_run")
+    def test_sig_results(self, demo_dir):
+        results_file = "Output/processed_results/mae/mae/MAE_results_v29.tsv"
+        r_cmd = """
+                library(data.table)
+                res <- fread("{}")
+                print(nrow(res))
+                """.format(results_file)
+        r = runR(r_cmd, demo_dir)
+        assert "[1] 3" in r.stdout
