@@ -45,6 +45,20 @@ fi
 chr_subset=$(comm -12 <(cut -f1 -d" " ${canonical} | sort -u) <(echo "${vcf_chr}"))
 chr_subset=$(comm -12 <(echo "${bam_chr}") <(echo "${chr_subset}") | uniq)
 
+# ASEReadCounter fails without read groups (RG), this snippet checks for RG in bam file
+# and if RG tag isn't present, lets the user know how to fix it
+if samtools view -H ${bam_file} | grep -q "@RG";then
+  printf "BAM contains read groups (RG), continuing with ASEReadCounter...\n"
+else
+  printf "%s\n" "" "ERROR: BAM file doesn't contain Read Group Tag (RG)" \
+  " RG doesn't exist, it can be added using -" \
+  "   gatk AddOrReplaceGroups -R /path/to/reference -I /your/input.bam -O /your/output.bam --QUIET true" \
+  " https://gatk.broadinstitute.org/hc/en-us/articles/360037226472-AddOrReplaceReadGroups-Picard-" \
+  " Try rerunning this module using the BAM with RG tags"
+  exit 1
+fi
+
+
 for chr in $chr_subset; do
   $gatk ASEReadCounter \
     -R ${fasta} \

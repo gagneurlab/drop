@@ -21,7 +21,6 @@ samtools=$8
 
 tmp=$(mktemp)
 tmp2=$(mktemp)
-tmp3=$(mktemp)
 
 canonical_chr="chr1,chr2,chr3,chr4,chr5,chr6,chr7,chr8,chr9,chr10,\
 chr11,chr12,chr13,chr14,chr15,chr16,chr17,chr18,chr19,chr20,\
@@ -50,23 +49,25 @@ fi
 # view the vcf file and remove the info header information and the set the INFO column to '.'
 # split any multi-allelic lines
 # pull out the sample and only the snps that have at least 2 reads supporting it
+# Using bcftools -Ou to speed up processing
 $bcftools view  $vcf_file -r $canonical_chr | \
     grep -vP '^##INFO=' | \
     awk -F'\t' 'BEGIN {OFS = FS} { if($1 ~ /^[^#]/){ $8 = "." }; print $0 }' | \
-    $bcftools norm -m-both | \
-    $bcftools norm -d both | \
-    $bcftools view ${sample_flag} -m2 -M2 -v snps > $tmp
+    $bcftools norm -Ou -m-both | \
+    $bcftools norm -Ou -d both | \
+    $bcftools view ${sample_flag} -m2 -M2 -v snps > ${tmp2}
 
 # use the select_pattern defined above to pull out the heterozygous variants used for MAE
-gatk SelectVariants -V $tmp ${sample_name} ${select_pattern} -O ${tmp2}
-gatk SelectVariants --restrict-alleles-to BIALLELIC -V $tmp2 -O ${tmp3}
+gatk SelectVariants -V ${tmp2} ${sample_name} ${select_pattern} -O ${tmp}
+
+# explicitly remove all BIALLELIC variants. This is needed as ASEReadCounter does not support them.
+gatk SelectVariants --restrict-alleles-to BIALLELIC -V ${tmp} -O ${tmp2}
 
 # zip and save as tmp file
-bgzip -c $tmp3 > $tmp
-$bcftools index -t $tmp
+bgzip -c ${tmp2} > ${tmp}
+$bcftools index -t ${tmp}
 
 rm -f $tmp2
-rm -f $tmp3
 
 # compare and correct chromosome format mismatch
 bam_chr=$($samtools idxstats ${bam_file} | cut -f1 | grep "^chr" | wc -l)
