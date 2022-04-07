@@ -23,6 +23,7 @@ snakemake -c1
 ### html file
 Looking at the resulting ``Output/html/drop_demo_index.html`` we can see the ``AberrantExpression`` 
 tab at the top of the screen. Following that the Overview tab contains links to the:  
+
 - Counting Summaries 
     - For each aberrant expression group
         - split of local vs external sample counts
@@ -37,7 +38,7 @@ tab at the top of the screen. Following that the Overview tab contains links to 
         - results table
 - Files
     - OUTRIDER files for each aberrant expression group
-        - For each of these files you can follow the `OUTRIDER vignette for analysis <https://www.bioconductor.org/packages/devel/bioc/vignettes/OUTRIDER/inst/doc/OUTRIDER.pdf>`_. 
+        - For each of these files you can follow the `OUTRIDER vignette for individual analysis <https://www.bioconductor.org/packages/devel/bioc/vignettes/OUTRIDER/inst/doc/OUTRIDER.pdf>`_. 
     - results.tsv files
         - For each aberrant expression group
             - a tsv file that contains the sampleID, hgnc gene symbol, pvalue and adjusted pvalue, and subsequent analysis points
@@ -61,7 +62,7 @@ tab at the top of the screen. Following that the Overview tab contains links to 
         - result table
 - Files
     - FRASER files for each aberrant splicing group
-        - For each of these files you can follow the `FRASER vignette for analysis <https://www.bioconductor.org/packages/devel/bioc/vignettes/FRASER/inst/doc/FRASER.pdf>`_. 
+        - For each of these files you can follow the `FRASER vignette for individual analysis <https://www.bioconductor.org/packages/devel/bioc/vignettes/FRASER/inst/doc/FRASER.pdf>`_. 
     - results.tsv files
         - For each aberrant splicing group
             - results.tsv 
@@ -70,4 +71,17 @@ tab at the top of the screen. Following that the Overview tab contains links to 
                 - this tsv file contains only significant junctions that meet the cutoffs defined in the ``config.yaml`` they are aggregated at the junction level. 
 
 
-## Mono-allelic Expression TODO
+## Mono-allelic Expression
+Looking at the resulting ``Output/html/drop_demo_index.html`` we can see the ``MonoallelicExpression`` 
+tab at the top of the screen. Following that the Overview tab contains links to the:  
+- Results
+    - For each mae group
+        - the number of samples, unique genes, and aberrant events
+        - a cascade plot that shows additional filters
+            - MAE for REF: the monoallelic expression favors the reference allele 
+            - MAE for ALT: the monoallelic expression favors the alternative allele 
+            - rare: if ``add_AF`` is set to true in ``config.yaml`` must meet minimum AF set by ``max_AF``. Additionally it must meet the inner-cohort frequency ``maxVarFreqCohort`` cutoff
+        - histogram of inner cohort frequency
+        - summary of cascade plots and results table
+        
+        

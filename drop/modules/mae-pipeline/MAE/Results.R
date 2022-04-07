@@ -36,6 +36,7 @@ suppressPackageStartupMessages({
   library(GenomicRanges)
   library(SummarizedExperiment)
   library(R.utils)
+  library(dplyr)
 })
 
 # Read all MAE results files
@@ -119,6 +120,7 @@ fwrite(res[MAE_ALT == TRUE & rare == TRUE], snakemake@output$res_signif_rare,
 
 # Add columns for plot
 res[, N := .N, by = ID]
+res[,c("N_MAE","N_MAE_REF","N_MAE_ALT","N_MAE_REF_RARE","N_MAE_ALT_RARE") := 0,by = ID]
 res[MAE == TRUE, N_MAE := .N, by = ID]
 res[MAE == TRUE & MAE_ALT == FALSE, N_MAE_REF := .N, by = ID]
 res[MAE_ALT == TRUE, N_MAE_ALT := .N, by = ID]
@@ -126,6 +128,11 @@ res[MAE == TRUE & MAE_ALT == FALSE & rare == TRUE, N_MAE_REF_RARE := .N, by = ID
 res[MAE_ALT == TRUE & rare == TRUE, N_MAE_ALT_RARE := .N, by = ID]
 
 rd <- unique(res[,.(ID, N, N_MAE, N_MAE_REF, N_MAE_ALT, N_MAE_REF_RARE, N_MAE_ALT_RARE)])
+
+# rd contains duplicate entries for each ID. IE when MAE==F N_MAE for ID1 is both .N and 0
+# summarize these duplicates by taking the maximum of each column for each ID
+rd <- rd %>% group_by(ID) %>% summarize_all(max) %>% as.data.table()
+
 melt_dt <- melt(rd, id.vars = 'ID')
 melt_dt[variable == 'N', variable := '>10 counts']
 melt_dt[variable == 'N_MAE', variable := '+MAE']
@@ -137,8 +144,8 @@ melt_dt[variable == 'N_MAE_ALT_RARE', variable := '+MAE for ALT\n& rare']
 #' 
 #' ## Cascade plot 
 ggplot(melt_dt, aes(variable, value)) + geom_boxplot() +
-  scale_y_log10() + theme_bw(base_size = 14) +
-  labs(y = 'Heterozygous SNVs per patient', x = '') +
+  scale_y_log10(limits = c(1,NA)) + theme_bw(base_size = 14) +
+  labs(y = 'Heterozygous SNVs per patient', x = '') + 
     annotation_logticks(sides = "l")
 
 #'

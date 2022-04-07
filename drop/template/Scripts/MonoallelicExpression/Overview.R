@@ -9,6 +9,7 @@
 #'    - datasets: '`sm cfg.MAE.groups`'
 #'    - qc_groups: '`sm cfg.MAE.qcGroups`'
 #'    - htmlDir: '`sm config["htmlOutputPath"] + "/MonoallelicExpression"`'
+#'    - resultsDir: '`sm cfg.getProcessedResultsDir() + "/mae"`'
 #'  input:
 #'    - functions: '`sm cfg.workDir / "Scripts/html_functions.R"`'
 #'    - allelic_counts: '`sm expand(cfg.getProcessedDataDir() +
@@ -24,7 +25,7 @@
 #'                  "dna_rna_qc_matrix.Rds", qc_group=cfg.MAE.qcGroups)`'
 #' output:
 #'   html_document:
-#'    code_folding: hide
+#'    code_folding: show
 #'    code_download: TRUE
 #'---
 
@@ -37,11 +38,19 @@ source(snakemake@input$functions)
 datasets <- sort(snakemake@params$datasets)
 annotations <- snakemake@params$annotations
 htmlDir <- snakemake@params$htmlDir
+resultsDir <- snakemake@params$resultsDir
 
 results_links <- sapply(
   annotations, function(v) build_link_list(
     file_paths = file.path(htmlDir, paste0(datasets, '--', v, '_results.html')),
     captions = datasets
+  )
+)
+
+table_links <- sapply(
+  annotations, function(v) build_link_list(
+    file_paths = file.path(resultsDir, paste0(datasets, '/MAE_results_', v, '.tsv')),
+    captions = paste0(datasets)
   )
 )
 
@@ -55,9 +64,13 @@ results_links <- sapply(
 #'
 #' ## Files
 #' * [Allelic counts](`r file.path(snakemake@config$root, 'processed_data/mae/allelic_counts/')`)
-#' * [Results tables of each sample](`r file.path(snakemake@config$root, 'processed_results/mae/samples/')`)
-#' * [Aggregated results tables of each group](`r paste('* ', snakemake@input$results_tables, collapse = '\n')`)
+#' * [Results data tables of each sample (.Rds)](`r file.path(snakemake@config$root, 'processed_results/mae/samples/')`)  
+
 #'
+#' `r display_text(caption = 'Significant MAE results tables ', links = table_links)`
+
+
+#+ eval=TRUE, echo=TRUE
 #' ## Analyze Individual Results
 # Read the first results table
 res_sample <- readRDS(snakemake@input$results_obj[[1]])
@@ -73,9 +86,11 @@ if(is.null(res_sample$rare)){
   g2 <- plotAllelicCounts(res_sample, rare_column = 'rare')
 }
 
+#+echo=F
 #' ### MA plot: fold change vs RNA coverage
 g1
 
+#+echo=F
 #' ### Alternative vs Reference plot
 g2
 
