@@ -39,11 +39,14 @@ tab at the top of the screen. Following that the Overview tab contains links to 
 * Files
     * OUTRIDER files for each aberrant expression group
         * For each of these files you can follow the `OUTRIDER vignette for individual analysis <https://www.bioconductor.org/packages/devel/bioc/vignettes/OUTRIDER/inst/doc/OUTRIDER.pdf>`_. 
-    * results.tsv files
+    * tsv files
         * For each aberrant expression group
-            * a tsv file that contains the sampleID, hgnc gene symbol, pvalue and adjusted pvalue, and subsequent analysis points
-                * this tsv file contains only the genes and samples that meet the cutoffs defined in the ``config.yaml``
-                for ``padjCutoff`` and ``zScoreCutoff``
+            * results.tsv
+                * this tsv file contains only the significant genes and samples that meet the cutoffs defined in the ``config.yaml`` for ``padjCutoff`` and ``zScoreCutoff``
+
+Local result files
+##################
+Additionally the ``aberrantExpression`` module creates the file Output/processed_results/aberrant_expression/{annotation}/outrider/{drop_group}/OUTRIDER_results_all.Rds`` this file is the Rds object containing the entire OUTRIDER results table regardless of significance.
 
 Aberrant Splicing
 +++++++++++++++++
@@ -67,7 +70,7 @@ tab at the top of the screen. Following that the Overview tab contains links to 
 * Files
     * FRASER files for each aberrant splicing group
         * For each of these files you can follow the `FRASER vignette for individual analysis <https://www.bioconductor.org/packages/devel/bioc/vignettes/FRASER/inst/doc/FRASER.pdf>`_. 
-    * results.tsv files
+    * tsv files
         * For each aberrant splicing group
             * results.tsv 
                 * this tsv file contains only significant junctions that meet the cutoffs defined in the ``config.yaml`` they are aggregated at the gene level. Any sample/gene pair is represented by only the most significant junction.
@@ -89,7 +92,9 @@ tab at the top of the screen. Following that the Overview tab contains links to 
         * a cascade plot that shows additional filters
             * MAE for REF: the monoallelic expression favors the reference allele 
             * MAE for ALT: the monoallelic expression favors the alternative allele 
-            * rare: if ``add_AF`` is set to true in ``config.yaml`` must meet minimum AF set by ``max_AF``. Additionally it must meet the inner-cohort frequency ``maxVarFreqCohort`` cutoff
+            * rare: 
+                * if ``add_AF`` is set to true in ``config.yaml`` must meet minimum AF set by ``max_AF``
+                * additionally it must meet the inner-cohort frequency ``maxVarFreqCohort`` cutoff
         * histogram of inner cohort frequency
         * summary of cascade plots and results table
 * Files
@@ -99,10 +104,23 @@ tab at the top of the screen. Following that the Overview tab contains links to 
         * Rds objects containing the full results table regardless of MAE status
     * Significant MAE results tables
         * For each mae group
-            * a link to the results tsv file. Only contains MAE results for the alternative allele
+            * a link to the results tsv file.
+            * Only contains significant MAE results based on ``config.yaml`` cutoffs for the alternative allele
 * Quality Control
     * QC Overview
         * For each mae group QC checks for DNA/RNA matching
 * Analyze Individual Results
     * An example analaysis that can be run using the Rds objects linked in the files subsection
-    * performed on the first mae sample
+    * performed on the first mae sample 
+    
+Local result files
+##################
+Additionally the ``mae`` module creates the following files:
+* Output/processed_results/mae/{drop_group}/MAE_results_all_v29.tsv.gz``
+    * this file is the tsv results of all heterozygous variants regardless of significance
+* Output/processed_results/mae/{drop_group}/MAE_results_v29.tsv``
+    * this is the file linked in the html document and described above
+* Output/processed_results/mae/{drop_group}/MAE_results_v29_rare.tsv``
+    * this file is the subsetted tsv of ``MAE_results_v29.tsv`` with only the variants that pass the rare cutoffs
+        * if ``add_AF`` is set to true in ``config.yaml`` must meet minimum AF set by ``max_AF``
+        * inner-cohort frequency must meet ``maxVarFreqCohort`` cutoff

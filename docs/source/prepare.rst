@@ -220,16 +220,16 @@ Using ``exportCounts`` generates the necessary files in the appropriate
 ``ROOT_DIR/Output/processed_results/exported_counts/`` sub-directory
 
 ``SPLICE_COUNTS_DIR`` should contain the following:  
-- k_j_counts.tsv.gz  
-- k_theta_counts.tsv.gz  
-- n_psi3_counts.tsv.gz  
-- n_psi5_counts.tsv.gz  
-- n_theta_counts.tsv.gz  
+* k_j_counts.tsv.gz  
+* k_theta_counts.tsv.gz  
+* n_psi3_counts.tsv.gz  
+* n_psi5_counts.tsv.gz  
+* n_theta_counts.tsv.gz  
 
 Publicly available DROP external counts
 #######################################
 You can find different sets of publicly available external counts to add to your
-analysis on our github page  <https://github.com/gagneurlab/drop/#datasets>
+analysis on our `github page <https://github.com/gagneurlab/drop/#datasets>`_
 
 If you want to contribute with your own count matrices, please contact us: yepez at in.tum.de (yepez@in.tum.de)
 
