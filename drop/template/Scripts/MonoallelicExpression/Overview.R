@@ -95,7 +95,7 @@ res_sample <- readRDS(snakemake@input$results_obj[[1]])
 #+echo=F
 library(tMAE)
 
-if(is.null(res_sample$rare)){
+if(is.na(res_sample$rare)){
   g1 <- plotMA4MAE(res_sample)
   g2 <- plotAllelicCounts(res_sample)
 } else {
