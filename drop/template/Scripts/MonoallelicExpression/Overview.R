@@ -91,16 +91,25 @@ qc_matrix_links <- build_link_list(
 #' ## Analyze Individual Results
 # Read the first results table
 res_sample <- readRDS(snakemake@input$results_obj[[1]])
+print(unique(res_sample$ID))
 
 #+echo=F
 library(tMAE)
 
 if(is.na(res_sample$rare)){
-  g1 <- plotMA4MAE(res_sample)
-  g2 <- plotAllelicCounts(res_sample)
+  g1 <- plotMA4MAE(res_sample,
+				   padjCutoff = snakemake@config$mae$padjCutoff,
+				   allelicRatioCutoff = snakemake@config$mae$allelicRatioCutoff )
+  g2 <- plotAllelicCounts(res_sample,
+				   padjCutoff = snakemake@config$mae$padjCutoff,
+				   allelicRatioCutoff = snakemake@config$mae$allelicRatioCutoff )
 } else {
-  g1 <- plotMA4MAE(res_sample, rare_column = 'rare')
-  g2 <- plotAllelicCounts(res_sample, rare_column = 'rare')
+  g1 <- plotMA4MAE(res_sample, rare_column = 'rare',
+				   padjCutoff = snakemake@config$mae$padjCutoff,
+				   allelicRatioCutoff = snakemake@config$mae$allelicRatioCutoff )
+  g2 <- plotAllelicCounts(res_sample, rare_column = 'rare',
+				   padjCutoff = snakemake@config$mae$padjCutoff,
+				   allelicRatioCutoff = snakemake@config$mae$allelicRatioCutoff )
 }
 
 #' ### MA plot: fold change vs RNA coverage
