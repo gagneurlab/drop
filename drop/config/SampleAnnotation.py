@@ -40,23 +40,26 @@ class SampleAnnotation:
         clean columns and set types
         """
         data_types = {
-            "RNA_ID": str, "DNA_ID": str, "DROP_GROUP": str, "GENE_ANNOTATION": str,
-            "PAIRED_END": bool, "COUNT_MODE": str, "COUNT_OVERLAPS": bool, "STRAND": str, "GENOME": str
+            "RNA_ID": str, "DNA_ID": str, "DROP_GROUP": str, 
+            "PAIRED_END": bool, "COUNT_MODE": str, "COUNT_OVERLAPS": bool, "STRAND": str, 
+            "GENE_COUNTS_FILE": str, "SPLICE_COUNTS_DIR": str, "GENE_ANNOTATION": str, "GENOME": str
         }
+        optional_columns = {"GENE_COUNTS_FILE", "SPLICE_COUNTS_DIR", "GENE_ANNOTATION", "GENOME"}
+
         sa = pd.read_csv(self.file, sep=sep, index_col=False)
         missing_cols = [x for x in self.SAMPLE_ANNOTATION_COLUMNS if x not in sa.columns.values]
         if len(missing_cols) > 0:
-            if "GENOME" in missing_cols:
-                # deal with missing columns in data types, remove it to fix checks later
-                del data_types["GENOME"]
-                self.SAMPLE_ANNOTATION_COLUMNS.remove("GENOME")
-                missing_cols.remove("GENOME")
-
             if "GENE_ANNOTATION" in missing_cols and "ANNOTATION" in sa.columns.values:
                 logger.info(
                     "WARNING: GENE_ANNOTATION must be a column in the sample annotation table, ANNOTATION is the old column name and will be deprecated in the future\n")
                 sa["GENE_ANNOTATION"] = sa.pop("ANNOTATION")
                 missing_cols.remove("GENE_ANNOTATION")
+
+            for toDel_optional in (set(missing_cols) & optional_columns):
+                # deal with missing columns in data types, remove it to fix checks later
+                del data_types[toDel_optional]
+                self.SAMPLE_ANNOTATION_COLUMNS.remove(toDel_optional)
+                missing_cols.remove(toDel_optional)
 
             if len(missing_cols) > 0:
                 raise ValueError(f"Incorrect columns in sample annotation file. Missing:\n{missing_cols}")
@@ -106,7 +109,7 @@ class SampleAnnotation:
             raise FileNotFoundError(message)
         elif len(existing) < file_mapping.shape[0]:
             missing = set(file_mapping["FILE_PATH"]) - set(existing)
-            logger.info(f"WARNING: {len(missing)} files missing in samples annotation. Ignoring...")
+            logger.info(f"WARNING: {missing} files missing in samples annotation. Ignoring...")
             logger.debug(f"Missing files: {missing}")
             file_mapping = file_mapping[file_mapping["FILE_PATH"].isin(existing)]
 
@@ -170,10 +173,15 @@ class SampleAnnotation:
             if not sa_cols <= set(subset.columns):  # check if mandatory cols not contained
                 raise ValueError(f"Subset columns not the same as {sa_cols}\ngot: {subset.columns}")
 
-        # check if column is valid
-        if column not in sa_cols:
+        # check if values is None. Do nothing
+        if values is None:
+            return subset
+        # check if column is valid. Raise Error
+        elif column not in sa_cols:
             raise KeyError(f"Column '{column}' not present in sample annotation.")
-        return utils.subsetBy(subset, column, values)
+        # subset column for values
+        else: 
+            return utils.subsetBy(subset, column, values)
 
     def subsetFileMapping(self, file_type=None, sample_id=None):
         """

@@ -81,11 +81,17 @@ class AS(Submodule):
         :param fileType: name of the file without extension which is to be returned
         :return: list of directories or files
         """
+
+        # if sample annotation does not contain the column SPLICE_COUNTS_DIR return no external counts
+        if("SPLICE_COUNTS_DIR" not in self.sampleAnnotation.SAMPLE_ANNOTATION_COLUMNS):
+            return []
+
         ids = self.sampleAnnotation.getIDsByGroup(group, assay="SPLICE_COUNT")
         extCountFiles = self.sampleAnnotation.getImportCountFiles(annotation=None, group=group, 
                 file_type="SPLICE_COUNTS_DIR", asSet=False)
         if fileType is not None:
-            extCountFiles = np.asarray(extCountFiles)[pd.isna(extCountFiles) == False].tolist()
+            extCountFiles = np.asarray(extCountFiles)
+            extCountFiles = extCountFiles[extCountFiles != "nan"].tolist()
             extCountFiles = [x + "/" + fileType + ".tsv.gz" for x in extCountFiles]
         return extCountFiles
     

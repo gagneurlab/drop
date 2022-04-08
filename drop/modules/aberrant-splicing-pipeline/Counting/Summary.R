@@ -44,7 +44,7 @@ if(has_external){
 #' Local (fromBam): `r sum(!fdsMerge@colData$isExternal)`  
 #' External: `r sum(fdsMerge@colData$isExternal)`  
 #' 
-#' ### Using external counts
+#' **Using external counts**  
 #' External counts introduce some complexity into the problem of counting junctions
 #' because it is ambiguous whether or not a junction is not counted (because there are no reads)
 #' compared to filtered and not present due to legal/personal sharing reasons. As a result,
@@ -52,11 +52,11 @@ if(has_external){
 #' the same in both remain. As a result it is likely that the number of junctions will decrease after a merge.
 #' 
 #' 
-#' ### Number of introns (psi5 or psi3) before filtering:  
+#' ### Number of introns (psi5 or psi3) before and after merging:  
 #' Local (fromBam): `r length(rowRanges(fdsLocal, type = "psi5"))`  
 #' Merged : `r length(rowRanges(fdsMerge, type = "psi5"))`  
 #' 
-#' ### Number of splice sites (theta) before filtering: 
+#' ### Number of splice sites (theta) before and after merging: 
 #' Local (fromBam): `r length(rowRanges(fdsLocal, type = "theta"))`  
 #' Merged: `r length(rowRanges(fdsMerge, type = "theta"))`  
 #' 
