@@ -42,7 +42,6 @@ class SampleAnnotation:
         data_types = {
             "RNA_ID": str, "DNA_ID": str, "DROP_GROUP": str, 
             "PAIRED_END": bool, "COUNT_MODE": str, "COUNT_OVERLAPS": bool, "STRAND": str, 
-            "GENE_COUNTS_FILE": str, "SPLICE_COUNTS_DIR": str, "GENE_ANNOTATION": str, "GENOME": str
         }
         optional_columns = {"GENE_COUNTS_FILE", "SPLICE_COUNTS_DIR", "GENE_ANNOTATION", "GENOME"}
 
@@ -57,7 +56,6 @@ class SampleAnnotation:
 
             for toDel_optional in (set(missing_cols) & optional_columns):
                 # deal with missing columns in data types, remove it to fix checks later
-                del data_types[toDel_optional]
                 self.SAMPLE_ANNOTATION_COLUMNS.remove(toDel_optional)
                 missing_cols.remove(toDel_optional)
 
@@ -109,7 +107,7 @@ class SampleAnnotation:
             raise FileNotFoundError(message)
         elif len(existing) < file_mapping.shape[0]:
             missing = set(file_mapping["FILE_PATH"]) - set(existing)
-            logger.info(f"WARNING: {missing} files missing in samples annotation. Ignoring...")
+            logger.info(f"WARNING: {len(missing)} files missing in samples annotation. Ignoring...")
             logger.debug(f"Missing files: {missing}")
             file_mapping = file_mapping[file_mapping["FILE_PATH"].isin(existing)]
 
@@ -173,14 +171,15 @@ class SampleAnnotation:
             if not sa_cols <= set(subset.columns):  # check if mandatory cols not contained
                 raise ValueError(f"Subset columns not the same as {sa_cols}\ngot: {subset.columns}")
 
-        # check if values is None. Do nothing
+
+        # if you don't want to subset
         if values is None:
             return subset
-        # check if column is valid. Raise Error
+        # check if column is valid
         elif column not in sa_cols:
             raise KeyError(f"Column '{column}' not present in sample annotation.")
-        # subset column for values
-        else: 
+        #subset column for matching values
+        else:
             return utils.subsetBy(subset, column, values)
 
     def subsetFileMapping(self, file_type=None, sample_id=None):
