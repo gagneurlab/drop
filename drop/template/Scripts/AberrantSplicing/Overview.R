@@ -87,7 +87,9 @@ siteIndex <- 4
 
 #' ### Volcano plot
 # set basePlot to FALSE to create an interactive plot
-FRASER::plotVolcano(fds, sample, type = 'psi3', basePlot = TRUE)
+FRASER::plotVolcano(fds, sample, type = 'psi3', basePlot = TRUE,
+                    deltaPsiCutoff = snakemake@config$aberrantSplicing$deltaPsiCutoff,
+                    padjCutoff = snakemake@config$aberrantSplicing$padjCutoff)
 
 #' ### Expression plot
 FRASER::plotExpression(fds, type = 'psi3', site = siteIndex, basePlot = TRUE)
