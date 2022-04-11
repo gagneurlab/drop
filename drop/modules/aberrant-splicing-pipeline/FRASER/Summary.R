@@ -77,6 +77,7 @@ for(type in psiTypes){
     annotation_col = NA,
     annotation_row = NA,
     sampleCluster = NA,
+    minDeltaPsi = snakemake@config$aberrantSplicing$minDeltaPsi,
     plotMeanPsi=FALSE,
     plotCov = FALSE,
     annotation_legend = TRUE
@@ -93,6 +94,7 @@ for(type in psiTypes){
     annotation_col = NA,
     annotation_row = NA,
     sampleCluster = NA,
+    minDeltaPsi = snakemake@config$aberrantSplicing$minDeltaPsi,
     plotMeanPsi=FALSE,
     plotCov = FALSE,
     annotation_legend = TRUE
