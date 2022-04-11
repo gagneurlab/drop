@@ -193,5 +193,5 @@ plotExpressedGenes(ods) +
 if(has_external){
     DT::datatable(expressed_genes[order(Rank)],rownames = F)
 } else{
-    DT::datatable(expressed_genes[order(Rank),-"is External"],rownames = F)
+    DT::datatable(expressed_genes[order(Rank),-"Is External"],rownames = F)
 }
