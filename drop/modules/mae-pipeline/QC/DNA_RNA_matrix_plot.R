@@ -38,9 +38,6 @@ ggplot(melt_mat, aes(value)) + geom_histogram(fill = 'cadetblue4', binwidth = 0.
   geom_vline(xintercept=identityCutoff, linetype='dashed', color = 'firebrick')
 
 
-
-
-
 #' ## Identify matching samples
 
 #' Number of samples: `r nrow(qc_mat)`
