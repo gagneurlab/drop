@@ -149,14 +149,21 @@ ggplot(melt_dt, aes(variable, value)) + geom_boxplot() +
     annotation_logticks(sides = "l")
 
 #'
-#' ## Variant Frequency within Cohort Histogram
+#' ## Variant Frequency within Cohort
 ggplot(unique(res[,cohort_freq,by =.(gene_name, contig, position)]),aes(x = cohort_freq)) + geom_histogram( binwidth = 0.02)  +
-  geom_vline(xintercept = maxCohortFreq, col = "red") +
-  xlab("Variant frequency in cohort") + ylab("Count")
+  geom_vline(xintercept = maxCohortFreq, col = "red",linetype="dashed") + theme_bw(base_size = 14) +
+  xlim(0,1) + xlab("Variant frequency in cohort") + ylab("Variants")
 
 #' Median of each category
 DT::datatable(melt_dt[, .(median = median(value, na.rm = T)), by = variable])
 
+
+# round numbers
+if(nrow(res) > 0){
+  res[, pValue := signif(pValue, 3)]
+  res[, padjust := signif(padjust, 3)]
+  res[, log2FC := signif(deltaPsi, 3)]
+}
 #' 
 #' ## MAE Results table
 DT::datatable(

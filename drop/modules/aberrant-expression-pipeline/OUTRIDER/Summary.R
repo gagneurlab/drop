@@ -63,18 +63,18 @@ plotAberrantPerSample(ods, main = dataset_title,
 
 #' ### Batch correction
 #+ countCorHeatmap, fig.height=8, fig.width=8
-plotCountCorHeatmap(ods, normalized = FALSE, 
+plotCountCorHeatmap(ods, normalized = FALSE, colGroups = "isExternal",
                     main = paste0('Raw Counts (', dataset_title, ')'))
-plotCountCorHeatmap(ods, normalized = TRUE, 
+plotCountCorHeatmap(ods, normalized = TRUE, ,colGroups = "isExternal",
                     main = paste0('Normalized Counts (', dataset_title, ')'))
 
 
 #' ### Expression by gene per sample
 #+ geneSampleHeatmap, fig.height=12, fig.width=6
-plotCountGeneSampleHeatmap(ods, normalized = FALSE, nGenes = 50,
+plotCountGeneSampleHeatmap(ods, normalized = FALSE, nGenes = 50, colGroups = "isExternal",
                            main = paste0('Raw Counts (', dataset_title, ')'),
                            bcvQuantile = .95, show_names = 'row')
-plotCountGeneSampleHeatmap(ods, normalized = TRUE, nGenes = 50,
+plotCountGeneSampleHeatmap(ods, normalized = TRUE, nGenes = 50, colGroups = "isExternal",
                            main = paste0('Normalized Counts (',dataset_title,')'),
                            bcvQuantile = .95, show_names = 'row')
 
@@ -134,8 +134,8 @@ fwrite(res, file, sep = '\t', quote = F)
 #+ echo=FALSE, results='asis'
 cat(paste0("<a href='./", basename(file), "'>Download OUTRIDER results table</a>"))
 
-res[, pValue := format(pValue, scientific = T, digits = 2)]
-res[, padjust := format(padjust, scientific = T, digits = 2)]
+res[, pValue := format(pValue, scientific = T, digits = 3)]
+res[, padjust := format(padjust, scientific = T, digits = 3)]
 
 DT::datatable(
   head(res, 1000),

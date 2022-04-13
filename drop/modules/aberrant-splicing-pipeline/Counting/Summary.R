@@ -35,14 +35,16 @@ fdsMerge <- loadFraserDataSet(dir=workingDir, name=paste0("raw-", dataset))
 
 has_external <- !(all(is.na(fdsMerge@colData$SPLICE_COUNTS_DIR)) || is.null(fdsMerge@colData$SPLICE_COUNTS_DIR))
 if(has_external){
-    fdsMerge@colData$isExternal <- !is.na(fdsMerge@colData$SPLICE_COUNTS_DIR)
+    fdsMerge@colData$isExternal <- as.factor(!is.na(fdsMerge@colData$SPLICE_COUNTS_DIR))
 }else{
-    fdsMerge@colData$isExternal <- FALSE
+    fdsMerge@colData$isExternal <- as.factor(FALSE)
 }
+devNull <- saveFraserDataSet(fdsMerge,dir=workingDir, name=paste0("raw-", dataset))
+
 
 #' ## Number of samples:   
-#' Local (fromBam): `r sum(!fdsMerge@colData$isExternal)`  
-#' External: `r sum(fdsMerge@colData$isExternal)`  
+#' Local (fromBam): `r sum(!as.logical(fdsMerge@colData$isExternal))`  
+#' External: `r sum(as.logical(fdsMerge@colData$isExternal))`  
 #' 
 #' **Using external counts**  
 #' External counts introduce some complexity into the problem of counting junctions
@@ -63,23 +65,24 @@ if(has_external){
 
 #' ### Comparison of local and external counts  
 if(has_external){
-externalCountIDs <- colData(fdsMerge)[colData(fdsMerge)[,"isExternal"],"sampleID"]
-localCountIDs <- colData(fdsMerge)[!colData(fdsMerge)[,"isExternal"],"sampleID"]
+    externalCountIDs <- colData(fdsMerge)[as.logical(colData(fdsMerge)[,"isExternal"]),"sampleID"]
+    localCountIDs <- colData(fdsMerge)[!as.logical(colData(fdsMerge)[,"isExternal"]),"sampleID"]
 
-cts <- K(fdsMerge,"psi5")
-ctsLocal<- cts[,localCountIDs]
-ctsExt<- cts[,externalCountIDs]
+    cts <- K(fdsMerge,"psi5")
+    ctsLocal<- cts[,localCountIDs]
+    ctsExt<- cts[,externalCountIDs]
 
-rowlgmLocal <- rowMeans(log(ctsLocal + 1))
-rowlgmExt <- rowMeans(log(ctsExt + 1))
+    rowMeanLocal <- rowMeans(ctsLocal)
+    rowMeanExt <- rowMeans(ctsExt)
 
-dt <- data.table("Local log mean counts" = rowlgmLocal,
-                 "External log mean counts" = rowlgmExt)
+    dt <- data.table("Local log mean counts" = rowMeanLocal,
+                 "External log mean counts" = rowMeanExt)
                  
-ggplot(dt,aes(x = `Local log mean counts`, y= `External log mean counts`)) +
-   geom_point() + theme_cowplot(font_size = 16) +
-   geom_abline(slope = 1, intercept =0) +
-   scale_color_brewer(palette="Dark2") 
+    ggplot(dt,aes(x = `Local log mean counts`, y= `External log mean counts`)) +
+       geom_hex() + theme_cowplot(font_size = 16) +
+	   theme_bw() + scale_x_log10() + scale_y_log10() + 
+       geom_abline(slope = 1, intercept =0) +
+       scale_color_brewer(palette="Dark2") 
 }else{
 	print("No external counts, comparison is ommitted")
 }

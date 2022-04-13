@@ -220,6 +220,7 @@ Using ``exportCounts`` generates the necessary files in the appropriate
 ``ROOT_DIR/Output/processed_results/exported_counts/`` sub-directory
 
 ``SPLICE_COUNTS_DIR`` should contain the following:  
+
 * k_j_counts.tsv.gz  
 * k_theta_counts.tsv.gz  
 * n_psi3_counts.tsv.gz  

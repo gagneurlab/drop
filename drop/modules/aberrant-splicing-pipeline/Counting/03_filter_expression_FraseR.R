@@ -63,12 +63,14 @@ if(length(exCountIDs) > 0){
         # junctions from the external counts.
         fds <- mergeExternalData(fds=fds, countFiles=ctsFiles,
                 sampleIDs=exSampleIDs, annotation=exAnno)
+        fds@colData$isExternal <- as.factor(!is.na(fds@colData$SPLICE_COUNTS_DIR))
     }
 } else {
     message("symLink fraser dir")
     file.symlink(paste0(workingDirIn, "savedObjects/","raw-", dataset),
                  paste0(workingDirOut, "savedObjects/","raw-", dataset))
     
+    fds@colData$isExternal <- as.factor(FALSE)
     workingDir(fds) <- workingDirOut
     name(fds) <- paste0("raw-", dataset)
 }

@@ -35,21 +35,26 @@ ods <- readRDS(snakemake@input$ods)
 
 has_external <- !(all(ods@colData$GENE_COUNTS_FILE == "") || is.null(ods@colData$GENE_COUNTS_FILE))
 if(has_external){
-    ods@colData$isExternal <- ods@colData$GENE_COUNTS_FILE != ""
+    ods@colData$isExternal <- as.factor(ods@colData$GENE_COUNTS_FILE != "")
 }else{
-    ods@colData$isExternal <- FALSE
+    ods@colData$isExternal <- as.factor(FALSE)
 }
+
+# save ods with isExternal column
+saveRDS(ods,snakemake@input$ods)
 
 cnts_mtx_local <- counts(ods, normalized = F)[,!ods@colData$isExternal]
 cnts_mtx <- counts(ods, normalized = F)
 
 #' ## Number of samples:  
-#' Local (fromBam): `r sum(!ods@colData$isExternal)`  
-#' External: `r sum(ods@colData$isExternal)`  
+#' Local: `r sum(!as.logical(ods@colData$isExternal))`  
+#' External: `r sum(as.logical(ods@colData$isExternal))`  
 #' 
 #' # Count Quality Control
 #' 
-#' Compare number of records vs. read counts
+#' Compare number of records vs. read counts  
+#' `The Obtained Read Count Ratio` plot does not include external counts
+#' because there are no raw reads to be counted.
 #' 
 bam_coverage <- fread(snakemake@input$bam_cov)
 bam_coverage[, sampleID := as.character(sampleID)]
@@ -116,8 +121,8 @@ plot_grid(p_sf, p_sf_cov)
 #' **local**: A pre-filtered summary of counts using only the local (from BAM) counts. Omitted if no external counts  
 #' **all**: A pre-filtered summary of counts using only the merged local (from BAM) and external counts  
 #' **passed_FPKM**: Passes the user defined FPKM cutoff in at least 5% of genes  
-#' **min_1**: minimum of 1 read expressed in 5% of genes  
-#' **min_10**: minimum of 10 reads expressed in 5% of genes  
+#' **min 1 read**: minimum of 1 read expressed in 5% of genes  
+#' **min 10 reads**: minimum of 10 reads expressed in 5% of genes  
 
 quant <- .95
 
@@ -125,27 +130,27 @@ if(has_external){
     filter_mtx <- list(
       local = cnts_mtx_local,
       all = cnts_mtx,
-      passed_FPKM = cnts_mtx[rowData(ods)$passedFilter,],
-      min_1 = cnts_mtx[rowQuantiles(cnts_mtx, probs = quant) > 1, ],
-      min_10 = cnts_mtx[rowQuantiles(cnts_mtx, probs = quant) > 10, ]
+      `passed FPKM` = cnts_mtx[rowData(ods)$passedFilter,],
+      `min 1 read` = cnts_mtx[rowQuantiles(cnts_mtx, probs = quant) > 1, ],
+      `min 10 reads` = cnts_mtx[rowQuantiles(cnts_mtx, probs = quant) > 10, ]
     )
     filter_dt <- lapply(names(filter_mtx), function(filter_name) {
       mtx <- filter_mtx[[filter_name]]
       data.table(gene_ID = rownames(mtx), median_counts = rowMeans(mtx), filter = filter_name)
     }) %>% rbindlist
-    filter_dt[, filter := factor(filter, levels = c('local', 'all', 'passed_FPKM', 'min_1', 'min_10'))]
+    filter_dt[, filter := factor(filter, levels = c('local', 'all', 'passed FPKM', 'min 1 read', 'min 10 reads'))]
 } else{
     filter_mtx <- list(
       all = cnts_mtx,
-      passed_FPKM = cnts_mtx[rowData(ods)$passedFilter,],
-      min_1 = cnts_mtx[rowQuantiles(cnts_mtx, probs = quant) > 1, ],
-      min_10 = cnts_mtx[rowQuantiles(cnts_mtx, probs = quant) > 10, ]
+      `passed FPKM` = cnts_mtx[rowData(ods)$passedFilter,],
+      `min 1 read` = cnts_mtx[rowQuantiles(cnts_mtx, probs = quant) > 1, ],
+      `min 10 reads` = cnts_mtx[rowQuantiles(cnts_mtx, probs = quant) > 10, ]
     )
     filter_dt <- lapply(names(filter_mtx), function(filter_name) {
       mtx <- filter_mtx[[filter_name]]
       data.table(gene_ID = rownames(mtx), median_counts = rowMeans(mtx), filter = filter_name)
     }) %>% rbindlist
-    filter_dt[, filter := factor(filter, levels = c('all', 'passed_FPKM', 'min_1', 'min_10'))]
+    filter_dt[, filter := factor(filter, levels = c('all', 'passed FPKM', 'min 1 read', 'min 10 reads'))]
 }
 
 binwidth <- .2
@@ -174,11 +179,10 @@ p_dens <- ggplot(filter_dt, aes(x = median_counts, col = filter)) +
 plot_grid(p_hist, p_dens)
 
 #' ### Expressed Genes
-exp_genes_cols <- c(`Expressed\ngenes` = "expressedGenes", 
+exp_genes_cols <- c(Rank = "expressedGenesRank",`Expressed\ngenes` = "expressedGenes", 
                     `Union of\nexpressed genes` = "unionExpressedGenes", 
                     `Intersection of\nexpressed genes` = "intersectionExpressedGenes", 
-                    `Genes passed\nfiltering` = "passedFilterGenes", Rank = "expressedGenesRank",
-                    `Is External` = "isExternal")
+                    `Genes passed\nfiltering` = "passedFilterGenes", `Is External` = "isExternal")
 
 expressed_genes <- as.data.table(colData(ods)[,exp_genes_cols])
 colnames(expressed_genes) <- names(exp_genes_cols)
