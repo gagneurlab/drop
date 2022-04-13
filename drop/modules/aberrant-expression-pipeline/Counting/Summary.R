@@ -33,17 +33,8 @@ suppressPackageStartupMessages({
 
 ods <- readRDS(snakemake@input$ods)
 
-has_external <- !(all(ods@colData$GENE_COUNTS_FILE == "") || is.null(ods@colData$GENE_COUNTS_FILE))
-if(has_external){
-    ods@colData$isExternal <- as.factor(ods@colData$GENE_COUNTS_FILE != "")
-}else{
-    ods@colData$isExternal <- as.factor(FALSE)
-}
-
-# save ods with isExternal column
-saveRDS(ods,snakemake@input$ods)
-
-cnts_mtx_local <- counts(ods, normalized = F)[,!ods@colData$isExternal]
+has_external <- any(as.logical(colData(ods)$isExternal))
+cnts_mtx_local <- counts(ods, normalized = F)[,!as.logical(ods@colData$isExternal)]
 cnts_mtx <- counts(ods, normalized = F)
 
 #' ## Number of samples:  
