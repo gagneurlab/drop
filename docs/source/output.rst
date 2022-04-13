@@ -72,11 +72,13 @@ tab at the top of the screen. Following that the Overview tab contains links to 
         * For each of these files you can follow the `FRASER vignette for individual analysis <https://www.bioconductor.org/packages/devel/bioc/vignettes/FRASER/inst/doc/FRASER.pdf>`_. 
     * tsv files
         * For each aberrant splicing group
-            * results.tsv 
-                * this tsv file contains only significant junctions that meet the cutoffs defined in the ``config.yaml`` they are aggregated at the gene level. Any sample/gene pair is represented by only the most significant junction.
             * results_per_junction.tsv 
                 * this tsv file contains only significant junctions that meet the cutoffs defined in the ``config.yaml`` they are aggregated at the junction level. 
 
+Local result files
+##################
+Additionally the ``aberrantSplicing`` module creates the following file ``Output/processed_results/aberrant_splicing/results/{annotation}/fraser/{drop_group}/results.tsv``. 
+This tsv file contains only significant junctions that meet the cutoffs defined in the ``config.yaml`` they are aggregated at the gene level. Any sample/gene pair is represented by only the most significant junction.
 
 Mono-allelic Expression
 +++++++++++++++++++++++
