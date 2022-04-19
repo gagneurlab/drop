@@ -47,6 +47,7 @@ rule rnaVariantCalling:
                 "{dataset}_{annotation}.annotated.vcf.gz"),
                 annotation = cfg.get("geneAnnotation"), dataset = cfg.RVC.groups)
     output: RVC_index_output
+    threads: 1
     run:
         if cfg.RVC.run:
             ci(str(RVC_WORKDIR), 'rvc-pipeline')
@@ -54,6 +55,7 @@ rule rnaVariantCalling:
 
 rule rnaVariantCalling_dependency:
     output: RVC_graph_file
+    threads: 1
     shell:
         """
         snakemake --rulegraph rnaVariantCalling | \
@@ -75,6 +77,7 @@ rule allVariants:
             dataset = cfg.RVC.groups)
     output:
         os.path.join(str(cfg.processedDataDir) + "/rnaVariantCalling/{dataset}_done.txt")
+    threads: 1
     shell:
         """
         touch {output}
@@ -88,6 +91,7 @@ rule split_multiVCF:
             "rnaVariantCalling/out/batch_vcfs",
             cfg.RVC.batchIDs[wildcards.sample],
             cfg.RVC.batchIDs[wildcards.sample] + ".processed.vcf.gz")
+    threads: 1
     output:
         vcf = os.path.join(
             cfg.processedDataDir,
@@ -609,6 +613,7 @@ rule changeHeader:
         bam = lambda wildcards: sa.getFilePath(wildcards.sample, "RNA_BAM_FILE"),
         bai = lambda wildcards: sa.getFilePath(wildcards.sample, "RNA_BAM_FILE") + ".bai",
         script = str(RVC_WORKDIR) + "/GATK_BASH/changeHeader.sh"
+    threads: 1
     output:
         bam = temp(os.path.join(
             cfg.processedDataDir,
