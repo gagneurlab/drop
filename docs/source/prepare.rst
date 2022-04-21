@@ -1,6 +1,18 @@
 Preparing the Input Data
 ========================
 
+The input files of DROP are: 
+
+- BAM files from RNA-seq  (and their respective index files)
+- VCF files from either WES or WGS (and their respective index files). Only used for the MAE module
+- a configuration file containing the different parameters
+- a sample annotation file
+- a gene annotation file (gtf)
+- a reference genome file (fasta, and its respective index)
+
+For more details see the Materials section of the `DROP manuscript <https://rdcu.be/cdMmF>`_.
+
+
 Config file
 -----------
 
