@@ -55,7 +55,7 @@ class AS(Submodule):
         :return: list of files
         """
         ids = self.sampleAnnotation.getIDsByGroup(dataset, assay="RNA")
-        file_stump = self.processedDataDir / "aberrant_splicing" / "datasets" / "fromBam" / "cache" / f"raw-{dataset}" / \
+        file_stump = self.processedDataDir / "aberrant_splicing" / "datasets" / "cache" / f"raw-local-{dataset}" / \
                      "sample_tmp" / "splitCounts"
         done_files = str(file_stump / "sample_{sample_id}.done")
         return expand(done_files, sample_id=ids)
@@ -67,7 +67,7 @@ class AS(Submodule):
         :return: list of files
         """
         ids = self.sampleAnnotation.getIDsByGroup(dataset, assay="RNA")
-        file_stump = self.processedDataDir / "aberrant_splicing" / "datasets" / "fromBam" / "cache" / f"raw-{dataset}" / \
+        file_stump = self.processedDataDir / "aberrant_splicing" / "datasets" / "cache" / f"raw-local-{dataset}" / \
                      "sample_tmp" / "nonSplitCounts"
         done_files = str(file_stump / "sample_{sample_id}.done")
         return expand(done_files, sample_id=ids)

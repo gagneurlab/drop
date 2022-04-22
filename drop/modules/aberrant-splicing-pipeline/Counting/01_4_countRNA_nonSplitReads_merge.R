@@ -6,17 +6,17 @@
 #'    - snakemake: '`sm str(tmp_dir / "AS" / "{dataset}" / "01_4_nonSplitReadsMerge.Rds")`'
 #'  params:
 #'   - setup: '`sm cfg.AS.getWorkdir() + "/config.R"`'
-#'   - workingDir: '`sm cfg.getProcessedDataDir() + "/aberrant_splicing/datasets/fromBam"`'
+#'   - workingDir: '`sm cfg.getProcessedDataDir() + "/aberrant_splicing/datasets"`'
 #'  threads: 20
 #'  input:
 #'   - sample_counts:  '`sm lambda w: cfg.AS.getNonSplitCountFiles(w.dataset)`'
 #'   - gRangesNonSplitCounts: '`sm cfg.getProcessedDataDir() + 
-#'                          "/aberrant_splicing/datasets/fromBam/cache/raw-{dataset}/gRanges_NonSplitCounts.rds"`'
+#'                          "/aberrant_splicing/datasets/cache/raw-local-{dataset}/gRanges_NonSplitCounts.rds"`'
 #'  output:
 ###   - countsSS: '`sm cfg.getProcessedDataDir() +
-###                   "/aberrant_splicing/datasets/fromBam/savedObjects/raw-{dataset}/rawCountsSS.h5"`'
+###                   "/aberrant_splicing/datasets/savedObjects/raw-local-{dataset}/rawCountsSS.h5"`'
 #'   - done:     '`sm cfg.getProcessedDataDir() + 
-#'                "/aberrant_splicing/datasets/fromBam/savedObjects/raw-{dataset}/merge_theta.done"`'
+#'                "/aberrant_splicing/datasets/savedObjects/raw-local-{dataset}/merge_theta.done"`'
 #'  type: script
 #'---
 
@@ -32,14 +32,14 @@ register(MulticoreParam(snakemake@threads))
 setAutoBPPARAM(MulticoreParam(snakemake@threads))
 
 # Read FRASER object
-fds <- loadFraserDataSet(dir=workingDir, name=paste0("raw-", dataset))
+fds <- loadFraserDataSet(dir=workingDir, name=paste0("raw-local-", dataset))
 
 # Read splice site coordinates from RDS
 splitCounts_gRanges <- readRDS(snakemake@input$gRangesNonSplitCounts)
 
 # If samples are recounted, remove the merged ones
 nonSplitCountsDir <- file.path(workingDir, "savedObjects", 
-                            paste0("raw-", dataset), 'nonSplitCounts')
+                            paste0("raw-local-", dataset), 'nonSplitCounts')
 if(params$recount == TRUE & dir.exists(nonSplitCountsDir)){
   unlink(nonSplitCountsDir, recursive = TRUE)
 }

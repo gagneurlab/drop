@@ -44,7 +44,7 @@ cnts_mtx <- counts(ods, normalized = F)
 #' # Count Quality Control
 #' 
 #' Compare number of records vs. read counts  
-#' `The Obtained Read Count Ratio` plot does not include external counts
+#' The `Obtained Read Count Ratio` plot does not include external counts
 #' because there are no raw reads to be counted.
 #' 
 bam_coverage <- fread(snakemake@input$bam_cov)
@@ -111,7 +111,7 @@ plot_grid(p_sf, p_sf_cov)
 #' # Filtering
 #' **local**: A pre-filtered summary of counts using only the local (from BAM) counts. Omitted if no external counts  
 #' **all**: A pre-filtered summary of counts using only the merged local (from BAM) and external counts  
-#' **passed_FPKM**: Passes the user defined FPKM cutoff in at least 5% of genes  
+#' **passed FPKM**: Passes the user defined FPKM cutoff in at least 5% of genes  
 #' **min 1 read**: minimum of 1 read expressed in 5% of genes  
 #' **min 10 reads**: minimum of 10 reads expressed in 5% of genes  
 

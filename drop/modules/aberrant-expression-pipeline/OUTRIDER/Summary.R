@@ -52,7 +52,7 @@ plotEncDimSearch(ods) +
   labs(title = dataset_title) +
   theme_cowplot() +
   background_grid() +
-  scale_color_brewer(palette = "Set1")
+  scale_color_brewer(palette="Dark2")
 
 
 #' ### Aberrantly expressed genes per sample
@@ -63,18 +63,18 @@ plotAberrantPerSample(ods, main = dataset_title,
 
 #' ### Batch correction
 #+ countCorHeatmap, fig.height=8, fig.width=8
-plotCountCorHeatmap(ods, normalized = FALSE, colGroups = "isExternal",
+plotCountCorHeatmap(ods, normalized = FALSE, colGroups = "isExternal", colColSet = "Dark2",
                     main = paste0('Raw Counts (', dataset_title, ')'))
-plotCountCorHeatmap(ods, normalized = TRUE, ,colGroups = "isExternal",
+plotCountCorHeatmap(ods, normalized = TRUE, ,colGroups = "isExternal", colColSet = "Dark2",
                     main = paste0('Normalized Counts (', dataset_title, ')'))
 
 
 #' ### Expression by gene per sample
-#+ geneSampleHeatmap, fig.height=12, fig.width=6
-plotCountGeneSampleHeatmap(ods, normalized = FALSE, nGenes = 50, colGroups = "isExternal",
+#+ geneSampleHeatmap, fig.height=12, fig.width=8
+plotCountGeneSampleHeatmap(ods, normalized = FALSE, nGenes = 50, colGroups = "isExternal", colColSet = "Dark2",
                            main = paste0('Raw Counts (', dataset_title, ')'),
                            bcvQuantile = .95, show_names = 'row')
-plotCountGeneSampleHeatmap(ods, normalized = TRUE, nGenes = 50, colGroups = "isExternal",
+plotCountGeneSampleHeatmap(ods, normalized = TRUE, nGenes = 50, colGroups = "isExternal", colColSet = "Dark2",
                            main = paste0('Normalized Counts (',dataset_title,')'),
                            bcvQuantile = .95, show_names = 'row')
 
@@ -110,13 +110,14 @@ ggplot(bcv_dt, aes(when, BCV)) +
 #' ## Results
 res <- fread(snakemake@input$results)
 
-#' Samples with at least one outlier gene: `r res[, uniqueN(sampleID)]`
-#'
+#' Samples with at least one outlier gene: `r res[, uniqueN(sampleID)]`  
+
 #' ### Aberrant samples
+#' An aberrant sample is one that has more than 0.1% of the total genes called as outliers.
 if (nrow(res) > 0) {
-  ab_table <- res[AberrantBySample > nrow(ods)/1000, .N, by = .(sampleID)] %>% unique
+  ab_table <- res[AberrantBySample > nrow(ods)/1000, .("Outlier genes" = .N), by = .(sampleID)] %>% unique
   if (nrow(ab_table) > 0) {
-    setorder(ab_table, N) 
+    setorder(ab_table, "Outlier genes") 
     DT::datatable(ab_table)
   } else {
     print("no aberrant samples")

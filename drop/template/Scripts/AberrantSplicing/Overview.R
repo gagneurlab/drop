@@ -11,7 +11,7 @@
 #'  input:
 #'    - functions: '`sm cfg.workDir / "Scripts/html_functions.R"`'
 #'    - fds_files: '`sm expand(cfg.getProcessedResultsDir() +
-#'                "/aberrant_splicing/datasets/merged/savedObjects/{dataset}--{annotation}/" +
+#'                "/aberrant_splicing/datasets/savedObjects/{dataset}--{annotation}/" +
 #'                "fds-object.RDS", dataset=cfg.AS.groups, annotation=cfg.genome.getGeneVersions())`'
 #'    - result_tables: '`sm expand(cfg.getProcessedResultsDir() +
 #'                    "/aberrant_splicing/results/{annotation}/fraser/{dataset}/results_per_junction.tsv",

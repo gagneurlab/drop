@@ -6,17 +6,17 @@
 #'    - snakemake: '`sm str(tmp_dir / "AS" / "{dataset}" / "01_5_collect.Rds")`'
 #'  params:
 #'   - setup: '`sm cfg.AS.getWorkdir() + "/config.R"`'
-#'   - workingDir: '`sm cfg.getProcessedDataDir() + "/aberrant_splicing/datasets/fromBam"`'
+#'   - workingDir: '`sm cfg.getProcessedDataDir() + "/aberrant_splicing/datasets"`'
 #'  input:
 #'    - countsSSdone: '`sm cfg.getProcessedDataDir() + 
-#'                          "/aberrant_splicing/datasets/fromBam/savedObjects/raw-{dataset}/merge_theta.done"`'
+#'                          "/aberrant_splicing/datasets/savedObjects/raw-local-{dataset}/merge_theta.done"`'
 #'    - gRangesSplitCounts: '`sm cfg.getProcessedDataDir() + 
-#'                          "/aberrant_splicing/datasets/fromBam/cache/raw-{dataset}/gRanges_splitCounts.rds"`'
+#'                          "/aberrant_splicing/datasets/cache/raw-local-{dataset}/gRanges_splitCounts.rds"`'
 #'    - spliceSites: '`sm cfg.getProcessedDataDir() + 
-#'                          "/aberrant_splicing/datasets/fromBam/cache/raw-{dataset}/spliceSites_splitCounts.rds"`'
+#'                          "/aberrant_splicing/datasets/cache/raw-local-{dataset}/spliceSites_splitCounts.rds"`'
 #'  output:
 #'   - counting_done: '`sm cfg.getProcessedDataDir() + 
-#'                          "/aberrant_splicing/datasets/fromBam/savedObjects/raw-{dataset}/counting.done" `'
+#'                          "/aberrant_splicing/datasets/savedObjects/raw-local-{dataset}/counting.done" `'
 #'  type: script
 #'---
 
@@ -28,7 +28,7 @@ workingDir <- snakemake@params$workingDir
 saveDir    <- dirname(snakemake@input$countsSSdone)
 
 # Read FRASER object
-fds <- loadFraserDataSet(dir=workingDir, name=paste0("raw-", dataset))
+fds <- loadFraserDataSet(dir=workingDir, name=paste0("raw-local-", dataset))
 splitCounts_gRanges <- readRDS(snakemake@input$gRangesSplitCounts)
 spliceSiteCoords <- readRDS(snakemake@input$spliceSites)
 

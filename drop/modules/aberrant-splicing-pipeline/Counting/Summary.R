@@ -6,11 +6,10 @@
 #'    - snakemake: '`sm str(tmp_dir / "AS" / "{dataset}" / "CountSummary.Rds")`'
 #'  params:
 #'   - setup: '`sm cfg.AS.getWorkdir() + "/config.R"`'
-#'   - workingDir: '`sm cfg.getProcessedDataDir() + "/aberrant_splicing/datasets/merged/"`'
-#'   - workingDirLocal: '`sm cfg.getProcessedDataDir() + "/aberrant_splicing/datasets/fromBam/"`'
+#'   - workingDir: '`sm cfg.getProcessedDataDir() + "/aberrant_splicing/datasets/"`'
 #'  input:
 #'   - filter: '`sm cfg.getProcessedDataDir() + 
-#'                "/aberrant_splicing/datasets/merged/savedObjects/{dataset}/filter.done" `'
+#'                "/aberrant_splicing/datasets/savedObjects/{dataset}/filter.done" `'
 #'  output:
 #'   - wBhtml: '`sm config["htmlOutputPath"] + 
 #'                  "/AberrantSplicing/{dataset}_countSummary.html"`'
@@ -28,9 +27,8 @@ suppressPackageStartupMessages({
 #+ input
 dataset    <- snakemake@wildcards$dataset
 workingDir <- snakemake@params$workingDir
-workingDirLocal <- snakemake@params$workingDirLocal
 
-fdsLocal <- loadFraserDataSet(dir=workingDirLocal, name=paste0("raw-", dataset))
+fdsLocal <- loadFraserDataSet(dir=workingDir, name=paste0("raw-local-", dataset))
 fdsMerge <- loadFraserDataSet(dir=workingDir, name=paste0("raw-", dataset))
 
 has_external <- !(all(is.na(fdsMerge@colData$SPLICE_COUNTS_DIR)) || is.null(fdsMerge@colData$SPLICE_COUNTS_DIR))
@@ -43,23 +41,23 @@ devNull <- saveFraserDataSet(fdsMerge,dir=workingDir, name=paste0("raw-", datase
 
 
 #' ## Number of samples:   
-#' Local (fromBam): `r sum(!as.logical(fdsMerge@colData$isExternal))`  
+#' Local: `r sum(!as.logical(fdsMerge@colData$isExternal))`  
 #' External: `r sum(as.logical(fdsMerge@colData$isExternal))`  
 #' 
 #' **Using external counts**  
 #' External counts introduce some complexity into the problem of counting junctions
-#' because it is ambiguous whether or not a junction is not counted (because there are no reads)
+#' because it is unknown whether or not a junction is not counted (because there are no reads)
 #' compared to filtered and not present due to legal/personal sharing reasons. As a result,
-#' after merging the local (fromBam) counts and the external counts, only the junctions that are exactly
-#' the same in both remain. As a result it is likely that the number of junctions will decrease after a merge.
+#' after merging the local (counted from BAM files) counts and the external counts, only the junctions that are 
+#' present in both remain. As a result it is likely that the number of junctions will decrease after merging.
 #' 
 #' 
 #' ### Number of introns (psi5 or psi3) before and after merging:  
-#' Local (fromBam): `r length(rowRanges(fdsLocal, type = "psi5"))`  
-#' Merged : `r length(rowRanges(fdsMerge, type = "psi5"))`  
+#' Local: `r length(rowRanges(fdsLocal, type = "psi5"))`  
+#' Merged: `r length(rowRanges(fdsMerge, type = "psi5"))`  
 #' 
 #' ### Number of splice sites (theta) before and after merging: 
-#' Local (fromBam): `r length(rowRanges(fdsLocal, type = "theta"))`  
+#' Local: `r length(rowRanges(fdsLocal, type = "theta"))`  
 #' Merged: `r length(rowRanges(fdsMerge, type = "theta"))`  
 #' 
 
@@ -75,10 +73,10 @@ if(has_external){
     rowMeanLocal <- rowMeans(ctsLocal)
     rowMeanExt <- rowMeans(ctsExt)
 
-    dt <- data.table("Local log mean counts" = rowMeanLocal,
-                 "External log mean counts" = rowMeanExt)
+    dt <- data.table("Mean counts of local samples" = rowMeanLocal,
+                     "Mean counts of external samples" = rowMeanExt)
                  
-    ggplot(dt,aes(x = `Local log mean counts`, y= `External log mean counts`)) +
+    ggplot(dt,aes(x = `Mean counts of local samples`, y= `Mean counts of external samples`)) +
        geom_hex() + theme_cowplot(font_size = 16) +
 	   theme_bw() + scale_x_log10() + scale_y_log10() + 
        geom_abline(slope = 1, intercept =0) +

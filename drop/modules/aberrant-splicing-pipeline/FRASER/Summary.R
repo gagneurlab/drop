@@ -8,7 +8,7 @@
 #'   - setup: '`sm cfg.AS.getWorkdir() + "/config.R"`'
 #'  input:
 #'   - fdsin: '`sm cfg.getProcessedResultsDir() + 
-#'                 "/aberrant_splicing/datasets/merged/savedObjects/{dataset}--{annotation}/fds-object.RDS"`'
+#'                 "/aberrant_splicing/datasets/savedObjects/{dataset}--{annotation}/fds-object.RDS"`'
 #'   - results: '`sm cfg.getProcessedResultsDir() + 
 #'                   "/aberrant_splicing/results/{annotation}/fraser/{dataset}/results.tsv"`'
 #'  output:
@@ -24,6 +24,7 @@ source(snakemake@params$setup, echo=FALSE)
 
 suppressPackageStartupMessages({
   library(cowplot)
+  library("RColorBrewer")
 })
 
 #+ input
@@ -35,6 +36,7 @@ deltaPsi_cutoff <- snakemake@config$aberrantSplicing$deltaPsiCutoff
 
 
 fds <- loadFraserDataSet(file=snakemake@input$fdsin)
+hasExternal <- length(levels(colData(fds)$isExternal) > 1)
 
 #' Number of samples: `r nrow(colData(fds))`
 #' 
@@ -65,6 +67,7 @@ plotAberrantPerSample(fds, padjCutoff = padj_cutoff, zScoreCutoff = zScore_cutof
 #' ## Batch Correlation: samples x samples
 topN <- 30000
 topJ <- 10000
+anno_color_scheme <- brewer.pal(n = 3, name = 'Dark2')[1:2]
 for(type in psiTypes){
   before <- plotCountCorHeatmap(
     object=fds,
@@ -80,7 +83,8 @@ for(type in psiTypes){
     minDeltaPsi = snakemake@config$aberrantSplicing$minDeltaPsi,
     plotMeanPsi=FALSE,
     plotCov = FALSE,
-    annotation_legend = TRUE
+    annotation_legend = TRUE,
+	annotation_colors = list(isExternal = c("FALSE" = anno_color_scheme[1],"TRUE" =  anno_color_scheme[2]))
   )
   before
   after <- plotCountCorHeatmap(
@@ -97,7 +101,8 @@ for(type in psiTypes){
     minDeltaPsi = snakemake@config$aberrantSplicing$minDeltaPsi,
     plotMeanPsi=FALSE,
     plotCov = FALSE,
-    annotation_legend = TRUE
+    annotation_legend = TRUE,
+	annotation_colors = list(isExternal = c("FALSE" = anno_color_scheme[1],"TRUE" =  anno_color_scheme[2]))
   )
   after
 }

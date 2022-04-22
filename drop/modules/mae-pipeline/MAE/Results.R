@@ -120,20 +120,16 @@ fwrite(res[MAE_ALT == TRUE & rare == TRUE], snakemake@output$res_signif_rare,
 
 # Add columns for plot
 res[, N := .N, by = ID]
-res[,c("N_MAE","N_MAE_REF","N_MAE_ALT","N_MAE_REF_RARE","N_MAE_ALT_RARE") := 0,by = ID]
-res[MAE == TRUE, N_MAE := .N, by = ID]
-res[MAE == TRUE & MAE_ALT == FALSE, N_MAE_REF := .N, by = ID]
-res[MAE_ALT == TRUE, N_MAE_ALT := .N, by = ID]
-res[MAE == TRUE & MAE_ALT == FALSE & rare == TRUE, N_MAE_REF_RARE := .N, by = ID]
-res[MAE_ALT == TRUE & rare == TRUE, N_MAE_ALT_RARE := .N, by = ID]
+plot_res <- res[,.(N = .N,
+             N_MAE = sum(MAE==T),
+             N_MAE_REF=sum(MAE==T & MAE_ALT == F),
+             N_MAE_ALT=sum(MAE_ALT == T),
+             N_MAE_REF_RARE = sum(MAE ==T & MAE_ALT==F & rare == T),
+             N_MAE_ALT_RARE = sum(MAE_ALT ==T & rare ==T)
+			 ),by = ID]
 
-rd <- unique(res[,.(ID, N, N_MAE, N_MAE_REF, N_MAE_ALT, N_MAE_REF_RARE, N_MAE_ALT_RARE)])
 
-# rd contains duplicate entries for each ID. IE when MAE==F N_MAE for ID1 is both .N and 0
-# summarize these duplicates by taking the maximum of each column for each ID
-rd <- rd %>% group_by(ID) %>% summarize_all(max) %>% as.data.table()
-
-melt_dt <- melt(rd, id.vars = 'ID')
+melt_dt <- melt(plot_res, id.vars = 'ID')
 melt_dt[variable == 'N', variable := '>10 counts']
 melt_dt[variable == 'N_MAE', variable := '+MAE']
 melt_dt[variable == 'N_MAE_REF', variable := '+MAE for\nREF']
@@ -143,6 +139,15 @@ melt_dt[variable == 'N_MAE_ALT_RARE', variable := '+MAE for ALT\n& rare']
 
 #' 
 #' ## Cascade plot 
+#' a cascade plot that shows a progression of added filters  
+#'   - >10 counts: only variants supported by more than 10 counts
+#'   - +MAE: and shows mono allelic expression
+#'   - +MAE for REF : the monoallelic expression favors the reference allele
+#'   - +MAE for ALT : the monoallelic expression favors the alternative allele
+#'   - rare: 
+#'     - if `add_AF` is set to true in config file must meet minimum AF set by the config value `max_AF`
+#'     - must meet the inner-cohort frequency `maxVarFreqCohort` cutoff
+
 ggplot(melt_dt, aes(variable, value)) + geom_boxplot() +
   scale_y_log10(limits = c(1,NA)) + theme_bw(base_size = 14) +
   labs(y = 'Heterozygous SNVs per patient', x = '') + 
