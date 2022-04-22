@@ -103,9 +103,9 @@ Local result files
 ##################
 Additionally the ``mae`` module creates the following files:
 
-* ``Output/processed_results/mae/{drop_group}/MAE_results_all_v29.tsv.gz``
+* ``Output/processed_results/mae/{drop_group}/MAE_results_all_{annotation}.tsv.gz``
     * this file is the tsv results of all heterozygous variants regardless of significance
-* ``Output/processed_results/mae/{drop_group}/MAE_results_v29.tsv``
+* ``Output/processed_results/mae/{drop_group}/MAE_results_{annotation}.tsv``
     * this is the file linked in the HTML document and described above
-* ``Output/processed_results/mae/{drop_group}/MAE_results_v29_rare.tsv``
-    * this file is the subsetted tsv of ``MAE_results_v29.tsv`` with only the variants that pass the rare cutoffs. If ``add_AF`` is set to true in ``config.yaml`` must meet minimum AF set by ``max_AF``. Additionally, the inner-cohort frequency must meet ``maxVarFreqCohort`` cutoff
+* ``Output/processed_results/mae/{drop_group}/MAE_results_{annotation}_rare.tsv``
+    * this file is the subsetted tsv of ``MAE_results_{annotation}.tsv`` with only the variants that pass the rare cutoffs. If ``add_AF`` is set to true in ``config.yaml`` must meet minimum AF set by ``max_AF``. Additionally, the inner-cohort frequency must meet ``maxVarFreqCohort`` cutoff
