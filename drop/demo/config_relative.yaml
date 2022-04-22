@@ -16,13 +16,14 @@ exportCounts:
     - v29
   excludeGroups:
     - mae
-    - import_exp
+    - outrider_external
+    - fraser_external
 
 aberrantExpression:
     run: true
     groups:
       - outrider
-      - import_exp
+      - outrider_external
     fpkmCutoff: 1
     implementation: autoencoder
     padjCutoff: 1
@@ -36,6 +37,7 @@ aberrantSplicing:
     run: true
     groups:
       - fraser
+      - fraser_external
     recount: true
     longRead: false
     keepNonStandardChrs: true
@@ -53,8 +55,8 @@ mae:
     groups:
       - mae
     gatkIgnoreHeaderCheck: true
-    padjCutoff: .05
-    allelicRatioCutoff: 0.8
+    padjCutoff: .5
+    allelicRatioCutoff: 0.7
     addAF: false
     maxAF: .001
     maxVarFreqCohort: 1

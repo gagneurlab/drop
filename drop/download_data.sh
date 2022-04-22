@@ -2,12 +2,12 @@
 set -e
 
 # get data
-resource_url="https://www.cmm.in.tum.de/public/paper/drop_analysis/resource.tar.gz"
+resource_url="https://www.cmm.in.tum.de/public/paper/drop_analysis/resource_splice_merge.tar.gz"
 tmpdir="$(dirname "$(mktemp)")"
-wget -nc -P $tmpdir $resource_url
+wget -c -O $tmpdir/resource_exsplice.tar.gz $resource_url
 mkdir -p Data
 if [ -z "$(ls Data)" ]; then
-	tar -zxvf "$tmpdir/resource.tar.gz" -C .
+	tar -zxvf "$tmpdir/resource_exsplice.tar.gz" -C .
 	rm -rf Data
 	mv resource Data
 else

@@ -9,7 +9,7 @@ warnings.filterwarnings("ignore", 'This pattern has match groups')
 
 
 class SampleAnnotation:
-    FILE_TYPES = ["RNA_BAM_FILE", "DNA_VCF_FILE", "GENE_COUNTS_FILE"]
+    FILE_TYPES = ["RNA_BAM_FILE", "DNA_VCF_FILE", "GENE_COUNTS_FILE", "SPLICE_COUNTS_DIR"]
     SAMPLE_ANNOTATION_COLUMNS = FILE_TYPES + [
         "RNA_ID", "DNA_ID", "DROP_GROUP", "GENE_ANNOTATION",
         "PAIRED_END", "COUNT_MODE", "COUNT_OVERLAPS", "STRAND", "GENOME"
@@ -32,6 +32,7 @@ class SampleAnnotation:
         self.dnaIDs = self.createGroupIds(file_type="DNA_VCF_FILE", sep=',')
         # external counts
         self.extGeneCountIDs = self.createGroupIds(file_type="GENE_COUNTS_FILE", sep=',')
+        self.extSpliceCountIDs = self.createGroupIds(file_type="SPLICE_COUNTS_DIR", sep=',')
 
     def parse(self, sep='\t'):
         """
@@ -39,23 +40,24 @@ class SampleAnnotation:
         clean columns and set types
         """
         data_types = {
-            "RNA_ID": str, "DNA_ID": str, "DROP_GROUP": str, "GENE_ANNOTATION": str,
-            "PAIRED_END": bool, "COUNT_MODE": str, "COUNT_OVERLAPS": bool, "STRAND": str, "GENOME": str
+            "RNA_ID": str, "DNA_ID": str, "DROP_GROUP": str, 
+            "PAIRED_END": bool, "COUNT_MODE": str, "COUNT_OVERLAPS": bool, "STRAND": str, 
         }
+        optional_columns = {"GENE_COUNTS_FILE", "SPLICE_COUNTS_DIR", "GENE_ANNOTATION", "GENOME"}
+
         sa = pd.read_csv(self.file, sep=sep, index_col=False)
         missing_cols = [x for x in self.SAMPLE_ANNOTATION_COLUMNS if x not in sa.columns.values]
         if len(missing_cols) > 0:
-            if "GENOME" in missing_cols:
-                # deal with missing columns in data types, remove it to fix checks later
-                del data_types["GENOME"]
-                self.SAMPLE_ANNOTATION_COLUMNS.remove("GENOME")
-                missing_cols.remove("GENOME")
-
             if "GENE_ANNOTATION" in missing_cols and "ANNOTATION" in sa.columns.values:
                 logger.info(
                     "WARNING: GENE_ANNOTATION must be a column in the sample annotation table, ANNOTATION is the old column name and will be deprecated in the future\n")
                 sa["GENE_ANNOTATION"] = sa.pop("ANNOTATION")
                 missing_cols.remove("GENE_ANNOTATION")
+
+            for toDel_optional in (set(missing_cols) & optional_columns):
+                # deal with missing columns in data types, remove it to fix checks later
+                self.SAMPLE_ANNOTATION_COLUMNS.remove(toDel_optional)
+                missing_cols.remove(toDel_optional)
 
             if len(missing_cols) > 0:
                 raise ValueError(f"Incorrect columns in sample annotation file. Missing:\n{missing_cols}")
@@ -80,10 +82,12 @@ class SampleAnnotation:
             columns: [ID | ASSAY | FILE_TYPE | FILE_PATH ]
         """
 
-        assay_mapping = {'RNA_ID': ['RNA_BAM_FILE', 'GENE_COUNTS_FILE'], 'DNA_ID': ['DNA_VCF_FILE']}
+        assay_mapping = {'RNA_ID': ['RNA_BAM_FILE', 'GENE_COUNTS_FILE', 'SPLICE_COUNTS_DIR'], 'DNA_ID': ['DNA_VCF_FILE']}
         assay_subsets = []
         for id_, file_types in assay_mapping.items():
             for file_type in file_types:
+                if file_type not in self.annotationTable.columns:
+                    continue
                 df = self.annotationTable[[id_, file_type]].dropna().drop_duplicates().copy()
                 df.rename(columns={id_: 'ID', file_type: 'FILE_PATH'}, inplace=True)
                 df['ASSAY'] = id_
@@ -150,13 +154,12 @@ class SampleAnnotation:
 
     ### Subsetting
 
-    def subsetSampleAnnotation(self, column, values, subset=None, exact_match=True):
+    def subsetSampleAnnotation(self, column, values, subset=None):
         """
         subset by one or more values of different columns from sample file mapping
             :param column: valid column in sample annotation
             :param values: values of column to subset
             :param subset: subset sample annotation
-            :param exact_match: whether to match substrings in the sample annotation, false allows substring matching
         """
         sa_cols = set(self.SAMPLE_ANNOTATION_COLUMNS)
         if subset is None:
@@ -168,10 +171,16 @@ class SampleAnnotation:
             if not sa_cols <= set(subset.columns):  # check if mandatory cols not contained
                 raise ValueError(f"Subset columns not the same as {sa_cols}\ngot: {subset.columns}")
 
+
+        # if you don't want to subset
+        if values is None:
+            return subset
         # check if column is valid
-        if column not in sa_cols:
+        elif column not in sa_cols:
             raise KeyError(f"Column '{column}' not present in sample annotation.")
-        return utils.subsetBy(subset, column, values, exact_match=exact_match)
+        #subset column for matching values
+        else:
+            return utils.subsetBy(subset, column, values)
 
     def subsetFileMapping(self, file_type=None, sample_id=None):
         """
@@ -230,10 +239,9 @@ class SampleAnnotation:
         return self.getFilePath(sampleIDs, file_type, single_file=False)
 
     # build a dictionary from the drop group and column. like getImportCounts with skipping options and dict output
-    def getGenomes(self, value, group, file_type="RNA_ID",
-                            column="GENOME", group_key="DROP_GROUP",exact_match = True,skip = False):
+    def getGenomes(self, value, group, file_type="RNA_ID", column="GENOME", group_key="DROP_GROUP", skip = False):
         """
-        :param value: values to match in the column. Must be an exact match, passed to subsetting sample annotation 
+        :param value: values to match in the column.
         :param group: a group of the group_key (DROP_GROUP) column. 
         :return: dict file_type to column
         """
@@ -242,24 +250,30 @@ class SampleAnnotation:
         if skip:
             subset = None
         else:
-            subset = self.subsetSampleAnnotation(column, value,exact_match=True)
+            subset = self.subsetSampleAnnotation(column, value)
 
         # additionally subset for the group_key and the group
-        subset = self.subsetSampleAnnotation(group_key, group, subset,exact_match=exact_match)
+        subset = self.subsetSampleAnnotation(group_key, group, subset)
 
         return {sample_id: value for sample_id in subset[file_type].tolist()}
 
-    def getImportCountFiles(self, annotation, group, file_type="GENE_COUNTS_FILE",
-                            annotation_key="GENE_ANNOTATION", group_key="DROP_GROUP",exact_match = True):
+    def getImportCountFiles(self, annotation, group, file_type: str = "GENE_COUNTS_FILE",
+                            annotation_key: str = "GENE_ANNOTATION", group_key: str = "DROP_GROUP", 
+                            asSet: bool = True):
         """
-        :param annotation: annotation name as specified in config and GENE_ANNOTATION column
-        :param group: a group of the DROP_GROUP column. exact match is passed to subsetter, false allows for substring matching
+        :param annotation: annotation name as specified in config and GENE_ANNOTATION column. Can be None
+        :param group: a group of the DROP_GROUP column.
         :return: set of unique external count file names
         """
+        
         #subset for the annotation_key in the annotation group and the group_key in the group
-        subset = self.subsetSampleAnnotation(annotation_key, annotation,exact_match=exact_match)
-        subset = self.subsetSampleAnnotation(group_key, group, subset,exact_match=False)
-        return set(subset[file_type].tolist())
+        subset = self.subsetSampleAnnotation(annotation_key, annotation)
+        subset = self.subsetSampleAnnotation(group_key, group, subset)
+            
+        ans = subset[file_type].tolist()
+        if asSet:
+            ans = set(ans)
+        return ans
 
     def getRow(self, column, value):
         sa = self.annotationTable
@@ -277,15 +291,18 @@ class SampleAnnotation:
         Get group to IDs mapping
         :param assays: list of or single assay the IDs should be from. Can be file_type or 'RNA'/'DNA'
         """
-        assays = [assays] if isinstance(assays, str) else assays
+        if isinstance(assays, str):
+            assays = [assays]
         groupedIDs = defaultdict(list)
         for assay in assays:
             if "RNA" in assay:
-                groupedIDs.update(self.rnaIDs)
+                utils.deep_merge_dict(groupedIDs, self.rnaIDs, inplace=True)
             elif "DNA" in assay:
-                groupedIDs.update(self.dnaIDs)
+                utils.deep_merge_dict(groupedIDs, self.dnaIDs, inplace=True)
             elif "GENE_COUNT" in assay:
-                groupedIDs.update(self.extGeneCountIDs)
+                utils.deep_merge_dict(groupedIDs, self.extGeneCountIDs, inplace=True)
+            elif "SPLICE_COUNT" in assay:
+                utils.deep_merge_dict(groupedIDs, self.extSpliceCountIDs, inplace=True)
             else:
                 raise ValueError(f"'{assay}' is not a valid assay name")
         return groupedIDs

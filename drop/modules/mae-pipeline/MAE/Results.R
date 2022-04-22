@@ -36,6 +36,7 @@ suppressPackageStartupMessages({
   library(GenomicRanges)
   library(SummarizedExperiment)
   library(R.utils)
+  library(dplyr)
 })
 
 # Read all MAE results files
@@ -119,14 +120,16 @@ fwrite(res[MAE_ALT == TRUE & rare == TRUE], snakemake@output$res_signif_rare,
 
 # Add columns for plot
 res[, N := .N, by = ID]
-res[MAE == TRUE, N_MAE := .N, by = ID]
-res[MAE == TRUE & MAE_ALT == FALSE, N_MAE_REF := .N, by = ID]
-res[MAE_ALT == TRUE, N_MAE_ALT := .N, by = ID]
-res[MAE == TRUE & MAE_ALT == FALSE & rare == TRUE, N_MAE_REF_RARE := .N, by = ID]
-res[MAE_ALT == TRUE & rare == TRUE, N_MAE_ALT_RARE := .N, by = ID]
+plot_res <- res[,.(N = .N,
+             N_MAE = sum(MAE==T),
+             N_MAE_REF=sum(MAE==T & MAE_ALT == F),
+             N_MAE_ALT=sum(MAE_ALT == T),
+             N_MAE_REF_RARE = sum(MAE ==T & MAE_ALT==F & rare == T),
+             N_MAE_ALT_RARE = sum(MAE_ALT ==T & rare ==T)
+			 ),by = ID]
 
-rd <- unique(res[,.(ID, N, N_MAE, N_MAE_REF, N_MAE_ALT, N_MAE_REF_RARE, N_MAE_ALT_RARE)])
-melt_dt <- melt(rd, id.vars = 'ID')
+
+melt_dt <- melt(plot_res, id.vars = 'ID')
 melt_dt[variable == 'N', variable := '>10 counts']
 melt_dt[variable == 'N_MAE', variable := '+MAE']
 melt_dt[variable == 'N_MAE_REF', variable := '+MAE for\nREF']
@@ -136,20 +139,36 @@ melt_dt[variable == 'N_MAE_ALT_RARE', variable := '+MAE for ALT\n& rare']
 
 #' 
 #' ## Cascade plot 
+#' a cascade plot that shows a progression of added filters  
+#'   - >10 counts: only variants supported by more than 10 counts
+#'   - +MAE: and shows mono allelic expression
+#'   - +MAE for REF : the monoallelic expression favors the reference allele
+#'   - +MAE for ALT : the monoallelic expression favors the alternative allele
+#'   - rare: 
+#'     - if `add_AF` is set to true in config file must meet minimum AF set by the config value `max_AF`
+#'     - must meet the inner-cohort frequency `maxVarFreqCohort` cutoff
+
 ggplot(melt_dt, aes(variable, value)) + geom_boxplot() +
-  scale_y_log10() + theme_bw(base_size = 14) +
-  labs(y = 'Heterozygous SNVs per patient', x = '') +
+  scale_y_log10(limits = c(1,NA)) + theme_bw(base_size = 14) +
+  labs(y = 'Heterozygous SNVs per patient', x = '') + 
     annotation_logticks(sides = "l")
 
 #'
-#' ## Variant Frequency within Cohort Histogram
+#' ## Variant Frequency within Cohort
 ggplot(unique(res[,cohort_freq,by =.(gene_name, contig, position)]),aes(x = cohort_freq)) + geom_histogram( binwidth = 0.02)  +
-  geom_vline(xintercept = maxCohortFreq, col = "red") +
-  xlab("Variant frequency in cohort") + ylab("Count")
+  geom_vline(xintercept = maxCohortFreq, col = "red",linetype="dashed") + theme_bw(base_size = 14) +
+  xlim(0,NA) + xlab("Variant frequency in cohort") + ylab("Variants")
 
 #' Median of each category
 DT::datatable(melt_dt[, .(median = median(value, na.rm = T)), by = variable])
 
+
+# round numbers
+if(nrow(res) > 0){
+  res[, pvalue := signif(pvalue, 3)]
+  res[, padj := signif(padj, 3)]
+  res[, log2FC := signif(log2FC, 3)]
+}
 #' 
 #' ## MAE Results table
 DT::datatable(
