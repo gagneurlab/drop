@@ -40,7 +40,7 @@ tab at the top of the screen. The Overview tab contains links to the:
     * OUTRIDER datasets 
         * Follow the `OUTRIDER vignette <https://www.bioconductor.org/packages/devel/bioc/vignettes/OUTRIDER/inst/doc/OUTRIDER.pdf>`_ for individual OUTRIDER object file (ods) analysis.
     * Results tables
-        * ``results.tsv`` this tsv file contains only the significant genes and samples that meet the cutoffs defined in the ``config.yaml`` for ``padjCutoff`` and ``zScoreCutoff``
+        * ``results.tsv`` this tsv file contains only the significant genes and samples that meet the cutoffs defined in the config file for ``padjCutoff`` and ``zScoreCutoff``
 
 Local result files
 ##################
@@ -108,4 +108,4 @@ Additionally the ``mae`` module creates the following files:
 * ``Output/processed_results/mae/{drop_group}/MAE_results_{annotation}.tsv``
     * this is the file linked in the HTML document and described above
 * ``Output/processed_results/mae/{drop_group}/MAE_results_{annotation}_rare.tsv``
-    * this file is the subsetted tsv of ``MAE_results_{annotation}.tsv`` with only the variants that pass the rare cutoffs. If ``add_AF`` is set to true in ``config.yaml`` must meet minimum AF set by ``max_AF``. Additionally, the inner-cohort frequency must meet ``maxVarFreqCohort`` cutoff
+    * this file is the subsetted tsv of ``MAE_results_{annotation}.tsv`` with only the variants that pass the rare cutoffs. If ``add_AF`` is set to true in config file must meet minimum AF set by ``max_AF``. Additionally, the inner-cohort frequency must meet ``maxVarFreqCohort`` cutoff
