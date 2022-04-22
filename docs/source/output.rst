@@ -24,12 +24,11 @@ HTML file
 Looking at the resulting ``Output/html/drop_demo_index.html`` we can see the ``AberrantExpression`` 
 tab at the top of the screen. The Overview tab contains links to the:  
 
-* Counts Summaries 
-    * For each aberrant expression group
-        * number of local and external samples
-        * QC relating to reads and size factors for each sample
-        * histograms showing the mean count distribution with different conditions
-        * expressed genes within each sample and as a dataset
+* Counts Summaries for each aberrant expression group
+    * number of local and external samples
+    * QC relating to reads and size factors for each sample
+    * histograms showing the mean count distribution with different conditions
+    * expressed genes within each sample and as a dataset
 * Outrider Summaries for each aberrant expression group
     * aberrantly expressed genes per sample
     * correlation between samples before and after the autoencoder
