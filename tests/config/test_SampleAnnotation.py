@@ -37,7 +37,7 @@ class Test_SampleAnnotation:
     @pytest.mark.parametrize(
         "annotation,group,files",
         [
-            ("v29", "import_exp", {'Data/external_geneCounts.tsv.gz'})
+            ("v29", "outrider_external", {'Data/external_count_data/geneCounts.tsv.gz'})
         ]
     )
     def test_import(self, demo_dir, sampleAnnotation, annotation, group, files):

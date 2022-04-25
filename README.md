@@ -11,7 +11,7 @@ The manuscript is available in [Nature Protocols](https://www.nature.com/article
 DROP is available on [bioconda](https://anaconda.org/bioconda/drop).
 We recommend using a dedicated conda environment. (installation time: ~ 10min)
 ```
-mamba install -c conda-forge -c bioconda drop
+mamba create -n drop_env -c conda-forge -c bioconda drop
 ```
 
 Test installation with demo project
@@ -49,6 +49,14 @@ This shows you the rules of all subworkflows. Omit `-n` and specify the number o
 snakemake aberrantExpression --cores 10
 ```
 
+## Citation
+
+If you use DROP in research, please cite our [manuscript](https://www.nature.com/articles/s41596-020-00462-5).
+
+Furthermore, if you use the aberrant expression module, also cite [OUTRIDER](https://doi.org/10.1016/j.ajhg.2018.10.025); if you use the aberrant splicing module, also cite [FRASER](https://www.nature.com/articles/s41467-020-20573-7); and if you use the MAE module, also cite the [Kremer, Bader et al study](https://www.nature.com/articles/ncomms15824) and [DESeq2](https://genomebiology.biomedcentral.com/articles/10.1186/s13059-014-0550-8).
+
+For the complete set of tools used by DROP (e.g. for counting), see the [manuscript](https://www.nature.com/articles/s41596-020-00462-5).
+
 ## Datasets
 The following publicly-available datasets of gene counts can be used as controls.
 Please cite as instructed for each dataset.
@@ -58,6 +66,8 @@ Please cite as instructed for each dataset.
 * 269 strand specific fibroblasts, build hg19, Technical University of Munich: [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.4646826.svg)](https://doi.org/10.5281/zenodo.4646826)
 
 * 49 tissues, each containing hundreds of samples, non-strand specific, build hg19, GTEx: [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.5596755.svg)](https://doi.org/10.5281/zenodo.5596755)
+
+* 49 tissues, each containing hundreds of samples, non-strand specific, build hg38, GTEx: [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.6078396.svg)](https://doi.org/10.5281/zenodo.6078396)
 
 * 139 strand specific fibroblasts, build hg19, Baylor College of Medicine: [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.3963473.svg)](https://doi.org/10.5281/zenodo.3963473)
 

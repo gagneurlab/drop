@@ -33,7 +33,7 @@ class Test_MAE_Pipeline:
         assert "[1] 55\n" in r.stdout
 
     @pytest.mark.usefixtures("pipeline_run")
-    def test_results(self, demo_dir):
+    def test_all_results(self, demo_dir):
         results_file = "Output/processed_results/mae/mae/MAE_results_all_v29.tsv.gz"
         r_cmd = """
                 library(data.table)

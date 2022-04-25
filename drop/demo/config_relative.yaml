@@ -15,50 +15,56 @@ exportCounts:
   geneAnnotations:
   - v29
   excludeGroups:
-  - mae
-  - import_exp
-  
+    - mae
+    - outrider_external
+    - fraser_external
+
 aberrantExpression:
-  run: true
-  groups:
-  - outrider
-  - import_exp
-  fpkmCutoff: 1
-  implementation: autoencoder
-  padjCutoff: 1
-  zScoreCutoff: 0
-  maxTestedDimensionProportion: 3
+    run: true
+    groups:
+      - outrider
+      - outrider_external
+    fpkmCutoff: 1
+    implementation: autoencoder
+    padjCutoff: 1
+    zScoreCutoff: 0
+    maxTestedDimensionProportion: 3
+    dassie:
+        tssWindow: 500
+        pasWindow: 1000
 
 aberrantSplicing:
-  run: true
-  groups:
-  - fraser
-  recount: true
-  longRead: false
-  keepNonStandardChrs: true
-  filter: false
-  minExpressionInOneSample: 20
-  minDeltaPsi: 0.05
-  implementation: PCA
-  padjCutoff: 1
-  zScoreCutoff: 0
-  deltaPsiCutoff: 0.05
-  maxTestedDimensionProportion: 6
-  
+    run: true
+    groups:
+      - fraser
+      - fraser_external
+    recount: true
+    longRead: false
+    keepNonStandardChrs: true
+    filter: false
+    minExpressionInOneSample: 20
+    minDeltaPsi: 0.05
+    implementation: PCA
+    padjCutoff: 1
+    zScoreCutoff: 0
+    deltaPsiCutoff : 0.05
+    maxTestedDimensionProportion: 6
+
 mae:
-  run: true
-  groups:
-  - mae
-  gatkIgnoreHeaderCheck: true
-  padjCutoff: 0.05
-  allelicRatioCutoff: 0.8
-  addAF: false
-  maxAF: 0.001
-  maxVarFreqCohort: 1
-  qcVcf: Data/qc_vcf_1000G.vcf.gz
-  qcGroups:
-  - mae
-  
+    run: true
+    groups:
+      - mae
+    gatkIgnoreHeaderCheck: true
+    padjCutoff: .5
+    allelicRatioCutoff: 0.7
+    addAF: false
+    maxAF: .001
+    maxVarFreqCohort: 1
+    # VCF-BAM matching
+    qcVcf: Data/qc_vcf_1000G.vcf.gz
+    qcGroups:
+      - mae
+
 rnaVariantCalling:
   run: true
   groups:
@@ -75,7 +81,7 @@ rnaVariantCalling:
   maxVarFreqCohort: 1
   hcArgs: null
   minAlt: 3
-  
+
 tools:
   gatkCmd: gatk
   bcftoolsCmd: bcftools

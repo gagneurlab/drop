@@ -3,7 +3,7 @@ class Test_AS_Config:
     def test_config(self, dropConfig,demo_dir):
         assert dropConfig.AS.getWorkdir() == f"{demo_dir}/Scripts/AberrantSplicing/pipeline"
         dict_ = {
-            'groups': ['fraser'],
+            'groups': ['fraser', 'fraser_external'],
             'recount': True,
             'longRead': False,
             'keepNonStandardChrs': True,
@@ -19,7 +19,7 @@ class Test_AS_Config:
         assert dict_.items() <= dropConfig.AS.dict_.items()
 
     def test_getSplitCountFiles(self, demo_dir, dropConfig):
-        counts_dir = f"{demo_dir}/Output/processed_data/aberrant_splicing/datasets/cache/raw-fraser/sample_tmp/" \
+        counts_dir = f"{demo_dir}/Output/processed_data/aberrant_splicing/datasets/cache/raw-local-fraser/sample_tmp/" \
                      "splitCounts"
         ids = [
             'HG00096', 'HG00103', 'HG00111',
@@ -35,7 +35,7 @@ class Test_AS_Config:
         assert counts_files_true == counts_files_test
 
     def test_getNonSplitCountFiles(self, demo_dir, dropConfig):
-        counts_dir = f"{demo_dir}/Output/processed_data/aberrant_splicing/datasets/cache/raw-fraser/sample_tmp/" \
+        counts_dir = f"{demo_dir}/Output/processed_data/aberrant_splicing/datasets/cache/raw-local-fraser/sample_tmp/" \
                      "nonSplitCounts"
         ids = [
             'HG00096', 'HG00103', 'HG00111',

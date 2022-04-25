@@ -1,3 +1,6 @@
+---                                                                                                                     
+title: "README"                                                                                                         
+--- 
 # DROP Analysis
 
 Analysis of the demo dataset using the Detection of RNA Outliers Pipeline. For

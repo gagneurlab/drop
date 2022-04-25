@@ -9,10 +9,10 @@
 #'   - workingDir: '`sm cfg.getProcessedDataDir() + "/aberrant_splicing/datasets"`'
 #'  input:
 #'   - spliceSites: '`sm cfg.getProcessedDataDir() + 
-#'                   "/aberrant_splicing/datasets/cache/raw-{dataset}/spliceSites_splitCounts.rds"`'
+#'                   "/aberrant_splicing/datasets/cache/raw-local-{dataset}/spliceSites_splitCounts.rds"`'
 #'  output:
 #'   - done_sample_nonSplitCounts : '`sm cfg.getProcessedDataDir() + 
-#'                   "/aberrant_splicing/datasets/cache/raw-{dataset}/sample_tmp/nonSplitCounts/sample_{sample_id}.done"`' 
+#'                   "/aberrant_splicing/datasets/cache/raw-local-{dataset}/sample_tmp/nonSplitCounts/sample_{sample_id}.done"`' 
 #'  threads: 3
 #'  type: script
 #'---
@@ -26,7 +26,7 @@ workingDir <- snakemake@params$workingDir
 params <- snakemake@config$aberrantSplicing
 
 # Read FRASER object
-fds <- loadFraserDataSet(dir=workingDir, name=paste0("raw-", dataset))
+fds <- loadFraserDataSet(dir=workingDir, name=paste0("raw-local-", dataset))
 
 # Get sample id from wildcard
 sample_id <- snakemake@wildcards[["sample_id"]]

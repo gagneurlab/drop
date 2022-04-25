@@ -13,6 +13,7 @@ Then, DROP can be executed in multiple ways (:doc:`pipeline`).
    installation
    prepare
    pipeline
+   output
    license
    help
 
@@ -25,7 +26,7 @@ Use `mamba` instead of `conda` as it provides more reliable and faster dependenc
 
 .. code-block:: bash
 
-    mamba install -c conda-forge -c bioconda drop
+    mamba create -n drop -c conda-forge -c bioconda drop
 
 Test installation with demo project
 

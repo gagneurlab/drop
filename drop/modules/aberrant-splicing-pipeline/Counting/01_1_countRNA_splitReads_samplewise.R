@@ -6,13 +6,13 @@
 #'    - snakemake: '`sm str(tmp_dir / "AS" / "{dataset}" / "splitReads" / "{sample_id}.Rds")`'
 #'  params:
 #'   - setup: '`sm cfg.AS.getWorkdir() + "/config.R"`'
-#'   - workingDir: '`sm cfg.getProcessedDataDir() + "/aberrant_splicing/datasets"`'
+#'   - workingDir: '`sm cfg.getProcessedDataDir() + "/aberrant_splicing/datasets/"`'
 #'  input:
 #'   - done_fds: '`sm cfg.getProcessedDataDir() + 
-#'                "/aberrant_splicing/datasets/cache/raw-{dataset}/fds.done"`'
+#'                "/aberrant_splicing/datasets/cache/raw-local-{dataset}/fds.done"`'
 #'  output:
 #'   - done_sample_splitCounts: '`sm cfg.getProcessedDataDir() + 
-#'                "/aberrant_splicing/datasets/cache/raw-{dataset}"
+#'                "/aberrant_splicing/datasets/cache/raw-local-{dataset}"
 #'                +"/sample_tmp/splitCounts/sample_{sample_id}.done"`'
 #'  threads: 3
 #'  type: script
@@ -28,7 +28,7 @@ params <- snakemake@config$aberrantSplicing
 genomeAssembly <- snakemake@config$genomeAssembly
 
 # Read FRASER object
-fds <- loadFraserDataSet(dir=workingDir, name=paste0("raw-", dataset))
+fds <- loadFraserDataSet(dir=workingDir, name=paste0("raw-local-", dataset))
 
 # Get sample id from wildcard
 sample_id <- snakemake@wildcards[["sample_id"]]
