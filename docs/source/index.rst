@@ -2,7 +2,7 @@ DROP - Detection of RNA Outliers Pipeline
 ==========================================
 
 DROP is intended to help researchers use RNA-Seq data in order to detect genes with aberrant expression,
-aberrant splicing and mono-allelic expression. It consists of three independent modules for each of those strategies.
+aberrant splicing, mono-allelic expression, and RNA-Seq variant calling. It consists of 4 independent modules for each of those strategies.
 After installing DROP, the user needs to fill in the config file and sample annotation table (:doc:`prepare`).
 Then, DROP can be executed in multiple ways (:doc:`pipeline`).
 
@@ -22,6 +22,7 @@ Quickstart
 
 DROP is available on `bioconda <https://anaconda.org/bioconda/drop>`_.
 We recommend using a dedicated conda environment. (installation time: ~ 10min)
+Use `mamba` instead of `conda` as it provides more reliable and faster dependency solving.
 
 .. code-block:: bash
 

@@ -42,8 +42,13 @@ suppressPackageStartupMessages({
 # Read all MAE results files
 rmae <- lapply(snakemake@input$mae_res, function(m){
   rt <- readRDS(m)
+  # force consistant UCSC chromosome style
+  rt <- rt[!grepl("chr",contig),contig:= paste0("chr",contig)]
   return(rt)
 }) %>% rbindlist()
+
+# re-factor contig
+rmae$contig <- factor(rmae$contig)
 
 # Convert results into GRanges
 rmae_ranges <- GRanges(seqnames = rmae$contig, 

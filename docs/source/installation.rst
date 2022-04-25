@@ -9,6 +9,8 @@ In case the conda channel priority is set to ``strict``, it should be reset to `
     conda config --set channel_priority true
 
 We recommend using a dedicated conda environment (here: ``drop_env``) for installing drop.
+For installing, use `mamba` instead of `conda` as it provides more reliable and faster dependency solving.
+
 
 .. code-block:: bash
 
@@ -27,6 +29,7 @@ Test whether the pipeline runs through by setting up the demo dataset in an empt
     drop demo
 
 The pipeline can be run using `snakemake <snakemake.readthedocs.io/>`_ commands
+Run time: ~25min
 
 .. code-block:: bash
 
@@ -111,11 +114,11 @@ Alternatively, DROP can be installed without ``conda``. In this case the followi
 
     * `tabix <https://www.htslib.org/download/>`_
 
-    * `samtools <https://www.htslib.org/download/>`_ >= 1.7
+    * `samtools <https://www.htslib.org/download/>`_ >= 1.9
 
-    * `bcftools <https://github.com/samtools/bcftools>`_ >= 1.7
+    * `bcftools <https://github.com/samtools/bcftools>`_ >= 1.9
 
-    * `GATK <https://software.broadinstitute.org/gatk/>`_ >= 4.0.4
+    * `GATK <https://software.broadinstitute.org/gatk/>`_ >= 4.1.8
 
     * `graphviz <https://www.graphviz.org/>`_
 
@@ -134,4 +137,3 @@ As this is a lengthy process, it might be desirable to install them in advance, 
 
     # optional
     Rscript <path/to/drop/repo>/drop/installRPackages.R drop/requirementsR.txt
-

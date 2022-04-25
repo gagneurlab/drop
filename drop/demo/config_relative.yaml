@@ -1,19 +1,19 @@
 projectTitle: Detection of RNA Outlier Pipeline
 htmlOutputPath: Output/html
 indexWithFolderName: true
-
 root: Output
 sampleAnnotation: Data/sample_annotation.tsv
 geneAnnotation:
-    v29: Data/gencode_annotation_trunc.gtf
+  v29: Data/gencode_annotation_trunc.gtf
 genomeAssembly: hg19
-genome: Data/chr21.fa
+genome: 
+  ncbi: Data/chr21_ncbi.fa
+  ucsc: Data/chr21.fa
 hpoFile: null
-random_seed: true  # use this to fully gain reproducible data in debug mode
-
+random_seed: true
 exportCounts:
   geneAnnotations:
-    - v29
+  - v29
   excludeGroups:
     - mae
     - outrider_external
@@ -65,7 +65,24 @@ mae:
     qcGroups:
       - mae
 
+rnaVariantCalling:
+  run: true
+  groups:
+  - batch_0
+  - batch_1
+  knownVCFs:
+  - Data/high_confidence_snps.vcf.gz
+  - Data/high_confidence_indels.vcf.gz
+  - Data/dbSNP_chr21.vcf.gz
+  repeat_mask: Data/repeat_mask_chr21.bed
+  createSingleVCF: false
+  addAF: false
+  maxAF: 0.001
+  maxVarFreqCohort: 1
+  hcArgs: null
+  minAlt: 3
+
 tools:
-    gatkCmd: gatk
-    bcftoolsCmd: bcftools
-    samtoolsCmd: samtools
+  gatkCmd: gatk
+  bcftoolsCmd: bcftools
+  samtoolsCmd: samtools
