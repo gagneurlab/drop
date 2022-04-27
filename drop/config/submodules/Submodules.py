@@ -114,17 +114,17 @@ class Submodule:
         if len(genomeFiles) == 1:  # globally defined in the config
             globalGenome = list(genomeFiles.values())[0]
 
-            # subset SA by the drop group (not exact match) and skip the filtering by SA-GENOME column
+            # subset SA by the drop group and skip the filtering by SA-GENOME column
             # because only 1 genome is defined don't filter by the GENOME column (it may not exist)
             genomeDict = self.sampleAnnotation.getGenomes(
                 globalGenome,
                 self.groups,
                 file_type="RNA_ID",
                 column=group_key, group_key=group_key,
-                exact_match=False, skip=True
+                skip=True
             )
         else:
-            # subset SA by the drop group (not exact match) and filter by SA-GENOME column. Must exactly match config key
+            # subset SA by the drop group and filter by SA-GENOME column. Must exactly match config key
             # because more than 1 genome is defined filter by the GENOME column 
             for gf in genomeFiles.keys():
                 genomeDict.update(
@@ -133,7 +133,7 @@ class Submodule:
                         self.groups,
                         file_type="RNA_ID",
                         column="GENOME", group_key=group_key,
-                        exact_match=False, skip=False
+                        skip=False
                     )
                 )
 
