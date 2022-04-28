@@ -65,8 +65,8 @@ fds <- saveFraserDataSet(fds_input, dir=outputDir, name = paste(dataset, annotat
 # Extract results per junction
 res_junc <- results(fds,
                     padjCutoff=snakemake@params$padjCutoff,
-                    zscoreCutoff=snakemake@params$zScoreCutoff,
-                    dPsiCutoff=snakemake@params$deltaPsiCutoff)
+                    zScoreCutoff=snakemake@params$zScoreCutoff,
+                    deltaPsiCutoff=snakemake@params$deltaPsiCutoff)
 res_junc_dt   <- as.data.table(res_junc)
 print('Results per junction extracted')
 saveFraserDataSet(fds, dir=outputDir)
