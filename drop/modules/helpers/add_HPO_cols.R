@@ -25,7 +25,7 @@ add_HPO_cols <- function(RES, sample_id_col = 'sampleID',
     f3 <- f3[HPO_TERMS != ''] # remove cases with no HPO terms to speed up
     if(nrow(f3) > 0){
       f3[, HPO_match := any(grepl(HPO_id, HPO_TERMS)), by = 1:nrow(f3)]
-      f3 <- f3[HPO_match == TRUE]
+      f3 <- f3[HPO_match == TRUE] #only take those that match HPOs
       if(nrow(f3) > 0){
         f4 <- f3[, .(HPO_label_overlap = paste(HPO_label, collapse = ', '),
                      HPO_id_overlap = paste(HPO_id, collapse = ', '),
