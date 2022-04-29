@@ -36,5 +36,13 @@ ods <- filterExpression(ods, gtfFile=txdb, filter=FALSE,
 # add column for genes with at least 1 gene
 rowData(ods)$counted1sample = rowSums(assay(ods)) > 0
 
+has_external <- !(all(ods@colData$GENE_COUNTS_FILE == "") || is.null(ods@colData$GENE_COUNTS_FILE))
+if(has_external){
+    ods@colData$isExternal <- as.factor(ods@colData$GENE_COUNTS_FILE != "")
+}else{
+    ods@colData$isExternal <- as.factor(FALSE)
+}
+
+
 # Save the ods before filtering to preserve the original number of genes
 saveRDS(ods, snakemake@output$ods)

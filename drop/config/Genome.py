@@ -34,8 +34,14 @@ class Genome:
         else:
             return self.reference
 
+    def getFastaList(self):
+        return list(self.getFastaFiles().values())
+
     def getFastaDict(self, fasta_file):
         return Path(fasta_file).with_suffix(".dict")
+    
+    def getDictList(self):
+        return [self.getFastaDict(i) for i in self.getFastaList()]
 
     def getBSGenomeName(self):
         assemblyID = self.assembly

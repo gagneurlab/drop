@@ -27,7 +27,7 @@ class ExportCounts:
         self.CONFIG_KEYS = ["geneAnnotations", "excludeGroups"]
         self.config_dict = self.setDefaults(dict_, genome.annotation)
         self.outputRoot = outputRoot / "exported_counts"
-        self.sa = sampleAnnotation
+        self.sampleAnnotation = sampleAnnotation
         self.genomeAssembly = genome.assembly
         self.geneAnnotations = self.get("geneAnnotations")
         self.modules = {

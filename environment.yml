@@ -8,3 +8,6 @@ dependencies:
   - drop
   - flake8
   - bioconductor-bsgenome.hsapiens.ucsc.hg19
+
+  # required for downloading R packages through github
+  - unzip

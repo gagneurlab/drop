@@ -51,7 +51,7 @@ class Test_AE_Pipeline:
         assert "res: 1610 15" in r.stdout
 
     def test_import_results(self, demo_dir):
-        output_dir = "Output/processed_results/aberrant_expression/v29/outrider/import_exp"
+        output_dir = "Output/processed_results/aberrant_expression/v29/outrider/outrider_external"
         r_cmd = """
                 # ods object
                 ods <- readRDS(file.path("{}", "ods.Rds"))
@@ -70,17 +70,12 @@ class Test_AE_Pipeline:
     def no_import(self, demo_dir):
         LOGGER.info("dryrun without import counts...")
 
-        # remove last 2 lines of sample annotation
-        run("head -n -2 Data/sample_annotation.tsv > Data/sample_annotation_noimp.tsv", demo_dir)
-
         # adapt config
-        run("sed 's/sample_annotation.tsv/sample_annotation_noimp.tsv/' config.yaml | "
-            "sed '/import_exp/d' > config_noimp.yaml", demo_dir)
+        run("sed '/outrider_external/d' config.yaml > config_noimp.yaml", demo_dir)
 
         yield demo_dir
 
         # reset changed files back to original
-        run("rm Data/sample_annotation_noimp.tsv", demo_dir)
         run("rm config_noimp.yaml", demo_dir)
 
     def test_no_import(self, no_import):

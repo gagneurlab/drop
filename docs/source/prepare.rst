@@ -1,6 +1,18 @@
 Preparing the Input Data
 ========================
 
+The input files of DROP are: 
+
+- BAM files from RNA-seq  (and their respective index files)
+- VCF files from either WES or WGS (and their respective index files). Only used for the MAE module
+- a configuration file containing the different parameters
+- a sample annotation file
+- a gene annotation file (gtf)
+- a reference genome file (fasta, and its respective index)
+
+For more details see the Materials section of the `DROP manuscript <https://rdcu.be/cdMmF>`_.
+
+
 Config file
 -----------
 
@@ -34,6 +46,7 @@ When providing a path to a file or directory, please provide the *full system pa
 
 Global parameters
 +++++++++++++++++
+These parameters are applied to multiple modules and as a result should be consistent throughout the data you are analyzing
 
 ===================  ==========  =======================================================================================================================================  ======
 Parameter            Type        Description                                                                                                                              Default/Examples
@@ -43,9 +56,9 @@ htmlOutputPath       character   Full path of the folder where the HTML files ar
 indexWithFolderName  boolean     If true, the basename of the project directory will be used as prefix for the index.html file                                            ``true``
 genomeAssembly       character   Either hg19/hs37d5 or hg38/GRCh38, depending on the genome assembly used for mapping                                                     ``/data/project1``
 sampleAnnotation     character   Full path of the sample annotation table                                                                                                 ``/data/project1/sample_annotation.tsv``
-root                 character   Full path of the folder where the subdirectories processed_data and processed_results will be created containing DROP's output files.    ``/data/project1``
+root                 character   Full path of the folder where the sub-directories processed_data and processed_results will be created containing DROP's output files.    ``/data/project1``
 genome               character   Full path of a human reference genome fasta file                                                                                         ``/path/to/hg19.fa``
-genome               dictionary  (Optional) Multiple fasta files can be specified when RNA-seq BAM files belong to different genome assemblies (eg, ncbi, ucsc).          ``ncbi: /path/to/hg19_ncbi.fa``
+genome               dictionary  (Optional) Multiple fasta files can be specified when RNA-seq BAM files belong to different genome. assemblies (eg, ncbi, ucsc).          ``ncbi: /path/to/hg19_ncbi.fa``
 
                                                                                                                                                                           ``ucsc: /path/to/hg19_ucsc.fa``
 geneAnnotation       dictionary  A key-value list of the annotation name (key) and the full path to the GTF file (value). More than one annotation file can be provided.  ``anno1: /path/to/gtf1.gtf``
@@ -61,6 +74,10 @@ tools                dictionary  A key-value list of different commands (key) an
 
 Export counts dictionary
 ++++++++++++++++++++++++
+These parameters are directly used by the ``exportCounts`` snakemake command. This section
+is used to designate which aberrant expression and aberrant splicing groups should be exported
+into datasets that can be shared. To avoid sharing sensitive data, only the canonical annotations
+as described by `geneAnnotations` are exported. Only the groups excluded by `excludeGroups` are not exported.
 
 ===============  ====  ==========================================================================================================================  ======
 Parameter        Type  Description                                                                                                                 Default/Examples
@@ -72,6 +89,8 @@ excludeGroups    list  aberrant expression and aberrant splicing groups whose co
 
 Aberrant expression dictionary
 ++++++++++++++++++++++++++++++
+These parameters are directly used by the ``aberrantExpression`` snakemake command. Aberrant expression groups must have at least ``10``
+samples per group. To use external counts please see the ``Using External Counts`` section.
 
 ============================  =========  =================================================================================================================================  ======
 Parameter                     Type       Description                                                                                                                        Default/Examples
@@ -90,6 +109,8 @@ maxTestedDimensionProportion  numeric    An integer that controls the maximum va
 
 Aberrant splicing dictionary
 ++++++++++++++++++++++++++++
+These parameters are directly used by the ``aberrantSplicing`` snakemake command. Aberrant splicing groups must have at least ``10``
+samples per group. To use external counts please see the ``Using External Counts`` section.
 
 ============================  =========  ============================================================================================  ======
 Parameter                     Type       Description                                                                                   Default/Examples
@@ -110,8 +131,10 @@ maxTestedDimensionProportion  numeric    Same as in aberrant expression.        
 ============================  =========  ============================================================================================  ======
 
 
-Mono-allelic expression dictionary
+Mono-allelic expression (MAE) dictionary
 ++++++++++++++++++++++++++++++++++
+These parameters are directly used by the ``mae`` snakemake command. MAE groups are not bound by a minimum number of samples,
+but require additional information in the sample annotation table.
 
 =====================  =========  ========================================================================================================================  ======
 Parameter              Type       Description                                                                                                               Default/Examples
@@ -164,9 +187,8 @@ For example, if the AberrantExpression module is set to false, the  ``Scripts/Ab
 
 Creating the sample annotation table
 ------------------------------------
-
 For a detailed explanation of the columns of the sample annotation, please refer to
-Box 3 of the `DROP manuscript <https://rdcu.be/cdMmF>`_. 
+Box 3 of the `DROP manuscript <https://rdcu.be/cdMmF>`_. Although some information has been updated since puplication, please use this documentation as the preferred syntax/formatting.
 
 Each row of the sample annotation table corresponds to a unique pair of RNA and DNA
 samples derived from the same individual. An RNA assay can belong to one or more DNA
@@ -179,71 +201,102 @@ The following columns describe the RNA-seq experimental setup:
 counting procedures of the aberrant expression and splicing modules. For a detailed
 explanation, refer to the documentation of `HTSeq <https://htseq.readthedocs.io/en/latest/>`_.
 
-To run the MAE module, the columns ``DNA_ID`` and ``DNA_VCF_FILE`` are needed.
-
-In case external counts are included, add a new row for each sample from those
-files (or a subset if not all samples are needed). Add the columns: ``GENE_COUNTS_FILE``,
-``GENE_ANNOTATON``, ``SPLIT_COUNTS_FILE`` and ``NON_SPLIT_COUNTS_FILE``. See examples below.
+To run the MAE module, the columns ``DNA_ID`` and ``DNA_VCF_FILE`` are needed. MAE can not be run
+in samples using external counts as we need to use the ``RNA_BAM_FILE`` to count reads supporting
+each allele of the heterozygous variants found in the ``DNA_VCF_FILE``.
 
 In case RNA-seq BAM files belong to different genome assemblies (eg, ncbi, ucsc), multiple
 reference genome fasta files can be specified. Add a column called `GENOME` that
 contains, for each sample, the key from the `genome` parameter in the config file that
 matches its genome assembly (eg, ncbi or ucsc).
 
-
-The sample annotation file must be saved in the tab-separated values (tsv) format. The
-column order does not matter. Also, it does not matter where it is stored, as the path is
+The sample annotation file must be saved in the tab-separated values (tsv) format. The 
+column order does not matter. Also, it does not matter where it is stored, as the path is 
 specified in the config file. Here we provide some examples on how to deal with certain
 situations. For simplicity, we do not include all possible columns in the examples.
 
-Example of RNA replicates
+
+Using External Counts
 ++++++++++++++++++++++++++++++++++
+DROP can utilize external counts for the ``aberrantExpression`` and ``aberrantSplicing`` modules
+which can enhance the statistical power of these modules by providing more samples from which we 
+can build a distribution of counts and detect outliers. However this process introduces some
+particular issues that need to be addressed to make sure it is a valuable addition to the experiment.
 
-======  ======  ==========  ===================  ==
-RNA_ID  DNA_ID  DROP_GROUP  RNA_BAM_FILE         DNA_VCF_FILE
-======  ======  ==========  ===================  ==
-S10R_B  S10G    BLOOD       /path/to/S10R_B.BAM  /path/to/S10G.vcf.gz
-S10R_M  S10G    MUSCLE      /path/to/S10R_M.BAM  /path/to/S10G.vcf.gz
-======  ======  ==========  ===================  ==
+In case external counts are included, add a new row for each sample from those 
+files (or a subset if not all samples are needed). Add the columns: ``GENE_COUNTS_FILE``
+(for aberrant expression), ``GENE_ANNOTATON``, and ``SPLICE_COUNTS_DIR`` (for aberrant splicing).
+These columns should remain empty for samples processed locally (from ``RNA_BAM``).
 
-Example of DNA replicates
-++++++++++++++++++++++++++++++++++
+Aberrant Expression
+####################
+Using external counts for aberrant expression forces you to use the exact same gene annotation for each
+external sample as well as using the same gene annotation file specified in the config file
+``Global parameters`` section. This is to avoid potential mismatching on counting, 2 different gene
+annotations could drastically affect which reads are counted in which region drastically skewing the results.
 
-======  ======  ==========  =================  ==
-RNA_ID  DNA_ID  DROP_GROUP  RNA_BAM_FILE       DNA_VCF_FILE
-======  ======  ==========  =================  ==
-S20R    S20E    WES         /path/to/S20R.BAM  /path/to/S20E.vcf.gz
-S20R    S20G    WGS         /path/to/S20R.BAM  /path/to/S20G.vcf.gz
-======  ======  ==========  =================  ==
+The user must also use special consideration when building the sample annotation table. Samples
+using external counts need only ``RNA_ID`` which must exactly match the column header in the external count file
+``DROP_GROUP``, ``GENE_COUNTS_FILE``, and ``GENE_ANNOTATION`` which must contain the exact key specified in the config.
+The other columns should remain empty. 
 
-Example of a multi-sample vcf file
-++++++++++++++++++++++++++++++++++
+Using ``exportCounts`` generates the sharable ``GENE_COUNTS_FILE`` file in the appropriate
+``ROOT_DIR/Output/processed_results/exported_counts/`` sub-directory.
 
-======  ======  ==========  =================  ==
-RNA_ID  DNA_ID  DROP_GROUP  RNA_BAM_FILE       DNA_VCF_FILE
-======  ======  ==========  =================  ==
-S10R    S10G    WGS         /path/to/S10R.BAM  /path/to/multi_sample.vcf.gz
-S20R    S20G    WGS         /path/to/S20R.BAM  /path/to/multi_sample.vcf.gz
-======  ======  ==========  =================  ==
+Aberrant Splicing
+##################
+Using external counts for aberrant splicing reduces the number of introns processed to only those
+that are exactly the same between the local and external junctions. Because rare junctions may be 
+personally identifiable the ``exportCounts`` command only exports regions canonically mentioned in the gtf file.
+As a result, when merging the external counts with the local counts we only match introns that are **exact** between
+the 2 sets, this is to ensure that if a region is missing we don't introduce 0 counts into the distribution calculations.
 
-External count matrices
+The user must also use special consideration when building the sample annotation table. Samples
+using external counts need only ``RNA_ID`` which must exactly match the column header in the external count file
+``DROP_GROUP``, and ``SPLICE_COUNTS_DIR``. ``SPLICE_COUNTS_DIR`` is the directory containing the set of 5 needed count files.
+The other columns should remain empty. 
+
+Using ``exportCounts`` generates the necessary files in the appropriate
+``ROOT_DIR/Output/processed_results/exported_counts/`` sub-directory
+
+``SPLICE_COUNTS_DIR`` should contain the following:  
+
+* k_j_counts.tsv.gz  
+* k_theta_counts.tsv.gz  
+* n_psi3_counts.tsv.gz  
+* n_psi5_counts.tsv.gz  
+* n_theta_counts.tsv.gz  
+
+Publicly available DROP external counts
+#######################################
+You can find different sets of publicly available external counts to add to your
+analysis on our `github page <https://github.com/gagneurlab/drop/#datasets>`_
+
+If you want to contribute with your own count matrices, please contact us: yepez at in.tum.de (yepez@in.tum.de)
+
+External count examples
 +++++++++++++++++++++++
 
 In case counts from external matrices are to be integrated into the analysis,
-the file must be specified in the GENE_COUNTS_FILE column. A new row must be
-added for each sample from the count matrix that should be included in the
-analysis. An RNA_BAM_FILE must not be specified. The DROP_GROUP of the local
+the sample annotation must be built in a particular way
+A new row must be added for each sample from the count matrix that should be included in the 
+analysis. The ``RNA_ID`` must match the column header of the external files,
+the ``RNA_BAM_FILE`` must not be specified. The ``DROP_GROUP`` of the local
 and external samples that are to be analyzed together must be the same.
-Similarly, the GENE_ANNOTATION of the external counts and the key of the `geneAnnotation`
+For aberrant expression, the GENE_ANNOTATION of the external counts and the key of the `geneAnnotation`
 parameter from the config file must match.
 
-======  ======  ==========  =================  ==============================  ==
-RNA_ID  DNA_ID  DROP_GROUP  RNA_BAM_FILE       GENE_COUNTS_FILE                GENE_ANNOTATION
-======  ======  ==========  =================  ==============================  ==
-S10R    S10G    BLOOD       /path/to/S10R.BAM
-EXT-1R          BLOOD                          /path/to/externalCounts.tsv.gz  gencode34
-EXT-2R          BLOOD                          /path/to/externalCounts.tsv.gz  gencode34
-======  ======  ==========  =================  ==============================  ==
+This example will use the ``DROP_GROUP`` BLOOD_AE for the aberrant expression module (containing S10R, EXT-1R, EXT-2R) and
+the ``DROP_GROUP`` BLOOD_AS for the aberrant expression module (containing S10R, EXT-2R, EXT-3R)
+
+======  ======  =================  =================  ==============================  =============== =========================
+RNA_ID  DNA_ID  DROP_GROUP         RNA_BAM_FILE       GENE_COUNTS_FILE                GENE_ANNOTATION SPLICE_COUNTS_DIR
+======  ======  =================  =================  ==============================  =============== =========================
+S10R    S10G    BLOOD_AE,BLOOD_AS  /path/to/S10R.BAM  
+EXT-1R          BLOOD_AE                              /path/to/externalCounts.tsv.gz  gencode34
+EXT-2R          BLOOD_AE,BLOOD_AS                     /path/to/externalCounts.tsv.gz  gencode34       /path/to/externalCountDir 
+EXT-3R          BLOOD_AS                                                                              /path/to/externalCountDir 
+======  ======  =================  =================  ==============================  =============== =========================
 
 .. _filesdownload:
 
@@ -269,6 +322,36 @@ These can be downloaded for hg19 at our `public repository <https://www.cmm.in.t
 and for hg38 through the Broad Institute's `resource bundle <https://gatk.broadinstitute.org/hc/en-us/articles/360035890811-Resource-bundle>`
 
 .. _advancedoptions:
+
+Example of RNA replicates 
+++++++++++++++++++++++++++++++++++
+
+======  ======  ==========  ===================  ==
+RNA_ID  DNA_ID  DROP_GROUP  RNA_BAM_FILE         DNA_VCF_FILE
+======  ======  ==========  ===================  ==
+S10R_B  S10G    BLOOD       /path/to/S10R_B.BAM  /path/to/S10G.vcf.gz
+S10R_M  S10G    MUSCLE      /path/to/S10R_M.BAM  /path/to/S10G.vcf.gz
+======  ======  ==========  ===================  ==
+
+Example of DNA replicates 
+++++++++++++++++++++++++++++++++++
+
+======  ======  ==========  =================  ==
+RNA_ID  DNA_ID  DROP_GROUP  RNA_BAM_FILE       DNA_VCF_FILE
+======  ======  ==========  =================  ==
+S20R    S20E    WES         /path/to/S20R.BAM  /path/to/S20E.vcf.gz
+S20R    S20G    WGS         /path/to/S20R.BAM  /path/to/S20G.vcf.gz
+======  ======  ==========  =================  ==
+
+Example of a multi-sample vcf file
+++++++++++++++++++++++++++++++++++
+
+======  ======  ==========  =================  ==
+RNA_ID  DNA_ID  DROP_GROUP  RNA_BAM_FILE       DNA_VCF_FILE
+======  ======  ==========  =================  ==
+S10R    S10G    WGS         /path/to/S10R.BAM  /path/to/multi_sample.vcf.gz
+S20R    S20G    WGS         /path/to/S20R.BAM  /path/to/multi_sample.vcf.gz
+======  ======  ==========  =================  ==
 
 Advanced options
 ----------------

@@ -1,13 +1,15 @@
-RNA_ID	RNA_BAM_FILE	DNA_VCF_FILE	DNA_ID	DROP_GROUP	PAIRED_END	COUNT_MODE	COUNT_OVERLAPS	STRAND	HPO_TERMS	GENE_COUNTS_FILE	GENE_ANNOTATION	GENOME
-HG00096	Data/rna_bam/HG00096_ncbi.bam	Data/dna_vcf/demo_chr21_ncbi.vcf.gz	HG00096	outrider,fraser,mae,batch_0	True	IntersectionStrict	True	no	HP:0009802,HP:0010896			ncbi
-HG00103	Data/rna_bam/HG00103.bam	Data/dna_vcf/demo_chr21.vcf.gz	HG00103	outrider,fraser,mae,batch_1	True	IntersectionStrict	True	no	HP:0004582,HP:0031959			ucsc
-HG00106	Data/rna_bam/HG00106.bam	Data/dna_vcf/demo_chr21.vcf.gz	HG00106	outrider,fraser,mae,import_exp,batch_1	True	IntersectionStrict	True	no	HP:0002895,HP:0006731			ucsc
-HG00111	Data/rna_bam/HG00111.bam	Data/dna_vcf/demo_chr21.vcf.gz	HG00111	outrider,fraser,import_exp	True	IntersectionStrict	True	no	HP:0100491,HP:0100871			
-HG00116	Data/rna_bam/HG00116.bam	Data/dna_vcf/demo_chr21.vcf.gz	HG00116	outrider,fraser,import_exp	True	IntersectionStrict	True	no	HP:0030613,HP:0012767			
-HG00126	Data/rna_bam/HG00126.bam	Data/dna_vcf/demo_chr21.vcf.gz	HG00126	outrider,fraser,import_exp	True	IntersectionStrict	True	no	HP:0000290,HP:0000293			
-HG00132	Data/rna_bam/HG00132.bam	Data/dna_vcf/demo_chr21.vcf.gz	HG00132	outrider,fraser,import_exp	True	IntersectionStrict	True	no	HP:0006489,HP:0006490			
-HG00149	Data/rna_bam/HG00149.bam	Data/dna_vcf/demo_chr21.vcf.gz	HG00149	outrider,fraser,import_exp	True	IntersectionStrict	True	no	HP:0000014,HP:0000020,HP:0032663			
-HG00150	Data/rna_bam/HG00150.bam	Data/dna_vcf/demo_chr21.vcf.gz	HG00150	outrider,fraser,import_exp	True	IntersectionStrict	True	no	HP:0030809,HP:0006144			
-HG00176	Data/rna_bam/HG00176.bam	Data/dna_vcf/demo_chr21.vcf.gz	HG00176	outrider,fraser,import_exp	True	IntersectionStrict	True	no	HP:0005215,HP:0010234			
-HG00178				import_exp						Data/external_geneCounts.tsv.gz	v29	
-HG00181				import_exp						Data/external_geneCounts.tsv.gz	v29	
+RNA_ID	RNA_BAM_FILE	DNA_VCF_FILE	DNA_ID	DROP_GROUP	PAIRED_END	COUNT_MODE	COUNT_OVERLAPS	STRAND	HPO_TERMS	GENE_COUNTS_FILE	GENE_ANNOTATION	GENOME	SPLICE_COUNTS_DIR
+HG00096	Data/rna_bam/HG00096_ncbi.bam	Data/dna_vcf/demo_chr21_ncbi.vcf.gz	HG00096	outrider,fraser,mae,batch_0	True	IntersectionStrict	True	no	HP:0009802,HP:0010896			ncbi	
+HG00103	Data/rna_bam/HG00103.bam	Data/dna_vcf/demo_chr21.vcf.gz	HG00103	outrider,fraser,mae,batch_1	True	IntersectionStrict	True	no	HP:0004582,HP:0031959			ucsc	
+HG00106	Data/rna_bam/HG00106.bam	Data/dna_vcf/demo_chr21.vcf.gz	HG00106	outrider,outrider_external,fraser,mae,batch_1	True	IntersectionStrict	True	no	HP:0002895,HP:0006731			ucsc	
+HG00111	Data/rna_bam/HG00111.bam	Data/dna_vcf/demo_chr21.vcf.gz	HG00111	outrider,outrider_external,fraser,fraser_external	True	IntersectionStrict	True	no	HP:0100491,HP:0100871				
+HG00116	Data/rna_bam/HG00116.bam	Data/dna_vcf/demo_chr21.vcf.gz	HG00116	outrider,outrider_external,fraser,fraser_external	True	IntersectionStrict	True	no	HP:0030613,HP:0012767				
+HG00126	Data/rna_bam/HG00126.bam	Data/dna_vcf/demo_chr21.vcf.gz	HG00126	outrider,outrider_external,fraser,fraser_external	True	IntersectionStrict	True	no	HP:0000290,HP:0000293				
+HG00132	Data/rna_bam/HG00132.bam	Data/dna_vcf/demo_chr21.vcf.gz	HG00132	outrider,outrider_external,fraser,fraser_external	True	IntersectionStrict	True	no	HP:0006489,HP:0006490				
+HG00149	Data/rna_bam/HG00149.bam	Data/dna_vcf/demo_chr21.vcf.gz	HG00149	outrider,outrider_external,fraser,fraser_external	True	IntersectionStrict	True	no	HP:0000014,HP:0000020,HP:0032663				
+HG00150	Data/rna_bam/HG00150.bam	Data/dna_vcf/demo_chr21.vcf.gz	HG00150	outrider,outrider_external,fraser,fraser_external	True	IntersectionStrict	True	no	HP:0030809,HP:0006144				
+HG00176	Data/rna_bam/HG00176.bam	Data/dna_vcf/demo_chr21.vcf.gz	HG00176	outrider,outrider_external,fraser,fraser_external	True	IntersectionStrict	True	no	HP:0005215,HP:0010234				
+HG00178				outrider_external						Data/external_count_data/geneCounts.tsv.gz	v29		
+HG00181				outrider_external,fraser_external						Data/external_count_data/geneCounts.tsv.gz	v29		Data/external_count_data
+HG00191				fraser_external									Data/external_count_data
+HG00201				fraser_external									Data/external_count_data

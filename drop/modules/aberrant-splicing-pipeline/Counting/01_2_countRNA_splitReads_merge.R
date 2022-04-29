@@ -12,13 +12,13 @@
 #'   - sample_counts: '`sm lambda w: cfg.AS.getSplitCountFiles(w.dataset)`'
 #'  output:
 #'   - countsJ: '`sm cfg.getProcessedDataDir() +
-#'                   "/aberrant_splicing/datasets/savedObjects/raw-{dataset}/rawCountsJ.h5"`'
+#'                          "/aberrant_splicing/datasets/savedObjects/raw-local-{dataset}/rawCountsJ.h5"`'
 #'   - gRangesSplitCounts: '`sm cfg.getProcessedDataDir() + 
-#'                          "/aberrant_splicing/datasets/cache/raw-{dataset}/gRanges_splitCounts.rds"`'
+#'                          "/aberrant_splicing/datasets/cache/raw-local-{dataset}/gRanges_splitCounts.rds"`'
 #'   - gRangesNonSplitCounts: '`sm cfg.getProcessedDataDir() + 
-#'                          "/aberrant_splicing/datasets/cache/raw-{dataset}/gRanges_NonSplitCounts.rds"`'
+#'                          "/aberrant_splicing/datasets/cache/raw-local-{dataset}/gRanges_NonSplitCounts.rds"`'
 #'   - spliceSites: '`sm cfg.getProcessedDataDir() + 
-#'                   "/aberrant_splicing/datasets/cache/raw-{dataset}/spliceSites_splitCounts.rds"`'
+#'                   "/aberrant_splicing/datasets/cache/raw-local-{dataset}/spliceSites_splitCounts.rds"`'
 #'  type: script
 #'---
 
@@ -36,11 +36,11 @@ register(MulticoreParam(snakemake@threads))
 setAutoBPPARAM(MulticoreParam(snakemake@threads))
 
 # Read FRASER object
-fds <- loadFraserDataSet(dir=workingDir, name=paste0("raw-", dataset))
+fds <- loadFraserDataSet(dir=workingDir, name=paste0("raw-local-", dataset))
 
 # If samples are recounted, remove the merged ones
 splitCountsDir <- file.path(workingDir, "savedObjects", 
-                            paste0("raw-", dataset), 'splitCounts')
+                            paste0("raw-local-", dataset), 'splitCounts')
 if(params$recount == TRUE & dir.exists(splitCountsDir)){
   unlink(splitCountsDir, recursive = TRUE)
 }

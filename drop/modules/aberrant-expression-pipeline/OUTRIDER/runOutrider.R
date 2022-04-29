@@ -63,11 +63,4 @@ ods <- findEncodingDim(ods, params = pars_q, implementation = implementation)
 ods <- OUTRIDER(ods, implementation = implementation)
 message("outrider fitting finished")
 
-# Save the new ods with a date stamp
-op <- snakemake@output$ods
-op_date <- paste0(file_path_sans_ext(op), "-", format(Sys.time(), "%Y%m%d") , ".Rds")
-saveRDS(ods, op_date)
-
-# Create a link to the previous file
-if(file.exists(op)) file.remove(op)
-file.symlink(op_date, op)
+saveRDS(ods, snakemake@output$ods)
