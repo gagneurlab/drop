@@ -40,6 +40,15 @@ saveRDS(snakemake, snakemake@log$snakemake)
   return(x)
 }
 
+# extract gtf_label by using a regex to match the target label and then take the first field after that
+.extract_info <- function(vcf,gtf_label){
+  gene_info <- gsub('"', "", info(vcf)$GENE)
+  target <- sapply(gene_info,function(x){
+    backhalf <- gsub(paste0(".*",gtf_label," (.+)"), "\\1", x)
+    target <- strsplit(backhalf," ")[[1]][1]
+  })
+}
+
 vcf <- VariantAnnotation::readVcf(snakemake@input$annotatedVCF) # read the batch vcf
 canonical_chr <- c(paste0("chr",c(1:22,"X","Y","M")),1:22,"X","Y","MT")
 vcf <- vcf[seqnames(vcf) %in% canonical_chr]
@@ -47,6 +56,8 @@ vcf <- vcf[seqnames(vcf) %in% canonical_chr]
 vcf_dt <- as.data.table(geno(vcf)$GT)
 vcf_dt[,FILTER := vcf@fixed$FILTER]
 vcf_dt[,VARIANT := names(vcf)]
+vcf_dt[,GENE_ID := .extract_info(vcf,"gene_id")]
+vcf_dt[,GENE_NAME := .extract_info(vcf,"gene_name")]
 
 dt <- as.data.table(lapply(vcf_dt, .clean_vars))
 
@@ -86,5 +97,5 @@ if (snakemake@config$rnaVariantCalling$addAF){
   res$MAX_AF <- NA
 }
 
-setcolorder(res,"VARIANT")
+setcolorder(res,c("VARIANT","GENE_ID","GENE_NAME","FILTER","MAX_AF","cohortFreq"))
 saveRDS(res,snakemake@output$data_table) # save res to a data_table object

@@ -26,6 +26,8 @@ res_plot <- copy(res)
 
 
 # Not needed or plotting
+res_plot[,GENE_ID := NULL]
+res_plot[,GENE_NAME := NULL]
 res_plot[,MAX_AF := NULL]
 res_plot[,cohortFreq := NULL]
 res_plot[,VARIANT := NULL]
