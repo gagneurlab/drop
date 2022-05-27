@@ -64,7 +64,7 @@ genome               dictionary  (Optional) Multiple fasta files can be specifie
 geneAnnotation       dictionary  A key-value list of the annotation name (key) and the full path to the GTF file (value). More than one annotation file can be provided.  ``anno1: /path/to/gtf1.gtf``
 
                                                                                                                                                                           ``anno2: /path/to/gtf2.gtf``
-hpoFile              character   Full path of the file containing HPO terms. If ``null`` (default), it reads it from our webserver. Refer to download_files_.        ``/path/to/hpo_file.tsv``
+hpoFile              character   Full path of the file containing HPO terms. If ``null`` (default), it reads it from our webserver. Refer to :ref:`Files to download`     ``/path/to/hpo_file.tsv``
 tools                dictionary  A key-value list of different commands (key) and the command (value) to run them                                                         ``gatkCmd: gatk``
 
                                                                                                                                                                           ``bcftoolsCmd: bcftools``
@@ -104,7 +104,7 @@ fpkmCutoff                    numeric    A positive number indicating the minimu
 implementation                character  Either 'autoencoder', 'pca' or 'peer'. Methods to remove sample covariation in OUTRIDER.                                           ``autoencoder``
 zScoreCutoff                  numeric    A non-negative number. Z scores (in absolute value) greater than this cutoff are considered as outliers.                           ``0``
 padjCutoff                    numeric    A number between (0, 1] indicating the maximum FDR an event can have in order to be considered an outlier.                         ``0.05``
-maxTestedDimensionProportion  numeric    An integer that controls the maximum value that the encoding dimension can take. Refer to advanced_options_.                  ``3``
+maxTestedDimensionProportion  numeric    An integer that controls the maximum value that the encoding dimension can take. Refer to :ref:`advancedoptions`.                  ``3``
 ============================  =========  =================================================================================================================================  ======
 
 Aberrant splicing dictionary
@@ -147,7 +147,7 @@ allelicRatioCutoff     numeric    A number between [0.5, 1) indicating the maxim
 addAF                  boolean    Whether or not to add the allele frequencies from gnomAD                                                                  ``true``
 maxAF                  numeric    Maximum allele frequency (of the minor allele) cut-off. Variants with AF equal or below this number are considered rare.  ``0.001``
 maxVarFreqCohort       numeric    Maximum variant frequency among the cohort.                                                                               ``0.05``
-qcVcf                  character  Full path to the vcf file used for VCF-BAM matching. Refer to download_files_.                                       ``/path/to/qc_vcf.vcf.gz``
+qcVcf                  character  Full path to the vcf file used for VCF-BAM matching. Refer to :ref:`Files to download`.                                       ``/path/to/qc_vcf.vcf.gz``
 qcGroups               list       Same as “groups”, but for the VCF-BAM matching                                                                            ``# see aberrant expression example``
 =====================  =========  ========================================================================================================================  ======
 
@@ -299,23 +299,25 @@ EXT-3R          BLOOD_AS                                                        
 ======  ======  =================  =================  ==============================  =============== =========================
 
 
-.. _download_files:
-
 Files to download
 -----------------
+
 The following files can be downloaded from our `public repository <https://www.cmm.in.tum.de/public/paper/drop_analysis/resource/>`_.
 
-#. VCF file containing different positions to be used to match DNA with RNA files.
+1. VCF file containing different positions to be used to match DNA with RNA files.
 The file name is ``qc_vcf_1000G_{genome_build}.vcf.gz``. One file is available for each
 genome build (hg19/hs37d5 and hg38/GRCh38). Download it together with the corresponding .tbi file.
 Indicate the full path to the vcf file in the ``qcVcf`` key in the mono-allelic expression dictionary.
 This file is only needed for the MAE module. Otherwise, write ``null`` in the ``qcVcf`` key.
-#. Text file containing the relations between genes and phenotypes encoded as HPO terms.
+
+2. Text file containing the relations between genes and phenotypes encoded as HPO terms.
 The file name is ``hpo_genes.tsv.gz``.
 Download it and indicate the full path to it in the ``hpoFile`` key.
 The file is only needed in case HPO terms are specified in the sample annotation.
 Otherwise, write ``null`` in the ``hpoFile`` key.
-#. For the RNA-Seq variant calling module:  
+
+3. For the RNA-Seq variant calling module:  
+
 known variants should be used to calibrate variant and sequencing scores.
 These can be downloaded for hg19 at our `public repository <https://www.cmm.in.tum.de/public/paper/drop_analysis/resource/>`_
 and for hg38 through the Broad Institute's `resource bundle. <https://gatk.broadinstitute.org/hc/en-us/articles/360035890811-Resource-bundle>`_
@@ -326,6 +328,8 @@ We recommend using the variants from dbSNP which is quite large. You can downloa
 
 repeat masker is used to filter hard to call regions. In general this removes false positive calls, however some targeted and known splicing defects lie within these repeat regions. Understand that this filter is labelled ``Mask`` in the result VCF files. You can download the repeat mask on our `public repository. <https://www.cmm.in.tum.de/public/paper/drop_analysis/resource/>`_
 
+
+.. _advancedoptions:
 
 Example of RNA replicates 
 ++++++++++++++++++++++++++++++++++
@@ -356,9 +360,6 @@ RNA_ID  DNA_ID  DROP_GROUP  RNA_BAM_FILE       DNA_VCF_FILE
 S10R    S10G    WGS         /path/to/S10R.BAM  /path/to/multi_sample.vcf.gz
 S20R    S20G    WGS         /path/to/S20R.BAM  /path/to/multi_sample.vcf.gz
 ======  ======  ==========  =================  ==
-
-
-.. _advanced_options:
 
 Advanced options
 ----------------
