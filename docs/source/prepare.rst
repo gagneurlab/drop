@@ -333,7 +333,7 @@ S10R_B  S10G    BLOOD       /path/to/S10R_B.BAM  /path/to/S10G.vcf.gz
 S10R_M  S10G    MUSCLE      /path/to/S10R_M.BAM  /path/to/S10G.vcf.gz
 ======  ======  ==========  ===================  ==
 
-Example of DNA replicates 
+Example of DNA replicates
 ++++++++++++++++++++++++++++++++++
 
 ======  ======  ==========  =================  ==
