@@ -317,7 +317,6 @@ The file is only needed in case HPO terms are specified in the sample annotation
 Otherwise, write ``null`` in the ``hpoFile`` key.
 
 3. RNA-Seq variant calling 
-
 For the ``rnaVariantCalling`` module known variants are needed to calibrate variant and sequencing scores.
 These can be downloaded for hg19 at our `public repository <https://www.cmm.in.tum.de/public/paper/drop_analysis/resource/>`_
 and for hg38 through the Broad Institute's `resource bundle. <https://gatk.broadinstitute.org/hc/en-us/articles/360035890811-Resource-bundle>`_
