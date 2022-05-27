@@ -56,15 +56,15 @@ htmlOutputPath       character   Full path of the folder where the HTML files ar
 indexWithFolderName  boolean     If true, the basename of the project directory will be used as prefix for the index.html file                                            ``true``
 genomeAssembly       character   Either hg19/hs37d5 or hg38/GRCh38, depending on the genome assembly used for mapping                                                     ``/data/project1``
 sampleAnnotation     character   Full path of the sample annotation table                                                                                                 ``/data/project1/sample_annotation.tsv``
-root                 character   Full path of the folder where the sub-directories processed_data and processed_results will be created containing DROP's output files.    ``/data/project1``
+root                 character   Full path of the folder where the sub-directories processed_data and processed_results will be created containing DROP's output files.   ``/data/project1``
 genome               character   Full path of a human reference genome fasta file                                                                                         ``/path/to/hg19.fa``
-genome               dictionary  (Optional) Multiple fasta files can be specified when RNA-seq BAM files belong to different genome. assemblies (eg, ncbi, ucsc).          ``ncbi: /path/to/hg19_ncbi.fa``
+genome               dictionary  (Optional) Multiple fasta files can be specified when RNA-seq BAM files belong to different genome. assemblies (eg, ncbi, ucsc).         ``ncbi: /path/to/hg19_ncbi.fa``
 
                                                                                                                                                                           ``ucsc: /path/to/hg19_ucsc.fa``
 geneAnnotation       dictionary  A key-value list of the annotation name (key) and the full path to the GTF file (value). More than one annotation file can be provided.  ``anno1: /path/to/gtf1.gtf``
 
                                                                                                                                                                           ``anno2: /path/to/gtf2.gtf``
-hpoFile              character   Full path of the file containing HPO terms. If ``null`` (default), it reads it from our webserver. Refer to :ref:`Files to download`     ``/path/to/hpo_file.tsv``
+hpoFile              character   Full path of the file containing HPO terms. If ``null`` (default), it reads it from our webserver. Refer to `files-to-download`_         ``/path/to/hpo_file.tsv``
 tools                dictionary  A key-value list of different commands (key) and the command (value) to run them                                                         ``gatkCmd: gatk``
 
                                                                                                                                                                           ``bcftoolsCmd: bcftools``
@@ -104,7 +104,7 @@ fpkmCutoff                    numeric    A positive number indicating the minimu
 implementation                character  Either 'autoencoder', 'pca' or 'peer'. Methods to remove sample covariation in OUTRIDER.                                           ``autoencoder``
 zScoreCutoff                  numeric    A non-negative number. Z scores (in absolute value) greater than this cutoff are considered as outliers.                           ``0``
 padjCutoff                    numeric    A number between (0, 1] indicating the maximum FDR an event can have in order to be considered an outlier.                         ``0.05``
-maxTestedDimensionProportion  numeric    An integer that controls the maximum value that the encoding dimension can take. Refer to :ref:`advancedoptions`.                  ``3``
+maxTestedDimensionProportion  numeric    An integer that controls the maximum value that the encoding dimension can take. Refer to `advanced-options`_.                     ``3``
 ============================  =========  =================================================================================================================================  ======
 
 Aberrant splicing dictionary
@@ -132,7 +132,7 @@ maxTestedDimensionProportion  numeric    Same as in aberrant expression.        
 
 
 Mono-allelic expression (MAE) dictionary
-++++++++++++++++++++++++++++++++++
+++++++++++++++++++++++++++++++++++++++++
 These parameters are directly used by the ``mae`` snakemake command. MAE groups are not bound by a minimum number of samples,
 but require additional information in the sample annotation table.
 
@@ -147,7 +147,7 @@ allelicRatioCutoff     numeric    A number between [0.5, 1) indicating the maxim
 addAF                  boolean    Whether or not to add the allele frequencies from gnomAD                                                                  ``true``
 maxAF                  numeric    Maximum allele frequency (of the minor allele) cut-off. Variants with AF equal or below this number are considered rare.  ``0.001``
 maxVarFreqCohort       numeric    Maximum variant frequency among the cohort.                                                                               ``0.05``
-qcVcf                  character  Full path to the vcf file used for VCF-BAM matching. Refer to :ref:`Files to download`.                                       ``/path/to/qc_vcf.vcf.gz``
+qcVcf                  character  Full path to the vcf file used for VCF-BAM matching. Refer to `files-to-download`_.                                       ``/path/to/qc_vcf.vcf.gz``
 qcGroups               list       Same as “groups”, but for the VCF-BAM matching                                                                            ``# see aberrant expression example``
 =====================  =========  ========================================================================================================================  ======
 
@@ -160,7 +160,7 @@ The RNA variant calling process uses information from multiple samples (as desig
 =====================  =========  =====================================================================================================================================================================  =========
 Parameter              Type       Description                                                                                                                                                                    Default/Examples
 =====================  =========  =====================================================================================================================================================================  =========
-groups                 list       groups that should be executed in this module. If not specified or ``null`` all groups are used.                                                           ``- group1``
+groups                 list       groups that should be executed in this module. If not specified or ``null`` all groups are used.                                                                       ``- group1``
 
 
                                                                                                                                                                                                          ``- group2``
@@ -172,7 +172,7 @@ knownVCFs              list       Filepaths where each item in the list is path 
                                                                                                                                                                                                          ``- known_indels.vcf``
 
 repeat_mask            character  Location of the RepeatMask .bed file.                                                                                                                                  ``path/to/RepeatMask.bed``
-minAlt                 numeric    Integer describing the minimum required reads that support the alternative allele. We recommend a minimum of 3 if further filtering on your own. 10 otherwise.   ``3``
+minAlt                 numeric    Integer describing the minimum required reads that support the alternative allele. We recommend a minimum of 3 if further filtering on your own. 10 otherwise.         ``3``
 hcArgs                 character  String describing additional arguments for GATK haplocaller. For expert tuning.                                                                                        ``""``
 
 =====================  =========  =====================================================================================================================================================================  =========
@@ -299,6 +299,8 @@ EXT-3R          BLOOD_AS                                                        
 ======  ======  =================  =================  ==============================  =============== =========================
 
 
+.. _files-to-download:
+
 Files to download
 -----------------
 
@@ -319,17 +321,18 @@ Otherwise, write ``null`` in the ``hpoFile`` key.
 3. For the ``rnaVariantCalling`` module known variants are needed to calibrate variant and sequencing scores.
 These can be downloaded for hg19 at our `public repository <https://www.cmm.in.tum.de/public/paper/drop_analysis/resource/>`_
 and for hg38 through the Broad Institute's `resource bundle. <https://gatk.broadinstitute.org/hc/en-us/articles/360035890811-Resource-bundle>`_
+
 * `Mills_and_1000G_gold_standard.indels.hg19.sites.chrPrefix.vcf.gz`
 * `1000G_phase1.snps.high_confidence.hg19.sites.chrPrefix.vcf.gz`
+
 We recommend using the variants from dbSNP which is quite large. You can download this from `NCBI <https://ftp.ncbi.nih.gov/snp/organisms/>`_
+
 * follow links for the current version (``human_9606/VCF/00-All.vcf.gz``) or older assemblies (eg. ``human_9606_b151_GRCh37p13/VCF/00-All.vcf.gz``)
+
 The repeat masker file is used to filter hard to call regions. In general this removes false positive calls, however some targeted and known splicing defects lie within these repeat regions. Understand that this filter is labelled ``Mask`` in the result VCF files. You can download the repeat mask on our `public repository. <https://www.cmm.in.tum.de/public/paper/drop_analysis/resource/>`_
 
-
-.. _advancedoptions:
-
 Example of RNA replicates 
-++++++++++++++++++++++++++++++++++
+-------------------------
 
 ======  ======  ==========  ===================  ==
 RNA_ID  DNA_ID  DROP_GROUP  RNA_BAM_FILE         DNA_VCF_FILE
@@ -357,6 +360,8 @@ RNA_ID  DNA_ID  DROP_GROUP  RNA_BAM_FILE       DNA_VCF_FILE
 S10R    S10G    WGS         /path/to/S10R.BAM  /path/to/multi_sample.vcf.gz
 S20R    S20G    WGS         /path/to/S20R.BAM  /path/to/multi_sample.vcf.gz
 ======  ======  ==========  =================  ==
+
+.. _advanced-options:
 
 Advanced options
 ----------------
