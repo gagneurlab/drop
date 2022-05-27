@@ -9,7 +9,7 @@ HG00132	Data/rna_bam/HG00132.bam	Data/dna_vcf/demo_chr21.vcf.gz	HG00132	outrider
 HG00149	Data/rna_bam/HG00149.bam	Data/dna_vcf/demo_chr21.vcf.gz	HG00149	outrider,fraser,fraser_external,outrider_external	True	IntersectionStrict	True	no	HP:0000014,HP:0000020,HP:0032663			
 HG00150	Data/rna_bam/HG00150.bam	Data/dna_vcf/demo_chr21.vcf.gz	HG00150	outrider,fraser,fraser_external,outrider_external	True	IntersectionStrict	True	no	HP:0030809,HP:0006144			
 HG00176	Data/rna_bam/HG00176.bam	Data/dna_vcf/demo_chr21.vcf.gz	HG00176	outrider,fraser,fraser_external,outrider_external	True	IntersectionStrict	True	no	HP:0005215,HP:0010234			
-HG00178				outrider_external						Data/external_geneCounts.tsv.gz	v29	
-HG00181				outrider_external						Data/external_geneCounts.tsv.gz	v29	
+HG00178				outrider_external						Data/external_count_data/geneCounts.tsv.gz	v29	
+HG00181				outrider_external						Data/external_count_data/geneCounts.tsv.gz	v29	
 HG00191.3.M_120208_3				fraser_external									Data/external_count_data
 HG00201.1.M_120208_6				fraser_external									Data/external_count_data
