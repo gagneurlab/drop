@@ -14,9 +14,9 @@ class Test_SampleAnnotation:
     def test_mapping(self, sampleAnnotation):
         # ID mappings/groups
         assert sampleAnnotation.idMapping.shape == (14, 2)
-        assert sampleAnnotation.sampleFileMapping.shape == (25, 4)
+        assert sampleAnnotation.sampleFileMapping.shape == (24, 4)
         true_mapping = {'batch_0': 1, 'batch_1': 2, 'mae': 3, 'outrider_external': 8, 'outrider': 10, 
-                        'fraser': 10, 'fraser_external': 7}
+                        'fraser': 10, 'fraser_external': 8}
         assert true_mapping == {k: len(v) for k, v in sampleAnnotation.rnaIDs.items()}
         assert true_mapping == {k: len(v) for k, v in sampleAnnotation.dnaIDs.items()}
 
