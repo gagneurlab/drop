@@ -121,7 +121,7 @@ class Submodule:
                 self.groups,
                 file_type="RNA_ID",
                 column=group_key, group_key=group_key,
-                exact_match=False, skip=True
+                skip=True
             )
         else:
             # subset SA by the drop group (not exact match) and filter by SA-GENOME column. Must exactly match config key
@@ -133,7 +133,7 @@ class Submodule:
                         self.groups,
                         file_type="RNA_ID",
                         column="GENOME", group_key=group_key,
-                        exact_match=False, skip=False
+                        skip=False
                     )
                 )
 
