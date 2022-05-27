@@ -64,7 +64,7 @@ genome               dictionary  (Optional) Multiple fasta files can be specifie
 geneAnnotation       dictionary  A key-value list of the annotation name (key) and the full path to the GTF file (value). More than one annotation file can be provided.  ``anno1: /path/to/gtf1.gtf``
 
                                                                                                                                                                           ``anno2: /path/to/gtf2.gtf``
-hpoFile              character   Full path of the file containing HPO terms. If ``null`` (default), it reads it from our webserver. Refer to :ref:`filesdownload`.        ``/path/to/hpo_file.tsv``
+hpoFile              character   Full path of the file containing HPO terms. If ``null`` (default), it reads it from our webserver. Refer to :ref:`<Files to download>`.        ``/path/to/hpo_file.tsv``
 tools                dictionary  A key-value list of different commands (key) and the command (value) to run them                                                         ``gatkCmd: gatk``
 
                                                                                                                                                                           ``bcftoolsCmd: bcftools``
@@ -147,7 +147,7 @@ allelicRatioCutoff     numeric    A number between [0.5, 1) indicating the maxim
 addAF                  boolean    Whether or not to add the allele frequencies from gnomAD                                                                  ``true``
 maxAF                  numeric    Maximum allele frequency (of the minor allele) cut-off. Variants with AF equal or below this number are considered rare.  ``0.001``
 maxVarFreqCohort       numeric    Maximum variant frequency among the cohort.                                                                               ``0.05``
-qcVcf                  character  Full path to the vcf file used for VCF-BAM matching. Refer to :ref:`filesdownload`.                                       ``/path/to/qc_vcf.vcf.gz``
+qcVcf                  character  Full path to the vcf file used for VCF-BAM matching. Refer to :ref:`303 Files to download`.                                       ``/path/to/qc_vcf.vcf.gz``
 qcGroups               list       Same as “groups”, but for the VCF-BAM matching                                                                            ``# see aberrant expression example``
 =====================  =========  ========================================================================================================================  ======
 
@@ -298,7 +298,6 @@ EXT-2R          BLOOD_AE,BLOOD_AS                     /path/to/externalCounts.ts
 EXT-3R          BLOOD_AS                                                                              /path/to/externalCountDir 
 ======  ======  =================  =================  ==============================  =============== =========================
 
-.. _filesdownload:
 
 Files to download
 -----------------
@@ -321,13 +320,13 @@ Otherwise, write ``null`` in the ``hpoFile`` key.
 known variants should be used to calibrate variant and sequencing scores.
 These can be downloaded for hg19 at our `public repository <https://www.cmm.in.tum.de/public/paper/drop_analysis/resource/>`_
 and for hg38 through the Broad Institute's `resource bundle. <https://gatk.broadinstitute.org/hc/en-us/articles/360035890811-Resource-bundle>`_
-    - `Mills_and_1000G_gold_standard.indels.hg19.sites.chrPrefix.vcf.gz`
-    - `1000G_phase1.snps.high_confidence.hg19.sites.chrPrefix.vcf.gz`
+    * `Mills_and_1000G_gold_standard.indels.hg19.sites.chrPrefix.vcf.gz`
+    * `1000G_phase1.snps.high_confidence.hg19.sites.chrPrefix.vcf.gz`
 
 We recommend using the variants from dbSNP which is quite large. You can download this from `NCBI <https://ftp.ncbi.nih.gov/snp/organisms/>`_
-    - follow links for the current version (`human_9606/VCF/00-All.vcf.gz`) or older assemblies (eg. `human_9606_b151_GRCh37p13/VCF/00-All.vcf.gz`)
+    * follow links for the current version (``human_9606/VCF/00-All.vcf.gz``) or older assemblies (eg. ``human_9606_b151_GRCh37p13/VCF/00-All.vcf.gz``)
 
-repeat masker is used to filter hard to call regions. In general this removes false positive calls, however some targeted and known splicing defects lie within these repeat regions. Understand that this filter is labelled `Mask` in the result VCF files. You can download the repeat mask on our `public repository. <https://www.cmm.in.tum.de/public/paper/drop_analysis/resource/>`_
+repeat masker is used to filter hard to call regions. In general this removes false positive calls, however some targeted and known splicing defects lie within these repeat regions. Understand that this filter is labelled ``Mask`` in the result VCF files. You can download the repeat mask on our `public repository. <https://www.cmm.in.tum.de/public/paper/drop_analysis/resource/>`_
 
 
 .. _advancedoptions:
