@@ -165,13 +165,12 @@ groups                 list       groups that should be executed in this module.
 
                                                                                                                                                                                                          ``- group2``
 
-knownVCFs              list       Filepaths where each item in the list is path to a vcf file. Each vcf file describes known variants. We recommend using dbSNP as well as resources described by GATK.  ``- dbSNP.vcf``
+highQualityVCFs        list       Filepaths where each item in the list is path to a vcf file. Each vcf file describes known high quality variants. These are used to recalibrate sequencing scores.     ``- known_indels.vcf``
 
                                                                                                                                                                                                          ``- known_SNPs.vcf``
 
-                                                                                                                                                                                                         ``- known_indels.vcf``
-
-repeat_mask            character  Location of the RepeatMask .bed file.                                                                                                                                  ``path/to/RepeatMask.bed``
+dbSNP                  character  Location of the dbSNP ``.vcf`` file. This improves both recalibrating sequencing scores, as well as variant calling precision. Refer to `files-to-download`_           ``path/to/dbSNP.vcf``
+repeat_mask            character  Location of the RepeatMask ``.bed`` file. Refer to `files-to-download`_                                                                                                ``path/to/RepeatMask.bed``
 minAlt                 numeric    Integer describing the minimum required reads that support the alternative allele. We recommend a minimum of 3 if further filtering on your own. 10 otherwise.         ``3``
 hcArgs                 character  String describing additional arguments for GATK haplocaller. For expert tuning.                                                                                        ``""``
 

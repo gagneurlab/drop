@@ -31,7 +31,8 @@ def fixConfig(input_file, output_file):
                  "v29": "geneAnnotation",
                  "ncbi": "genome", "ucsc":"genome",
                  "qcVcf": "mae",
-                 "knownVCFs":"rnaVariantCalling",
+                 "highQualityVCFs":"rnaVariantCalling",
+                 "dbSNP":"rnaVariantCalling",
                  "repeat_mask":"rnaVariantCalling"
                  }
 
