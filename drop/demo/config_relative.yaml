@@ -73,7 +73,7 @@ rnaVariantCalling:
   knownVCFs:
   - Data/high_confidence_snps.vcf.gz
   - Data/high_confidence_indels.vcf.gz
-  - Data/dbSNP_chr21.vcf.gz
+  dbSNP: Data/dbSNP_chr21.vcf.gz
   repeat_mask: Data/repeat_mask_chr21.bed
   createSingleVCF: true
   addAF: false

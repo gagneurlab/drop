@@ -62,7 +62,8 @@ class RVC(Submodule):
         setKey = utils.setKey
         setKey(dict_, None, "run", False)
         setKey(dict_, None, "groups", self.sampleAnnotation.getGroups())
-        setKey(dict_, None, "knownVCFs", [])
+        setKey(dict_, None, "highQualityVCFs", [])
+        setKey(dict_, None, "dbSNP","") 
         setKey(dict_, None, "repeat_mask", "")
         setKey(dict_, None, "hcArgs", "")
         setKey(dict_, None, "addAF", False)
@@ -72,5 +73,5 @@ class RVC(Submodule):
         setKey(dict_, None, "createSingleVCF", False)
 
         if dict_["run"]:
-            dict_ = utils.checkKeys(dict_, keys=["repeat_mask","knownVCFs"], check_files=True)
+            dict_ = utils.checkKeys(dict_, keys=["repeat_mask","highQualityVCFs","dbSNP"], check_files=True)
         return dict_

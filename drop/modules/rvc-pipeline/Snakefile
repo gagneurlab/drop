@@ -4,11 +4,14 @@ RVC_index_input,RVC_graph_file,RVC_index_output = cfg.RVC.getModuleIndexFiles("r
 #########
 # Helper Functions
 # #######
-def getKnownVCFs():
-    knownVCFs = ""
-    for vcf_file in cfg.config_dict["rnaVariantCalling"]["knownVCFs"]:
-        knownVCFs += vcf_file + ";"
-    return knownVCFs.strip(";")
+def getKnownVCFs(dbSNP_only = False):
+    if dbSNP_only:
+        return cfg.config_dict["rnaVariantCalling"]["dbSNP"] 
+    else:
+        highQualityVCFs = cfg.config_dict["rnaVariantCalling"]["dbSNP"] + ";"
+        for vcf_file in cfg.config_dict["rnaVariantCalling"]["highQualityVCFs"]:
+            highQualityVCFs += vcf_file + ";"
+        return highQualityVCFs
 
 def getHaploCallerArgs():
     return cfg.config_dict["rnaVariantCalling"]["hcArgs"]
@@ -376,7 +379,8 @@ rule haplotypeCaller:
             cfg.processedDataDir,
             "rnaVariantCalling/out/bam",
             "{sample}",
-            "{sample}_Aligned.sortedByCoord.dupMarked.split.bqsr.out.bai")
+            "{sample}_Aligned.sortedByCoord.dupMarked.split.bqsr.out.bai"),
+        script = str(RVC_WORKDIR) + "/GATK_BASH/haplotypeCaller.sh"
     output:
         os.path.join(
         cfg.processedDataDir,
@@ -385,15 +389,17 @@ rule haplotypeCaller:
         "{sample}.g.vcf.gz")
     params:
         ref = lambda wildcards: cfg.RVC.getGenomePath(wildcards.sample),
+        ucsc2ncbi = cfg.workDir / "Scripts/Pipeline/chr_UCSC_NCBI.txt",
+        ncbi2ucsc = cfg.workDir / "Scripts/Pipeline/chr_NCBI_UCSC.txt",
         hcArgs = getHaploCallerArgs(),
+        dbSNP = getKnownVCFs(dbSNP_only = True)
     log:
         str(cfg.processedDataDir) + "/rnaVariantCalling/logs/all_haplocaller/{sample}.log"
     shell:
         """
-        gatk --java-options "-Djava.io.tmpdir={resources.tmpdir}" HaplotypeCaller \
-        -R {params.ref} -I {input.bam} --dont-use-soft-clipped-bases -stand-call-conf 20.0 \
-        --output-mode EMIT_ALL_CONFIDENT_SITES \
-        -ERC GVCF {params.hcArgs} -O {output} 2> {log}
+        {input.script} {input.bam} {input.bai} \
+        {params.ref} {params.dbSNP} {params.ucsc2ncbi} {params.ncbi2ucsc} \
+        {log} {resources.tmpdir} {output} {params.hcArgs}
         """
 
 
@@ -457,7 +463,7 @@ rule bqsr:
             "{sample}_recal.table")
     params:
         ref = lambda wildcards: cfg.RVC.getGenomePath(wildcards.sample),
-        known_sites = getKnownVCFs(),
+        highQualityVCFs = getKnownVCFs(),
         ucsc2ncbi = cfg.workDir / "Scripts/Pipeline/chr_UCSC_NCBI.txt",
         ncbi2ucsc = cfg.workDir / "Scripts/Pipeline/chr_NCBI_UCSC.txt"
     log:
@@ -465,7 +471,7 @@ rule bqsr:
     shell:
         """
         {input.script} {input.bam} {input.bai} \
-        {params.ref} "{params.known_sites}" {params.ucsc2ncbi} {params.ncbi2ucsc} \
+        {params.ref} "{params.highQualityVCFs}" {params.ucsc2ncbi} {params.ncbi2ucsc} \
         {log} {resources.tmpdir} {output.bqsr_table}
         """
 
