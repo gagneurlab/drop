@@ -70,7 +70,7 @@ rnaVariantCalling:
   groups:
   - batch_0
   - batch_1
-  knownVCFs:
+  highQualityVCFs:
   - Data/high_confidence_snps.vcf.gz
   - Data/high_confidence_indels.vcf.gz
   dbSNP: Data/dbSNP_chr21.vcf.gz

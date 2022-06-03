@@ -78,7 +78,7 @@ rnaVariantCalling:
     run: false
     groups:
         - batch_0
-    knownVCFs:
+    highQualityVCFs:
         - Data/Mills_and_1000G_gold_standard.indels.hg19.sites.chrPrefix.vcf.gz
         - Data/1000G_phase1.snps.high_confidence.hg19.sites.chrPrefix.vcf.gz
     dbSNP: Data/00-All.vcf.gz
