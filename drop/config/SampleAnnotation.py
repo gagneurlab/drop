@@ -46,10 +46,10 @@ class SampleAnnotation:
         annotationTable = pd.read_csv(self.file, sep=sep, index_col=False)
         optional_columns = {"GENE_COUNTS_FILE", "SPLICE_COUNTS_DIR", "GENE_ANNOTATION", "GENOME"}
 
-        sa = pd.read_csv(self.file, sep=sep, index_col=False)
-        missing_cols = [x for x in self.SAMPLE_ANNOTATION_COLUMNS if x not in sa.columns.values]
+        annotationTable = pd.read_csv(self.file, sep=sep, index_col=False)
+        missing_cols = [x for x in self.SAMPLE_ANNOTATION_COLUMNS if x not in annotationTable.columns.values]
         if len(missing_cols) > 0:
-            if "GENE_ANNOTATION" in missing_cols and "ANNOTATION" in sa.columns.values:
+            if "GENE_ANNOTATION" in missing_cols and "ANNOTATION" in annotationTable.columns.values:
                 logger.info(
                     "WARNING: GENE_ANNOTATION must be a column in the sample annotation table, ANNOTATION is the old column name and will be deprecated in the future\n")
                 annotationTable["GENE_ANNOTATION"] = annotationTable.pop("ANNOTATION")
