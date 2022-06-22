@@ -102,7 +102,10 @@ if(length(res_junc) > 0){
       res_genes_dt <- add_HPO_cols(res_genes_dt, hpo_file = snakemake@params$hpoFile)
     }
   }
-} else res_genes_dt <- data.table()
+} else{
+  res_genes_dt <- data.table()
+  warning("The aberrant splicing pipeline gave 0 results for the ", dataset, " dataset.")
+}
 
 # Results
 write_tsv(res_junc_dt, file=snakemake@output$resultTableJunc)
