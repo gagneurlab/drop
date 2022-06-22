@@ -56,15 +56,15 @@ htmlOutputPath       character   Full path of the folder where the HTML files ar
 indexWithFolderName  boolean     If true, the basename of the project directory will be used as prefix for the index.html file                                            ``true``
 genomeAssembly       character   Either hg19/hs37d5 or hg38/GRCh38, depending on the genome assembly used for mapping                                                     ``/data/project1``
 sampleAnnotation     character   Full path of the sample annotation table                                                                                                 ``/data/project1/sample_annotation.tsv``
-root                 character   Full path of the folder where the sub-directories processed_data and processed_results will be created containing DROP's output files.    ``/data/project1``
+root                 character   Full path of the folder where the sub-directories processed_data and processed_results will be created containing DROP's output files.   ``/data/project1``
 genome               character   Full path of a human reference genome fasta file                                                                                         ``/path/to/hg19.fa``
-genome               dictionary  (Optional) Multiple fasta files can be specified when RNA-seq BAM files belong to different genome. assemblies (eg, ncbi, ucsc).          ``ncbi: /path/to/hg19_ncbi.fa``
+genome               dictionary  (Optional) Multiple fasta files can be specified when RNA-seq BAM files belong to different genome. assemblies (eg, ncbi, ucsc).         ``ncbi: /path/to/hg19_ncbi.fa``
 
                                                                                                                                                                           ``ucsc: /path/to/hg19_ucsc.fa``
 geneAnnotation       dictionary  A key-value list of the annotation name (key) and the full path to the GTF file (value). More than one annotation file can be provided.  ``anno1: /path/to/gtf1.gtf``
 
                                                                                                                                                                           ``anno2: /path/to/gtf2.gtf``
-hpoFile              character   Full path of the file containing HPO terms. If ``null`` (default), it reads it from our webserver. Refer to :ref:`filesdownload`.        ``/path/to/hpo_file.tsv``
+hpoFile              character   Full path of the file containing HPO terms. If ``null`` (default), it reads it from our webserver. Refer to `files-to-download`_         ``/path/to/hpo_file.tsv``
 tools                dictionary  A key-value list of different commands (key) and the command (value) to run them                                                         ``gatkCmd: gatk``
 
                                                                                                                                                                           ``bcftoolsCmd: bcftools``
@@ -104,7 +104,7 @@ fpkmCutoff                    numeric    A positive number indicating the minimu
 implementation                character  Either 'autoencoder', 'pca' or 'peer'. Methods to remove sample covariation in OUTRIDER.                                           ``autoencoder``
 zScoreCutoff                  numeric    A non-negative number. Z scores (in absolute value) greater than this cutoff are considered as outliers.                           ``0``
 padjCutoff                    numeric    A number between (0, 1] indicating the maximum FDR an event can have in order to be considered an outlier.                         ``0.05``
-maxTestedDimensionProportion  numeric    An integer that controls the maximum value that the encoding dimension can take. Refer to :ref:`advancedoptions`.                  ``3``
+maxTestedDimensionProportion  numeric    An integer that controls the maximum value that the encoding dimension can take. Refer to `advanced-options`_.                     ``3``
 ============================  =========  =================================================================================================================================  ======
 
 Aberrant splicing dictionary
@@ -132,7 +132,7 @@ maxTestedDimensionProportion  numeric    Same as in aberrant expression.        
 
 
 Mono-allelic expression (MAE) dictionary
-++++++++++++++++++++++++++++++++++
+++++++++++++++++++++++++++++++++++++++++
 These parameters are directly used by the ``mae`` snakemake command. MAE groups are not bound by a minimum number of samples,
 but require additional information in the sample annotation table.
 
@@ -147,33 +147,32 @@ allelicRatioCutoff     numeric    A number between [0.5, 1) indicating the maxim
 addAF                  boolean    Whether or not to add the allele frequencies from gnomAD                                                                  ``true``
 maxAF                  numeric    Maximum allele frequency (of the minor allele) cut-off. Variants with AF equal or below this number are considered rare.  ``0.001``
 maxVarFreqCohort       numeric    Maximum variant frequency among the cohort.                                                                               ``0.05``
-qcVcf                  character  Full path to the vcf file used for VCF-BAM matching. Refer to :ref:`filesdownload`.                                       ``/path/to/qc_vcf.vcf.gz``
+qcVcf                  character  Full path to the vcf file used for VCF-BAM matching. Refer to `files-to-download`_.                                       ``/path/to/qc_vcf.vcf.gz``
 qcGroups               list       Same as “groups”, but for the VCF-BAM matching                                                                            ``# see aberrant expression example``
 =====================  =========  ========================================================================================================================  ======
 
 
 RNA Variant Calling dictionary
 ++++++++++++++++++++++++++++++++++
-RNA Variant Calling may be useful for researchers who do not have access to variant calls from genomic data. While variant calling from WES and WGS technologies may be more traditional (and reliable), we have found that variant calling from RNA-Seq data can provide additional evidence for the underlying causes of aberrant expression or splicing.
+Variant Calling originating from RNA-seq data may be useful for researchers who do not have access to variant calls from genomic data. While variant calling from WES and WGS technologies may be more traditional (and reliable), we have found that variant calling from RNA-Seq data can provide additional evidence for the underlying causes of aberrant expression or splicing.
 The RNA variant calling process uses information from multiple samples (as designated by the ``groups`` variable) to improve the variant calling process. However, the larger the group size, the more costly the computation is in terms of time and resources. When building the sample annotation table, take this into account. For the most accurate variant calls include many samples in each ``DROP_GROUP`` group, but in order to speed up computation, separate samples into many groups.
 
 =====================  =========  =====================================================================================================================================================================  =========
 Parameter              Type       Description                                                                                                                                                                    Default/Examples
-=====================  =========  =====================================================================================================================================================================  =========
-groups                 list       groups that should be executed in this module. If not specified or ``null`` all groups are used.                                                           ``- group1``
+=====================  =========  ================================================================================================================================================================================================  =========
+groups                 list       groups that should be executed in this module. If not specified or ``null`` all groups are used.                                                                                                  ``- group1``
 
 
-                                                                                                                                                                                                         ``- group2``
+                                                                                                                                                                                                                                    ``- group2``
 
-knownVCFs              list       Filepaths where each item in the list is path to a vcf file. Each vcf file describes known variants. We recommend using dbSNP as well as resources described by GATK.  ``- dbSNP.vcf``
+highQualityVCFs        list       Filepaths where each item in the list is path to a vcf file. Each vcf file describes known high quality variants, which are used to recalibrate sequencing scores. Refer to `files-to-download`_  ``- known_indels.vcf``
 
-                                                                                                                                                                                                         ``- known_SNPs.vcf``
+                                                                                                                                                                                                                                    ``- known_SNPs.vcf``
 
-                                                                                                                                                                                                         ``- known_indels.vcf``
-
-repeat_mask            character  Location of the RepeatMask .bed file.                                                                                                                                  ``path/to/RepeatMask.bed``
-minAlt                 numeric    Integer describing the minimum required reads that support the alternative allele. We recommend a minimum of 3 if further filtering on your own. 10 otherwise.   ``3``
-hcArgs                 character  String describing additional arguments for GATK haplocaller. For expert tuning.                                                                                        ``""``
+dbSNP                  character  Location of the dbSNP ``.vcf`` file. This improves both recalibrating sequencing scores, as well as variant calling precision. Refer to `files-to-download`_                                      ``path/to/dbSNP.vcf``
+repeat_mask            character  Location of the RepeatMask ``.bed`` file. Refer to `files-to-download`_                                                                                                                           ``path/to/RepeatMask.bed``
+minAlt                 numeric    Integer describing the minimum required reads that support the alternative allele. We recommend a minimum of 3 if further filtering on your own. 10 otherwise.                                    ``3``
+hcArgs                 character  String describing additional arguments for GATK haplocaller. For expert tuning.                                                                                                                   ``""``
 
 =====================  =========  =====================================================================================================================================================================  =========
 
@@ -298,7 +297,8 @@ EXT-2R          BLOOD_AE,BLOOD_AS                     /path/to/externalCounts.ts
 EXT-3R          BLOOD_AS                                                                              /path/to/externalCountDir 
 ======  ======  =================  =================  ==============================  =============== =========================
 
-.. _filesdownload:
+
+.. _files-to-download:
 
 Files to download
 -----------------
@@ -307,7 +307,7 @@ The following files can be downloaded from our `public repository <https://www.c
 
 1. VCF file containing different positions to be used to match DNA with RNA files.
 The file name is ``qc_vcf_1000G_{genome_build}.vcf.gz``. One file is available for each
-genome build (hg19/hs37d5 and hg38/GRCh38). Download it together with the corresponding .tbi file.
+genome build (hg19/hs37d5 and hg38/GRCh38). Download it together with the corresponding ``.tbi`` file.
 Indicate the full path to the vcf file in the ``qcVcf`` key in the mono-allelic expression dictionary.
 This file is only needed for the MAE module. Otherwise, write ``null`` in the ``qcVcf`` key.
 
@@ -317,14 +317,28 @@ Download it and indicate the full path to it in the ``hpoFile`` key.
 The file is only needed in case HPO terms are specified in the sample annotation.
 Otherwise, write ``null`` in the ``hpoFile`` key.
 
-3. For the RNA-Seq variant calling module, known variants should be used to calibrate variant and sequencing scores.
-These can be downloaded for hg19 at our `public repository <https://www.cmm.in.tum.de/public/paper/drop_analysis/resource/>`
-and for hg38 through the Broad Institute's `resource bundle <https://gatk.broadinstitute.org/hc/en-us/articles/360035890811-Resource-bundle>`
+3. For the ``rnaVariantCalling`` module known high quality variants are needed to calibrate variant and sequencing scores to be used in the ``rnaVariantCalling`` module in the ``highQualityVCF`` config parameter.
+These and the associated ``.tbi`` indexes can be downloaded for hg19 at our `public repository <https://www.cmm.in.tum.de/public/paper/drop_analysis/resource/>`_
+and for hg38 through the Broad Institute's `resource bundle. <https://gatk.broadinstitute.org/hc/en-us/articles/360035890811-Resource-bundle>`_
 
-.. _advancedoptions:
+hg19
+
+* ``Mills_and_1000G_gold_standard.indels.hg19.sites.chrPrefix.vcf.gz``
+* ``1000G_phase1.snps.high_confidence.hg19.sites.chrPrefix.vcf.gz``
+
+hg38
+
+* ``Mills_and_1000G_gold_standard.indels.hg38.vcf.gz``
+* ``Homo_sapiens_assembly38.known_indels.vcf.gz``
+
+We also recommend using the variants from dbSNP which is quite large. You can download them and their associated ``.tbi`` indexes from `NCBI <https://ftp.ncbi.nih.gov/snp/organisms/>`_
+
+* follow links for the current version (``human_9606/VCF/00-All.vcf.gz``) or older assemblies (eg. ``human_9606_b151_GRCh37p13/VCF/00-All.vcf.gz``)
+
+The repeat masker file is used to filter hard-to-call regions. In general, this removes false-positive calls, however, some targeted and known splicing defects lie within these repeat regions. Understand that this filter is labeled ``Mask`` in the result VCF files. You can download the repeat mask and associated ``.idx`` on our `public repository. <https://www.cmm.in.tum.de/public/paper/drop_analysis/resource/>`_ for the ``repeat_mask`` config parameter.
 
 Example of RNA replicates 
-++++++++++++++++++++++++++++++++++
+-------------------------
 
 ======  ======  ==========  ===================  ==
 RNA_ID  DNA_ID  DROP_GROUP  RNA_BAM_FILE         DNA_VCF_FILE
@@ -353,6 +367,8 @@ S10R    S10G    WGS         /path/to/S10R.BAM  /path/to/multi_sample.vcf.gz
 S20R    S20G    WGS         /path/to/S20R.BAM  /path/to/multi_sample.vcf.gz
 ======  ======  ==========  =================  ==
 
+.. _advanced-options:
+
 Advanced options
 ----------------
 
@@ -365,7 +381,6 @@ Also, the number of threads allowed for a computational step can be modified.
 
     DROP needs to be installed from a local directory using ``pip install -e <path/to/drop-repo>``
     so that any changes in the code will be available in the next pipeline run
-    (see :ref:`otherversions`).
     Any changes made to the R code need to be updated with ``drop update`` in the project directory.
 
 The aberrant expression and splicing modules use a denoising autoencoder to
@@ -387,3 +402,4 @@ In additon, DROP allows that BAM files from RNA-seq were aligned to one genome
 assembly (eg ucsc) and the corresponding VCF files from DNA sequencing to another
 genome assembly (eg ncbi). If so, the assembly of the reference genome fasta file
 must correspond to the one of the BAM file from RNA-seq.
+

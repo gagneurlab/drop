@@ -43,6 +43,7 @@ class SampleAnnotation:
             "RNA_ID": str, "DNA_ID": str, "DROP_GROUP": str, 
             "PAIRED_END": bool, "COUNT_MODE": str, "COUNT_OVERLAPS": bool, "STRAND": str, 
         }
+        annotationTable = pd.read_csv(self.file, sep=sep, index_col=False)
         optional_columns = {"GENE_COUNTS_FILE", "SPLICE_COUNTS_DIR", "GENE_ANNOTATION", "GENOME"}
 
         annotationTable = pd.read_csv(self.file, sep=sep, index_col=False)

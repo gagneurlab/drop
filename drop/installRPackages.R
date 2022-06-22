@@ -1,4 +1,4 @@
-options(timeout = 600) 
+options(timeout = 900)
 
 options(repos=structure(c(CRAN="https://cloud.r-project.org")), warn = -1)
 

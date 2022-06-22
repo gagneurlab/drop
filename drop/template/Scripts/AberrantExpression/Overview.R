@@ -35,13 +35,13 @@ htmlDir <- snakemake@params$htmlDir
 
 count_links <- sapply(
   annotations, function(x) build_link_list(
-    file_paths = file.path(htmlDir, "Counting", annotations, paste0('Summary_', datasets, '.html')),
+    file_paths = file.path(htmlDir, "Counting", x, paste0('Summary_', datasets, '.html')),
     captions = datasets)
 )
 
 results_links <- sapply(
  annotations, function(x) build_link_list(
-    file_paths = file.path(htmlDir, "Outrider", annotations, paste0('Summary_', datasets, '.html')),
+    file_paths = file.path(htmlDir, "Outrider", x, paste0('Summary_', datasets, '.html')),
     captions = datasets)
 )
 

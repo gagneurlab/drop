@@ -41,8 +41,8 @@ htmlDir <- snakemake@params$htmlDir
 resultsDir <- snakemake@params$resultsDir
 
 results_links <- sapply(
-  annotations, function(v) build_link_list(
-    file_paths = file.path(htmlDir, paste0(datasets, '--', v, '_results.html')),
+  annotations, function(x) build_link_list(
+    file_paths = file.path(htmlDir, paste0(datasets, '--', x, '_results.html')),
     captions = datasets
   )
 )

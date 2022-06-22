@@ -21,6 +21,9 @@ if [[ $input_gtf == *.gz ]];
         cut -f1,4,5,9 $input_gtf > $tmp_bed
 fi
 
+# remove all ';' characters from the annotation to be parsed as 1 field
+sed -i "s/;//g" $tmp_bed
+
 #grep the first column (no headers) for chr1-9,chr10-19,chr20-22
 vcf_chr=$(zgrep -v "^#" $input_vcf | cut -f1 | grep -w -c -E "^chr[1-9]$|^chr[1][0-9]$|^chr[2][0-2]$"||true )
 bed_chr=$(cat $tmp_bed | cut -f1 |  grep -w -c -E "^chr[1-9]$|^chr[1][0-9]$|^chr[2][0-2]$"||true )

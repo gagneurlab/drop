@@ -126,14 +126,20 @@ class SampleParams:
         for module in moduleList:
             config_dict = module.dict_
             format_dict = {key:str(config_dict[key]) for key in config_dict}
-            current_config = pd.DataFrame.from_dict(format_dict,orient = "index",columns = ["value"])
+
+            # additional hard coded keys for global settings
+            format_dict["geneAnnotation"] = self.geneAnnotation
+            format_dict["processedDataDir"] = self.processedDataDir
+            format_dict["sampleAnnotation"] = self.sampleAnnotation.file
+
+            current_config = pd.DataFrame.from_dict(format_dict,orient = "index",columns = ["value"],dtype = str)
             moduleCSV = self.processedDataDir / self.MODULE_NAMES[module.name] / "params" / "config" 
             moduleCSV.mkdir(parents = True,exist_ok = True)
             filename = f"{str(moduleCSV)}/{module.name}_config.tsv"
 
             # if a file by the desired name exists.
             if os.path.isfile(filename):
-                old_config = pd.read_csv(filename,sep = "\t",index_col = 0).fillna(value = "").astype(str)
+                old_config = pd.read_csv(filename,sep = "\t",index_col = 0,dtype = str).fillna(value = "").astype(str)
                 if current_config.equals(old_config):
                     pass
                 else:

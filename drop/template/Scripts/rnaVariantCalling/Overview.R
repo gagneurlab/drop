@@ -1,6 +1,6 @@
 #'---
 #' title: RNA Variant Calling
-#' author:
+#' author: nickhsmith
 #' wb:
 #'  log:
 #'    - snakemake: '`sm str(tmp_dir / "RVC" / "Overview.Rds")`'
@@ -12,13 +12,13 @@
 #'    - functions: '`sm cfg.workDir / "Scripts/html_functions.R"`'
 #'    - htmls:     '`sm expand(os.path.join(config["htmlOutputPath"],
 #'                             "rnaVariantCalling",
-#'                             "{dataset}--{annotation}_summary.html"),
-#'                          annotation = cfg.get("geneAnnotation"), dataset = cfg.RVC.groups)`' 
+#'                             "{annotation}/Summary_{dataset}.html"),
+#'                          annotation = cfg.genome.getGeneVersions(), dataset = cfg.RVC.groups)`' 
 #'    - annotated_vcfs: '`sm expand(os.path.join(
 #'                            cfg.processedResultsDir,
-#'                            "rnaVariantCalling/out/batch_vcfs", "{dataset}",
+#'                            "rnaVariantCalling/batch_vcfs", "{dataset}",
 #'                            "{dataset}_{annotation}.annotated.vcf.gz"),
-#'                          annotation = cfg.get("geneAnnotation"), dataset = cfg.RVC.groups)`'
+#'                          annotation = cfg.genome.getGeneVersions(), dataset = cfg.RVC.groups)`'
 #' output:
 #'   html_document:
 #'    code_folding: hide
@@ -36,11 +36,11 @@ annotations <- snakemake@params$annotations
 htmlDir <- snakemake@params$htmlDir
 
 results_links <- sapply(
-  annotations, function(v) build_link_list(
-    file_paths = file.path(htmlDir, paste0(datasets, '--', v, '_results.html')),
-    captions = datasets
-  )
+  annotations, function(x) build_link_list(
+    file_paths = file.path(htmlDir, x, paste0('Summary_', datasets, '.html')),
+    captions = datasets)
 )
+
 
 #'
 #' **Datasets:** `r paste(datasets, collapse = ', ')`
@@ -48,9 +48,8 @@ results_links <- sapply(
 #' **Gene annotations:** `r paste(annotations, collapse = ', ')`
 #'
 #' ## RVC results
-#' `r display_text(caption = 'Gene annotation version ', links = results_links)`
+#' `r display_text(caption = 'Gene annotation_test:', links = results_links)`
 #'
 #' ## Files
-#' * [annotated VCFs](`r file.path(snakemake@config$root, 'processed_results/rnaVariantCalling/out/batch_vcfs/')`)
-#'
-#' ## Analyze Individual Results
+#' * [single sample VCFs](`r file.path(snakemake@config$root, 'processed_results/rnaVariantCalling/sample_vcfs/')`)
+#' * [batch annotated VCFs](`r file.path(snakemake@config$root, 'processed_results/rnaVariantCalling/batch_vcfs/')`)

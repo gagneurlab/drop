@@ -11,7 +11,7 @@ sampleAnnotation: Data/sample_annotation.tsv
 geneAnnotation:
     v29: Data/gencode_annotation_trunc.gtf
 genomeAssembly: hg19
-genome: Data/chr21.fa
+genome: Data/hg19.fa
 
 hpoFile: null
 random_seed: true  # just for demo data, remove for proper analysis
@@ -20,9 +20,9 @@ exportCounts:
     # specify which gene annotations to include and which
     # groups to exclude when exporting counts
     geneAnnotations:
-      - v29
+        - v29
     excludeGroups
-      - group1
+        - group1
 genome: # path to genome sequence in fasta format.
     # You can define multiple reference genomes in yaml format, ncbi: path_to_ncbi, ucsc: path_to_ucsc
     # the keywords that define the path should be in the GENOME column of the SA table
@@ -44,7 +44,7 @@ aberrantExpression:
 aberrantSplicing:
     run: true
     groups:
-      - fraser
+        - fraser
     recount: true
     longRead: false
     keepNonStandardChrs: true
@@ -78,17 +78,17 @@ rnaVariantCalling:
     run: false
     groups:
         - batch_0
-    knownVCFs:
-        - high_confidence_snps_test.vcf.gz
-        - high_confidence_indels_test.vcf.gz
-        - dbSNP.vcf.gz
-    repeat_mask: Data/repeat_mask.bed
+    highQualityVCFs:
+        - Data/Mills_and_1000G_gold_standard.indels.hg19.sites.chrPrefix.vcf.gz
+        - Data/1000G_phase1.snps.high_confidence.hg19.sites.chrPrefix.vcf.gz
+    dbSNP: Data/00-All.vcf.gz
+    repeat_mask: Data/hg19_repeatMasker_sorted.chrPrefix.bed
+    createSingleVCF: true                    
     addAF: true
     maxAF: .001
-    maxVarFreqCohort: .04
+    maxVarFreqCohort: .1
     hcArgs: 
     minAlt: 3
-
 
 tools:
     gatkCmd: gatk
