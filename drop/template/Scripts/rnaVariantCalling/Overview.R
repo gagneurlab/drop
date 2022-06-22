@@ -51,5 +51,5 @@ results_links <- sapply(
 #' `r display_text(caption = 'Gene annotation_test:', links = results_links)`
 #'
 #' ## Files
-#' * [annotated VCFs](`r file.path(snakemake@config$root, 'processed_results/rnaVariantCalling/out/batch_vcfs/')`)
-
+#' * [single sample VCFs](`r file.path(snakemake@config$root, 'processed_results/rnaVariantCalling/sample_vcfs/')`)
+#' * [batch annotated VCFs](`r file.path(snakemake@config$root, 'processed_results/rnaVariantCalling/batch_vcfs/')`)
