@@ -165,7 +165,7 @@ groups                 list       groups that should be executed in this module.
 
                                                                                                                                                                                                          ``- group2``
 
-highQualityVCFs        list       Filepaths where each item in the list is path to a vcf file. Each vcf file describes known high quality variants. These are used to recalibrate sequencing scores.     ``- known_indels.vcf``
+highQualityVCFs        list       Filepaths where each item in the list is path to a vcf file. Each vcf file describes known high quality variants, which are used to recalibrate sequencing scores.     ``- known_indels.vcf``
 
                                                                                                                                                                                                          ``- known_SNPs.vcf``
 
