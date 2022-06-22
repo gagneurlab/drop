@@ -16,7 +16,7 @@
 #'                          annotation = cfg.genome.getGeneVersions(), dataset = cfg.RVC.groups)`' 
 #'    - annotated_vcfs: '`sm expand(os.path.join(
 #'                            cfg.processedResultsDir,
-#'                            "rnaVariantCalling/out/batch_vcfs", "{dataset}",
+#'                            "rnaVariantCalling/batch_vcfs", "{dataset}",
 #'                            "{dataset}_{annotation}.annotated.vcf.gz"),
 #'                          annotation = cfg.genome.getGeneVersions(), dataset = cfg.RVC.groups)`'
 #' output:
