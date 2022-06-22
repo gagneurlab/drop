@@ -4,5 +4,5 @@ from . import config
 from . import utils
 from . import demo
 
-__version__ = "1.1.4"
+__version__ = "1.2.0"
 
