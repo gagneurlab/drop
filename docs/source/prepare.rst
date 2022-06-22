@@ -154,25 +154,25 @@ qcGroups               list       Same as “groups”, but for the VCF-BAM matc
 
 RNA Variant Calling dictionary
 ++++++++++++++++++++++++++++++++++
-RNA Variant Calling may be useful for researchers who do not have access to variant calls from genomic data. While variant calling from WES and WGS technologies may be more traditional (and reliable), we have found that variant calling from RNA-Seq data can provide additional evidence for the underlying causes of aberrant expression or splicing.
+Variant Calling originating from RNA-seq data may be useful for researchers who do not have access to variant calls from genomic data. While variant calling from WES and WGS technologies may be more traditional (and reliable), we have found that variant calling from RNA-Seq data can provide additional evidence for the underlying causes of aberrant expression or splicing.
 The RNA variant calling process uses information from multiple samples (as designated by the ``groups`` variable) to improve the variant calling process. However, the larger the group size, the more costly the computation is in terms of time and resources. When building the sample annotation table, take this into account. For the most accurate variant calls include many samples in each ``DROP_GROUP`` group, but in order to speed up computation, separate samples into many groups.
 
 =====================  =========  =====================================================================================================================================================================  =========
 Parameter              Type       Description                                                                                                                                                                    Default/Examples
-=====================  =========  =====================================================================================================================================================================  =========
-groups                 list       groups that should be executed in this module. If not specified or ``null`` all groups are used.                                                                       ``- group1``
+=====================  =========  ================================================================================================================================================================================================  =========
+groups                 list       groups that should be executed in this module. If not specified or ``null`` all groups are used.                                                                                                  ``- group1``
 
 
-                                                                                                                                                                                                         ``- group2``
+                                                                                                                                                                                                                                    ``- group2``
 
-highQualityVCFs        list       Filepaths where each item in the list is path to a vcf file. Each vcf file describes known high quality variants, which are used to recalibrate sequencing scores.     ``- known_indels.vcf``
+highQualityVCFs        list       Filepaths where each item in the list is path to a vcf file. Each vcf file describes known high quality variants, which are used to recalibrate sequencing scores. Refer to `files-to-download`_  ``- known_indels.vcf``
 
-                                                                                                                                                                                                         ``- known_SNPs.vcf``
+                                                                                                                                                                                                                                    ``- known_SNPs.vcf``
 
-dbSNP                  character  Location of the dbSNP ``.vcf`` file. This improves both recalibrating sequencing scores, as well as variant calling precision. Refer to `files-to-download`_           ``path/to/dbSNP.vcf``
-repeat_mask            character  Location of the RepeatMask ``.bed`` file. Refer to `files-to-download`_                                                                                                ``path/to/RepeatMask.bed``
-minAlt                 numeric    Integer describing the minimum required reads that support the alternative allele. We recommend a minimum of 3 if further filtering on your own. 10 otherwise.         ``3``
-hcArgs                 character  String describing additional arguments for GATK haplocaller. For expert tuning.                                                                                        ``""``
+dbSNP                  character  Location of the dbSNP ``.vcf`` file. This improves both recalibrating sequencing scores, as well as variant calling precision. Refer to `files-to-download`_                                      ``path/to/dbSNP.vcf``
+repeat_mask            character  Location of the RepeatMask ``.bed`` file. Refer to `files-to-download`_                                                                                                                           ``path/to/RepeatMask.bed``
+minAlt                 numeric    Integer describing the minimum required reads that support the alternative allele. We recommend a minimum of 3 if further filtering on your own. 10 otherwise.                                    ``3``
+hcArgs                 character  String describing additional arguments for GATK haplocaller. For expert tuning.                                                                                                                   ``""``
 
 =====================  =========  =====================================================================================================================================================================  =========
 

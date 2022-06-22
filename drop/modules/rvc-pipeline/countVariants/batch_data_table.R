@@ -10,12 +10,12 @@
 #'                        "rnaVariantCalling/params/config/rnaVariantCalling_config.tsv")`'
 #'   - annotatedVCF: '`sm os.path.join(
 #'                        cfg.processedResultsDir,
-#'                        "rnaVariantCalling/out/batch_vcfs", "{dataset}",
+#'                        "rnaVariantCalling/batch_vcfs", "{dataset}",
 #'                        "{dataset}_{annotation}.annotated.vcf.gz")`'
 #'  output:
 #'   - data_table: '`sm os.path.join(
 #'                        cfg.processedResultsDir,
-#'                        "rnaVariantCalling/out/data_tables", "{dataset}",
+#'                        "rnaVariantCalling/data_tables", "{dataset}",
 #'                        "{dataset}_{annotation}_data_table.Rds")`'
 #'  type: script
 #'---  

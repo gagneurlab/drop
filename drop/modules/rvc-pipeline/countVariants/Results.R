@@ -7,7 +7,7 @@
 #'  input:
 #'   - data_table: '`sm os.path.join(
 #'                        cfg.processedResultsDir,
-#'                        "rnaVariantCalling/out/data_tables", "{dataset}",
+#'                        "rnaVariantCalling/data_tables", "{dataset}",
 #'                        "{dataset}_{annotation}_data_table.Rds")`'
 #'  output:
 #'   - wBhtml: '`sm config["htmlOutputPath"] + "/rnaVariantCalling/{annotation}/Summary_{dataset}.html"`'
@@ -31,6 +31,8 @@ res_plot[,GENE_NAME := NULL]
 res_plot[,MAX_AF := NULL]
 res_plot[,cohortFreq := NULL]
 res_plot[,VARIANT := NULL]
+
+res$cohortFreq <- round(res$cohortFreq,3)
 
 #' ## Variant Calling Tables
 DT::datatable(
@@ -63,11 +65,11 @@ ggplot(res_plot, aes(x = FILTER, y = N,col = GT)) +
        geom_boxplot() +
        geom_text(data = res_plot[,median(N),by=c("FILTER","GT")],
            mapping = aes(x=FILTER,y= V1,label = V1, vjust = -0.5),position = position_dodge(0.9),show.legend = F,size = 3.5) +
-       ylab("Variants per sample") + scale_x_discrete(guide = guide_axis(n.dodge = 2))
+       ylab("Variants per sample") + scale_x_discrete(guide = guide_axis(n.dodge = 2)) + theme_bw()
 
 # Split res
 res_plot[grepl("PASS",FILTER),FILTER := "PASS"]
-res_plot[!grepl("PASS",FILTER),FILTER := "FILTERED"]
+res_plot[!grepl("PASS",FILTER),FILTER := "FILTERED OUT"]
 
 res_plot_summary <- res_plot[,sum(N),by = .(FILTER,variable,GT)]
 
@@ -76,4 +78,4 @@ ggplot(res_plot_summary, aes(x = FILTER, y = V1,col = GT)) +
        geom_boxplot() +
        geom_text(data = res_plot_summary[,median(V1),by=c("FILTER","GT")],
            mapping = aes(x=FILTER,y= V1,label = V1, vjust = -0.5),position = position_dodge(0.9),show.legend = F,size = 3.5) +
-       ylab("Variants per sample") + scale_x_discrete(guide = guide_axis(n.dodge = 2))
+       ylab("Variants per sample") + scale_x_discrete(guide = guide_axis(n.dodge = 2)) + theme_bw()

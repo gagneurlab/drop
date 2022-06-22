@@ -83,12 +83,12 @@ rnaVariantCalling:
         - Data/1000G_phase1.snps.high_confidence.hg19.sites.chrPrefix.vcf.gz
     dbSNP: Data/00-All.vcf.gz
     repeat_mask: Data/hg19_repeatMasker_sorted.chrPrefix.bed
+    createSingleVCF: true                    
     addAF: true
     maxAF: .001
     maxVarFreqCohort: .1
     hcArgs: 
     minAlt: 3
-
 
 tools:
     gatkCmd: gatk
