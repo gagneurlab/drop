@@ -39,8 +39,8 @@ count_links <- build_link_list(
 )
 
 results_links <- sapply(
-  annotations, function(v) build_link_list(
-    file_paths = file.path(htmlDir, paste0(datasets, '--', v, '_summary.html')),
+  annotations, function(x) build_link_list(
+    file_paths = file.path(htmlDir, paste0(datasets, '--', x, '_summary.html')),
     captions = datasets
   )
 )
@@ -87,7 +87,9 @@ siteIndex <- 4
 
 #' ### Volcano plot
 # set basePlot to FALSE to create an interactive plot
-FRASER::plotVolcano(fds, sample, type = 'psi3', basePlot = TRUE)
+FRASER::plotVolcano(fds, sample, type = 'psi3', basePlot = TRUE,
+                    deltaPsiCutoff = snakemake@config$aberrantSplicing$deltaPsiCutoff,
+                    padjCutoff = snakemake@config$aberrantSplicing$padjCutoff)
 
 #' ### Expression plot
 FRASER::plotExpression(fds, type = 'psi3', site = siteIndex, basePlot = TRUE)

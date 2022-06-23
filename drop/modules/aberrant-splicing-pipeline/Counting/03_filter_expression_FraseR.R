@@ -7,14 +7,16 @@
 #'  params:
 #'   - setup: '`sm cfg.AS.getWorkdir() + "/config.R"`'
 #'   - workingDir: '`sm cfg.getProcessedDataDir() + "/aberrant_splicing/datasets/"`'
+#'   - exCountIDs: '`sm lambda w: sa.getIDsByGroup(w.dataset, assay="SPLICE_COUNT")`'
 #'  input:
-#'   - theta:  '`sm cfg.getProcessedDataDir()+
-#'                  "/aberrant_splicing/datasets/savedObjects/raw-{dataset}/theta.h5"`'
+#'   - theta:  '`sm cfg.getProcessedDataDir() +
+#'                  "/aberrant_splicing/datasets/savedObjects/raw-local-{dataset}/theta.h5"`'
+#'   - exCounts: '`sm lambda w: cfg.AS.getExternalCounts(w.dataset, "k_j_counts")`'
 #'  output:
 #'   - fds: '`sm cfg.getProcessedDataDir() +
-#'                "/aberrant_splicing/datasets/savedObjects/{dataset}/fds-object.RDS"`'
-#'   - done: '`sm cfg.getProcessedDataDir() + 
-#'                "/aberrant_splicing/datasets/savedObjects/{dataset}/filter.done" `'
+#'                  "/aberrant_splicing/datasets/savedObjects/{dataset}/fds-object.RDS"`'
+#'   - done: '`sm cfg.getProcessedDataDir() +
+#'                  "/aberrant_splicing/datasets/savedObjects/{dataset}/filter.done" `'
 #'  threads: 3
 #'  type: script
 #'---
@@ -27,23 +29,56 @@ opts_chunk$set(fig.width=12, fig.height=8)
 # input
 dataset    <- snakemake@wildcards$dataset
 workingDir <- snakemake@params$workingDir
-params <- snakemake@config$aberrantSplicing
+params     <- snakemake@config$aberrantSplicing
+exCountIDs <- snakemake@params$exCountIDs
+exCountFiles <- snakemake@input$exCounts
+sample_anno_file <- snakemake@config$sampleAnnotation
+minExpressionInOneSample <- params$minExpressionInOneSample
+minDeltaPsi <- params$minDeltaPsi
 
-fds <- loadFraserDataSet(dir=workingDir, name=paste0("raw-", dataset))
+fds <- loadFraserDataSet(dir=workingDir, name=paste0("raw-local-", dataset))
 
 register(MulticoreParam(snakemake@threads))
 # Limit number of threads for DelayedArray operations
 setAutoBPPARAM(MulticoreParam(snakemake@threads))
 
-# Apply filter
-minExpressionInOneSample <- params$minExpressionInOneSample
-minDeltaPsi <- params$minDeltaPsi
+# Add external data if provided by dataset
+if(length(exCountIDs) > 0){
+    message("create new merged fraser object")
+    fds <- saveFraserDataSet(fds,dir = workingDir, name=paste0("raw-", dataset))
 
+    for(resource in unique(exCountFiles)){
+        exSampleIDs <- exCountIDs[exCountFiles == resource]
+        exAnno <- fread(sample_anno_file, key="RNA_ID")[J(exSampleIDs)]
+        setnames(exAnno, "RNA_ID", "sampleID")
+        
+        ctsNames <- c("k_j", "k_theta", "n_psi3", "n_psi5", "n_theta")
+        ctsFiles <- paste0(dirname(resource), "/", ctsNames, "_counts.tsv.gz")
+        
+        # Merging external counts restricts the junctions to those that 
+        # are only present in both the counted (fromBam) junctions AND the 
+        # junctions from the external counts.
+        fds <- mergeExternalData(fds=fds, countFiles=ctsFiles,
+                sampleIDs=exSampleIDs, annotation=exAnno)
+        fds@colData$isExternal <- as.factor(!is.na(fds@colData$SPLICE_COUNTS_DIR))
+    }
+} else {
+    message("symLink fraser dir")
+    file.symlink(paste0(workingDir, "savedObjects/","raw-local-", dataset),
+                 paste0(workingDir, "savedObjects/","raw-", dataset))
+    
+    fds@colData$isExternal <- as.factor(FALSE)
+    workingDir(fds) <- workingDir
+    name(fds) <- paste0("raw-", dataset)
+}
+
+# filter for expression and write it out to disc.
 fds <- filterExpressionAndVariability(fds, 
-                        minExpressionInOneSample = minExpressionInOneSample,
-                        minDeltaPsi = minDeltaPsi,
-                        filter=FALSE)
-devNull <- saveFraserDataSet(fds)
+        minExpressionInOneSample = minExpressionInOneSample,
+        minDeltaPsi = minDeltaPsi,
+        filter=FALSE)
+
+devNull <- saveFraserDataSet(fds,dir = workingDir)
 
 # Keep junctions that pass filter
 name(fds) <- dataset
@@ -55,5 +90,5 @@ if (params$filter == TRUE) {
 
 seqlevels(fds) <- seqlevelsInUse(fds)
 colData(fds)$sampleID <- as.character(colData(fds)$sampleID)
-fds <- saveFraserDataSet(fds)
+fds <- saveFraserDataSet(fds,dir = workingDir)
 file.create(snakemake@output$done)

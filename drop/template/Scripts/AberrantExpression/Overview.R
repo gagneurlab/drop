@@ -35,13 +35,13 @@ htmlDir <- snakemake@params$htmlDir
 
 count_links <- sapply(
   annotations, function(x) build_link_list(
-    file_paths = file.path(htmlDir, "Counting", annotations, paste0('Summary_', datasets, '.html')),
+    file_paths = file.path(htmlDir, "Counting", x, paste0('Summary_', datasets, '.html')),
     captions = datasets)
 )
 
 results_links <- sapply(
  annotations, function(x) build_link_list(
-    file_paths = file.path(htmlDir, "Outrider", annotations, paste0('Summary_', datasets, '.html')),
+    file_paths = file.path(htmlDir, "Outrider", x, paste0('Summary_', datasets, '.html')),
     captions = datasets)
 )
 
@@ -90,10 +90,14 @@ sample <- res[1, sampleID]
 #' ### Volcano plot
 #' setting basePlot = FALSE creates an interactive plot
 #' that allows finding the gene(s) of interest
-OUTRIDER::plotVolcano(ods, sample, basePlot = TRUE)
+OUTRIDER::plotVolcano(ods, sample, basePlot = TRUE,
+                      zScoreCutoff = snakemake@config$aberrantExpression$zScoreCutoff,
+                      padjCutoff = snakemake@config$aberrantExpression$padjCutoff)
 
 #' ### Gene expression plot (normalized counts)
-OUTRIDER::plotExpressionRank(ods, gene, basePlot = TRUE)
+OUTRIDER::plotExpressionRank(ods, gene, basePlot = TRUE,
+                      zScoreCutoff = snakemake@config$aberrantExpression$zScoreCutoff,
+                      padjCutoff = snakemake@config$aberrantExpression$padjCutoff)
 
 #' ### Expected vs observed counts
 OUTRIDER::plotExpectedVsObservedCounts(ods, gene, basePlot = TRUE)

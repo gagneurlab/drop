@@ -17,7 +17,7 @@ click_log.basic_config(logger)
 
 @click.group()
 @click_log.simple_verbosity_option(logger)
-@click.version_option('1.1.4',prog_name='drop')
+@click.version_option('1.2.0',prog_name='drop')
 
 
 def main():
@@ -72,7 +72,9 @@ def copyModuleCode(repoPaths, projectPaths):
     repo_map = {
         "aberrant-expression-pipeline": "AberrantExpression",
         "aberrant-splicing-pipeline": "AberrantSplicing",
-        "mae-pipeline": "MonoallelicExpression"
+        "mae-pipeline": "MonoallelicExpression",
+        "rvc-pipeline": "rnaVariantCalling"
+
     }
 
     import sys

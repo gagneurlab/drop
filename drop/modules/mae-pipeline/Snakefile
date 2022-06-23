@@ -37,8 +37,8 @@ rule create_dict:
 ## MAE
 rule mae_createSNVs:
     input:
-        ncbi2ucsc = MAE_WORKDIR / "resource" / "chr_NCBI_UCSC.txt",
-        ucsc2ncbi = MAE_WORKDIR / "resource" / "chr_UCSC_NCBI.txt",
+        ncbi2ucsc = cfg.workDir / "Scripts/Pipeline/chr_NCBI_UCSC.txt",
+        ucsc2ncbi = cfg.workDir / "Scripts/Pipeline/chr_UCSC_NCBI.txt",
         vcf_file  = lambda w: cfg.MAE.getVcf(w.vcf),
         bam_file  = lambda w: sa.getFilePath(w.rna, 'RNA_BAM_FILE'),
         script    = MAE_WORKDIR / "MAE" / "filterSNVs.sh",
@@ -58,8 +58,8 @@ rule mae_createSNVs:
 
 rule mae_allelicCounts:
     input:
-        ncbi2ucsc = MAE_WORKDIR / "resource" / "chr_NCBI_UCSC.txt",
-        ucsc2ncbi = MAE_WORKDIR / "resource" / "chr_UCSC_NCBI.txt",
+        ncbi2ucsc = cfg.workDir / "Scripts/Pipeline/chr_NCBI_UCSC.txt",
+        ucsc2ncbi = cfg.workDir / "Scripts/Pipeline/chr_UCSC_NCBI.txt",
         vcf_file  = rules.mae_createSNVs.output.snvs_filename,
         bam_file  = lambda w: sa.getFilePath(w.rna, 'RNA_BAM_FILE'),
         fasta     = lambda w: cfg.MAE.getGenomePath(w.rna),

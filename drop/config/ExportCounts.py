@@ -27,13 +27,14 @@ class ExportCounts:
         self.CONFIG_KEYS = ["geneAnnotations", "excludeGroups"]
         self.config_dict = self.setDefaults(dict_, genome.annotation)
         self.outputRoot = outputRoot / "exported_counts"
-        self.sa = sampleAnnotation
+        self.sampleAnnotation = sampleAnnotation
         self.genomeAssembly = genome.assembly
         self.geneAnnotations = self.get("geneAnnotations")
         self.modules = {
             "aberrantExpression": aberrantExpression,
             "aberrantSplicing": aberrantSplicing
         }
+
         self.pattern = self.outputRoot / "{dataset}--{genomeAssembly}--{annotation}"
 
     def setDefaults(self, config_dict, gene_annotations):
@@ -74,6 +75,7 @@ class ExportCounts:
         for module in modules:
             groups.extend(self.modules[module].groups)
         export_groups = set(groups) - set(self.get("excludeGroups"))
+
         return sorted(list(export_groups))
 
     def getFiles(self, filename, datasets=None, **kwargs):

@@ -23,7 +23,7 @@ copyright = '2020, Michaela Müller'
 author = 'Michaela Müller'
 
 # The full version, including alpha/beta/rc tags
-release_ = '1.1.4'
+release_ = '1.2.0'
 
 
 
@@ -36,6 +36,7 @@ master_doc = 'index'
 # ones.
 extensions = [
     "sphinx_rtd_theme",
+    'sphinx.ext.autosectionlabel'
 ]
 
 # Add any paths that contain templates here, relative to this directory.

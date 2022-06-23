@@ -1,6 +1,9 @@
+---                                                                                                                     
+title: "README"                                                                                                         
+--- 
 # DROP Analysis
 
-Analysis of the demo dataset using the Detection of RNA Outliers Pipeline. For 
+Analysis of the demo dataset using the Detection of RNA Outliers Pipeline. For
 speed purposes, this is only a small subset of the test dataset from GEUVADIS.
 
 Browse either through the tabs to see the different analysis results or through
@@ -11,6 +14,8 @@ the following links to see the pipelines results.
 * [**Aberrant splicing pipeline**](./aberrant-splicing-pipeline_index.html)
 
 * [**Mono-allelic expression pipeline**](./mae-pipeline_index.html)
+
+* [**RNA Variant Calling pipeline**](./rvc-pipeline_index.html)
 
 ## Resources
 

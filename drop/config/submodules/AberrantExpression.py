@@ -25,7 +25,7 @@ class AE(Submodule):
                 please fix to only have either external count or BAM processing\n")
 
         # check number of IDs per group
-        all_ids = {g: self.rnaIDs[g] + self.extRnaIDs[g] for g in self.groups}
+        all_ids = self.sampleAnnotation.subsetGroups(self.groups, assay=["RNA", "GENE_COUNTS"])
         self.checkSubset(all_ids)
 
     def setDefaultKeys(self, dict_):
@@ -47,6 +47,11 @@ class AE(Submodule):
         :param group: DROP group name from wildcard
         :return: list of files
         """
+
+        # if sample annotation table does not contain GENE_COUNTS_FILE column. return no external counts
+        if("GENE_COUNTS_FILE" not in self.sampleAnnotation.SAMPLE_ANNOTATION_COLUMNS):
+            return []
+
         bam_IDs = self.sampleAnnotation.getIDsByGroup(group, assay="RNA")
         file_stump = self.processedDataDir / "aberrant_expression" / annotation / "counts" / "{sampleID}.Rds"
         count_files = expand(str(file_stump), sampleID=bam_IDs)
@@ -62,4 +67,3 @@ class AE(Submodule):
             for k, v in count_params.iloc[0].to_dict().items()
         }
         return count_params_dict
-        # count_params.iloc[0].to_dict()

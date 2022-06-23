@@ -1,3 +1,5 @@
+options(timeout = 900)
+
 options(repos=structure(c(CRAN="https://cloud.r-project.org")), warn = -1)
 
 if (!requireNamespace('BiocManager', quietly = TRUE)) {

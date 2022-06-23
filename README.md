@@ -3,6 +3,8 @@
 [![Version](https://img.shields.io/github/v/release/gagneurlab/drop?include_prereleases)](https://github.com/gagneurlab/drop/releases)
 [![Version](https://readthedocs.org/projects/gagneurlab-drop/badge/?version=latest)](https://gagneurlab-drop.readthedocs.io/en/latest)
 
+The detection of RNA Outliers Pipeline (DROP) is an integrative workflow to detect aberrant expression, aberrant splicing, and mono-allelic expression from raw sequencing files. Since version 1.2.0 it also has a module to perform RNA-seq variant calling. 
+
 The manuscript is available in [Nature Protocols](https://www.nature.com/articles/s41596-020-00462-5). [SharedIt link.](https://rdcu.be/cdMmF)
 
 <img src="drop_sticker.png" alt="drop logo" width="200" class="center"/>
@@ -11,7 +13,7 @@ The manuscript is available in [Nature Protocols](https://www.nature.com/article
 DROP is available on [bioconda](https://anaconda.org/bioconda/drop).
 We recommend using a dedicated conda environment. (installation time: ~ 10min)
 ```
-mamba install -c conda-forge -c bioconda drop
+mamba create -n drop_env -c conda-forge -c bioconda drop
 ```
 
 Test installation with demo project
@@ -48,6 +50,14 @@ This shows you the rules of all subworkflows. Omit `-n` and specify the number o
 ```
 snakemake aberrantExpression --cores 10
 ```
+
+## Citation
+
+If you use DROP in research, please cite our [manuscript](https://www.nature.com/articles/s41596-020-00462-5).
+
+Furthermore, if you use the aberrant expression module, also cite [OUTRIDER](https://doi.org/10.1016/j.ajhg.2018.10.025); if you use the aberrant splicing module, also cite [FRASER](https://www.nature.com/articles/s41467-020-20573-7); and if you use the MAE module, also cite the [Kremer, Bader et al study](https://www.nature.com/articles/ncomms15824) and [DESeq2](https://genomebiology.biomedcentral.com/articles/10.1186/s13059-014-0550-8).
+
+For the complete set of tools used by DROP (e.g. for counting), see the [manuscript](https://www.nature.com/articles/s41596-020-00462-5).
 
 ## Datasets
 The following publicly-available datasets of gene counts can be used as controls.

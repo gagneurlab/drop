@@ -12,11 +12,11 @@ build_link_list <- function(file_paths, captions=NULL) {
   file_link
 }
 
-display_text <- function(caption='', links) {
-  captions <- ifelse(
-    caption != '',
-    paste0('**', caption, '**', names(links)),
+display_text <- function(links, caption='') {
+  label <- if(caption != ''){
+    sapply(names(links), function(x) paste0('**', caption, '**',x))
+  }else{
     caption
-  )
-  paste0(captions, '\n', links, collapse = '\n')
+  }
+  paste0(label, '\n', links, collapse = '\n')
 }

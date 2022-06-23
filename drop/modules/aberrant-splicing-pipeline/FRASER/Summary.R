@@ -24,13 +24,19 @@ source(snakemake@params$setup, echo=FALSE)
 
 suppressPackageStartupMessages({
   library(cowplot)
+  library("RColorBrewer")
 })
 
 #+ input
 dataset    <- snakemake@wildcards$dataset
 annotation <- snakemake@wildcards$annotation
+padj_cutoff <- snakemake@config$aberrantSplicing$padjCutoff
+zScore_cutoff <- snakemake@config$aberrantSplicing$zScoreCutoff
+deltaPsi_cutoff <- snakemake@config$aberrantSplicing$deltaPsiCutoff
+
 
 fds <- loadFraserDataSet(file=snakemake@input$fdsin)
+hasExternal <- length(levels(colData(fds)$isExternal) > 1)
 
 #' Number of samples: `r nrow(colData(fds))`
 #' 
@@ -53,44 +59,50 @@ for(type in psiTypes){
 }
 
 #' ## Aberrantly spliced genes per sample
-plotAberrantPerSample(fds, aggregate=TRUE, main=dataset_title) + 
+plotAberrantPerSample(fds, padjCutoff = padj_cutoff, zScoreCutoff = zScore_cutoff, deltaPsiCutoff = deltaPsi_cutoff,
+                      aggregate=TRUE, main=dataset_title) + 
   theme_cowplot(font_size = 16) +
   theme(legend.position = "top")
 
-#' ## Batch Correlation: Samples x samples
+#' ## Batch Correlation: samples x samples
 topN <- 30000
 topJ <- 10000
+anno_color_scheme <- brewer.pal(n = 3, name = 'Dark2')[1:2]
 for(type in psiTypes){
   before <- plotCountCorHeatmap(
-    fds,
+    object=fds,
     type = type,
     logit = TRUE,
     topN = topN,
     topJ = topJ,
     plotType = "sampleCorrelation",
     normalized = FALSE,
-    annotation_col = NA,
+    annotation_col = "isExternal",
     annotation_row = NA,
     sampleCluster = NA,
+    minDeltaPsi = snakemake@config$aberrantSplicing$minDeltaPsi,
     plotMeanPsi=FALSE,
     plotCov = FALSE,
-    annotation_legend = TRUE
+    annotation_legend = TRUE,
+	annotation_colors = list(isExternal = c("FALSE" = anno_color_scheme[1],"TRUE" =  anno_color_scheme[2]))
   )
   before
   after <- plotCountCorHeatmap(
-    fds,
+    object=fds,
     type = type,
     logit = TRUE,
     topN = topN,
     topJ = topJ,
     plotType = "sampleCorrelation",
     normalized = TRUE,
-    annotation_col = NA,
+    annotation_col = "isExternal",
     annotation_row = NA,
     sampleCluster = NA,
+    minDeltaPsi = snakemake@config$aberrantSplicing$minDeltaPsi,
     plotMeanPsi=FALSE,
     plotCov = FALSE,
-    annotation_legend = TRUE
+    annotation_legend = TRUE,
+	annotation_colors = list(isExternal = c("FALSE" = anno_color_scheme[1],"TRUE" =  anno_color_scheme[2]))
   )
   after
 }
@@ -120,4 +132,3 @@ DT::datatable(
   escape=FALSE,
   filter = 'top'
 )
-
