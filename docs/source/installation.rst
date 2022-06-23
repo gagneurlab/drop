@@ -4,7 +4,7 @@ Installation
 DROP is available on `bioconda <https://anaconda.org/bioconda/drop>`_ .
 In case the conda channel priority is set to ``strict``, it should be reset to ``flexible``:
 
-.. code-block::
+.. code-block:: bash
 
     conda config --set channel_priority true
 
@@ -77,7 +77,7 @@ If the package needs to be updated frequently, it is more useful to use the ``-e
 Any new update pulled from the repository will be available without reinstall.
 Note, that this requires an explicit call to update any existing project (:any:`dropUpdate`).
 
-.. code-block::
+.. code-block:: bash
 
     pip install -e ./drop
 
