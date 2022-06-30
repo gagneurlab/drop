@@ -6,7 +6,7 @@ class Test_AS_Config:
             'groups': ['fraser', 'fraser_external'],
             'recount': True,
             'longRead': False,
-            'keepNonStandardChrs': True,
+            'keepNonStandardChrs': False,
             'filter': False,
             'minExpressionInOneSample': 20,
             'minDeltaPsi': 0.05,
