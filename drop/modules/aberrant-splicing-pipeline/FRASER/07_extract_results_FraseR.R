@@ -69,7 +69,6 @@ res_junc <- results(fds,
                     deltaPsiCutoff=snakemake@params$deltaPsiCutoff)
 res_junc_dt   <- as.data.table(res_junc)
 print('Results per junction extracted')
-saveFraserDataSet(fds, dir=outputDir)
 
 
 # Add features
