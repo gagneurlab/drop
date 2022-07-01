@@ -47,7 +47,7 @@ aberrantSplicing:
         - fraser
     recount: true
     longRead: false
-    keepNonStandardChrs: true
+    keepNonStandardChrs: false
     filter: false
     minExpressionInOneSample: 20
     minDeltaPsi: 0.05
