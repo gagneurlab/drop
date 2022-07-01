@@ -5,7 +5,7 @@ set -e
 resource_url="https://github.com/nickhsmith/drop_demo_data/archive/refs/heads/main.zip"
 tmpdir="$(dirname "$(mktemp)")"
 wget -nc -P $tmpdir $resource_url
-if [ -z "$(ls Data)" ]; then
+if [ -d "Data" ]; then
 	unzip "$tmpdir/main.zip" 
 	mv drop_demo_data-main/Data Data
 	rm -rf drop_demo_data-main
