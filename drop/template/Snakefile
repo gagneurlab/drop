@@ -73,6 +73,7 @@ rule publish_local:
     shell: "rsync -Ort {config[htmlOutputPath]} {config[webDir]}"
 
 rule prepFasta_fa:
+    priority: 1
     input:
         "{path_to_ref}.fa"
     output:
@@ -85,6 +86,7 @@ rule prepFasta_fa:
         """
 
 rule prepFasta_fasta:
+    priority: 1
     input:
         "{path_to_ref}.fasta"
     output:
