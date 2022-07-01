@@ -85,7 +85,7 @@ rule prepFasta_fa:
         gatk CreateSequenceDictionary -R {input} -O {output.dict}
         """
 
-rule prepFasta_fasta
+rule prepFasta_fasta:
     priority: 1
     input:
         "{path_to_ref}.fasta"
