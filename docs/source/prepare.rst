@@ -160,6 +160,7 @@ The RNA variant calling process uses information from multiple samples (as desig
 =====================  =========  ================================================================================================================================================================================================  =========
 Parameter              Type       Description                                                                                                                                                                    Default/Examples
 =====================  =========  ================================================================================================================================================================================================  =========
+run                    boolean    If true, the module will be run. If false, it will be ignored.                                                                                                                                    ``true``
 groups                 list       groups that should be executed in this module. If not specified or ``null`` all groups are used.                                                                                                  ``- group1``
 
 
@@ -171,6 +172,10 @@ highQualityVCFs        list       Filepaths where each item in the list is path 
 
 dbSNP                  character  Location of the dbSNP ``.vcf`` file. This improves both recalibrating sequencing scores, as well as variant calling precision. Refer to `files-to-download`_                                      ``path/to/dbSNP.vcf``
 repeat_mask            character  Location of the RepeatMask ``.bed`` file. Refer to `files-to-download`_                                                                                                                           ``path/to/RepeatMask.bed``
+createSingleVCF        boolean    By default the output is a mult-sample VCF file. If you would like to split this into individual sample VCFs, set to ``true``. This only subsets the larger vcf sample.                           ``true``
+addAF                  boolean    Whether or not to add the allele frequencies from gnomAD                                                                                                                                          ``true``
+maxAF                  numeric    Maximum allele frequency (of the minor allele) cut-off. Variants with AF equal or below this number are considered rare.                                                                          ``0.001``
+maxVarFreqCohort       numeric    Maximum variant frequency among the cohort.                                                                                                                                                       ``0.05``
 minAlt                 numeric    Integer describing the minimum required reads that support the alternative allele. We recommend a minimum of 3 if further filtering on your own. 10 otherwise.                                    ``3``
 hcArgs                 character  String describing additional arguments for GATK haplocaller. For expert tuning.                                                                                                                   ``""``
 
