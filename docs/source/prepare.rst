@@ -154,30 +154,26 @@ qcGroups               list       Same as “groups”, but for the VCF-BAM matc
 
 RNA Variant Calling dictionary
 ++++++++++++++++++++++++++++++++++
-Variant Calling originating from RNA-seq data may be useful for researchers who do not have access to variant calls from genomic data. While variant calling from WES and WGS technologies may be more traditional (and reliable), we have found that variant calling from RNA-Seq data can provide additional evidence for the underlying causes of aberrant expression or splicing.
-The RNA variant calling process uses information from multiple samples (as designated by the ``groups`` variable) to improve the variant calling process. However, the larger the group size, the more costly the computation is in terms of time and resources. When building the sample annotation table, take this into account. For the most accurate variant calls include many samples in each ``DROP_GROUP`` group, but in order to speed up computation, separate samples into many groups.
+Calling variants on RNA-seq data may be useful for researchers who do not have access to variant calls from genomic data. While variant calling from WES and WGS technologies may be more traditional (and reliable), variant calling from RNA-Seq data can provide additional evidence for the underlying causes of aberrant expression or splicing.
+The RNA variant calling process uses information from multiple samples (as designated by the ``groups`` variable) to improve the quality of the called variants. However, the larger the group size, the more costly the computation is in terms of time and resources. To prioritize accuracy, include many samples in each ``DROP_GROUP``, and to prioritize speed up computation, separate samples into many groups. Additionally, certain vcf and bed files must be included to further boost the quality of the called variants (refer to `files-to-download`_).
 
 =====================  =========  ================================================================================================================================================================================================  =========
 Parameter              Type       Description                                                                                                                                                                    Default/Examples
 =====================  =========  ================================================================================================================================================================================================  =========
 run                    boolean    If true, the module will be run. If false, it will be ignored.                                                                                                                                    ``true``
-groups                 list       groups that should be executed in this module. If not specified or ``null`` all groups are used.                                                                                                  ``- group1``
-
-
-                                                                                                                                                                                                                                    ``- group2``
-
-highQualityVCFs        list       Filepaths where each item in the list is path to a vcf file. Each vcf file describes known high quality variants, which are used to recalibrate sequencing scores. Refer to `files-to-download`_  ``- known_indels.vcf``
+groups                 list       Same as in aberrant expression.                                                                                                                                                                   ``# see aberrant expression example``
+highQualityVCFs        list       File paths where each item is the path to a vcf file. Each vcf file describes known high quality variants, which are used to recalibrate sequencing scores. Refer to `files-to-download`_         ``- known_indels.vcf``
 
                                                                                                                                                                                                                                     ``- known_SNPs.vcf``
 
 dbSNP                  character  Location of the dbSNP ``.vcf`` file. This improves both recalibrating sequencing scores, as well as variant calling precision. Refer to `files-to-download`_                                      ``path/to/dbSNP.vcf``
 repeat_mask            character  Location of the RepeatMask ``.bed`` file. Refer to `files-to-download`_                                                                                                                           ``path/to/RepeatMask.bed``
-createSingleVCF        boolean    By default the output is a mult-sample VCF file. If you would like to split this into individual sample VCFs, set to ``true``. This only subsets the larger vcf sample.                           ``true``
+createSingleVCF        boolean    If ``true``, splits the multi-sample VCF file into individual sample VCF files. This only subsets the larger vcf sample.                                                                          ``true``
 addAF                  boolean    Whether or not to add the allele frequencies from gnomAD                                                                                                                                          ``true``
 maxAF                  numeric    Maximum allele frequency (of the minor allele) cut-off. Variants with AF equal or below this number are considered rare.                                                                          ``0.001``
 maxVarFreqCohort       numeric    Maximum variant frequency among the cohort.                                                                                                                                                       ``0.05``
 minAlt                 numeric    Integer describing the minimum required reads that support the alternative allele. We recommend a minimum of 3 if further filtering on your own. 10 otherwise.                                    ``3``
-hcArgs                 character  String describing additional arguments for GATK haplocaller. For expert tuning.                                                                                                                   ``""``
+hcArgs                 character  String describing additional arguments for GATK haplocaller. Refer to `advanced-options`_.                                                                                                        ``""``
 
 =====================  =========  ================================================================================================================================================================================================  =========
 
@@ -377,10 +373,9 @@ S20R    S20G    WGS         /path/to/S20R.BAM  /path/to/multi_sample.vcf.gz
 Advanced options
 ----------------
 
-A local copy of DROP can be edited and modified for uncovering potential issues or increasing outputs.
-For example, the user might want to add new plots to the ``Summary`` scripts, or add
-additional columns to the results tables.
-Also, the number of threads allowed for a computational step can be modified.
+A local copy of DROP can be edited and modified.
+For example, the user might want to add new plots to the ``Summary`` scripts, add
+additional columns to the results tables, or modify the number of threads allowed for a script.
 
 .. note::
 
@@ -391,15 +386,15 @@ Also, the number of threads allowed for a computational step can be modified.
 The aberrant expression and splicing modules use a denoising autoencoder to
 correct for sample covariation. This process reduces the fitting space to a
 dimension smaller than the number of samples N. The encoding dimension is optimized.
-We recommend the search space to be at most N/3 for the aberrant expression,
-and N/6 for the aberrant splicing case. Nevertheless, the user can specify the
+By default, the maximum value in the search space is N/3 for the aberrant expression,
+and N/6 for the aberrant splicing case. The user can specify the
 denominator with the parameter ``maxTestedDimensionProportion``.
 
 DROP allows that BAM files from RNA-seq from samples belonging to the same `DROP_GROUP`
-were aligned to different genome assemblies from the same build (eg, some to ucsc
+were aligned to different genome assemblies from the same build (e.g., some to ucsc
 and others to ncbi, but all to either hg19 or hg38). If so, for the aberrant
 expression and splicing modules, no special configuration is needed.
-For the MAE and rnaVariantCalling module, the different fasta files must be specified as a dictionary in
+For the MAE and rnaVariantCalling modules, the different fasta files must be specified as a dictionary in
 the `genome` parameter of the config file, and, for each sample, the corresponding
 key of the `genome` dictionary must be specified in the `GENOME` column of the
 sample annotation.
@@ -408,3 +403,7 @@ assembly (eg ucsc) and the corresponding VCF files from DNA sequencing to anothe
 genome assembly (eg ncbi). If so, the assembly of the reference genome fasta file
 must correspond to the one of the BAM file from RNA-seq.
 
+Specific haplotype parameters can be denoted in the config file to further customize the RNA-seq variant calling. 
+The different available parameters can be found in the
+`HaplotypeCaller GATK documentation. <https://gatk.broadinstitute.org/hc/en-us/articles/5358864757787-HaplotypeCaller>`_
+One example for the value in the config file would be "--assembly-region-padding 100 --base-quality-score-threshold 18".
