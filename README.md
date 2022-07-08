@@ -19,7 +19,7 @@ Also, the integration of external split and non-split counts to detect aberrant 
 DROP is available on [bioconda](https://anaconda.org/bioconda/drop).
 We recommend using a dedicated conda environment. (installation time: ~ 10min)
 ```
-mamba create -n drop_env -c conda-forge -c bioconda drop
+mamba create -n drop_env -c conda-forge -c bioconda drop --override-channels
 ```
 
 Test installation with demo project

@@ -14,7 +14,7 @@ For installing, use `mamba` instead of `conda` as it provides more reliable and 
 
 .. code-block:: bash
 
-    mamba create -n drop_env -c conda-forge -c bioconda drop
+    mamba create -n drop_env -c conda-forge -c bioconda drop --override-channels
 
 Installation time: ~ 10min
 
