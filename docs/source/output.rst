@@ -108,3 +108,38 @@ Additionally the ``mae`` module creates the following files:
     * this is the file linked in the HTML document and described above
 * ``Output/processed_results/mae/{drop_group}/MAE_results_{annotation}_rare.tsv``
     * this file is a subset of ``MAE_results_{annotation}.tsv`` with only the variants that pass the allele frequency cutoffs. If ``add_AF`` is set to ``true`` in config file must meet minimum AF set by ``max_AF``. Additionally, the inner-cohort frequency must meet the ``maxVarFreqCohort`` cutoff
+
+RNA Variant Calling
++++++++++++++++++++++++
+
+HTML file
+##########
+Looking at the resulting ``Output/html/drop_demo_index.html`` we can see the ``rnaVariantCalling`` 
+tab at the top of the screen. The Overview tab contains links to the:  
+
+* Results for each rvc batch
+    * a table summarizing the variants and genotypes that pass the variant calling filters for each sample
+        * FILTER: 
+          * ``PASS_common``: passes variant calling thresholds and fails either ``max_AF`` or ``maxVarFreqCohort`` cutoffs
+          * ``PASS_rare``: passes variant calling thresholds and config ``max_AF`` and ``maxVarFreqCohort`` cutoffs
+        * ``cohortFreq``: frequency of the variant within the batch (number of samples with the variant / total samples)
+        * ``MAX_AF``: frequency of the variant from **gnomAD** if enabled
+    * a subset table showing only the ``PASS_rare`` variants
+* Boxplot and underyling table showing the distribution of variants and the effect of various filters, split by genotype
+        * ``PASS_common``: passes variant calling thresholds and fails either ``max_AF`` or ``maxVarFreqCohort`` cutoffs
+        * ``PASS_rare``: passes variant calling thresholds and config ``max_AF`` and ``maxVarFreqCohort`` cutoffs
+        * ``Seq_filter``: fails one of the default variant calling filters
+        * ``Mask``: variant falls in a repeat/mask region
+        * ``minALT``: variant passes ``Seq_filter`` but doesn't meet config ``minALT`` criteria
+* Boxplot and underyling table showing the number of variants that pass or fail the filters
+    
+Local result files
+##################
+Additionally the ``rnaVariantCalling`` module creates the following output directories:
+
+* ``Output/processed_results/rnaVariantCalling/batch_vcfs``
+    * this directory contains the multi-sample vcf files for each batch
+* ``Output/processed_results/rnaVariantCalling/sample_vcfs``
+    * this directory contains the single-sample vcf files if the config value ``createSingleVCF: true``
+* ``Output/processed_results/rnaVariantCalling/data_tables``
+    * this directory contains data tables easily imported into ``R`` using ``fread('path/to/data.table.Rds')`` for each batch of vcfs
