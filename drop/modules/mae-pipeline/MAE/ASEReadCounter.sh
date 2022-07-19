@@ -86,7 +86,8 @@ then
     "" "  MAE ID: ${mae_id}" \
     "  VCF file: ${vcf_file}" \
     "  BAM file: ${bam_file}" \
-    "  FASTA file: ${fasta}"
+    "  FASTA file: ${fasta}" \
+    " Additionally the ReadGroups may be poorly formed. Please refer to https://gagneurlab-drop.readthedocs.io/en/latest/help.html for more information "
   exit 1
 fi
 
