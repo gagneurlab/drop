@@ -119,13 +119,12 @@ tab at the top of the screen. The Overview tab contains links to the:
 
 * Results for each rvc batch
     * a table summarizing the variants and genotypes that pass the variant calling filters for each sample
-        * FILTER: 
-          * ``PASS_common``: passes variant calling thresholds and fails either ``max_AF`` or ``maxVarFreqCohort`` cutoffs
-          * ``PASS_rare``: passes variant calling thresholds and config ``max_AF`` and ``maxVarFreqCohort`` cutoffs
+        * ``FILTER``: explained below
         * ``cohortFreq``: frequency of the variant within the batch (number of samples with the variant / total samples)
         * ``MAX_AF``: frequency of the variant from **gnomAD** if enabled
     * a subset table showing only the ``PASS_rare`` variants
 * Boxplot and underyling table showing the distribution of variants and the effect of various filters, split by genotype
+    * The following labels are applied and are not excluded from the final ``.vcf`` files.
         * ``PASS_common``: passes variant calling thresholds and fails either ``max_AF`` or ``maxVarFreqCohort`` cutoffs
         * ``PASS_rare``: passes variant calling thresholds and config ``max_AF`` and ``maxVarFreqCohort`` cutoffs
         * ``Seq_filter``: fails one of the default variant calling filters
