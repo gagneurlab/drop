@@ -131,7 +131,7 @@ tab at the top of the screen. The Overview tab contains links to the:
         * ``Seq_filter``: fails one of the default variant calling filters
         * ``Mask``: variant falls in a repeat/mask region
         * ``minALT``: variant passes ``Seq_filter`` but doesn't meet config ``minALT`` criteria
-* Boxplot and underyling table showing the number of variants that pass or fail the filters
+* Boxplot and underyling table showing the number of variants that pass or fail the different filters
     
 Local result files
 ##################
@@ -140,6 +140,6 @@ Additionally the ``rnaVariantCalling`` module creates the following output direc
 * ``Output/processed_results/rnaVariantCalling/batch_vcfs``
     * this directory contains the multi-sample vcf files for each batch
 * ``Output/processed_results/rnaVariantCalling/sample_vcfs``
-    * this directory contains the single-sample vcf files if the config value ``createSingleVCF: true``
+    * this directory contains the single-sample vcf files if the config parameter ``createSingleVCF`` is set to ``true``
 * ``Output/processed_results/rnaVariantCalling/data_tables``
-    * this directory contains data tables easily imported into ``R`` using ``fread('path/to/data.table.Rds')`` for each batch of vcfs
+    * this directory contains data tables for each batch of vcfs
