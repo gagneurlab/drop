@@ -36,7 +36,17 @@ ods <- filterExpression(ods, gtfFile=txdb, filter=FALSE,
 # add column for genes with at least 1 gene
 rowData(ods)$counted1sample = rowSums(assay(ods)) > 0
 
-has_external <- !(all(ods@colData$GENE_COUNTS_FILE == "") || is.null(ods@colData$GENE_COUNTS_FILE))
+# External data check
+if (is.null(ods@colData$GENE_COUNTS_FILE)){
+    has_external <- FALSE
+}else if(all(is.na(ods@colData$GENE_COUNTS_FILE))){ #column exists but it has no values
+    has_external <- FALSE
+}else if(all(ods@colData$GENE_COUNTS_FILE == "")){ #column exists with non-NA values but this group has all empty strings
+    has_external <- FALSE
+}else{ #column exists with non-NA values and this group has at least 1 non-empty string
+    has_external <- TRUE
+}
+
 if(has_external){
     ods@colData$isExternal <- as.factor(ods@colData$GENE_COUNTS_FILE != "")
 }else{
