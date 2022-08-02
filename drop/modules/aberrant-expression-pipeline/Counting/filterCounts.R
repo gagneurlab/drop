@@ -37,7 +37,7 @@ ods <- filterExpression(ods, gtfFile=txdb, filter=FALSE,
 rowData(ods)$counted1sample = rowSums(assay(ods)) > 0
 
 # External data check
-if (is.null(ods@colData$GENE_COUNTS_FILE)){
+if (is.null(ods@colData$GENE_COUNTS_FILE)){ #column does not exist in sample annotation table
     has_external <- FALSE
 }else if(all(is.na(ods@colData$GENE_COUNTS_FILE))){ #column exists but it has no values
     has_external <- FALSE
