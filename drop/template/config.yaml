@@ -1,10 +1,10 @@
 projectTitle: "DROP: Detection of RNA Outliers Pipeline"
-root:             # root directory of all intermediate output
+root:             # root directory of all output objects and tables
 htmlOutputPath:   # path for HTML rendered reports
 indexWithFolderName: true # whether the root base name should be part of the index name
 
 hpoFile: null  # if null, downloads it from webserver
-sampleAnnotation: # path to sample annotation (see documenation on how to create it)
+sampleAnnotation: # path to sample annotation (see documentation on how to create it)
 
 root: Output
 sampleAnnotation: Data/sample_annotation.tsv
@@ -14,18 +14,18 @@ genomeAssembly: hg19
 genome: Data/hg19.fa
 
 hpoFile: null
-random_seed: true  # just for demo data, remove for proper analysis
+random_seed: true  # just for demo data, remove for analysis
 
 exportCounts:
     # specify which gene annotations to include and which
     # groups to exclude when exporting counts
     geneAnnotations:
         - v29
-    excludeGroups
+    excludeGroups:
         - group1
-genome: # path to genome sequence in fasta format.
-    # You can define multiple reference genomes in yaml format, ncbi: path_to_ncbi, ucsc: path_to_ucsc
-    # the keywords that define the path should be in the GENOME column of the SA table
+genome: # path to reference genome sequence in fasta format.
+    # You can define multiple reference genomes in yaml format, ncbi: path/to/ncbi, ucsc: path/to/ucsc
+    # the keywords that define the path should be in the GENOME column of the sample annotation table
 
 aberrantExpression:
     run: true

@@ -81,8 +81,7 @@ if(nrow(res_junc_dt) > 0){
 
   # add colData to the results
   res_junc_dt <- merge(res_junc_dt, as.data.table(colData(fds)), by = "sampleID")
-  res_junc_dt[, c("bamFile", "pairedEnd") := NULL]
-  setnames(res_junc_dt, 'STRAND', 'STRAND_SPECIFIC')  # otherwise it's confusing with the 'strand' column from the junction
+  res_junc_dt[, c("bamFile", "pairedEnd", "STRAND") := NULL]
 } else{
   warning("The aberrant splicing pipeline gave 0 results for the ", dataset, " dataset.")
 }
@@ -91,9 +90,8 @@ if(nrow(res_junc_dt) > 0){
 if(length(res_junc) > 0){
   res_genes_dt <- resultsByGenes(res_junc) %>% as.data.table
   res_genes_dt <- merge(res_genes_dt, as.data.table(colData(fds)), by = "sampleID")
-  res_genes_dt[, c("bamFile", "pairedEnd") := NULL]
-  setnames(res_genes_dt, 'STRAND', 'STRAND_SPECIFIC')
-  
+  res_genes_dt[, c("bamFile", "pairedEnd", "STRAND") := NULL]
+    
   # add HPO overlap information
   sa <- fread(snakemake@config$sampleAnnotation, 
               colClasses = c(RNA_ID = 'character', DNA_ID = 'character'))
