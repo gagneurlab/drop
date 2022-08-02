@@ -56,10 +56,10 @@ total_counts <- SummarizedExperiment(assays=list(counts=merged_assays))
 rowRanges(total_counts) <- count_ranges
 
 # Add sample annotation data (colData)
-sample_anno <- fread(snakemake@config$sampleAnnotation)
+sample_anno <- fread(snakemake@config$sampleAnnotation,
+                    colClasses = c(RNA_ID = 'character', DNA_ID = 'character'))
 sample_anno <- sample_anno[, .SD[1], by = RNA_ID]
 col_data <- data.table(RNA_ID = as.character(colnames(total_counts)))
-sample_anno[, RNA_ID := as.character(RNA_ID)]
 col_data <- left_join(col_data, sample_anno, by = "RNA_ID")
 rownames(col_data) <- col_data$RNA_ID
 colData(total_counts) <- as(col_data, "DataFrame")
