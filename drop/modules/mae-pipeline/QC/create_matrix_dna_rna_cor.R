@@ -27,14 +27,15 @@ suppressPackageStartupMessages({
 })
 
 register(MulticoreParam(snakemake@threads))
-sa <- fread(snakemake@config$sampleAnnotation)
+sa <- fread(snakemake@config$sampleAnnotation, 
+            colClasses = c(RNA_ID = 'character', DNA_ID = 'character'))
 
 # Read the test vcf as GRanges
 gr_test <- readVcf(snakemake@config$mae$qcVcf) %>% granges()
 mcols(gr_test)$GT <- "0/0"
 
 # Obtain the rna and vcf files
-rna_samples <- snakemake@params$rnaIds
+rna_samples <- as.character(snakemake@params$rnaIds)
 mae_res <- snakemake@input$mae_res
 
 vcf_cols <- sa[RNA_ID %in% rna_samples, .(DNA_ID, DNA_VCF_FILE)] %>% unique %>% na.omit()
