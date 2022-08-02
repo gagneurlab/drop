@@ -10,7 +10,7 @@
 #'  input:
 #'   - annotation: '`sm cfg.getProcessedDataDir() + "/preprocess/{annotation}/txdb.db"`'
 #'   - fds_theta: '`sm cfg.getProcessedDataDir() + 
-#'                    "/aberrant_splicing/datasets/savedObjects/raw-{dataset}/theta.h5"`'
+#'                    "/aberrant_splicing/datasets/savedObjects/raw-local-{dataset}/theta.h5"`'
 #'  output:
 #'    - k_counts: '`sm expand(cfg.exportCounts.getFilePattern(str_=True, expandStr=True) + "/k_{metric}_counts.tsv.gz", metric=["j", "theta"])`'
 #'    - n_counts: '`sm expand(cfg.exportCounts.getFilePattern(str_=True, expandStr=True) + "/n_{metric}_counts.tsv.gz", metric=["psi5", "psi3", "theta"])`'
