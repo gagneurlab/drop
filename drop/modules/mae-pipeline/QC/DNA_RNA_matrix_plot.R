@@ -59,7 +59,8 @@ ggplot(melt_mat, aes(value)) + geom_histogram(fill = 'cadetblue4', binwidth = 0.
 #' * Is the sample a relative of the other?
 #' 
 
-sa <- fread(snakemake@config$sampleAnnotation)[, .(DNA_ID, RNA_ID)]
+sa <- fread(snakemake@config$sampleAnnotation, 
+            colClasses = c(RNA_ID = 'character', DNA_ID = 'character'))[, .(DNA_ID, RNA_ID)]
 sa[, ANNOTATED_MATCH := TRUE]
 colnames(melt_mat)[1:2] <- c('DNA_ID', 'RNA_ID')
 

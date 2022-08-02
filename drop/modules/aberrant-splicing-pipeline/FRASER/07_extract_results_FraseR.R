@@ -95,7 +95,8 @@ if(length(res_junc) > 0){
   setnames(res_genes_dt, 'STRAND', 'STRAND_SPECIFIC')
   
   # add HPO overlap information
-  sa <- fread(snakemake@config$sampleAnnotation)
+  sa <- fread(snakemake@config$sampleAnnotation, 
+              colClasses = c(RNA_ID = 'character', DNA_ID = 'character'))
   if(!is.null(sa$HPO_TERMS)){
     if(!all(is.na(sa$HPO_TERMS)) & ! all(sa$HPO_TERMS == '')){
       res_genes_dt <- add_HPO_cols(res_genes_dt, hpo_file = snakemake@params$hpoFile)
