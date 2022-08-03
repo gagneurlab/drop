@@ -181,6 +181,9 @@ class SampleAnnotation:
         # check if column is valid
         elif column not in sa_cols:
             raise KeyError(f"Column '{column}' not present in sample annotation.")
+        # return empty subset if empty
+        elif subset.empty:
+            return subset
         #subset column for matching values
         else:
             return utils.subsetBy(subset, column, values)
@@ -272,7 +275,6 @@ class SampleAnnotation:
         #subset for the annotation_key in the annotation group and the group_key in the group
         subset = self.subsetSampleAnnotation(annotation_key, annotation)
         subset = self.subsetSampleAnnotation(group_key, group, subset)
-            
         ans = subset[file_type].tolist()
         if asSet:
             ans = set(ans)
