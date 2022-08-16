@@ -34,7 +34,7 @@ aberrantExpression:
         - group2
     fpkmCutoff: 1
     implementation: autoencoder
-    padjCutoff: 1
+    padjCutoff: 0.05
     zScoreCutoff: 0
     maxTestedDimensionProportion: 3
     dassie:
@@ -45,16 +45,16 @@ aberrantSplicing:
     run: true
     groups:
         - fraser
-    recount: true
+    recount: false
     longRead: false
     keepNonStandardChrs: false
-    filter: false
+    filter: true
     minExpressionInOneSample: 20
     minDeltaPsi: 0.05
     implementation: PCA
-    padjCutoff: 1
+    padjCutoff: 0.1
     zScoreCutoff: 0
-    deltaPsiCutoff : 0.05
+    deltaPsiCutoff : 0.3
     maxTestedDimensionProportion: 6
 
 mae:
@@ -64,11 +64,11 @@ mae:
         - group2
         - group3
     gatkIgnoreHeaderCheck: true
-    padjCutoff: .05
+    padjCutoff: 0.05
     allelicRatioCutoff: 0.8
-    addAF: false
-    maxAF: .001
-    maxVarFreqCohort: .04
+    addAF: true
+    maxAF: 0.001
+    maxVarFreqCohort: 0.05
     # VCF-BAM matching
     qcVcf: Data/qc_vcf_1000G.vcf.gz
     qcGroups:
@@ -85,9 +85,9 @@ rnaVariantCalling:
     repeat_mask: Data/hg19_repeatMasker_sorted.chrPrefix.bed
     createSingleVCF: true
     addAF: true
-    maxAF: .001
-    maxVarFreqCohort: .1
-    hcArgs: 
+    maxAF: 0.001
+    maxVarFreqCohort: 0.05
+    hcArgs: ""
     minAlt: 3
 
 tools:
