@@ -9,7 +9,9 @@ sampleAnnotation: # path to sample annotation (see documentation on how to creat
 geneAnnotation:
     v29: Data/gencode_annotation_trunc.gtf
 genomeAssembly: hg19
-genome: Data/hg19.fa
+genome: # path to reference genome sequence in fasta format.
+    # You can define multiple reference genomes in yaml format, ncbi: path/to/ncbi, ucsc: path/to/ucsc
+    # the keywords that define the path should be in the GENOME column of the sample annotation table
 
 random_seed: true  # just for demo data, remove for analysis
 
@@ -20,9 +22,6 @@ exportCounts:
         - v29
     excludeGroups:
         - group1
-genome: # path to reference genome sequence in fasta format.
-    # You can define multiple reference genomes in yaml format, ncbi: path/to/ncbi, ucsc: path/to/ucsc
-    # the keywords that define the path should be in the GENOME column of the sample annotation table
 
 aberrantExpression:
     run: true
