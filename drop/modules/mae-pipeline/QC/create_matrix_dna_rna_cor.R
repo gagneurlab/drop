@@ -38,16 +38,26 @@ mcols(gr_test)$GT <- "0/0"
 rna_samples <- as.character(snakemake@params$rnaIds)
 mae_res <- snakemake@input$mae_res
 
-vcf_cols <- sa[RNA_ID %in% rna_samples, .(DNA_ID, DNA_VCF_FILE)] %>% unique %>% na.omit()
-wes_samples <- vcf_cols$DNA_ID
+rows_in_group <- sapply(strsplit(sa$DROP_GROUP, ',|, '), function(d) snakemake@wildcards$dataset %in% d)
+vcf_cols <- sa[rows_in_group, .(DNA_ID, DNA_VCF_FILE)] %>% unique
+dna_samples <- vcf_cols$DNA_ID
 vcf_files <- vcf_cols$DNA_VCF_FILE
 
 
+# Read all RNA genotypes into a list
+rna_gt_list <- bplapply(mae_res, function(m){
+  gr_rna <- readRDS(m)
+  seqlevelsStyle(gr_rna) <- seqlevelsStyle(gr_test)[1]
+  return(gr_rna)
+})
+
+
 N <- length(vcf_files)
+
 lp <- bplapply(1:N, function(i){
   
   # Read sample vcf file
-  sample <- wes_samples[i] %>% as.character()
+  sample <- dna_samples[i] %>% as.character()
   param <-  ScanVcfParam(fixed=NA, info='NT', geno='GT', samples=sample, trimEmpty=TRUE) 
   vcf_sample <- readVcf(vcf_files[i], param = param, row.names = FALSE)
   # Get GRanges and add Genotype
@@ -70,14 +80,12 @@ lp <- bplapply(1:N, function(i){
   
   # Find overlaps between test and sample
   gr_res <- copy(gr_test)
-  seqlevelsStyle(gr_res) <- seqlevelsStyle(seqlevelsInUse(gr_sample))  # Make chr style the same
+  seqlevelsStyle(gr_res) <- seqlevelsStyle(seqlevelsInUse(gr_sample))[1]
   ov <- findOverlaps(gr_res, gr_sample, type = 'equal')
   mcols(gr_res)[from(ov),]$GT <- mcols(gr_sample)[to(ov),]$GT
   
-  # Find simmilarity between DNA sample and RNA sample
-  x <- vapply(mae_res, function(m){
-    gr_rna <- readRDS(m)
-    seqlevelsStyle(gr_rna) <- seqlevelsStyle(gr_res)
+  # Find similarity between DNA sample and RNA sample
+  x <- vapply(rna_gt_list, function(m){
     ov <- findOverlaps(gr_res, gr_rna, type = 'equal')
     gt_dna <- gr_res[from(ov)]$GT
     gt_rna <- gr_rna[to(ov)]$RNA_GT
