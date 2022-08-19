@@ -96,7 +96,7 @@ lp <- bplapply(1:N, function(i){
 
 # Create a matrix
 mat <- do.call(rbind, lp)
-row.names(mat) <- wes_samples
+row.names(mat) <- dna_samples
 colnames(mat) <- rna_samples
 
 
