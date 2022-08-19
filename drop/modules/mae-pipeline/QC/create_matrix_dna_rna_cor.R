@@ -85,7 +85,7 @@ lp <- bplapply(1:N, function(i){
   mcols(gr_res)[from(ov),]$GT <- mcols(gr_sample)[to(ov),]$GT
   
   # Find similarity between DNA sample and RNA sample
-  x <- vapply(rna_gt_list, function(m){
+  x <- vapply(rna_gt_list, function(gr_rna){
     ov <- findOverlaps(gr_res, gr_rna, type = 'equal')
     gt_dna <- gr_res[from(ov)]$GT
     gt_rna <- gr_rna[to(ov)]$RNA_GT
