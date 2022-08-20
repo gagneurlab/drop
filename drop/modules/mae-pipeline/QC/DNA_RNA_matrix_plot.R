@@ -32,6 +32,8 @@ identityCutoff <- .85
 
 ggplot(melt_mat, aes(value)) + geom_histogram(fill = 'cadetblue4', binwidth = 0.05, center = .025) + 
   theme_bw(base_size = 14) + 
+  labs(x = 'Proportion of matching DNA-RNA variants', y = 'DNA-RNA combinations') + 
+  scale_y_log10() + annotation_logticks(sides = "l") + 
   expand_limits(x=c(0,1)) +
   geom_vline(xintercept=identityCutoff, linetype='dashed', color = 'firebrick')
 
