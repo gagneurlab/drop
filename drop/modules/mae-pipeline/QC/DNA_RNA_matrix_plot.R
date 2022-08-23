@@ -40,7 +40,9 @@ ggplot(melt_mat, aes(value)) + geom_histogram(fill = 'cadetblue4', binwidth = 0.
 
 #' ## Identify matching samples
 
-#' Number of samples: `r nrow(qc_mat)`
+#' Number of RNA samples: `r nrow(qc_mat)`
+#'
+#' Number of DNA samples: `r ncol(qc_mat)`
 #' 
 #' Number of samples that match RNA and DNA: `r length(qc_mat[qc_mat > identityCutoff])`
 #'

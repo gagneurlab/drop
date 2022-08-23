@@ -43,15 +43,10 @@ vcf_cols <- sa[rows_in_group, .(DNA_ID, DNA_VCF_FILE)] %>% unique
 dna_samples <- vcf_cols$DNA_ID
 vcf_files <- vcf_cols$DNA_VCF_FILE
 
-
 # Read all RNA genotypes into a list
-rna_gt_list <- bplapply(mae_res, function(m){
-  gr_rna <- readRDS(m)
-  seqlevelsStyle(gr_rna) <- seqlevelsStyle(gr_test)[1]
-  return(gr_rna)
-})
+rna_gt_list <- bplapply(mae_res, readRDS)
 
-
+# For every DNA, find the overlapping variants with each RNA
 N <- length(vcf_files)
 
 lp <- bplapply(1:N, function(i){
@@ -86,6 +81,7 @@ lp <- bplapply(1:N, function(i){
   
   # Find similarity between DNA sample and RNA sample
   x <- vapply(rna_gt_list, function(gr_rna){
+    seqlevelsStyle(gr_rna) <- seqlevelsStyle(gr_res)[1]
     ov <- findOverlaps(gr_res, gr_rna, type = 'equal')
     gt_dna <- gr_res[from(ov)]$GT
     gt_rna <- gr_rna[to(ov)]$RNA_GT
