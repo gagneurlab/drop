@@ -53,6 +53,7 @@ lp <- bplapply(1:N, function(i){
   
   # Read sample vcf file
   sample <- dna_samples[i] %>% as.character()
+
   param <-  ScanVcfParam(fixed=NA, info='NT', geno='GT', samples=sample, trimEmpty=TRUE) 
   vcf_sample <- readVcf(vcf_files[i], param = param, row.names = FALSE)
   # Get GRanges and add Genotype
