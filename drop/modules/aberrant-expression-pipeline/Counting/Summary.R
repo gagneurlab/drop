@@ -72,7 +72,7 @@ p_depth <- ggplot(coverage_dt, aes(x = count_rank, y = read_count, col= isExtern
   geom_point(size = 3,show.legend = has_external) +
   theme_cowplot() +
   background_grid() +
-  labs(title = "Obtained Read Counts", x="Sample Rank", y = "Reads Counted") +
+  labs(title = "Mapped reads in BAM file", x="Sample Rank", y = "Total Mapped Reads") +
   ylim(c(0,NA)) +
   scale_color_brewer(palette="Dark2")
 
@@ -80,8 +80,7 @@ p_frac <- ggplot(coverage_dt, aes(x = frac_rank, y = counted_frac, col = isExter
   geom_point(size = 3,show.legend = has_external) +
   theme_cowplot() +
   background_grid() +
-  labs(title = "Obtained Read Count Ratio", x = "Sample Rank", 
-       y = "Percent Reads Counted") +
+  labs(title = "Read Count Ratio", x = "Sample Rank", y = "Percent Reads Counted") +
   ylim(c(0,NA)) +
   scale_color_brewer(palette="Dark2")
 
@@ -101,8 +100,8 @@ p_sf_cov <- ggplot(coverage_dt, aes(read_count, size_factors, col = isExternal))
   ylim(c(0,NA)) +
   theme_cowplot() +
   background_grid() +
-  labs(title = 'Size Factors vs. Read Counts',
-       x = 'Read Counts', y = 'Size Factors') +
+  labs(title = 'Size Factors vs. Reads Mapped',
+       x = 'Total Mapped Reads', y = 'Size Factors') +
   scale_color_brewer(palette="Dark2")
 
 #+ sizeFactors, fig.height=6, fig.width=12
