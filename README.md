@@ -75,6 +75,10 @@ Please cite as instructed for each dataset.
 
 * 125 strand specific blood, build hg19, Baylor College of Medicine: [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.3963470.svg)](https://doi.org/10.5281/zenodo.3963470)
 
+* 330 strand specific induced pluripotent stem cells (iPSCs), build hg19, EMBL: [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.7022459.svg)](https://doi.org/10.5281/zenodo.7022459)
+
+* 56 non-strand specific amniotic fluid cells, build hg19, The University of Hong Kong: [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.7079684.svg)](https://doi.org/10.5281/zenodo.7079684)
+
 If you want to contribute with your own count matrices, please contact us: yepez at in.tum.de
 
 ## Citation
