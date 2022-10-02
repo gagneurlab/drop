@@ -43,69 +43,59 @@ cnts_mtx <- counts(ods, normalized = F)
 #' 
 #' # Count Quality Control
 #' 
-#' Compare number of records vs. read counts  
-#' The `Obtained Read Count Ratio` plot does not include external counts
-#' because there are no raw reads to be counted.
-#' 
+#' Compares total mapped vs counted reads.  
+#' The `Total vs Counted Reads` plot does not include external counts.  
+#' Consider removing samples with too low or too high size factors.
+#'  
 bam_coverage <- fread(snakemake@input$bam_cov)
 bam_coverage[, sampleID := as.character(sampleID)]
+setnames(bam_coverage, 'record_count', 'total_count')
 coverage_dt <- merge(bam_coverage,
                      data.table(sampleID = colnames(ods),
                                 read_count = colSums(cnts_mtx),
                                 isExternal = ods@colData$isExternal),
                      by = "sampleID", sort = FALSE)
-# read count
-setorder(coverage_dt, read_count)
-coverage_dt[, count_rank := .I]
-# ratio
-coverage_dt[, counted_frac := read_count/record_count]
-setorder(coverage_dt, counted_frac)
-coverage_dt[, frac_rank := .I]
+# read counts
+coverage_dt[, count_rank := rank(read_count)]
 
 # size factors 
 ods <- estimateSizeFactors(ods)
-coverage_dt[, size_factors := sizeFactors(ods)]
-setorder(coverage_dt, size_factors)
-coverage_dt[, sf_rank := 1:.N]
+coverage_dt[, size_factors := round(sizeFactors(ods), 3)]
+coverage_dt[, sf_rank := rank(size_factors)]
 
-p_depth <- ggplot(coverage_dt, aes(x = count_rank, y = read_count, col= isExternal )) +
-  geom_point(size = 3,show.legend = has_external) +
-  theme_cowplot() +
-  background_grid() +
-  labs(title = "Read Counts", x="Sample Rank", y = "Reads Counted") +
-  ylim(c(0,NA)) +
-  scale_color_brewer(palette="Dark2")
+# Show this plot only if there are external samples, as the next plot contains the same info
+if(has_external == T){
+  p_depth <- ggplot(coverage_dt, aes(x = count_rank, y = read_count, col = isExternal)) +
+    geom_point(size = 3,show.legend = has_external) +
+    theme_cowplot() + background_grid() +
+    labs(title = "Obtained Read Counts", x="Sample Rank", y = "Counted Reads") +
+    ylim(c(0,NA)) +
+    scale_color_brewer(palette="Dark2")
+  p_depth
+}
 
-p_frac <- ggplot(coverage_dt, aes(x = frac_rank, y = counted_frac, col = isExternal)) +
-  geom_point(size = 3,show.legend = has_external) +
-  theme_cowplot() +
-  background_grid() +
-  labs(title = "Read Count Ratio", x = "Sample Rank", y = "Percent Reads Counted") +
-  ylim(c(0,NA)) +
-  scale_color_brewer(palette="Dark2")
 
-#+ QC, fig.height=6, fig.width=12
-plot_grid(p_depth, p_frac) 
+p_comp <- ggplot(coverage_dt[isExternal == F], aes(x = total_count, y = read_count)) +
+  geom_point(size = 3, show.legend = has_external, color = "#1B9E77") +
+  theme_cowplot() + background_grid() +
+  labs(title = "Total mapped vs. Counted Reads", x = "Mapped Reads", y = "Counted Reads") +
+  xlim(c(0,NA)) + ylim(c(0,NA))
+p_comp
+# ggExtra::ggMarginal(p_comp, type = "histogram") # could be a nice add-on
 
 p_sf <- ggplot(coverage_dt, aes(sf_rank, size_factors, col = isExternal)) +
   geom_point(size = 3,show.legend = has_external) +
   ylim(c(0,NA)) +
-  theme_cowplot() +
-  background_grid() +
+  theme_cowplot() + background_grid() +
   labs(title = 'Size Factors', x = 'Sample Rank', y = 'Size Factors') +
   scale_color_brewer(palette="Dark2")
 
-p_sf_cov <- ggplot(coverage_dt, aes(read_count, size_factors, col = isExternal)) +
-  geom_point(size = 3,show.legend = has_external) +
-  ylim(c(0,NA)) +
-  theme_cowplot() +
-  background_grid() +
-  labs(title = 'Size Factors vs. Read Counts',
-       x = 'Reads Counted', y = 'Size Factors') +
-  scale_color_brewer(palette="Dark2")
+p_sf
 
-#+ sizeFactors, fig.height=6, fig.width=12
-plot_grid(p_sf, p_sf_cov)
+setnames(coverage_dt, old = c('total_count', 'read_count', 'size_factors'),
+         new = c('Reads Mapped', 'Reads Counted', 'Size Factors'))
+DT::datatable(coverage_dt[, .(sampleID, `Reads Mapped`, `Reads Counted`, `Size Factors`)][order(`Reads Mapped`)],
+              caption = 'Reads summary statistics')
 
 #' # Filtering
 #' **local**: A pre-filtered summary of counts using only the local (from BAM) counts. Omitted if no external counts  
