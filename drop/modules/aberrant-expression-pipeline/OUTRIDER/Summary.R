@@ -41,6 +41,7 @@ suppressPackageStartupMessages({
 dataset_title <- paste("Dataset:", paste(snakemake@wildcards$dataset, snakemake@wildcards$annotation, sep = '--'))
 
 ods <- readRDS(snakemake@input$ods)
+if(is.null(colData(ods)$isExternal)) colData(ods)$isExternal <- FALSE
 
 #' Number of samples: `r ncol(ods)`  
 #' Number of expressed genes: `r nrow(ods)`  
