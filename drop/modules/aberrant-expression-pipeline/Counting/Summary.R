@@ -44,7 +44,7 @@ cnts_mtx <- counts(ods, normalized = F)
 #' # Count Quality Control
 #' 
 #' Compares total mapped vs counted reads.  
-#' The `Total vs Counted Reads` plot does not include external counts.  
+#' The `Mapped vs Counted Reads` plot does not include external counts.  
 #' Consider removing samples with too low or too high size factors.
 #'  
 bam_coverage <- fread(snakemake@input$bam_cov)
