@@ -84,7 +84,7 @@ def subsetBy(df, column, values):
     
     inner_regex = values
     if not isinstance(values, str) :
-        inner_regex = "(" + "|".join(values) + ")"
+        inner_regex = "(?:" + "|".join(values) + ")"
     
     if df[column].isnull().all():
         return df[[False for i in range(df.shape[0])]]
