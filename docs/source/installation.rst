@@ -11,7 +11,6 @@ In case the conda channel priority is set to ``strict``, it should be reset to `
 We recommend using a dedicated conda environment (here: ``drop_env``) for installing drop.
 For installing, use `mamba` instead of `conda` as it provides more reliable and faster dependency solving.
 
-
 .. code-block:: bash
 
     mamba create -n drop_env -c conda-forge -c bioconda drop --override-channels
@@ -20,8 +19,8 @@ In the case of mamba/conda troubles we recommend using the fixed ``DROP.yaml`` i
 we make available on our `public server. <https://www.cmm.in.tum.de/public/paper/drop_analysis/DROP.yaml>`_
 Install this using the following command:
 
-
 .. code-block:: bash
+
     mamba env create -f DROP.yaml
 
 Installation time: ~ 10min
