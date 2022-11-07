@@ -19,30 +19,89 @@ suppressPackageStartupMessages({
   library(reshape2)
   library(data.table)
   library(ggplot2)
+  library(RColorBrewer)
+  library(pheatmap)
 })
 
+identityCutoff <- .85
+
+# Read sample annotation and subset to corresponding DROP group
+sa <- fread(snakemake@config$sampleAnnotation, 
+            colClasses = c(RNA_ID = 'character', DNA_ID = 'character'))
+rows_in_group <- sapply(strsplit(sa$DROP_GROUP, ',|, '), function(d) snakemake@wildcards$dataset %in% d)
+sa <- sa[rows_in_group, .(DNA_ID, RNA_ID)]
+sa[, ANNOTATED_MATCH := TRUE]
 
 #'
-#' ## Plot DNA - RNA matching matrix
-qc_mat <- readRDS(snakemake@input$mat_qc)
-# hist(qc_mat, xlab = '% of overlapping variants from DNA and RNA', main = '')
-melt_mat <- as.data.table(reshape2::melt(qc_mat))
+#' ## Plots DNA - RNA matching matrix
 
-identityCutoff <- .85
+#' ### DNA - RNA matching values distribution
+qc_mat <- readRDS(snakemake@input$mat_qc)
+melt_mat <- as.data.table(reshape2::melt(qc_mat))
+colnames(melt_mat)[1:2] <- c('DNA_ID', 'RNA_ID')
 
 ggplot(melt_mat, aes(value)) + geom_histogram(fill = 'cadetblue4', binwidth = 0.05, center = .025) + 
   theme_bw(base_size = 14) + 
   labs(x = 'Proportion of matching DNA-RNA variants', y = 'DNA-RNA combinations') + 
-  scale_y_log10() + annotation_logticks(sides = "l") + 
+  scale_y_log10() + annotation_logticks(sides = "l") +
   expand_limits(x=c(0,1)) +
   geom_vline(xintercept=identityCutoff, linetype='dashed', color = 'firebrick')
 
 
+#' ### Heatmap of matching variants
+
+#' Possible values are:
+#' 
+#' * match: the DNA sample matches the annotated RNA sample
+#' * no match: the DNA sample does not match the annotated RNA and no match was found
+#' * matches other: the DNA sample does not match the annotated RNA, but another match was found
+#' * matches more: the DNA sample matches the annotated RNA, but also other RNAs not annotated to match
+#' * matches less: the DNA sample is annotated with more than 1 RNA. Not all annotated RNAs are correct.
+#' 
+#' Similar for the RNAs.
+#' 
+
+qc_dt <- merge(sa, melt_mat, all = T)
+qc_dt[is.na(ANNOTATED_MATCH), ANNOTATED_MATCH := F]
+qc_dt[, PREDICTED_MATCH := value > identityCutoff]
+
+# function to check the matches
+check_matches <- function(annot_col, pred_col){
+  if(sum(pred_col) == 0) return('no match')
+  if(identical(annot_col,pred_col)) return('match')
+  if(sum(annot_col)==1 & sum(pred_col)==1) return('matches other')
+  if(sum(annot_col)>1 & sum(pred_col)==1)  return('matches less')
+  if(sum(annot_col)==1 & sum(pred_col)>1)  return('matches more')
+}
+
+# check DNA and RNA matches (not necessarily the same)
+dna_df <- data.frame(status = sapply(unique(qc_dt$DNA_ID), function(d){
+  check_matches(qc_dt[DNA_ID == d, ANNOTATED_MATCH], qc_dt[DNA_ID == d, PREDICTED_MATCH])})
+)
+rownames(dna_df) <- unique(qc_dt$DNA_ID)
+
+rna_df <- data.frame(status = sapply(unique(qc_dt$RNA_ID), function(r){
+  check_matches(qc_dt[RNA_ID == r, ANNOTATED_MATCH], qc_dt[RNA_ID == r, PREDICTED_MATCH])})
+)
+rownames(rna_df) <- unique(qc_dt$RNA_ID)
+
+# Colors for heatmap and annotations
+color <- colorRampPalette(brewer.pal(n = 9, name = "OrRd"))(100)
+ann_colors = list(
+  status = c(match = "ghostwhite", `no match` = "firebrick", `matches other` = "darkorchid4", 
+             `matches more` = 'deepskyblue3', `matches less` = 'goldenrod2')
+)
+ann_colors[['status']] <- ann_colors[['status']][unique(c(dna_df$status, rna_df$status))] 
+
+#+ Heatmap, fig.height=6, fig.width=8
+pheatmap(qc_mat, color = color, cluster_rows = FALSE, cluster_cols = FALSE, 
+         annotation_row = dna_df, annotation_col = rna_df, annotation_colors = ann_colors, 
+         labels_row = 'DNA samples', labels_col = 'RNA samples')
+
+
 #' ## Identify matching samples
 
-#' Number of RNA samples: `r ncol(qc_mat)`
-#'
-#' Number of DNA samples: `r nrow(qc_mat)`
+#' Number of samples: `r nrow(qc_mat)`
 #' 
 #' Number of samples that match RNA and DNA: `r length(qc_mat[qc_mat > identityCutoff])`
 #'
@@ -63,10 +122,6 @@ ggplot(melt_mat, aes(value)) + geom_histogram(fill = 'cadetblue4', binwidth = 0.
 #' * Is the sample a relative of the other?
 #' 
 
-sa <- fread(snakemake@config$sampleAnnotation, 
-            colClasses = c(RNA_ID = 'character', DNA_ID = 'character'))[, .(DNA_ID, RNA_ID)]
-sa[, ANNOTATED_MATCH := TRUE]
-colnames(melt_mat)[1:2] <- c('DNA_ID', 'RNA_ID')
 
 #' ### Samples that were annotated to match but do not 
 false_matches <- merge(sa, melt_mat, by = c('DNA_ID', 'RNA_ID'), 
