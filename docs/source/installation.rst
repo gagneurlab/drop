@@ -16,6 +16,12 @@ For installing, use `mamba` instead of `conda` as it provides more reliable and 
 
     mamba create -n drop_env -c conda-forge -c bioconda drop --override-channels
 
+In the case of mamba/conda troubles we recommend using the fixed `DROP.yaml` installation file
+we make available on our [public server](https://www.cmm.in.tum.de/public/paper/drop_analysis/DROP.yaml).
+Install this using the following command:
+.. code-block:: bash
+    mamba env create -f DROP.yaml
+
 Installation time: ~ 10min
 
 Test whether the pipeline runs through by setting up the demo dataset in an empty directory (e.g. ``~/drop_demo``).
