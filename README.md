@@ -24,13 +24,14 @@ We recommend using a dedicated conda environment. (installation time: ~ 10min)
 mamba create -n drop_env -c conda-forge -c bioconda drop --override-channels
 ```
 
-In the case of mamba/conda troubles we recommend using the fixed `DROP.yaml` installation file we make available on our [public server](https://www.cmm.in.tum.de/public/paper/drop_analysis/DROP.yaml). Install this using the following command:
+In the case of mamba/conda troubles we recommend using the fixed `DROP_<version>.yaml` installation file we make available on our [public server](https://www.cmm.in.tum.de/public/paper/drop_analysis/). Install the current version and use the full path in the following command to install the conda environment `drop_env`
 ```
-mamba env create -f DROP.yaml
+mamba env create -f DROP_1.2.2.yaml
 ```
 
 Test installation with demo project
 ```
+conda activate drop_env
 mkdir ~/drop_demo
 cd ~/drop_demo
 drop demo
