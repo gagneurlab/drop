@@ -50,6 +50,7 @@ ggplot(melt_mat, aes(value)) + geom_histogram(fill = 'cadetblue4', binwidth = 0.
 
 #' ### Heatmap of matching variants
 
+#' Shows the proportion of matching DNA (rows) - RNA (cols) variants.
 #' Possible values are:
 #' 
 #' * match: the DNA sample matches the annotated RNA sample
