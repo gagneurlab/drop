@@ -111,12 +111,13 @@ ggplot(bcv_dt, aes(when, BCV)) +
 #' ## Results
 res <- fread(snakemake@input$results)
 
-#' Total number of expression outliers: `r nrow(res)`
+#' Total number of expression outliers: `r nrow(res)`  
 #' Samples with at least one outlier gene: `r res[, uniqueN(sampleID)]`  
 
 #'
 #' ### Aberrant samples
-#' An aberrant sample is one that has more than 0.1% of the expressed genes called as outliers.
+#' 
+#' An aberrant sample is one that has more than 0.1% of the total genes called as outliers.
 if (nrow(res) > 0) {
   ab_table <- res[AberrantBySample > nrow(ods)/1000, .("Outlier genes" = .N), by = .(sampleID)] %>% unique
   if (nrow(ab_table) > 0) {
@@ -125,25 +126,24 @@ if (nrow(res) > 0) {
   } else {
     print("no aberrant samples")
   }
-} else {
-  print('no results')
-}
+} else print("no aberrant samples")
 
 
-#' ### Results table
+#' ## Results table
 
-## Save the results table in the html folder and provide link to download
+## Save results table in the html folder and provide link to download
 file <- snakemake@output$res_html
 fwrite(res, file, sep = '\t', quote = F)
+
+
+if(nrow(res) > 0){
+  res[, pValue := format(pValue, scientific = T, digits = 3)]
+  res[, padjust := format(padjust, scientific = T, digits = 3)]
+  
+  DT::datatable(head(res, 1000), caption = 'OUTRIDER results (up to 1,000 rows shown)',
+                options=list(scrollX=TRUE), filter = 'top')
+  
+} else print("no significant results")
+
 #+ echo=FALSE, results='asis'
 cat(paste0("<a href='./", basename(file), "'>Download OUTRIDER results table</a>"))
-
-res[, pValue := format(pValue, scientific = T, digits = 3)]
-res[, padjust := format(padjust, scientific = T, digits = 3)]
-
-DT::datatable(
-  head(res, 1000),
-  caption = 'OUTRIDER results (up to 1,000 rows shown)',
-  options=list(scrollX=TRUE),
-  filter = 'top'
-)
