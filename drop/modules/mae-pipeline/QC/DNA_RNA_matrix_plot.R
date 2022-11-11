@@ -97,7 +97,7 @@ ann_colors[['status']] <- ann_colors[['status']][unique(c(dna_df$status, rna_df$
 #+ Heatmap, fig.height=6, fig.width=8
 pheatmap(qc_mat, color = color, cluster_rows = FALSE, cluster_cols = FALSE, 
          annotation_row = dna_df, annotation_col = rna_df, annotation_colors = ann_colors, 
-         labels_row = 'DNA samples', labels_col = 'RNA samples')
+         labels_row = 'DNA samples', labels_col = 'RNA samples', angle_col = 0)
 
 
 #' ## Identify matching samples
