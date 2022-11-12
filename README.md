@@ -15,11 +15,11 @@ Version 1.2.2 fixes some critical bugs that affected the performance of the `abe
 
 As of version 1.2.1 DROP has a new module that performs RNA-seq variant calling. The input are BAM files and the output either a single-sample or a multi-sample VCF file (option specified by the user) annotated with allele frequencies from gnomAD (if specified by the user). The sample annotation table does not need to be changed, but several new parameters in the config file have to be added and tuned. For more info, refer to the [documentation](https://gagneurlab-drop.readthedocs.io/en/latest/prepare.html#rna-variant-calling-dictionary).
 
-Also, the integration of external split and non-split counts to detect aberrant splicing is now possible. Simply specify in a new column in the sample annotation the directory containing the counts. For more info, refer to the [documentation](https://gagneurlab-drop.readthedocs.io/en/latest/prepare.html#external-count-examples).
+Also, as of v 1.2.1 the integration of external split and non-split counts to detect aberrant splicing is now possible. Simply specify in a new column in the sample annotation the directory containing the counts. For more info, refer to the [documentation](https://gagneurlab-drop.readthedocs.io/en/latest/prepare.html#external-count-examples).
 
 ## Quickstart
 DROP is available on [bioconda](https://anaconda.org/bioconda/drop).
-We recommend using a dedicated conda environment. (installation time: ~ 10min)
+We recommend using a dedicated conda environment (`drop_env` in this example). Installation time: ~ 10min.
 ```
 mamba create -n drop_env -c conda-forge -c bioconda drop --override-channels
 ```
