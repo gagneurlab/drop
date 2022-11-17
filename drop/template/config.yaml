@@ -13,6 +13,8 @@ genome: # path to reference genome sequence in fasta format.
     # You can define multiple reference genomes in yaml format, ncbi: path/to/ncbi, ucsc: path/to/ucsc
     # the keywords that define the path should be in the GENOME column of the sample annotation table
 
+
+hpoFile: null
 random_seed: true  # just for demo data, remove for analysis
 
 exportCounts:
