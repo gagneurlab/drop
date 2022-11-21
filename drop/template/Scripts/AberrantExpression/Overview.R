@@ -84,8 +84,8 @@ DT::datatable(res, filter = 'top')
 
 #' Choose a random gene and sample to plot. Outliers are in red.
 #+ echo=TRUE
-gene <- res[1, geneID]
-sample <- res[1, sampleID]
+gene <- ifelse(nrow(res)>1, res[1, geneID], rownames(ods)[1])
+sample <- ifelse(nrow(res)>1, res[1, sampleID], colnames(ods)[1])
 
 #' ### Volcano plot
 #' setting basePlot = FALSE creates an interactive plot

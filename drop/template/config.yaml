@@ -6,12 +6,13 @@ indexWithFolderName: true # whether the root base name should be part of the ind
 hpoFile: null  # if null, downloads it from webserver
 sampleAnnotation: # path to sample annotation (see documentation on how to create it)
 
-root: Output
-sampleAnnotation: Data/sample_annotation.tsv
 geneAnnotation:
     v29: Data/gencode_annotation_trunc.gtf
 genomeAssembly: hg19
-genome: Data/hg19.fa
+genome: # path to reference genome sequence in fasta format.
+    # You can define multiple reference genomes in yaml format, ncbi: path/to/ncbi, ucsc: path/to/ucsc
+    # the keywords that define the path should be in the GENOME column of the sample annotation table
+
 
 hpoFile: null
 random_seed: true  # just for demo data, remove for analysis
@@ -23,9 +24,6 @@ exportCounts:
         - v29
     excludeGroups:
         - group1
-genome: # path to reference genome sequence in fasta format.
-    # You can define multiple reference genomes in yaml format, ncbi: path/to/ncbi, ucsc: path/to/ucsc
-    # the keywords that define the path should be in the GENOME column of the sample annotation table
 
 aberrantExpression:
     run: true
@@ -34,7 +32,7 @@ aberrantExpression:
         - group2
     fpkmCutoff: 1
     implementation: autoencoder
-    padjCutoff: 1
+    padjCutoff: 0.05
     zScoreCutoff: 0
     maxTestedDimensionProportion: 3
     dassie:
@@ -45,16 +43,16 @@ aberrantSplicing:
     run: true
     groups:
         - fraser
-    recount: true
+    recount: false
     longRead: false
     keepNonStandardChrs: false
-    filter: false
+    filter: true
     minExpressionInOneSample: 20
     minDeltaPsi: 0.05
     implementation: PCA
-    padjCutoff: 1
+    padjCutoff: 0.1
     zScoreCutoff: 0
-    deltaPsiCutoff : 0.05
+    deltaPsiCutoff : 0.3
     maxTestedDimensionProportion: 6
 
 mae:
@@ -64,11 +62,11 @@ mae:
         - group2
         - group3
     gatkIgnoreHeaderCheck: true
-    padjCutoff: .05
+    padjCutoff: 0.05
     allelicRatioCutoff: 0.8
-    addAF: false
-    maxAF: .001
-    maxVarFreqCohort: .04
+    addAF: true
+    maxAF: 0.001
+    maxVarFreqCohort: 0.05
     # VCF-BAM matching
     qcVcf: Data/qc_vcf_1000G.vcf.gz
     qcGroups:
@@ -85,9 +83,9 @@ rnaVariantCalling:
     repeat_mask: Data/hg19_repeatMasker_sorted.chrPrefix.bed
     createSingleVCF: true
     addAF: true
-    maxAF: .001
-    maxVarFreqCohort: .1
-    hcArgs: 
+    maxAF: 0.001
+    maxVarFreqCohort: 0.05
+    hcArgs: ""
     minAlt: 3
 
 tools:

@@ -56,7 +56,7 @@ count_ranges <- readRDS(snakemake@input$count_ranges)
 seqlevelsStyle(count_ranges) <- seqlevelsStyle(bam_file)
 
 # show info
-message(paste("input:", snakemake@input$features))
+message(paste("input:", snakemake@input$sample_bam))
 message(paste("output:", snakemake@output$counts))
 message(paste('\tcount mode:', count_mode, sep = "\t"))
 message(paste('\tpaired end:', paired_end, sep = "\t"))

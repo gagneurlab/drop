@@ -277,7 +277,7 @@ rule filterVCF:
         """
         # filter any sample for the 2nd AD field (ALT), if any pass filter mark PASS else mark minALT
         bcftools filter -i 'FORMAT/AD[:1] >= {params.minAlt}' {input.vcf}  -s "minALT" -o {output.temp_vcf} -O b
-        tabix {output.temp_vcf}
+        tabix -f -p vcf  {output.temp_vcf}
 
         gatk --java-options "-Djava.io.tmpdir={resources.tmpdir}" VariantFiltration \
         -R {params.ref} -V {output.temp_vcf} \
