@@ -66,7 +66,7 @@ saveRDS(splitCountRanges, snakemake@output$gRangesNonSplitCounts)
 
 # Extract splitSiteCoodinates: extract donor and acceptor sites
 # take either filtered or full fds
-spliceSiteCoords <- FRASER:::extractSpliceSiteCoordinates(splitCountRanges, fds)
+spliceSiteCoords <- FRASER:::extractSpliceSiteCoordinates(splitCountRanges)
 saveRDS(spliceSiteCoords, snakemake@output$spliceSites)
 
 

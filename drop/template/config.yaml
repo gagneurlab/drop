@@ -54,6 +54,7 @@ aberrantSplicing:
     zScoreCutoff: 0
     deltaPsiCutoff : 0.3
     maxTestedDimensionProportion: 6
+    FRASER_version: "FRASER1"
 
 mae:
     run: true

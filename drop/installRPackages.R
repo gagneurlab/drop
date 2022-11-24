@@ -21,7 +21,8 @@ if (file.exists(args[1])){
 } else {
     packages <- data.table(
         package=gsub("=.*", "", unlist(args)),
-        version=gsub(".*=", "", unlist(args)))
+        version=gsub(".*=", "", unlist(args)),
+        ref="")
     packages[package == version, version:=NA]
 }
 installed <- as.data.table(installed.packages())
@@ -30,13 +31,18 @@ for (pckg_name in packages$package) {
     package_dt <- packages[package == pckg_name]
     pckg_name <- gsub(".*/", "", pckg_name)
     version <- package_dt$version
+    branch <- package_dt$ref
     
     if (!pckg_name %in% installed$Package || (!is.na(version) && compareVersion(
         installed[Package == pckg_name, Version], version) < 0)) {
         
         package <- package_dt$package
         message(paste("install", package))
-        BiocManager::install(package, ask=FALSE, update=FALSE)
+        if(branch != ""){
+            BiocManager::install(package, ask=FALSE, update=FALSE, ref=branch)
+        } else{
+            BiocManager::install(package, ask=FALSE, update=FALSE)    
+        }
         message(paste("installed", package))
     }
 }

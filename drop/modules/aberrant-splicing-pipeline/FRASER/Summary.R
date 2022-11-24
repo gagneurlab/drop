@@ -59,7 +59,8 @@ for(type in psiTypes){
 }
 
 #' ## Aberrantly spliced genes per sample
-plotAberrantPerSample(fds, padjCutoff = padj_cutoff, zScoreCutoff = zScore_cutoff, deltaPsiCutoff = deltaPsi_cutoff,
+plotAberrantPerSample(fds, type=psiTypes, 
+                      padjCutoff = padj_cutoff, zScoreCutoff = zScore_cutoff, deltaPsiCutoff = deltaPsi_cutoff,
                       aggregate=TRUE, main=dataset_title) + 
   theme_cowplot(font_size = 16) +
   theme(legend.position = "top")

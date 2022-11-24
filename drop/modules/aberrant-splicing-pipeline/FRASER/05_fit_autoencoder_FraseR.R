@@ -12,8 +12,8 @@
 #'   - hyper: '`sm cfg.getProcessedDataDir() + 
 #'                "/aberrant_splicing/datasets/savedObjects/{dataset}/hyper.done" `'
 #'  output:
-#'   - fdsout: '`sm cfg.getProcessedDataDir() + 
-#'                  "/aberrant_splicing/datasets/savedObjects/{dataset}/predictedMeans_theta.h5"`'
+#'   - fdsout: '`sm expand(cfg.getProcessedDataDir() + 
+#'                  "/aberrant_splicing/datasets/savedObjects/{dataset}/predictedMeans_{type}.h5", type=cfg.AS.getPsiTypeAssay(), allow_missing=True)`'
 #'  type: script
 #'---
 

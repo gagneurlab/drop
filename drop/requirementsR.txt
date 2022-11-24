@@ -1,8 +1,8 @@
-package	version
+package	version	ref
 devtools
-gagneurlab/OUTRIDER	1.6.1
-c-mertes/FRASER	1.8.1
-gagneurlab/tMAE	1.0.4
+gagneurlab/OUTRIDER	1.6.1	HEAD
+c-mertes/FRASER	1.99.0	fraser2
+gagneurlab/tMAE	1.0.4	HEAD
 VariantAnnotation	
 rmarkdown	
 knitr	

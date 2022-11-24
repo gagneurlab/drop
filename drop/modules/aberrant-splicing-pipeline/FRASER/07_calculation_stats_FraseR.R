@@ -3,25 +3,26 @@
 #' author: Christian Mertes
 #' wb:
 #'  log:
-#'    - snakemake: '`sm str(tmp_dir / "AS" / "{dataset}" / "06_stats.Rds")`'
+#'    - snakemake: '`sm str(tmp_dir / "AS" / "{dataset}--{annotation}" / "07_stats.Rds")`'
 #'  params:
 #'   - setup: '`sm cfg.AS.getWorkdir() + "/config.R"`'
-#'   - workingDir: '`sm cfg.getProcessedDataDir() + "/aberrant_splicing/datasets/"`'
+#'   - workingDir: '`sm cfg.getProcessedResultsDir() + "/aberrant_splicing/datasets/"`'
 #'  threads: 20
 #'  input:
-#'   - fdsin:  '`sm cfg.getProcessedDataDir() + 
-#'                  "/aberrant_splicing/datasets/savedObjects/{dataset}/" +
-#'                  "predictedMeans_theta.h5"`'
+#'   - fdsin:  '`sm expand(cfg.getProcessedResultsDir() +
+#'                 "/aberrant_splicing/datasets/savedObjects/{dataset}--{annotation}/" +
+#'                  "predictedMeans_{type}.h5", type=cfg.AS.getPsiTypeAssay(), allow_missing=True)`'
 #'  output:
-#'   - fdsout: '`sm cfg.getProcessedDataDir() + 
-#'                  "/aberrant_splicing/datasets/savedObjects/{dataset}/" +
-#'                  "padjBetaBinomial_theta.h5"`'
+#'   - fdsout:  '`sm expand(cfg.getProcessedResultsDir() +
+#'                 "/aberrant_splicing/datasets/savedObjects/{dataset}--{annotation}/" +
+#'                  "padjBetaBinomial_{type}.h5", type=cfg.AS.getPsiTypeAssay(), allow_missing=True)`'
 #'  type: script
 #'---
 
 saveRDS(snakemake, snakemake@log$snakemake)
 source(snakemake@params$setup, echo=FALSE)
 
+annotation    <- snakemake@wildcards$annotation
 dataset    <- snakemake@wildcards$dataset
 fdsFile    <- snakemake@input$fdsin
 workingDir <- snakemake@params$workingDir
@@ -31,7 +32,7 @@ register(MulticoreParam(snakemake@threads))
 setAutoBPPARAM(MulticoreParam(snakemake@threads))
 
 # Load Zscores data
-fds <- loadFraserDataSet(dir=workingDir, name=dataset)
+fds <- loadFraserDataSet(dir=workingDir, name=paste(dataset, annotation, sep = '--'))
 
 # Calculate stats
 for (type in psiTypes) {
