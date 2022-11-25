@@ -14,7 +14,8 @@ class Test_AS_Config:
             'padjCutoff': 1,
             'zScoreCutoff': 0,
             'deltaPsiCutoff': 0.05,
-            'maxTestedDimensionProportion': 6
+            'maxTestedDimensionProportion': 6,
+            'FRASER_version': 'FRASER1'
         }
         assert dict_.items() <= dropConfig.AS.dict_.items()
 

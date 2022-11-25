@@ -85,15 +85,19 @@ DT::datatable(res, filter = 'top')
 sample <- ifelse(nrow(res)>1, res[1, sampleID], colnames(fds)[1])
 siteIndex <- 4
 
+#' Get asplice metric of interest. Choose any of the ones that have been fitted
+#' Here we use the splice metric of the first outlier in the results table
+splice_metric <- res[1, type]
+
 #' ### Volcano plot
 # set basePlot to FALSE to create an interactive plot
-FRASER::plotVolcano(fds, sample, type = 'psi3', basePlot = TRUE,
+FRASER::plotVolcano(fds, sample, type = splice_metric, basePlot = TRUE,
                     deltaPsiCutoff = snakemake@config$aberrantSplicing$deltaPsiCutoff,
                     padjCutoff = snakemake@config$aberrantSplicing$padjCutoff)
 
 #' ### Expression plot
-FRASER::plotExpression(fds, type = 'psi3', site = siteIndex, basePlot = TRUE)
+FRASER::plotExpression(fds, type = splice_metric, idx = siteIndex, basePlot = TRUE)
 
 #' ### Expected vs observed PSI (or theta)
-FRASER::plotExpectedVsObservedPsi(fds, type = 'psi3',
+FRASER::plotExpectedVsObservedPsi(fds, type = splice_metric,
                                   idx = siteIndex, basePlot = TRUE)
