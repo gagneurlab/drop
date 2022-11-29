@@ -43,13 +43,16 @@ aberrantSplicing:
     keepNonStandardChrs: false
     filter: false
     minExpressionInOneSample: 20
+    quantileMinExpression: 1 # change to 10 if using FRASER2
+    quantile: 0.95 # change to 0.75 if using FRASER2
     minDeltaPsi: 0.05
     implementation: PCA
     padjCutoff: 1
     zScoreCutoff: 0
-    deltaPsiCutoff : 0.05
+    deltaPsiCutoff : 0.05 # change to 0.1 if using FRASER2
     maxTestedDimensionProportion: 6
-    FRASER_version: "FRASER1"
+    FRASER_version: "FRASER" # change to 'FRASER2' if using FRASER2
+    pseudocount: 1 # change to 0.1 if using FRASER2
 
 mae:
     run: true

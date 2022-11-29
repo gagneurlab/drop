@@ -9,13 +9,16 @@ class Test_AS_Config:
             'keepNonStandardChrs': False,
             'filter': False,
             'minExpressionInOneSample': 20,
+            'quantileMinExpressionIn': 1,
+            'quantile': 0.95,
             'minDeltaPsi': 0.05,
             'implementation': 'PCA',
             'padjCutoff': 1,
             'zScoreCutoff': 0,
             'deltaPsiCutoff': 0.05,
             'maxTestedDimensionProportion': 6,
-            'FRASER_version': 'FRASER1'
+            'FRASER_version': 'FRASER',
+            'pseudocount': 1
         }
         assert dict_.items() <= dropConfig.AS.dict_.items()
 
