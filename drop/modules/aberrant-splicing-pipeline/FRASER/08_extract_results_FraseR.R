@@ -104,13 +104,24 @@ res_genes_dt <- annotateSpliceEventType(result=res_genes_dt, txdb=txdb, fds=fds)
     
 # set genome assembly version to load correct blacklist region BED file (hg19 or hg38)
 assemblyVersion <- snakemake@config$assemblyVersion
+if(grepl("grch37", assemblyVersion, ignore.case=TRUE)){
+    assemblyVersion <- "hg19"
+}
+if(grepl("grch38", assemblyVersion, ignore.case=TRUE)){
+    assemblyVersion <- "hg38"
+}
     
 # annotate overlap with blacklist regions
-res_junc_dt <- flagBlacklistRegions(result=res_junc_dt, 
-                                    assemblyVersion=assemblyVersion)
-res_genes_dt <- flagBlacklistRegions(result=res_genes_dt, 
-                                     assemblyVersion=assemblyVersion)
-
+if(assemblyVersion %in% c("hg19", "hg38")){
+    res_junc_dt <- flagBlacklistRegions(result=res_junc_dt, 
+                                        assemblyVersion=assemblyVersion)
+    res_genes_dt <- flagBlacklistRegions(result=res_genes_dt, 
+                                         assemblyVersion=assemblyVersion)
+} else{
+    message(date(), ": cannot annotate blacklist regions as no blacklist region\n", 
+            "BED file is available for genome assembly version ", assemblyVersion, 
+            " as part of FRASER")
+}
 
 # Results
 write_tsv(res_junc_dt, file=snakemake@output$resultTableJunc)

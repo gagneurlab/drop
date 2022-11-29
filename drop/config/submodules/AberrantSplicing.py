@@ -41,8 +41,8 @@ class AS(Submodule):
         setKey(dict_, None, "keepNonStandardChrs", False)
         setKey(dict_, None, "filter", True)
         setKey(dict_, None, "minExpressionInOneSample", 20)
-        setKey(dict_, None, "quantileMinExpression", 1)
-        setKey(dict_, None, "quantile", 0.95)
+        setKey(dict_, None, "quantileMinExpression", 10)
+        setKey(dict_, None, "quantileForFiltering", 0.95)
         setKey(dict_, None, "minDeltaPsi", 0)
         setKey(dict_, None, "implementation", "PCA")
         setKey(dict_, None, "padjCutoff", 0.05)
@@ -50,7 +50,6 @@ class AS(Submodule):
         setKey(dict_, None, "deltaPsiCutoff", 0.05)
         setKey(dict_, None, "maxTestedDimensionProportion", 6)
         setKey(dict_, None, "FRASER_version", "FRASER")
-        setKey(dict_, None, "pseudocount", 1)
         return dict_
 
     def getSplitCountFiles(self, dataset):

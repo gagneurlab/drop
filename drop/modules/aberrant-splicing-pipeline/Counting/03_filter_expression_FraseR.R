@@ -34,9 +34,10 @@ exCountIDs <- snakemake@params$exCountIDs
 exCountFiles <- snakemake@input$exCounts
 sample_anno_file <- snakemake@config$sampleAnnotation
 minExpressionInOneSample <- params$minExpressionInOneSample
-quantile <- params$quantile
+quantile <- params$quantileForFiltering
 quantileMinExpression <- params$quantileMinExpression
 minDeltaPsi <- params$minDeltaPsi
+filterOnJaccard <- (params$FRASER_version == "FRASER2")
 
 fds <- loadFraserDataSet(dir=workingDir, name=paste0("raw-local-", dataset))
 
@@ -80,7 +81,7 @@ fds <- filterExpressionAndVariability(fds,
         quantile=quantile,
         quantileMinExpression=quantileMinExpression,
         minDeltaPsi = minDeltaPsi,
-        filterOnJaccard=(params$FRASER_version == "FRASER2"),
+        filterOnJaccard=filterOnJaccard,
         filter=FALSE)
 
 devNull <- saveFraserDataSet(fds,dir = workingDir)

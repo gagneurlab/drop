@@ -36,10 +36,8 @@ h5disableFileLocking()
 cfg <- yaml::read_yaml("config.yaml")
 if(cfg$aberrantSplicing$FRASER_version == "FRASER2"){
     psiTypes <- c("jaccard")
+    pseudocount(0.1)
 } else{
     psiTypes <- c("psi5", "psi3", "theta")
+    pseudocount(1)
 }
-
-# set the pseudocount (defaults 1 for FRASER and 0.1 for FRASER2)
-pc <- as.numeric(cfg$aberrantSplicing$pseudocount)
-pseudocount(pc)
