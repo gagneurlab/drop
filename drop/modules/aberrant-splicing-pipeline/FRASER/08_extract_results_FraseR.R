@@ -103,7 +103,7 @@ res_junc_dt <- annotateSpliceEventType(result=res_junc_dt, txdb=txdb, fds=fds)
 res_genes_dt <- annotateSpliceEventType(result=res_genes_dt, txdb=txdb, fds=fds)
     
 # set genome assembly version to load correct blacklist region BED file (hg19 or hg38)
-assemblyVersion <- snakemake@config$assemblyVersion
+assemblyVersion <- snakemake@config$genomeAssembly
 if(grepl("grch37", assemblyVersion, ignore.case=TRUE)){
     assemblyVersion <- "hg19"
 }
@@ -120,7 +120,7 @@ if(assemblyVersion %in% c("hg19", "hg38")){
 } else{
     message(date(), ": cannot annotate blacklist regions as no blacklist region\n", 
             "BED file is available for genome assembly version ", assemblyVersion, 
-            " as part of FRASER")
+            " as part of FRASER.")
 }
 
 # Results
