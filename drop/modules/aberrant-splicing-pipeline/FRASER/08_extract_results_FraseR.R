@@ -7,7 +7,6 @@
 #'  params:
 #'   - workingDir: '`sm cfg.getProcessedResultsDir() + "/aberrant_splicing/datasets/"`'
 #'   - padjCutoff: '`sm cfg.AS.get("padjCutoff")`'
-#'   - zScoreCutoff: '`sm cfg.AS.get("zScoreCutoff")`'
 #'   - deltaPsiCutoff: '`sm cfg.AS.get("deltaPsiCutoff")`'
 #'   - hpoFile: '`sm cfg.get("hpoFile")`'
 #'  threads: 10
@@ -46,7 +45,7 @@ fds <- loadFraserDataSet(dir=workingDir, name=paste(dataset, annotation, sep = '
 # Extract results per junction
 res_junc <- results(fds, psiType=psiTypes,
                     padjCutoff=snakemake@params$padjCutoff,
-                    zScoreCutoff=snakemake@params$zScoreCutoff,
+                    zScoreCutoff=NA,
                     deltaPsiCutoff=snakemake@params$deltaPsiCutoff)
 res_junc_dt   <- as.data.table(res_junc)
 print('Results per junction extracted')
@@ -71,7 +70,7 @@ if(nrow(res_junc_dt) > 0){
 res_gene <- results(fds, psiType=psiTypes,
                     aggregate=TRUE, collapse=FALSE,
                     padjCutoff=snakemake@params$padjCutoff,
-                    zScoreCutoff=snakemake@params$zScoreCutoff,
+                    zScoreCutoff=NA,
                     deltaPsiCutoff=snakemake@params$deltaPsiCutoff)
 res_genes_dt   <- as.data.table(res_gene)
 print('Results per gene extracted')

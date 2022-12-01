@@ -14,7 +14,6 @@ class Test_AS_Config:
             'minDeltaPsi': 0.05,
             'implementation': 'PCA',
             'padjCutoff': 1,
-            'zScoreCutoff': 0,
             'deltaPsiCutoff': 0.05,
             'maxTestedDimensionProportion': 6,
             'FRASER_version': 'FRASER'

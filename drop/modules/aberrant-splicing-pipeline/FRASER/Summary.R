@@ -31,7 +31,7 @@ suppressPackageStartupMessages({
 dataset    <- snakemake@wildcards$dataset
 annotation <- snakemake@wildcards$annotation
 padj_cutoff <- snakemake@config$aberrantSplicing$padjCutoff
-zScore_cutoff <- snakemake@config$aberrantSplicing$zScoreCutoff
+zScore_cutoff <- NA
 deltaPsi_cutoff <- snakemake@config$aberrantSplicing$deltaPsiCutoff
 
 

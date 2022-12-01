@@ -48,7 +48,6 @@ aberrantSplicing:
     minDeltaPsi: 0.05
     implementation: PCA
     padjCutoff: 1
-    zScoreCutoff: 0
     deltaPsiCutoff : 0.05 # change to 0.1 if using FRASER2
     maxTestedDimensionProportion: 6
     FRASER_version: "FRASER" # change to 'FRASER2' if using FRASER2
