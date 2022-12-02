@@ -53,7 +53,7 @@ vcffile <- open(VcfFile(snakemake@input$annotatedVCF,yieldSize = snakemake@confi
 res_final <- data.table()
 
 #while there are rows to read in. Process the vcf file until nrow is 0.
-while(nrow(vcf_yield <- readVcf(vcffile,param =  ScanVcfParam(fixed="FILTER",geno="GT")))) {
+while(nrow(vcf <- readVcf(vcffile,param =  ScanVcfParam(fixed="FILTER",geno="GT")))) {
   canonical_chr <- c(paste0("chr",c(1:22,"X","Y","M")),1:22,"X","Y","MT")
   vcf <- vcf[seqnames(vcf) %in% canonical_chr]
 
