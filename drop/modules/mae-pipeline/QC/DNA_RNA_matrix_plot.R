@@ -123,7 +123,6 @@ pheatmap(qc_mat, color = color, cluster_rows = FALSE, cluster_cols = FALSE,
 #' * Is the sample a relative of the other?
 #' 
 
-
 #' ### Samples that were annotated to match but do not 
 false_matches <- merge(sa, melt_mat, by = c('DNA_ID', 'RNA_ID'), 
                        sort = FALSE, all.x = TRUE)
