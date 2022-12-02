@@ -29,6 +29,10 @@ aberrantExpression:
     padjCutoff: 1
     zScoreCutoff: 0
     maxTestedDimensionProportion: 3
+    dassie:
+        tssWindow: 500
+        pasWindow: 1000
+    yieldSize: 2000000
 
 aberrantSplicing:
     run: true
@@ -63,21 +67,22 @@ mae:
       - mae
 
 rnaVariantCalling:
-  run: true
-  groups:
-  - batch_0
-  - batch_1
-  highQualityVCFs:
-  - Data/high_confidence_snps.vcf.gz
-  - Data/high_confidence_indels.vcf.gz
-  dbSNP: Data/dbSNP_chr21.vcf.gz
-  repeat_mask: Data/repeat_mask_chr21.bed
-  createSingleVCF: true
-  addAF: false
-  maxAF: 0.001
-  maxVarFreqCohort: 1
-  hcArgs: null
-  minAlt: 3
+    run: true
+    groups:
+      - batch_0
+      - batch_1
+    highQualityVCFs:
+      - Data/high_confidence_snps.vcf.gz
+      - Data/high_confidence_indels.vcf.gz
+    dbSNP: Data/dbSNP_chr21.vcf.gz
+    repeat_mask: Data/repeat_mask_chr21.bed
+    createSingleVCF: true
+    addAF: false
+    maxAF: 0.001
+    maxVarFreqCohort: 1
+    hcArgs: null
+    minAlt: 3
+    yieldSize: 2000000
 
 tools:
   gatkCmd: gatk
