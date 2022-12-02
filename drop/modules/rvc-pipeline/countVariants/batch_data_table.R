@@ -52,8 +52,8 @@ saveRDS(snakemake, snakemake@log$snakemake)
 vcffile <- open(VcfFile(snakemake@input$annotatedVCF,yieldSize = snakemake@config$rnaVariantCalling$yieldSize)) # read the batch vcf
 res_final <- data.table()
 
-#while there are rows to read in. Process the vcf file
-while((nrow(vcf_yield <- readVcf(vcffile,param =  ScanVcfParam(fixed="FILTER",geno="GT"))))) {
+#while there are rows to read in. Process the vcf file until nrow is 0.
+while(nrow(vcf_yield <- readVcf(vcffile,param =  ScanVcfParam(fixed="FILTER",geno="GT")))) {
   canonical_chr <- c(paste0("chr",c(1:22,"X","Y","M")),1:22,"X","Y","MT")
   vcf <- vcf[seqnames(vcf) %in% canonical_chr]
 
