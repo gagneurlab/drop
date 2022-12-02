@@ -11,21 +11,32 @@ The manuscript is available in [Nature Protocols](https://www.nature.com/article
 
 
 ## What's new
+
+`Snakemake v.7.8` introduced some changes in which changes in parameters can cause rules to be re-executed. More info [here](https://github.com/snakemake/snakemake/issues/1694). This affects DROP and causes certain rules in the AS and QC modules to be triggered even if they were already completed and there were no changes in the sample annotation or scripts. The workaround is to run DROP by adding the parameter `--rerun-triggers mtime`, e.g. `snakemake -n --rerun-triggers mtime` or `snakemake --cores 10 --rerun-triggers mtime`. We will investigate the rules in DROP to fix this.
+
+Version 1.2.3 fixes a bug in one of the plots in the AE Summary Script as well as simplifies the plots. In addition, there's a new heatmap in the sampleQC Summary that allows to better identify DNA-RNA mismatches.
+
 Version 1.2.2 fixes some critical bugs that affected the performance of the `aberrantExpression` pipeline, and allows sample IDs to be numeric.
 
 As of version 1.2.1 DROP has a new module that performs RNA-seq variant calling. The input are BAM files and the output either a single-sample or a multi-sample VCF file (option specified by the user) annotated with allele frequencies from gnomAD (if specified by the user). The sample annotation table does not need to be changed, but several new parameters in the config file have to be added and tuned. For more info, refer to the [documentation](https://gagneurlab-drop.readthedocs.io/en/latest/prepare.html#rna-variant-calling-dictionary).
 
-Also, the integration of external split and non-split counts to detect aberrant splicing is now possible. Simply specify in a new column in the sample annotation the directory containing the counts. For more info, refer to the [documentation](https://gagneurlab-drop.readthedocs.io/en/latest/prepare.html#external-count-examples).
+Also, as of v 1.2.1 the integration of external split and non-split counts to detect aberrant splicing is now possible. Simply specify in a new column in the sample annotation the directory containing the counts. For more info, refer to the [documentation](https://gagneurlab-drop.readthedocs.io/en/latest/prepare.html#external-count-examples).
 
 ## Quickstart
 DROP is available on [bioconda](https://anaconda.org/bioconda/drop).
-We recommend using a dedicated conda environment. (installation time: ~ 10min)
+We recommend using a dedicated conda environment (`drop_env` in this example). Installation time: ~ 10min.
 ```
 mamba create -n drop_env -c conda-forge -c bioconda drop --override-channels
 ```
 
+In the case of mamba/conda troubles we recommend using the fixed `DROP_<version>.yaml` installation file we make available on our [public server](https://www.cmm.in.tum.de/public/paper/drop_analysis/). Install the current version and use the full path in the following command to install the conda environment `drop_env`
+```
+mamba env create -f DROP_1.2.3.yaml
+```
+
 Test installation with demo project
 ```
+conda activate drop_env
 mkdir ~/drop_demo
 cd ~/drop_demo
 drop demo
@@ -63,17 +74,21 @@ snakemake aberrantExpression --cores 10
 The following publicly-available datasets of gene counts can be used as controls.
 Please cite as instructed for each dataset.
 
-* 154 non-strand specific fibroblasts, build hg19, Technical University of Munich: [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.4646822.svg)](https://doi.org/10.5281/zenodo.4646822)
+* 154 non strand-specific fibroblasts, build hg19, Technical University of Munich: [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.4646822.svg)](https://doi.org/10.5281/zenodo.4646822)
 
-* 269 strand specific fibroblasts, build hg19, Technical University of Munich: [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.4646826.svg)](https://doi.org/10.5281/zenodo.4646826)
+* 269 strand-specific fibroblasts, build hg19, Technical University of Munich: [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.4646826.svg)](https://doi.org/10.5281/zenodo.4646826)
 
-* 49 tissues, each containing hundreds of samples, non-strand specific, build hg19, GTEx: [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.5596755.svg)](https://doi.org/10.5281/zenodo.5596755)
+* 49 tissues, each containing hundreds of samples, non strand-specific, build hg19, GTEx: [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.5596755.svg)](https://doi.org/10.5281/zenodo.5596755)
 
-* 49 tissues, each containing hundreds of samples, non-strand specific, build hg38, GTEx: [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.6078396.svg)](https://doi.org/10.5281/zenodo.6078396)
+* 49 tissues, each containing hundreds of samples, non strand-specific, build hg38, GTEx: [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.6078396.svg)](https://doi.org/10.5281/zenodo.6078396)
 
-* 139 strand specific fibroblasts, build hg19, Baylor College of Medicine: [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.3963473.svg)](https://doi.org/10.5281/zenodo.3963473)
+* 139 strand-specific fibroblasts, build hg19, Baylor College of Medicine: [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.3963473.svg)](https://doi.org/10.5281/zenodo.3963473)
 
-* 125 strand specific blood, build hg19, Baylor College of Medicine: [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.3963470.svg)](https://doi.org/10.5281/zenodo.3963470)
+* 125 strand-specific blood, build hg19, Baylor College of Medicine: [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.3963470.svg)](https://doi.org/10.5281/zenodo.3963470)
+
+* 330 strand-specific induced pluripotent stem cells (iPSCs), build hg19, EMBL: [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.7022459.svg)](https://doi.org/10.5281/zenodo.7022459)
+
+* 56 non strand-specific amniotic fluid cells, build hg19, The University of Hong Kong: [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.7079684.svg)](https://doi.org/10.5281/zenodo.7079684)
 
 If you want to contribute with your own count matrices, please contact us: yepez at in.tum.de
 

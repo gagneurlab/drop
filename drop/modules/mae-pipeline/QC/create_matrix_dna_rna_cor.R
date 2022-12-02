@@ -52,7 +52,9 @@ N <- length(vcf_files)
 lp <- bplapply(1:N, function(i){
   
   # Read sample vcf file
+
   sample <- dna_samples[i] %>% as.character()
+
   param <-  ScanVcfParam(fixed=NA, info='NT', geno='GT', samples=sample, trimEmpty=TRUE) 
   vcf_sample <- readVcf(vcf_files[i], param = param, row.names = FALSE)
   # Get GRanges and add Genotype
@@ -94,7 +96,7 @@ lp <- bplapply(1:N, function(i){
 mat <- do.call(rbind, lp)
 row.names(mat) <- dna_samples
 colnames(mat) <- rna_samples
-
+mat <- mat[sa[rows_in_group, DNA_ID], sa[rows_in_group, RNA_ID]]
 
 saveRDS(mat, snakemake@output$mat_qc)
 

@@ -82,7 +82,7 @@ DT::datatable(res, filter = 'top')
 
 #' Get a splice site and sample of interest. Outliers are in red.
 #+ echo=TRUE
-sample <- res[1, sampleID]
+sample <- ifelse(nrow(res)>1, res[1, sampleID], colnames(fds)[1])
 siteIndex <- 4
 
 #' ### Volcano plot
