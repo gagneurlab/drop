@@ -49,7 +49,7 @@ saveRDS(snakemake, snakemake@log$snakemake)
   })
 }
 
-vcffile <- open(VcfFile(snakemake@input$annotatedVCF,yieldSize = 100000)) # read the batch vcf
+vcffile <- open(VcfFile(snakemake@input$annotatedVCF,yieldSize = snakemake@config$rnaVariantCalling$yieldSize)) # read the batch vcf
 res_final <- data.table()
 repeat{
   vcf = readVcf(vcffile,param =  ScanVcfParam(fixed="FILTER",geno="GT"))

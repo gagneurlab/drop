@@ -36,6 +36,7 @@ aberrantExpression:
     dassie:
         tssWindow: 500
         pasWindow: 1000
+    yieldSize: 2000000
 
 aberrantSplicing:
     run: true
@@ -85,6 +86,7 @@ rnaVariantCalling:
     maxVarFreqCohort: 0.05
     hcArgs: ""
     minAlt: 3
+    yieldSize: 1000000
 
 tools:
     gatkCmd: gatk
