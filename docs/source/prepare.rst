@@ -175,7 +175,7 @@ maxAF                  numeric    Maximum allele frequency (of the minor allele)
 maxVarFreqCohort       numeric    Maximum variant frequency among the cohort.                                                                                                                                                       ``0.05``
 minAlt                 numeric    Integer describing the minimum required reads that support the alternative allele. We recommend a minimum of 3 if further filtering on your own. 10 otherwise.                                    ``3``
 hcArgs                 character  String describing additional arguments for GATK haplocaller. Refer to `advanced-options`_.                                                                                                        ``""``
-yieldSize              numeric    An integer that sets the batch size for counting reads within a vcf file. If memory issues persist during ``batch_data_table`` lower the yieldSize.                                               ``1000000``
+yieldSize              numeric    An integer that sets the batch size for counting reads within a vcf file. If memory issues persist during ``batch_data_table`` lower the yieldSize.                                               ``100000``
 =====================  =========  ================================================================================================================================================================================================  =========
 
 

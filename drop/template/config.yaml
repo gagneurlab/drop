@@ -86,7 +86,7 @@ rnaVariantCalling:
     maxVarFreqCohort: 0.05
     hcArgs: ""
     minAlt: 3
-    yieldSize: 1000000
+    yieldSize: 100000
 
 tools:
     gatkCmd: gatk
