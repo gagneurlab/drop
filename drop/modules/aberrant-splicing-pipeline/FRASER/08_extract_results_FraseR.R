@@ -45,7 +45,6 @@ fds <- loadFraserDataSet(dir=workingDir, name=paste(dataset, annotation, sep = '
 # Extract results per junction
 res_junc <- results(fds, psiType=psiTypes,
                     padjCutoff=snakemake@params$padjCutoff,
-                    zScoreCutoff=NA,
                     deltaPsiCutoff=snakemake@params$deltaPsiCutoff)
 res_junc_dt   <- as.data.table(res_junc)
 print('Results per junction extracted')
@@ -70,7 +69,6 @@ if(nrow(res_junc_dt) > 0){
 res_gene <- results(fds, psiType=psiTypes,
                     aggregate=TRUE, collapse=FALSE,
                     padjCutoff=snakemake@params$padjCutoff,
-                    zScoreCutoff=NA,
                     deltaPsiCutoff=snakemake@params$deltaPsiCutoff)
 res_genes_dt   <- as.data.table(res_gene)
 print('Results per gene extracted')

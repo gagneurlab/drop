@@ -31,7 +31,6 @@ suppressPackageStartupMessages({
 dataset    <- snakemake@wildcards$dataset
 annotation <- snakemake@wildcards$annotation
 padj_cutoff <- snakemake@config$aberrantSplicing$padjCutoff
-zScore_cutoff <- NA
 deltaPsi_cutoff <- snakemake@config$aberrantSplicing$deltaPsiCutoff
 
 
@@ -60,7 +59,7 @@ for(type in psiTypes){
 
 #' ## Aberrantly spliced genes per sample
 plotAberrantPerSample(fds, type=psiTypes, 
-                      padjCutoff = padj_cutoff, zScoreCutoff = zScore_cutoff, deltaPsiCutoff = deltaPsi_cutoff,
+                      padjCutoff = padj_cutoff, deltaPsiCutoff = deltaPsi_cutoff,
                       aggregate=TRUE, main=dataset_title) + 
   theme_cowplot(font_size = 16) +
   theme(legend.position = "top")
@@ -120,7 +119,6 @@ if(nrow(res) > 0){
   res[, pValue := signif(pValue, 3)]
   res[, padjust := signif(padjust, 3)]
   res[, deltaPsi := signif(deltaPsi, 2)]
-  res[, zscore := signif(zScore, 2)]
   res[, psiValue := signif(psiValue, 2)]
   res[, pValueGene := signif(pValueGene, 2)]
   res[, padjustGene := signif(padjustGene, 2)]
