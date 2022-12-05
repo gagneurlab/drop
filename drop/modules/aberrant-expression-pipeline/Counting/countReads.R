@@ -50,7 +50,7 @@ if (strand == "yes") {
 }
 
 # read files
-bam_file <- BamFile(snakemake@input$sample_bam, yieldSize = 2e6)
+bam_file <- BamFile(snakemake@input$sample_bam, yieldSize = snakemake@config$aberrantExpression$yieldSize)
 count_ranges <- readRDS(snakemake@input$count_ranges)
 # set chromosome style
 seqlevelsStyle(count_ranges) <- seqlevelsStyle(bam_file)

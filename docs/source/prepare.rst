@@ -105,6 +105,7 @@ implementation                character  Either 'autoencoder', 'pca' or 'peer'. 
 zScoreCutoff                  numeric    A non-negative number. Z scores (in absolute value) greater than this cutoff are considered as outliers.                           ``0``
 padjCutoff                    numeric    A number between (0, 1] indicating the maximum FDR an event can have in order to be considered an outlier.                         ``0.05``
 maxTestedDimensionProportion  numeric    An integer that controls the maximum value that the encoding dimension can take. Refer to `advanced-options`_.                     ``3``
+yieldSize                     numeric    An integer that sets the batch size for counting reads within a bam file. If memory issues persist lower the yieldSize.            ``2000000``
 ============================  =========  =================================================================================================================================  ======
 
 Aberrant splicing dictionary
@@ -174,7 +175,7 @@ maxAF                  numeric    Maximum allele frequency (of the minor allele)
 maxVarFreqCohort       numeric    Maximum variant frequency among the cohort.                                                                                                                                                       ``0.05``
 minAlt                 numeric    Integer describing the minimum required reads that support the alternative allele. We recommend a minimum of 3 if further filtering on your own. 10 otherwise.                                    ``3``
 hcArgs                 character  String describing additional arguments for GATK haplocaller. Refer to `advanced-options`_.                                                                                                        ``""``
-
+yieldSize              numeric    An integer that sets the batch size for counting reads within a vcf file. If memory issues persist during ``batch_data_table`` lower the yieldSize.                                               ``100000``
 =====================  =========  ================================================================================================================================================================================================  =========
 
 
