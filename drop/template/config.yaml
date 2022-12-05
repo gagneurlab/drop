@@ -49,13 +49,18 @@ aberrantSplicing:
     filter: true
     minExpressionInOneSample: 20
     quantileMinExpression: 10
-    quantileForFiltering: 0.95 # change to 0.75 if using FRASER2
     minDeltaPsi: 0.05
     implementation: PCA
     padjCutoff: 0.1
-    deltaPsiCutoff : 0.3 # change to 0.1 if using FRASER2
     maxTestedDimensionProportion: 6
-    FRASER_version: "FRASER" # change to 'FRASER2' if using FRASER2
+    ### FRASER1 configuration
+    FRASER_version: "FRASER" 
+    deltaPsiCutoff : 0.3 
+    quantileForFiltering: 0.95 
+    ### For FRASER2, use the follwing parameters instead of the 3 lines above:
+    # FRASER_version: "FRASER2"
+    # deltaPsiCutoff : 0.1
+    # quantileForFiltering: 0.75
 
 mae:
     run: true
