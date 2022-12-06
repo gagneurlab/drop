@@ -150,6 +150,7 @@ maxAF                  numeric    Maximum allele frequency (of the minor allele)
 maxVarFreqCohort       numeric    Maximum variant frequency among the cohort.                                                                               ``0.05``
 qcVcf                  character  Full path to the vcf file used for VCF-BAM matching. Refer to `files-to-download`_.                                       ``/path/to/qc_vcf.vcf.gz``
 qcGroups               list       Same as “groups”, but for the VCF-BAM matching                                                                            ``# see aberrant expression example``
+dnaRnaMatchCutoff      numeric    fraction (0-1) used to seperate "matching" samples and "non-matching" samples comparing the DNA and RNA data during QC    ``0.85``
 =====================  =========  ========================================================================================================================  ======
 
 

@@ -44,8 +44,9 @@ class MAE(Submodule):
         setKey(dict_, None, "allelicRatioCutoff", 0.8)
         setKey(dict_, None, "maxAF", .001)
         setKey(dict_, None, "addAF", False)
-        setKey(dict_, None, "maxVarFreqCohort", 0.04)
+        setKey(dict_, None, "maxVarFreqCohort", 0.05)
         setKey(dict_, None, "gnomAD", False)
+        setKey(dict_, None, "dnaRnaMatchCutoff", 0.85)
         if dict_["run"]:
             dict_ = utils.checkKeys(dict_, keys=["qcVcf"], check_files=True)
         return dict_

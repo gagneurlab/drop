@@ -7,6 +7,8 @@
 #'  input:
 #'    - mat_qc: '`sm cfg.getProcessedResultsDir() + 
 #'               "/mae/{dataset}/dna_rna_qc_matrix.Rds"`'
+#'  params:
+#'   - dnaRnaMatchCutoff: '`sm cfg.MAE.get("dnaRnaMatchCutoff")`'
 #'  output:
 #'    - wBhtml: '`sm config["htmlOutputPath"] + "/MonoallelicExpression/QC/{dataset}.html"`'
 #'  type: noindex
@@ -23,7 +25,7 @@ suppressPackageStartupMessages({
   library(pheatmap)
 })
 
-identityCutoff <- .85
+identityCutoff <- snakemake@params$dnaRnaMatchCutoff
 
 # Read sample annotation and subset to corresponding DROP group
 sa <- fread(snakemake@config$sampleAnnotation, 
