@@ -68,47 +68,36 @@ plotAberrantPerSample(fds, padjCutoff = padj_cutoff, zScoreCutoff = zScore_cutof
 topN <- 30000
 topJ <- 10000
 anno_color_scheme <- brewer.pal(n = 3, name = 'Dark2')[1:2]
+
 for(type in psiTypes){
-  before <- plotCountCorHeatmap(
-    object=fds,
-    type = type,
-    logit = TRUE,
-    topN = topN,
-    topJ = topJ,
-    plotType = "sampleCorrelation",
-    normalized = FALSE,
-    annotation_col = "isExternal",
-    annotation_row = NA,
-    sampleCluster = NA,
-    minDeltaPsi = snakemake@config$aberrantSplicing$minDeltaPsi,
-    plotMeanPsi=FALSE,
-    plotCov = FALSE,
-    annotation_legend = TRUE,
-	annotation_colors = list(isExternal = c("FALSE" = anno_color_scheme[1],"TRUE" =  anno_color_scheme[2]))
-  )
-  before
-  after <- plotCountCorHeatmap(
-    object=fds,
-    type = type,
-    logit = TRUE,
-    topN = topN,
-    topJ = topJ,
-    plotType = "sampleCorrelation",
-    normalized = TRUE,
-    annotation_col = "isExternal",
-    annotation_row = NA,
-    sampleCluster = NA,
-    minDeltaPsi = snakemake@config$aberrantSplicing$minDeltaPsi,
-    plotMeanPsi=FALSE,
-    plotCov = FALSE,
-    annotation_legend = TRUE,
-	annotation_colors = list(isExternal = c("FALSE" = anno_color_scheme[1],"TRUE" =  anno_color_scheme[2]))
-  )
-  after
+  for(normalized in c(T,F)){
+    hm <- plotCountCorHeatmap(
+      object=fds,
+      type = type,
+      logit = TRUE,
+      topN = topN,
+      topJ = topJ,
+      plotType = "sampleCorrelation",
+      normalized = normalized,
+      annotation_col = "isExternal",
+      annotation_row = NA,
+      sampleCluster = NA,
+      minDeltaPsi = minDeltaPsi,
+      plotMeanPsi = FALSE,
+      plotCov = FALSE,
+      annotation_legend = TRUE,
+      annotation_colors = list(isExternal = c("FALSE" = anno_color_scheme[1], "TRUE" = anno_color_scheme[2]))
+    )
+    hm
+  }
 }
 
 #' ## Results
 res <- fread(snakemake@input$results)
+
+#' Total gene-level splicing outliers: `r nrow(res)`
+#' 
+
 file <- snakemake@output$res_html
 write_tsv(res, file = file)
 #+ echo=FALSE, results='asis'
