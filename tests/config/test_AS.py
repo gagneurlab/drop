@@ -10,7 +10,7 @@ class Test_AS_Config:
             'keepNonStandardChrs': False,
             'filter': False,
             'minExpressionInOneSample': 20,
-            'quantileMinExpressionIn': 10,
+            'quantileMinExpression': 10,
             'quantileForFiltering': 0.95,
             'minDeltaPsi': 0.05,
             'implementation': 'PCA',
