@@ -107,22 +107,6 @@ class MAE(Submodule):
                         else:
                             pass  # desired behavior
 
-    def setDefaultKeys(self, dict_):
-        super().setDefaultKeys(dict_)
-        setKey = utils.setKey
-        setKey(dict_, None, "run", False)
-        groups = setKey(dict_, None, "groups", self.sampleAnnotation.getGroups(assay="DNA"))
-        setKey(dict_, None, "qcGroups", groups)
-        setKey(dict_, None, "gatkIgnoreHeaderCheck", True)
-        setKey(dict_, None, "padjCutoff", .05)
-        setKey(dict_, None, "allelicRatioCutoff", 0.8)
-        setKey(dict_, None, "maxAF", .001)
-        setKey(dict_, None, "addAF", False)
-        setKey(dict_, None, "maxVarFreqCohort", 0.04)
-        if dict_["run"]:
-            dict_ = utils.checkKeys(dict_, keys=["qcVcf"], check_files=True)
-        return dict_
-
     def createMaeIDS(self, id_sep='--'):
         """
         Create MAE IDs from sample annotation
