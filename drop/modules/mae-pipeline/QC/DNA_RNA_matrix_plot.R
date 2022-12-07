@@ -23,7 +23,7 @@ suppressPackageStartupMessages({
   library(pheatmap)
 })
 
-identityCutoff <- .85
+identityCutoff <- snakemake@config$mae$dnaRnaMatchCutoff
 
 # Read sample annotation and subset to corresponding DROP group
 sa <- fread(snakemake@config$sampleAnnotation, 

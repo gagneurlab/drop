@@ -65,6 +65,7 @@ mae:
     qcVcf: Data/qc_vcf_1000G.vcf.gz
     qcGroups:
       - mae
+    dnaRnaMatchCutoff: 0.85
 
 rnaVariantCalling:
     run: true
