@@ -68,9 +68,10 @@ class RVC(Submodule):
         setKey(dict_, None, "hcArgs", "")
         setKey(dict_, None, "addAF", False)
         setKey(dict_, None, "maxAF", 0.001 )
-        setKey(dict_, None, "maxVarFreqCohort", 0.04 )
+        setKey(dict_, None, "maxVarFreqCohort", 0.05 )
         setKey(dict_, None, "minAlt", 3)
         setKey(dict_, None, "createSingleVCF", False)
+        setKey(dict_, None, "yieldSize", 100000)
 
         if dict_["run"]:
             dict_ = utils.checkKeys(dict_, keys=["repeat_mask","highQualityVCFs","dbSNP"], check_files=True)
