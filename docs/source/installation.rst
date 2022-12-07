@@ -21,7 +21,7 @@ Install the current version and use the full path in the following command to in
 
 .. code-block:: bash
 
-    mamba env create -f DROP_1.2.3.yaml
+    mamba env create -f DROP_1.2.4.yaml
 
 Installation time: ~ 10min
 
