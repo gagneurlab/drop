@@ -164,15 +164,16 @@ exp_genes_cols <- c(Rank = "expressedGenesRank",`Expressed\ngenes` = "expressedG
                     `Intersection of\nexpressed genes` = "intersectionExpressedGenes", 
                     `Genes passed\nfiltering` = "passedFilterGenes", `Is External` = "isExternal")
 
-expressed_genes <- as.data.table(colData(ods)[,exp_genes_cols])
-colnames(expressed_genes) <- names(exp_genes_cols)
+expressed_genes <- as.data.table(colData(ods)[,exp_genes_cols], keep.rownames = TRUE)
+colnames(expressed_genes) <- c('RNA_ID', names(exp_genes_cols))
 
 #+ expressedGenes, fig.height=6, fig.width=8
 plotExpressedGenes(ods) + 
   theme_cowplot() +
   background_grid(major = "y") +
-  geom_point(data =melt(expressed_genes,id.vars = c("Rank","Is External")),
-             aes(x = Rank, y = value, col = variable, shape = `Is External`),show.legend = has_external)
+  geom_point(data = melt(expressed_genes, id.vars = c("RNA_ID", "Rank", "Is External")),
+             aes(Rank, value, col = variable, shape = `Is External`), 
+             show.legend = has_external)
 
 if(has_external){
     DT::datatable(expressed_genes[order(Rank)],rownames = F)
@@ -238,5 +239,8 @@ if(isEmpty(sex_idx)){
     
     DT::datatable(sex_dt[match_sex == F], caption = 'Sex mismatches')
     
+    # Write table
+    fwrite(sex_dt, gsub('ods_unfitted.Rds', 'xist_uty.tsv', snakemake@input$ods), 
+           sep = '\t', quote = F)
   }
 }

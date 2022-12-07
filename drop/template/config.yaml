@@ -13,8 +13,6 @@ genome: # path to reference genome sequence in fasta format.
     # You can define multiple reference genomes in yaml format, ncbi: path/to/ncbi, ucsc: path/to/ucsc
     # the keywords that define the path should be in the GENOME column of the sample annotation table
 
-
-hpoFile: null
 random_seed: true  # just for demo data, remove for analysis
 
 exportCounts:
@@ -38,6 +36,7 @@ aberrantExpression:
     dassie:
         tssWindow: 500
         pasWindow: 1000
+    yieldSize: 2000000
 
 aberrantSplicing:
     run: true
@@ -71,6 +70,7 @@ mae:
     qcVcf: Data/qc_vcf_1000G.vcf.gz
     qcGroups:
       - mae
+    dnaRnaMatchCutoff: 0.85
 
 rnaVariantCalling:
     run: false
@@ -87,6 +87,7 @@ rnaVariantCalling:
     maxVarFreqCohort: 0.05
     hcArgs: ""
     minAlt: 3
+    yieldSize: 100000
 
 tools:
     gatkCmd: gatk
