@@ -24,7 +24,7 @@ source(snakemake@params$setup, echo=FALSE)
 
 suppressPackageStartupMessages({
   library(cowplot)
-  library("RColorBrewer")
+  library(RColorBrewer)
 })
 
 #+ input
@@ -39,9 +39,9 @@ hasExternal <- length(levels(colData(fds)$isExternal) > 1)
 
 #' Number of samples: `r nrow(colData(fds))`
 #' 
-#' Number of introns (psi5 or psi3): `r length(rowRanges(fds, type = "psi5"))`
+#' Number of introns: `r length(rowRanges(fds, type = "psi5"))`
 #' 
-#' Number of splice sites (theta): `r length(rowRanges(fds, type = "theta"))`
+#' Number of splice sites: `r length(rowRanges(fds, type = "theta"))`
 
 # used for most plots
 dataset_title <- paste0("Dataset: ", dataset, "--", annotation)
@@ -52,7 +52,7 @@ for(type in psiTypes){
   g <- plotEncDimSearch(fds, type=type) 
   if (!is.null(g)) {
     g <- g + theme_cowplot(font_size = 16) + 
-      ggtitle(paste0("Q estimation, ", type))
+      ggtitle(paste0("Q estimation, ", type)) + theme(legend.position = "none")
     print(g)
   }
 }
