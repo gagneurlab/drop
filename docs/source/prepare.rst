@@ -302,6 +302,55 @@ EXT-3R          BLOOD_AS                                                        
 ======  ======  =================  =================  ==============================  =============== =========================
 
 
+Limiting FDR correction to subsets of genes of interest
++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+In addition to returning transcriptome-wide results, DROP provides the option to 
+limit the FDR correction to user-provided subsets of genes of interest in the 
+``aberrantExpression`` and ``aberrantSplicing`` modules. These could e.g. be all 
+OMIM genes, but it is also possible to provide sample-specific subsets such as all 
+genes with a rare splice region variant for each sample. 
+To use this feature of DROP, the sample annotation table needs to contain a column 
+``AE_GENES_TO_TEST`` and/or ``AS_GENES_TO_TEST`` which gives the path to one or more 
+files (comma separated) containing the list of genes to test for the sample (see example below).
+The result tables of the ``aberrantExpression`` and/or ``aberrantSplicing`` modules 
+will then additionally report aberrant events passing the cutoffs based on calculating 
+the FDR with respect to only the genes in the provided subsets.
+
+FDR correction on subset example
++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+To test only certain candidate genes based on prior knowledge, the sample annotation
+must be adapted to contain the column(s) ``AE_GENES_TO_TEST`` and/or ``AS_GENES_TO_TEST``.
+For each sample for which a certain set of genes should be considered, these columns 
+must contain a file path pointing to a file which contains the list of genes to test 
+for this sample. If no file is provided for a given sample, only transcriptome-wide 
+results will be reported for this sample.
+
+The following example will use the ``DROP_GROUP`` BLOOD_AE for the aberrant expression module (containing S10R, S12R) and
+the ``DROP_GROUP`` BLOOD_AS for the aberrant expression module (containing S11R). 
+
+======  ======  =================  =================  ===  =========================================================  ========================================================================
+RNA_ID  DNA_ID  DROP_GROUP         RNA_BAM_FILE       ...  AE_GENES_TO_TEST                                           AS_GENES_TO_TEST
+======  ======  =================  =================  ===  =========================================================  ========================================================================
+S10R    S10G    BLOOD_AE,BLOOD_AS  /path/to/S10R.BAM  ...  /path/to/omim_genes.txt                                    /path/to/omim_genes.txt,/path/to/candidate_genes_S10R.txt
+S11R    S11G    BLOOD_AS           /path/to/S11R.BAM  ...                                                             /path/to/candidate_genes_S11R.txt
+S12R    S12G    BLOOD_AE,BLOOD_AS  /path/to/S12R.BAM  ...  /path/to/omim_genes.txt,/path/to/candidate_genes_S12R.txt  
+======  ======  =================  =================  ===  =========================================================  ========================================================================
+
+The files containing the list of genes (HGNC symbols) to be tested must have a header in the first row 
+starting with a ``#`` that gives the name under which the results will be displayed in the result table. 
+In the following example, the name of this set of genes is ``rare_splice_variants``:
+
+Example content of ``/path/to/genes_with_rare_splice_variant_S10R.txt``:
+
+.. code-block:: bash
+
+    # rare_splice_variants
+    ABCG1
+    MCOLN1
+    SLC45A1
+    ...
+
+
 .. _files-to-download:
 
 Files to download

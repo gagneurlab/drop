@@ -9,10 +9,13 @@
 #'   - padjCutoff: '`sm cfg.AS.get("padjCutoff")`'
 #'   - deltaPsiCutoff: '`sm cfg.AS.get("deltaPsiCutoff")`'
 #'   - hpoFile: '`sm cfg.get("hpoFile")`'
+#'   - ids: '`sm lambda w: sa.getIDsByGroup(w.dataset, assay="RNA")`'
 #'  threads: 10
 #'  input:
 #'   - setup: '`sm cfg.AS.getWorkdir() + "/config.R"`'
 #'   - add_HPO_cols: '`sm str(projectDir / ".drop" / "helpers" / "add_HPO_cols.R")`'
+#'   - parse_subsets_for_FDR: '`sm str(projectDir / ".drop" / "helpers" / "parse_subsets_for_FDR.R")`'
+#'   - sampleAnnoFile: '`sm config["sampleAnnotation"]`'
 #'   - fdsin: '`sm expand(cfg.getProcessedResultsDir() +
 #'                 "/aberrant_splicing/datasets/savedObjects/{dataset}--{annotation}/" +
 #'                  "padjBetaBinomial_{type}.h5", type=cfg.AS.getPsiTypeAssay(), allow_missing=True)`'
@@ -39,13 +42,21 @@ register(MulticoreParam(snakemake@threads))
 # Limit number of threads for DelayedArray operations
 setAutoBPPARAM(MulticoreParam(snakemake@threads))
 
+# read in subsets from sample anno if present (returns NULL if not present)
+source(snakemake@input$parse_subsets_for_FDR)
+fraser_sample_ids <- snakemake@params$ids
+subsets <- parse_subsets_for_FDR(snakemake@input$sampleAnnoFile, 
+                                    module="AS",
+                                    sampleIDs=fraser_sample_ids)
+
 # Load fds and create a new one
 fds <- loadFraserDataSet(dir=workingDir, name=paste(dataset, annotation, sep = '--'))
 
 # Extract results per junction
 res_junc <- results(fds, psiType=psiTypes,
                     padjCutoff=snakemake@params$padjCutoff,
-                    deltaPsiCutoff=snakemake@params$deltaPsiCutoff)
+                    deltaPsiCutoff=snakemake@params$deltaPsiCutoff,
+                    subsets=subsets)
 res_junc_dt   <- as.data.table(res_junc)
 print('Results per junction extracted')
 
@@ -69,7 +80,8 @@ if(nrow(res_junc_dt) > 0){
 res_gene <- results(fds, psiType=psiTypes,
                     aggregate=TRUE, collapse=FALSE,
                     padjCutoff=snakemake@params$padjCutoff,
-                    deltaPsiCutoff=snakemake@params$deltaPsiCutoff)
+                    deltaPsiCutoff=snakemake@params$deltaPsiCutoff,
+                    subsets=subsets)
 res_genes_dt   <- as.data.table(res_gene)
 print('Results per gene extracted')
 
