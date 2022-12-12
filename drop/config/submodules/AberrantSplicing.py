@@ -14,7 +14,7 @@ class AS(Submodule):
         self.CONFIG_KEYS = [
             "groups", "recount", "longRead", "filter", "minExpressionInOneSample", "minDeltaPsi",
             "quantileMinExpression", "quantileForFiltering", "implementation", "padjCutoff", 
-            "deltaPsiCutoff", "maxTestedDimensionProportion", "FRASER_version"
+            "deltaPsiCutoff", "maxTestedDimensionProportion", "reportAllGenesToTest", "FRASER_version"
         ]
         self.name = "AberrantSplicing"
         # if self.run is false return without doing any config/sa checks for completeness
@@ -48,6 +48,7 @@ class AS(Submodule):
         setKey(dict_, None, "padjCutoff", 0.05)
         setKey(dict_, None, "deltaPsiCutoff", 0.05)
         setKey(dict_, None, "maxTestedDimensionProportion", 6)
+        setKey(dict_, None, "reportAllGenesToTest", False)
         setKey(dict_, None, "FRASER_version", "FRASER")
         return dict_
 

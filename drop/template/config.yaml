@@ -53,6 +53,7 @@ aberrantSplicing:
     implementation: PCA
     padjCutoff: 0.1
     maxTestedDimensionProportion: 6
+    reportAllGenesToTest: false
     ### FRASER1 configuration
     FRASER_version: "FRASER" 
     deltaPsiCutoff : 0.3 

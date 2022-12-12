@@ -8,6 +8,7 @@
 #'   - workingDir: '`sm cfg.getProcessedResultsDir() + "/aberrant_splicing/datasets/"`'
 #'   - padjCutoff: '`sm cfg.AS.get("padjCutoff")`'
 #'   - deltaPsiCutoff: '`sm cfg.AS.get("deltaPsiCutoff")`'
+#'   - reportAllGenesToTest: '`sm cfg.AS.get("reportAllGenesToTest")`'
 #'   - hpoFile: '`sm cfg.get("hpoFile")`'
 #'   - ids: '`sm lambda w: sa.getIDsByGroup(w.dataset, assay="RNA")`'
 #'  threads: 10
@@ -56,7 +57,8 @@ fds <- loadFraserDataSet(dir=workingDir, name=paste(dataset, annotation, sep = '
 res_junc <- results(fds, psiType=psiTypes,
                     padjCutoff=snakemake@params$padjCutoff,
                     deltaPsiCutoff=snakemake@params$deltaPsiCutoff,
-                    subsets=subsets)
+                    subsets=subsets, 
+                    fullSubset=snakemake@params$reportAllGenesToTest)
 res_junc_dt   <- as.data.table(res_junc)
 print('Results per junction extracted')
 
@@ -81,7 +83,8 @@ res_gene <- results(fds, psiType=psiTypes,
                     aggregate=TRUE, collapse=FALSE,
                     padjCutoff=snakemake@params$padjCutoff,
                     deltaPsiCutoff=snakemake@params$deltaPsiCutoff,
-                    subsets=subsets)
+                    subsets=subsets, 
+                    fullSubset=snakemake@params$reportAllGenesToTest)
 res_genes_dt   <- as.data.table(res_gene)
 print('Results per gene extracted')
 
