@@ -28,6 +28,7 @@ aberrantExpression:
     implementation: autoencoder
     padjCutoff: 1
     zScoreCutoff: 0
+    reportAllGenesToTest: false
     maxTestedDimensionProportion: 3
     dassie:
         tssWindow: 500

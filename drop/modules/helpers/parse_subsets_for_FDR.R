@@ -34,7 +34,13 @@ parse_subsets_for_FDR <- function(sample_anno_file, sampleIDs,
         genesSubset <- fread(file_path)
         setName <- colnames(genesSubset)[1]
         genes <- genesSubset[,get(setName)]
-        setName <- gsub("^#(\\s)*", "", setName)
+        
+        # throw error if no hashtag
+        if(!grepl("^#", setName)){
+            stop("Subset name missing in file: ", file_path)
+        }
+        # remove hashtag(s) and spaces from subset name
+        setName <- gsub("^#(#)*(\\s)*", "", setName)
         
         if(setName %in% names(subsets)){
             prev_list <- subsets[[setName]]
@@ -49,4 +55,31 @@ parse_subsets_for_FDR <- function(sample_anno_file, sampleIDs,
     
     # return subsets
     return(subsets)
+}
+
+# Convert element in subset gene lists from gene names to gene ids
+convert_to_geneIDs <- function(subsets, gene_mapping_file){
+    
+    # if no subsets used, return NULL
+    if(is.null(subsets)){
+        return(NULL)
+    }
+    
+    # otherwise map gene symbols to gene ids for OUTRIDER
+    gene_annot_dt <- fread(gene_mapping_file)
+    if(!is.null(gene_annot_dt$gene_name)){
+        subsetsWithGeneIDs <- lapply(subsets, function(subset){
+            geneIDs_mapped <- lapply(subset, function(genes){
+                merge(data.table(gene_name=genes), 
+                    gene_annot_dt[, .(gene_id, gene_name)],
+                    by = 'gene_name', sort = FALSE)[, gene_id]
+            })
+        })
+        return(subsetsWithGeneIDs)
+    } else{
+        warning("Cannot convert genes in subset to geneIDs, column gene_name ",
+                "mising in annotation. Ignoring subsets for OUTRIDER.")
+        return(NULL)
+    }
+    
 }
