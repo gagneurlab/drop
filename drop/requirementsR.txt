@@ -3,13 +3,13 @@ devtools
 gagneurlab/OUTRIDER	1.7.3	FDR_on_subset
 c-mertes/FRASER	1.99.0	fraser2
 gagneurlab/tMAE	1.0.4	HEAD
-VariantAnnotation	
-rmarkdown	
-knitr	
-ggplot2	
-ggthemes	
-cowplot	
-data.table	
-dplyr	
-tidyr	
-magrittr	
+VariantAnnotation		
+rmarkdown		
+knitr		
+ggplot2		
+ggthemes		
+cowplot		
+data.table		
+dplyr		
+tidyr		
+magrittr		
