@@ -12,7 +12,7 @@ The manuscript is available in [Nature Protocols](https://www.nature.com/article
 
 ## What's new
 
-We have splitted the 269 samples from the external counts from fibroblasts strand-specific hg19 into two datasets according to the sequencing depth. We recommend using the cohort with the sequencing depth that matches best the local samples.
+We have split the 269 samples from the external counts from fibroblasts strand-specific hg19 into two datasets according to the sequencing depth. We recommend using the cohort with the sequencing depth that matches best the local samples.
 
 `Snakemake v.7.8` introduced some changes in which changes in parameters can cause rules to be re-executed. More info [here](https://github.com/snakemake/snakemake/issues/1694). This affects DROP and causes certain rules in the AS and QC modules to be triggered even if they were already completed and there were no changes in the sample annotation or scripts. The workaround is to run DROP by adding the parameter `--rerun-triggers mtime`, e.g. `snakemake -n --rerun-triggers mtime` or `snakemake --cores 10 --rerun-triggers mtime`. We will investigate the rules in DROP to fix this.
 
