@@ -111,8 +111,8 @@ library(AnnotationDbi)
 txdb <- loadDb(snakemake@input$txdb)
     
 # annotate the type of splice event and UTR overlap
-res_junc_dt <- annotateSpliceEventType(result=res_junc_dt, txdb=txdb, fds=fds)
-res_genes_dt <- annotateSpliceEventType(result=res_genes_dt, txdb=txdb, fds=fds)
+res_junc_dt <- annotatePotentialImpact(result=res_junc_dt, txdb=txdb, fds=fds)
+res_genes_dt <- annotatePotentialImpact(result=res_genes_dt, txdb=txdb, fds=fds)
     
 # set genome assembly version to load correct blacklist region BED file (hg19 or hg38)
 assemblyVersion <- snakemake@config$genomeAssembly
