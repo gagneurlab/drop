@@ -9,11 +9,8 @@
 #'   - zScoreCutoff: '`sm cfg.AE.get("zScoreCutoff")`'
 #'   - hpoFile: '`sm cfg.get("hpoFile")`'
 #'   - reportAllGenesToTest: '`sm cfg.AE.get("reportAllGenesToTest")`'
-#'   - ids: '`sm lambda w: sa.getIDsByGroup(w.dataset, assay="RNA")`'
 #'  input:
 #'   - add_HPO_cols: '`sm str(projectDir / ".drop" / "helpers" / "add_HPO_cols.R")`'
-#'   - parse_subsets_for_FDR: '`sm str(projectDir / ".drop" / "helpers" / "parse_subsets_for_FDR.R")`'
-#'   - sampleAnnoFile: '`sm config["sampleAnnotation"]`'
 #'   - ods: '`sm cfg.getProcessedResultsDir() + "/aberrant_expression/{annotation}/outrider/{dataset}/ods.Rds"`'
 #'   - gene_name_mapping: '`sm cfg.getProcessedDataDir() + "/preprocess/{annotation}/gene_name_mapping_{annotation}.tsv"`'
 #'   - input_params: '`sm cfg.getProcessedDataDir() + "/aberrant_expression/{annotation}/params/results/{dataset}_resultParams.csv"`'
@@ -33,14 +30,6 @@ suppressPackageStartupMessages({
     library(SummarizedExperiment)
     library(OUTRIDER)
 })
-
-# read in subsets from sample anno if present (returns NULL if not present)
-source(snakemake@input$parse_subsets_for_FDR)
-outrider_sample_ids <- snakemake@params$ids
-subsets <- parse_subsets_for_FDR(snakemake@input$sampleAnnoFile, 
-                                 module="AE",
-                                 sampleIDs=outrider_sample_ids)
-subsets <- convert_to_geneIDs(subsets, snakemake@input$gene_name_mapping)
 
 ods <- readRDS(snakemake@input$ods)
 res <- results(ods, padjCutoff = snakemake@params$padjCutoff,

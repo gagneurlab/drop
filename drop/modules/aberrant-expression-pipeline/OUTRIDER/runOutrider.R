@@ -4,9 +4,14 @@
 #' wb:
 #'  log:
 #'   - snakemake: '`sm str(tmp_dir / "AE" / "{annotation}" / "{dataset}" / "runOUTRIDER.Rds")`'
+#'  params:
+#'   - ids: '`sm lambda w: sa.getIDsByGroup(w.dataset, assay="RNA")`'
 #'  input:
 #'   - ods: '`sm cfg.getProcessedResultsDir() + 
 #'           "/aberrant_expression/{annotation}/outrider/{dataset}/ods_unfitted.Rds"`'
+#'   - parse_subsets_for_FDR: '`sm str(projectDir / ".drop" / "helpers" / "parse_subsets_for_FDR.R")`'
+#'   - sampleAnnoFile: '`sm config["sampleAnnotation"]`'
+#'   - gene_name_mapping: '`sm cfg.getProcessedDataDir() + "/preprocess/{annotation}/gene_name_mapping_{annotation}.tsv"`'
 #'  output:
 #'   - ods: '`sm cfg.getProcessedResultsDir() + 
 #'           "/aberrant_expression/{annotation}/outrider/{dataset}/ods.Rds"`'
@@ -31,6 +36,14 @@ ods <- readRDS(snakemake@input$ods)
 implementation <- snakemake@config$aberrantExpression$implementation
 mp <- snakemake@config$aberrantExpression$maxTestedDimensionProportion
 register(MulticoreParam(snakemake@threads))
+
+# read in gene subsets from sample anno if present (returns NULL if not present)
+source(snakemake@input$parse_subsets_for_FDR)
+outrider_sample_ids <- snakemake@params$ids
+subsets <- parse_subsets_for_FDR(snakemake@input$sampleAnnoFile, 
+                                 module="AE",
+                                 sampleIDs=outrider_sample_ids)
+subsets <- convert_to_geneIDs(subsets, snakemake@input$gene_name_mapping)
 
 ## subset filtered
 ods <- ods[mcols(ods)$passedFilter,] 
@@ -60,7 +73,7 @@ pars_q <- round(exp(seq(log(a),log(b),length.out = Nsteps))) %>% unique
 ods <- findEncodingDim(ods, params = pars_q, implementation = implementation)
 
 ## fit OUTRIDER
-ods <- OUTRIDER(ods, implementation = implementation)
+ods <- OUTRIDER(ods, implementation = implementation, subsets=subsets)
 message("outrider fitting finished")
 
 saveRDS(ods, snakemake@output$ods)
