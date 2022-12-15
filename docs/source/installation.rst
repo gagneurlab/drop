@@ -63,6 +63,13 @@ Go to :doc:`prepare` for more details.
 
 Other DROP versions
 -------------------
+The following instructions are for users who have not used conda to install drop previously. In order for the pip
+installation to take effect, you must first uninstall any previous installation using the following snippet. If
+you have not installed drop previously, then there is no need to uninstall it.
+
+.. code-block:: bash
+
+    pip uninstall drop
 
 The developer version of DROP can be found in the `repository <https://github.com/gagneurlab/drop>`_ under the branch
 ``dev``.

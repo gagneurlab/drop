@@ -82,11 +82,27 @@ to unlock it. This will call snakemake's ``unlock`` command for every module
 
 Updating DROP
 +++++++++++++
-Every time a project is initialized, a temporary folder ``.drop`` will be created in the project folder.
-If a new version of drop is installed, the ``.drop`` folder has to be updated for each project that has been
-initialized using an older version. `drop update` will also reset the local project's `Scripts/` directory to match the installed version, so be sure to save any additional scripts or analyses in another location.
+The developers of DROP are active in making DROP a more usable and better tool. As a result there are often bug fixes
+or improvements that are made in the form of new versions. You can check them out in the *What's new* section of our
+`README. <https://github.com/gagneurlab/drop#whats-new>`_
 
-To do this run:
+When updating DROP we recommend using the conda/mamba functions to maintain any dependencies that could be related.
+
+.. code-block:: bash
+
+    mamba update drop
+
+If you were working with a pip installation of DROP then you would need to reinstall using pip directly from github.
+
+.. code-block:: bash
+
+    pip install git+https://github.com/gagneurlab/drop.git
+
+Once you have successfully bumped the DROP version to the latest, you will still need to update your project folder.
+`drop update` will reset the local project's `Scripts/` directory to match the installed version,
+so be sure to save any additional scripts or analyses in another location.
+
+To complete your update, you must run the following to get your local directory to match the version:
 
 .. code-block:: bash
 
