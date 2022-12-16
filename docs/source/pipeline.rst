@@ -82,7 +82,7 @@ Updating DROP
 +++++++++++++
 The developers of DROP are active in making DROP a better tool. As a result there are often bug fixes
 or improvements that are implemented and released in new versions. You can check them out in the *What's new* section of the
-`README <https://github.com/gagneurlab/drop#whats-new>`_ section.
+`README. <https://github.com/gagneurlab/drop#whats-new>`_ 
 
 When updating DROP we recommend using the conda/mamba functions to maintain any dependencies that could be related.
 
