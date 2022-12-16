@@ -1,7 +1,7 @@
 Pipeline Commands
 =================
 
-DROP is `Snakemake <https://snakemake.readthedocs.io/en/stable/executing/cli.html>`_ pipeline, so it is called with the ``snakemake`` command.
+DROP is a `Snakemake <https://snakemake.readthedocs.io/en/stable/executing/cli.html>`_ pipeline, so it is called with the ``snakemake`` command.
 
 Dry run
 -------
