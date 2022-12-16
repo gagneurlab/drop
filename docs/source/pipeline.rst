@@ -18,19 +18,19 @@ This will perform a *dry-run*, which means it will display all the steps (or rul
 
     snakemake --cores 1 -nr
 
-Finally, a simplified dry-run can be achieved by executing
+A simplified dry-run can be achieved using the ``-q`` parameter.
 
 .. code-block:: bash
 
     snakemake --cores 1 -nq
 
-Calling ``snakemake --cores 1`` without any additional parameters will execute the whole workflow. Snakemake requires you to designate the number of cores when running the ``snakemake`` command.
+Calling ``snakemake --cores 1`` without any additional parameters will execute the whole workflow. Snakemake requires you to designate the number of cores.
 
 
 Parallelizing jobs
 ------------------
 
-DROP's steps are computationally heavy, therefore it is a good idea to run them in parallel. Snakemake automatically determines the steps that can be parallelized. The user simply needs to specify the maximum number of cores that Snakemake can take, e.g. for 10 cores:
+DROP's steps are computationally heavy, therefore it is highly recommended to run them in parallel. Snakemake automatically determines the steps that can be parallelized. The user simply needs to specify the maximum number of cores that Snakemake can take, e.g. for 10 cores:
 
 .. code-block:: bash
 
@@ -40,7 +40,7 @@ DROP's steps are computationally heavy, therefore it is a good idea to run them 
 Executing subworkflows
 ----------------------
 
-Every single module can be called independently.
+Every module can be called independently.
 
 .. code-block:: bash
 
@@ -55,7 +55,7 @@ Subworkflow                Description
 ``rnaVariantCalling``      RNA Variant Calling pipeline
 ========================  =======================================================================
 
-An example for calling the aberrant expression pipeline with 10 cores would be
+For example, to run the aberrant expression pipeline with 10 cores, execute the following
 
 .. code-block:: bash
 
