@@ -9,7 +9,7 @@ In case the conda channel priority is set to ``strict``, it should be reset to `
     conda config --set channel_priority true
 
 We recommend using a dedicated conda environment (here: ``drop_env``) for installing DROP.
-For installing, use `mamba` instead of `conda` as it provides more reliable and faster dependency solving.
+Use `mamba` instead of `conda` as it provides more reliable and faster dependency solving.
 
 .. code-block:: bash
 
