@@ -71,10 +71,9 @@ you have not installed DROP previously, then there is no need to uninstall it.
 
     pip uninstall drop
 
-The developer version of DROP can be found in the `repository <https://github.com/gagneurlab/drop>`_ under the branch
-``dev``.
+Other versions of DROP, such as `dev` can be found in the `repository <https://github.com/gagneurlab/drop>`_ under different branches.
 Make sure that the :any:`prerequisites` are installed, preferably in a conda environment.
-Then install DROP from github using ``pip``.
+Then install the desired version (e.g. `dev` in this example) from GitHub using ``pip``.
 
 .. code-block:: bash
 
