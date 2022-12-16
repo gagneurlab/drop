@@ -24,7 +24,7 @@ Install the latest version and use the full path in the following command to ins
 
 Installation time: ~ 10min
 
-Test whether the pipeline runs through by setting up the demo dataset in an empty directory (e.g. ``~/drop_demo``).
+We can test whether the pipeline runs through by setting up the demo dataset in an empty directory (e.g. ``~/drop_demo``).
 
 .. code-block:: bash
 
@@ -32,7 +32,7 @@ Test whether the pipeline runs through by setting up the demo dataset in an empt
     mkdir ~/drop_demo
     cd ~/drop_demo
 
-    # demo will download the necessary data and pipeline files
+    # this command will download the necessary data and pipeline files
     drop demo
 
 The pipeline can be run using `snakemake <snakemake.readthedocs.io/>`_ commands
