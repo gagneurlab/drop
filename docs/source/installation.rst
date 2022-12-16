@@ -46,7 +46,7 @@ Run time: ~25min
 
 Initialize a project
 --------------------
-The demo project can be modified to be used for a new project.
+The config and sample annotation files from the demo project can be modified to be used for a new project.
 Alternatively, a new DROP project can be set up using ``drop init``.
 
 .. code-block:: bash
