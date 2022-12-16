@@ -35,7 +35,7 @@ We can test whether the pipeline runs through by setting up the demo dataset in 
     # this command will download the necessary data and pipeline files
     drop demo
 
-DROP is run using `snakemake <snakemake.readthedocs.io/>`_ commands
+DROP is run using `snakemake <snakemake.readthedocs.io/>`_ commands.
 
 Run time: ~25min
 
