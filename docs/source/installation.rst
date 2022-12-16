@@ -106,7 +106,7 @@ Installation without conda
 --------------------------
 
 The easiest way to ensure that all dependencies are installed is to install the bioconda package.
-Alternatively, DROP can be installed without ``pip``. In this case the following dependencies must be met:
+Alternatively, DROP can be installed with ``pip``. In this case the following dependencies must be met:
 
 * Programming languages:
 
