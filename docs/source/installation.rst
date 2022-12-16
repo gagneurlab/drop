@@ -9,7 +9,7 @@ In case the conda channel priority is set to ``strict``, it should be reset to `
     conda config --set channel_priority true
 
 We recommend using a dedicated conda environment (here: ``drop_env``) for installing DROP.
-Use `mamba` instead of `conda` as it provides more reliable and faster dependency solving.
+Use ``mamba`` instead of ``conda`` as it provides more reliable and faster dependency solving.
 
 .. code-block:: bash
 
@@ -63,7 +63,7 @@ Go to :doc:`prepare` for more details.
 
 Other DROP versions
 -------------------
-The following instructions are for users who have not used `conda` to install DROP previously. In order for the `pip`
+The following instructions are for users who have not used ``conda`` to install DROP previously. In order for the ``pip``
 installation to take effect, you must first uninstall any previous installation using the following command. If
 you have not installed DROP previously, then there is no need to uninstall it.
 
@@ -71,9 +71,9 @@ you have not installed DROP previously, then there is no need to uninstall it.
 
     pip uninstall drop
 
-Other versions of DROP, such as `dev` can be found in the `repository <https://github.com/gagneurlab/drop>`_ under different branches.
+Other versions of DROP, such as ``dev`` can be found in the `repository <https://github.com/gagneurlab/drop>`_ under different branches.
 Make sure that the :any:`prerequisites` are installed, preferably in a conda environment.
-Then install the desired version (e.g. `dev` in this example) from GitHub using ``pip``.
+Then install the desired version (e.g. ``dev`` in this example) from GitHub using ``pip``.
 
 .. code-block:: bash
 
@@ -87,7 +87,7 @@ Alternatively, you can clone the desired branch of the repository and install fr
     git clone -b dev https://github.com/gagneurlab/drop.git
     pip install ./drop
 
-If the package needs to be updated frequently, it is more useful to use the ``-e` option of ``pip``.
+If the package needs to be updated frequently, it is more convenient to use the ``-e`` option of ``pip``.
 Any new update pulled from the repository will be available without reinstall.
 Note, that this requires an explicit call to update any existing project (:any:`dropUpdate`).
 
@@ -105,7 +105,7 @@ Note, that this requires an explicit call to update any existing project (:any:`
 Prerequisites
 -------------
 
-The easiest way to ensure that all dependencies are installed is to install the bioconda package, as described above.
+The easiest way to ensure that all dependencies are installed is to install the bioconda package.
 Once the environment is set up and installation was successful, other versions of drop can be installed with ``pip``,
 overwriting the conda version of ``DROP`` (see :any:`otherversions`).
 
@@ -144,8 +144,8 @@ Alternatively, DROP can be installed without ``conda``. In this case the followi
     If you are using an already existing R installation, make sure that the R and bioconductor versions match.
     Otherwise, use the newest versions of R and bioconductor.
 
-At first invocation, all necessary R packages will be installed with the first pipeline call.
-As this is a lengthy process, it might be desirable to install them in advance, if a local copy of the repository exists.
+At the first invocation, all the necessary R packages will be installed.
+As this is a lengthy process, it might be desirable to install them in advance.
 
 .. code-block:: bash
 
