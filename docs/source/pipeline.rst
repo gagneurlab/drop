@@ -109,16 +109,16 @@ To complete your update, you must run the following to get your local directory 
 Skipping recomputation of files
 +++++++++++++++++++++++++++++++
 
-If snakemake is interrupted and restarted, it will continue with the last unsuccessful job in the job graph. If a script is updated with minor change, e.g. when calling ``drop update``, all jobs of the modified script and its downstream steps will be rerun. However, in some cases one might want to keep the intermediate files instead and continue with the missing files. In order to do so, first execute
+If the pipeline is interrupted and restarted, it will continue with the last unsuccessful job in the job graph. If a script is updated with minor change, e.g. when calling ``drop update``, all the jobs of the modified script and its downstream steps will be rerun. However, in some cases one might want to keep the intermediate files instead and continue with the missing files. In order to do so, first execute
 
 .. code-block:: bash
 
    snakemake <rule> --touch
 
-for whichever rule or module you want to continue the computation. The ``--touch`` command touches all output files required by the pipeline that have already been computed. Omitting the rule will lead to accessing the complete pipeline. Afterwards, use
+for whichever rule or module you want to continue the computation. The ``--touch`` command touches all output files required by the pipeline that have already been computed. Omitting the rule will lead to accessing the complete pipeline. Afterwards, run
 
 .. code-block:: bash
 
     snakemake unlock
 
-to unlock the submodules, so that the jobs that need to be computed can be identified.
+Overall, we recommend reading the snakemake documentation for further fine-tuning of the execution.
