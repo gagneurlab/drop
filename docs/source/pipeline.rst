@@ -51,7 +51,7 @@ Subworkflow                Description
 ========================  =======================================================================
 ``aberrantExpression``     Aberrant expression pipeline
 ``aberrantSplicing``       Aberrant splicing pipeline
-``mae``                    Monoalleic expression pipeline
+``mae``                    Monoallelic expression pipeline
 ``rnaVariantCalling``      RNA Variant Calling pipeline
 ========================  =======================================================================
 
@@ -80,9 +80,9 @@ While running, Snakemake *locks* the directory. If, for a whatever reason, the p
 
 Updating DROP
 +++++++++++++
-The developers of DROP are active in making DROP a more usable and better tool. As a result there are often bug fixes
-or improvements that are made in the form of new versions. You can check them out in the *What's new* section of our
-`README. <https://github.com/gagneurlab/drop#whats-new>`_
+The developers of DROP are active in making DROP a better tool. As a result there are often bug fixes
+or improvements that are implemented and released in new versions. You can check them out in the *What's new* section of the
+`README. <https://github.com/gagneurlab/drop#whats-new>`_ section.
 
 When updating DROP we recommend using the conda/mamba functions to maintain any dependencies that could be related.
 
