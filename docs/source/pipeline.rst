@@ -70,13 +70,11 @@ When DROP is updated or jobs fail, the following commands can be used to rerun a
 Unlocking the pipeline
 ++++++++++++++++++++++
 
-While running, Snakemake *locks* the directory. If, for a whatever reason, the pipeline was interrupted, the directory might be kept locked. Therefore, call
+While running, Snakemake *locks* the directory. If, for a whatever reason, the pipeline was interrupted, the directory might be kept locked. If this is the case, call
 
 .. code-block:: bash
 
     snakemake unlock
-
-to unlock it. This will call snakemake's ``unlock`` command for every module
 
 .. _dropUpdate:
 
