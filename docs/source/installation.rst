@@ -102,17 +102,11 @@ Note, that this requires an explicit call to update any existing project (:any:`
 
 .. _prerequisites:
 
-Prerequisites
--------------
+Installation without conda
+--------------------------
 
 The easiest way to ensure that all dependencies are installed is to install the bioconda package.
-Once the environment is set up and installation was successful, other versions of drop can be installed with ``pip``,
-overwriting the conda version of ``DROP`` (see :any:`otherversions`).
-
-
-Installation without conda
-++++++++++++++++++++++++++
-Alternatively, DROP can be installed without ``conda``. In this case the following dependencies must be met:
+Alternatively, DROP can be installed without ``pip``. In this case the following dependencies must be met:
 
 * Programming languages:
 
