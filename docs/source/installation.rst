@@ -65,7 +65,7 @@ Other DROP versions
 -------------------
 The following instructions are for users who have not used `conda` to install DROP previously. In order for the `pip`
 installation to take effect, you must first uninstall any previous installation using the following command. If
-you have not installed drop previously, then there is no need to uninstall it.
+you have not installed DROP previously, then there is no need to uninstall it.
 
 .. code-block:: bash
 
