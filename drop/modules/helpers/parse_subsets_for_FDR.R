@@ -14,7 +14,7 @@ parse_subsets_for_FDR <- function(sample_anno_file, sampleIDs,
     
     # check for presence of subset column
     if(!gene_subset_col %in% colnames(sa) || 
-            all(sa[, get(gene_subset_col)] == "" ||
+            all(sa[, get(gene_subset_col)] == "" |
                 is.na(sa[, get(gene_subset_col)]))){
         return(NULL)
     }
