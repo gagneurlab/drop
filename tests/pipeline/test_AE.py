@@ -48,7 +48,7 @@ class Test_AE_Pipeline:
         r = runR(r_cmd, demo_dir)
         assert "class: OutriderDataSet" in r.stdout
         assert "dim: 161 10" in r.stdout
-        assert "res: 1780 16" in r.stdout
+        assert "res: 1755 16" in r.stdout
 
     def test_import_results(self, demo_dir):
         output_dir = "Output/processed_results/aberrant_expression/v29/outrider/outrider_external"
