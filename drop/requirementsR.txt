@@ -1,5 +1,6 @@
 package	version
 devtools
+Bioconductor/BiocParallel	
 gagneurlab/OUTRIDER	1.6.1
 c-mertes/FRASER	1.8.1
 gagneurlab/tMAE	1.0.4
