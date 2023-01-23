@@ -1,6 +1,6 @@
 package	version	ref
 devtools
-gagneurlab/OUTRIDER	1.16.1	FDR_on_subset
+gagneurlab/OUTRIDER	1.17.1	master
 c-mertes/FRASER	1.99.0	fraser2
 gagneurlab/tMAE	1.0.4	HEAD
 VariantAnnotation		
