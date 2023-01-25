@@ -6,6 +6,7 @@
 #'   - snakemake: '`sm str(tmp_dir / "AE" / "{annotation}" / "{dataset}" / "pvalsOUTRIDER.Rds")`'
 #'  params:
 #'   - ids: '`sm lambda w: sa.getIDsByGroup(w.dataset, assay="RNA")`'
+#'   - genes_to_test: '`sm cfg.AE.get("genesToTest")`'
 #'  input:
 #'   - ods_fitted: '`sm cfg.getProcessedResultsDir() + 
 #'           "/aberrant_expression/{annotation}/outrider/{dataset}/ods_fitted.Rds"`'
@@ -31,6 +32,7 @@ suppressPackageStartupMessages({
     library(dplyr)
     library(magrittr)
     library(tools)
+    library(yaml)
 })
 
 ods <- readRDS(snakemake@input$ods_fitted)
@@ -40,14 +42,13 @@ register(MulticoreParam(snakemake@threads))
 # read in gene subsets from sample anno if present (returns NULL if not present)
 source(snakemake@input$parse_subsets_for_FDR)
 outrider_sample_ids <- snakemake@params$ids
-subsets <- parse_subsets_for_FDR(snakemake@input$sampleAnnoFile, 
-                                 module="AE",
+subsets <- parse_subsets_for_FDR(snakemake@params$genes_to_test,
                                  sampleIDs=outrider_sample_ids)
-subsets <- convert_to_geneIDs(subsets, snakemake@input$gene_name_mapping)
+subsets_final <- convert_to_geneIDs(subsets, snakemake@input$gene_name_mapping)
 
 # P value calculation
 message(date(), ": P-value calculation ...")
-ods <- computePvalues(ods, subsets=subsets)
+ods <- computePvalues(ods, subsets=subsets_final)
 message(date(), ": Zscore calculation ...")
 ods <- computeZscores(ods, 
                       peerResiduals=grepl('^peer$', implementation))

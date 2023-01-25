@@ -17,6 +17,7 @@ class Test_AS_Config:
             'padjCutoff': 1,
             'deltaPsiCutoff': 0.05,
             'maxTestedDimensionProportion': 6,
+            'genesToTest': 'Data/genes_to_test.yaml',
             'reportAllGenesToTest': False,
             'FRASER_version': 'FRASER'
         }

@@ -105,6 +105,7 @@ implementation                character  Either 'autoencoder', 'pca' or 'peer'. 
 zScoreCutoff                  numeric    A non-negative number. Z scores (in absolute value) greater than this cutoff are considered as outliers.                                                                                                                                                                                                                                                                                ``0``
 padjCutoff                    numeric    A number between (0, 1] indicating the maximum FDR an event can have in order to be considered an outlier.                                                                                                                                                                                                                                                                              ``0.05``
 maxTestedDimensionProportion  numeric    An integer that controls the maximum value that the encoding dimension can take. Refer to `advanced-options`_.                                                                                                                                                                                                                                                                          ``3``
+genesToTest                   character  Full path to a yaml file specifying lists of candidate genes per sample to test during FDR correction. See the documentation for details on the structure of this file.                                                                                                                                                                                                                 ``null``
 reportAllGenesToTest          boolean    If lists of candidate genes are provided in the AE_GENES_TO_TEST column of the sample annotation, this parameter controls whether only significant results (based on ``padjCutoff`` and ``zScoreCutoff``) will be reported for the set(s) of tested genes (default), or whether all events within a tested gene will be reported in the result table, regardless of aberrant status.    ``false``
 ============================  =========  ======================================================================================================================================================================================================================================================================================================================================================================================  ======
 
@@ -131,6 +132,7 @@ implementation                character  Either 'PCA' or 'PCA-BB-Decoder'. Metho
 deltaPsiCutoff                numeric    A non-negative number. Delta psi values greater than this cutoff are considered as outliers. Set to 0.1 when using FRASER2.                                                                                                                                                                                                                                                             ``0.3 # suggested by FRASER``
 padjCutoff                    numeric    Same as in aberrant expression.                                                                                                                                                                                                                                                                                                                                                         ``0.1``
 maxTestedDimensionProportion  numeric    Same as in aberrant expression.                                                                                                                                                                                                                                                                                                                                                         ``6``
+genesToTest                   character  Same as in aberrant expression.                                                                                                                                                                                                                                                                                                                                                         ``null``
 reportAllGenesToTest          boolean    If lists of candidate genes are provided in the AS_GENES_TO_TEST column of the sample annotation, this parameter controls whether only significant results (based on ``padjCutoff`` and ``deltaPsiCutoff``) will be reported for the set(s) of tested genes (default), or whether all events within a tested gene will be reported in the result table, regardless of aberrant status.  ``false``
 FRASER_version                character  The FRASER version which will be used. Set to ``FRASER2`` to use FRASER2 and the Intron Jaccard Index metric. All other values result in running FRASER with the metrics psi5, psi3 and theta.                                                                                                                                                                                          ``FRASER``
 ============================  =========  ======================================================================================================================================================================================================================================================================================================================================================================================  ======
@@ -305,52 +307,57 @@ EXT-3R          BLOOD_AS                                                        
 
 
 Limiting FDR correction to subsets of genes of interest
-+++++++++++++++++++++++++++++++++++++++++++++++++++++++
+------------------------------------
 In addition to returning transcriptome-wide results, DROP provides the option to 
 limit the FDR correction to user-provided subsets of genes of interest in the 
 ``aberrantExpression`` and ``aberrantSplicing`` modules. These could e.g. be all 
 OMIM genes, but it is also possible to provide sample-specific subsets such as all 
 genes with a rare splice region variant for each sample. 
-To use this feature of DROP, the sample annotation table needs to contain a column 
-``AE_GENES_TO_TEST`` and/or ``AS_GENES_TO_TEST`` which gives the path to one or more 
-files (comma separated) containing the list of genes to test for the sample (see example below).
-The result tables of the ``aberrantExpression`` and/or ``aberrantSplicing`` modules 
-will then additionally report aberrant events passing the cutoffs based on calculating 
+To use this feature of DROP, a yaml file containing the set(s) of genes to test 
+(per sample or for all samples) needs to be specified in the ``genesToTest`` field 
+of the ``aberrantExpression`` and ``aberrantSplicing`` modules in the config file. 
+If no file is provided, only transcriptome-wide results will be reported for this sample.
+Otherwise, the result tables of the ``aberrantExpression`` and ``aberrantSplicing`` modules 
+will additionally report aberrant events passing the cutoffs based on calculating 
 the FDR with respect to only the genes in the provided subsets.
 
-FDR correction on subset example
+Creating the YAML file specifying subsets of genes to test
 +++++++++++++++++++++++++++++++++++++++++++++++++++++++
-To test only certain candidate genes based on prior knowledge, the sample annotation
-must be adapted to contain the column(s) ``AE_GENES_TO_TEST`` and/or ``AS_GENES_TO_TEST``.
-For each sample for which a certain set of genes should be considered, these columns 
-must contain a file path pointing to a file which contains the list of genes to test 
-for this sample. If no file is provided for a given sample, only transcriptome-wide 
-results will be reported for this sample.
+The file containing the list of genes (HGNC symbols) to be tested must be a YAML file, 
+where the variable names specify the name of each set of tested genes. In the output 
+of DROP, this name will be used to identify the set in the results table. Each set 
+can either be a list of genes when a set should be tested for all samples. Alternatively 
+(and additionally), sample specific sets can be created by giving the RNA_ID of the sample
+for which the set should be used as the name (see example below).
+This yaml file can be easily created within R by using ``yaml::write_yaml(subsetList, filepath)``, 
+where ``subsetList`` is a named list of named lists containing the sets of genes to test.
+In the following example, the name of the global set of genes is ``Example_subset_used_for_all_samples``
+and the name of the sample specific set is ``Genes_with_rare_splice_variants``:
 
-The following example will use the ``DROP_GROUP`` BLOOD_AE for the aberrant expression module (containing S10R, S12R) and
-the ``DROP_GROUP`` BLOOD_AS for the aberrant expression module (containing S11R). 
-
-======  ======  =================  =================  ===  =========================================================  ========================================================================
-RNA_ID  DNA_ID  DROP_GROUP         RNA_BAM_FILE       ...  AE_GENES_TO_TEST                                           AS_GENES_TO_TEST
-======  ======  =================  =================  ===  =========================================================  ========================================================================
-S10R    S10G    BLOOD_AE,BLOOD_AS  /path/to/S10R.BAM  ...  /path/to/omim_genes.txt                                    /path/to/omim_genes.txt,/path/to/candidate_genes_S10R.txt
-S11R    S11G    BLOOD_AS           /path/to/S11R.BAM  ...                                                             /path/to/candidate_genes_S11R.txt
-S12R    S12G    BLOOD_AE,BLOOD_AS  /path/to/S12R.BAM  ...  /path/to/omim_genes.txt,/path/to/candidate_genes_S12R.txt  
-======  ======  =================  =================  ===  =========================================================  ========================================================================
-
-The files containing the list of genes (HGNC symbols) to be tested must have a header in the first row 
-starting with a ``#`` that gives the name under which the results will be displayed in the result table. 
-In the following example, the name of this set of genes is ``rare_splice_variants``:
-
-Example content of ``/path/to/candidate_genes_S10R.txt``:
+Example content of ``/path/to/genes_to_test.yaml``:
 
 .. code-block:: bash
 
-    # rare_splice_variants
-    ABCG1
-    MCOLN1
-    SLC45A1
-    ...
+    Example_subset_used_for_all_samples:
+      - BTG3
+      - GATD3B
+      - PKNOX1
+      - APP
+      - RRP1
+      - WRB-SH3BGR
+      - SLC19A1
+    Genes_with_rare_splice_variants:
+      sample1:
+      - ABCG1
+      - MCOLN1
+      - SLC45A1
+      sample2:
+      - CLIC6
+      - ATP5PO
+      - WRB
+      - ETS2
+      - HLCS
+
 
 
 .. _files-to-download:

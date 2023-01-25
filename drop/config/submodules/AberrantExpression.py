@@ -11,7 +11,7 @@ class AE(Submodule):
         super().__init__(config, sampleAnnotation, processedDataDir, processedResultsDir, workDir)
         self.CONFIG_KEYS = [
             "groups", "fpkmCutoff", "implementation", "padjCutoff", "zScoreCutoff",
-            "maxTestedDimensionProportion", "reportAllGenesToTest"
+            "maxTestedDimensionProportion", "genesToTest", "reportAllGenesToTest"
         ]
         self.name = "AberrantExpression"
         # if self.run is false return without doing any config/sa checks for completeness
@@ -37,6 +37,7 @@ class AE(Submodule):
         setKey(dict_, None, "implementation", "autoencoder")
         setKey(dict_, None, "padjCutoff", .05)
         setKey(dict_, None, "zScoreCutoff", 0)
+        setKey(dict_, None, "genesToTest", None)
         setKey(dict_, None, "reportAllGenesToTest", False)
         setKey(dict_, None, "maxTestedDimensionProportion", 3)
         return dict_

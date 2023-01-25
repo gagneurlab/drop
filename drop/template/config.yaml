@@ -34,6 +34,7 @@ aberrantExpression:
     implementation: autoencoder
     padjCutoff: 0.05
     zScoreCutoff: 0
+    genesToTest: null
     reportAllGenesToTest: false
     maxTestedDimensionProportion: 3
     dassie:
@@ -54,6 +55,7 @@ aberrantSplicing:
     implementation: PCA
     padjCutoff: 0.1
     maxTestedDimensionProportion: 6
+    genesToTest: null
     reportAllGenesToTest: false
     ### FRASER1 configuration
     FRASER_version: "FRASER" 

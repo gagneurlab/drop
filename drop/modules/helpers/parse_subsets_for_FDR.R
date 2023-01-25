@@ -1,60 +1,41 @@
 
 # Function to extract subsets of genes for limited FDR correction from sample 
 # annotation
-parse_subsets_for_FDR <- function(sample_anno_file, sampleIDs,
-                                    module=c("AE", "AS")){
+parse_subsets_for_FDR <- function(yaml_file, sampleIDs){
     
-    # read in sample annotation
-    sa <- fread(sample_anno_file)
-    sa <- sa[RNA_ID %in% sampleIDs]
-    
-    # define which column to extract from
-    module <- match.arg(module)
-    gene_subset_col <- paste0(module, "_GENES_TO_TEST")
-    
-    # check for presence of subset column
-    if(!gene_subset_col %in% colnames(sa) || 
-            all(sa[, get(gene_subset_col)] == "" |
-                is.na(sa[, get(gene_subset_col)]))){
+    # if no file specific in config, return NULL
+    if(is.null(yaml_file) | yaml_file == ""){
         return(NULL)
     }
     
-    # extract sampleID and  file paths from sample annotation
-    subset_files <- sa[, .(RNA_ID, get(gene_subset_col))]
-    # split comma separated file into a separate rows (ignoring spaces if any)
-    subset_files <- subset_files[, .(RNA_ID, unlist(tstrsplit(V2, ",(\\s)*")))]
-    subset_files <- subset_files[!is.na(V2)]
+    # check if file exists
+    if(!file.exists(yaml_file)){
+        stop("Cannot parse gene subsets: file ", yaml_file, " does not exist.")
+    }
     
-    # read in gene subsets from files into list with respective setName
-    subsets <- list()
-    for(i in seq_len(subset_files[,.N])){
-        sid <- subset_files[i, RNA_ID]
-        file_path <- subset_files[i, V2]
-        
-        genesSubset <- fread(file_path)
-        setName <- colnames(genesSubset)[1]
-        genes <- genesSubset[,get(setName)]
-        
-        # throw error if no hashtag
-        if(!grepl("^#", setName)){
-            stop("Subset name missing in file: ", file_path)
-        }
-        # remove hashtag(s) and spaces from subset name
-        setName <- gsub("^#(#)*(\\s)*", "", setName)
-        
-        if(setName %in% names(subsets)){
-            prev_list <- subsets[[setName]]
-            prev_list[[sid]] <- genes
-            subsets[[setName]] <- prev_list
+    # read in subsets from yaml
+    subsets <- read_yaml(yaml_file)
+    
+    # expand subsets that should be tested for all samples
+    subsets_expanded <- list()
+    for(subset_name in names(subsets)){
+        sub_ls <- subsets[[subset_name]]
+        if(is.null(names(sub_ls))){
+            # expand list to all samples if no sampleID specified in name
+            sub_ls <- rep(list(unlist(sub_ls)), length(sampleIDs))
+            names(sub_ls) <- sampleIDs
         } else{
-            new_ls <- list(genes)
-            names(new_ls) <- sid
-            subsets[[setName]] <- new_ls
+            # remove sampleIDs not present in the current group
+            sub_sids <- names(sub_ls)
+            sub_ls <- sub_ls[sub_sids %in% sampleIDs]
+        }
+        # unless no sampleIDs present in this group, set to final subset list
+        if(length(sub_ls) > 0){
+            subsets_expanded[[subset_name]] <- sub_ls
         }
     }
     
-    # return subsets
-    return(subsets)
+    return(subsets_expanded)
 }
 
 # Convert element in subset gene lists from gene names to gene ids
