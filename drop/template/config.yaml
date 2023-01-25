@@ -33,9 +33,6 @@ aberrantExpression:
     padjCutoff: 0.05
     zScoreCutoff: 0
     maxTestedDimensionProportion: 3
-    dassie:
-        tssWindow: 500
-        pasWindow: 1000
     yieldSize: 2000000
 
 aberrantSplicing:
