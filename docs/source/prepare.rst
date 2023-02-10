@@ -89,8 +89,8 @@ excludeGroups    list  aberrant expression and aberrant splicing groups whose co
 
 Aberrant expression dictionary
 ++++++++++++++++++++++++++++++
-These parameters are directly used by the ``aberrantExpression`` snakemake command. Aberrant expression groups must have at least ``10``
-samples per group. To use external counts please see the ``Using External Counts`` section.
+These parameters are directly used by the ``aberrantExpression`` snakemake command. Each group must have at least ``10``
+samples. To use external counts, refer to the ``Using External Counts`` section.
 
 ============================  =========  ======================================================================================================================================================================================================================================================================================================================================================================================  ======
 Parameter                     Type       Description                                                                                                                                                                                                                                                                                                                                                                             Default/Examples
@@ -111,8 +111,8 @@ reportAllGenesToTest          boolean    If lists of candidate genes are provide
 
 Aberrant splicing dictionary
 ++++++++++++++++++++++++++++
-These parameters are directly used by the ``aberrantSplicing`` snakemake command. Aberrant splicing groups must have at least ``10``
-samples per group. To use external counts please see the ``Using External Counts`` section.
+These parameters are directly used by the ``aberrantSplicing`` snakemake command. Each group must have at least ``10``
+samples. To use external counts, refer to the ``Using External Counts`` section.
 
 ============================  =========  ======================================================================================================================================================================================================================================================================================================================================================================================  ======
 Parameter                     Type       Description                                                                                                                                                                                                                                                                                                                                                                             Default/Examples
