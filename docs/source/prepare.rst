@@ -279,7 +279,7 @@ Publicly available DROP external counts
 You can find different sets of publicly available external counts to add to your
 analysis on our `github page <https://github.com/gagneurlab/drop/#datasets>`_
 
-If you want to contribute with your own count matrices, please contact us: yepez at in.tum.de (yepez@in.tum.de)
+If you want to contribute with your own count matrices, please contact us: yepez at in.tum.de.
 
 External count examples
 +++++++++++++++++++++++
