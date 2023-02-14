@@ -8,7 +8,6 @@
 #'   - padjCutoff: '`sm cfg.AE.get("padjCutoff")`'
 #'   - zScoreCutoff: '`sm cfg.AE.get("zScoreCutoff")`'
 #'   - hpoFile: '`sm cfg.get("hpoFile")`'
-#'   - reportAllGenesToTest: '`sm cfg.AE.get("reportAllGenesToTest")`'
 #'  input:
 #'   - add_HPO_cols: '`sm str(projectDir / ".drop" / "helpers" / "add_HPO_cols.R")`'
 #'   - ods: '`sm cfg.getProcessedResultsDir() + "/aberrant_expression/{annotation}/outrider/{dataset}/ods.Rds"`'
