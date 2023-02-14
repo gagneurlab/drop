@@ -33,8 +33,7 @@ suppressPackageStartupMessages({
 
 ods <- readRDS(snakemake@input$ods)
 res <- results(ods, padjCutoff = snakemake@params$padjCutoff,
-			   zScoreCutoff = snakemake@params$zScoreCutoff, all = TRUE,
-			   subsets=subsets)
+			   zScoreCutoff = snakemake@params$zScoreCutoff, all = TRUE)
 
 # Add fold change
 res[, foldChange := round(2^l2fc, 2)]
@@ -42,15 +41,11 @@ res[, foldChange := round(2^l2fc, 2)]
 # Save all the results and significant ones
 saveRDS(res, snakemake@output$results_all)
 
-# Subset to significant results (or everything from the subset if requested)
-if(isTRUE(snakemake@params$reportAllGenesToTest)){
-    res <- res[FDR_set %in% names(subsets) | 
-        (padjust <= snakemake@params$padjCutoff &
-        abs(zScore) >= snakemake@params$zScoreCutoff)]
-} else{
-    res <- res[padjust <= snakemake@params$padjCutoff &
-                abs(zScore) >= snakemake@params$zScoreCutoff]
-}
+# Subset to significant results
+padj_cols <- grep("padjust", colnames(res), value=TRUE)
+res <- res[do.call(pmin, c(res[,padj_cols, with=FALSE], list(na.rm = TRUE))) 
+                <= snakemake@params$padjCutoff &
+            abs(zScore) >= snakemake@params$zScoreCutoff]
 
 gene_annot_dt <- fread(snakemake@input$gene_name_mapping)
 if(!is.null(gene_annot_dt$gene_name)){

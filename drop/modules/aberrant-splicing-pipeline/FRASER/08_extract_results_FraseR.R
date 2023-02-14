@@ -8,7 +8,6 @@
 #'   - workingDir: '`sm cfg.getProcessedResultsDir() + "/aberrant_splicing/datasets/"`'
 #'   - padjCutoff: '`sm cfg.AS.get("padjCutoff")`'
 #'   - deltaPsiCutoff: '`sm cfg.AS.get("deltaPsiCutoff")`'
-#'   - reportAllGenesToTest: '`sm cfg.AS.get("reportAllGenesToTest")`'
 #'   - hpoFile: '`sm cfg.get("hpoFile")`'
 #'   - ids: '`sm lambda w: sa.getIDsByGroup(w.dataset, assay="RNA")`'
 #'   - genes_to_test: '`sm cfg.AS.get("genesToTest")`'
@@ -25,7 +24,9 @@
 #'  output:
 #'   - resultTableJunc: '`sm cfg.getProcessedResultsDir() +
 #'                          "/aberrant_splicing/results/{annotation}/fraser/{dataset}/results_per_junction.tsv"`'
-#'   - resultTableGene: '`sm cfg.getProcessedResultsDir() +
+#'   - resultTableGene_full: '`sm cfg.getProcessedResultsDir() +
+#'                          "/aberrant_splicing/results/{annotation}/fraser/{dataset}/results_gene_all.tsv"`'
+#'   - resultTableGene_aberrant: '`sm cfg.getProcessedResultsDir() +
 #'                          "/aberrant_splicing/results/{annotation}/fraser/{dataset}/results.tsv"`'
 #'  type: script
 #'---
@@ -58,8 +59,15 @@ res_junc <- results(fds, psiType=psiTypes,
                     padjCutoff=snakemake@params$padjCutoff,
                     deltaPsiCutoff=snakemake@params$deltaPsiCutoff,
                     subsets=subsets, 
-                    fullSubset=snakemake@params$reportAllGenesToTest)
+                    fullSubset=FALSE)
 res_junc_dt   <- as.data.table(res_junc)
+colorder <- colnames(res_junc_dt[, !"FDR_set", with=FALSE])
+res_junc_dt <- dcast(res_junc_dt, ... ~ FDR_set, value.var="padjust")
+setnames(res_junc_dt, "transcriptome-wide", "padjust")
+for(subset_name in names(subsets)){
+    setnames(res_junc_dt, subset_name, paste0("padjust_", subset_name))
+}
+setcolorder(res_junc_dt, colorder)
 print('Results per junction extracted')
 
 
@@ -78,14 +86,20 @@ if(nrow(res_junc_dt) > 0){
     warning("The aberrant splicing pipeline gave 0 results for the ", dataset, " dataset.")
 }
 
-# Extract results by gene
+# Extract full results by gene
 res_gene <- results(fds, psiType=psiTypes,
                     aggregate=TRUE, collapse=FALSE,
-                    padjCutoff=snakemake@params$padjCutoff,
-                    deltaPsiCutoff=snakemake@params$deltaPsiCutoff,
+                    padjCutoff=NA, deltaPsiCutoff=NA, minCountCutof=NA,
                     subsets=subsets, 
-                    fullSubset=snakemake@params$reportAllGenesToTest)
+                    fullSubset=TRUE)
 res_genes_dt   <- as.data.table(res_gene)
+colorder <- colnames(res_genes_dt[, !"FDR_set", with=FALSE])
+res_genes_dt <- dcast(res_genes_dt, ... ~ FDR_set, value.var="padjustGene")
+setnames(res_genes_dt, "transcriptome-wide", "padjustGene")
+for(subset_name in names(subsets)){
+    setnames(res_genes_dt, subset_name, paste0("padjustGene_", subset_name))
+}
+setcolorder(res_genes_dt, colorder)
 print('Results per gene extracted')
 
 if(length(res_gene) > 0){
@@ -135,6 +149,14 @@ if(assemblyVersion %in% c("hg19", "hg38")){
             " as part of FRASER.")
 }
 
+
+# Subset gene results to aberrant
+res_genes_ab_dt <- 
+    res_genes_dt[padjustGene <= snakemake@params$padjCutoff &
+                    abs(deltaPsi) >= snakemake@params$deltaPsiCutoff & 
+                    totalCounts >= 5,]
+
 # Results
 write_tsv(res_junc_dt, file=snakemake@output$resultTableJunc)
-write_tsv(res_genes_dt, file=snakemake@output$resultTableGene)
+write_tsv(res_genes_dt, file=snakemake@output$resultTableGene_full)
+write_tsv(res_genes_ab_dt, file=snakemake@output$resultTableGene_aberrant)

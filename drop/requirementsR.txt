@@ -1,6 +1,6 @@
 package	version	ref
 devtools
-gagneurlab/OUTRIDER	1.17.1	master
+gagneurlab/OUTRIDER	1.17.1	plot_function_update
 c-mertes/FRASER	1.99.0	fraser2
 gagneurlab/tMAE	1.0.4	HEAD
 VariantAnnotation		

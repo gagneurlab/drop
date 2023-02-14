@@ -35,7 +35,6 @@ aberrantExpression:
     padjCutoff: 0.05
     zScoreCutoff: 0
     genesToTest: null
-    reportAllGenesToTest: false
     maxTestedDimensionProportion: 3
     dassie:
         tssWindow: 500
@@ -56,7 +55,6 @@ aberrantSplicing:
     padjCutoff: 0.1
     maxTestedDimensionProportion: 6
     genesToTest: null
-    reportAllGenesToTest: false
     ### FRASER1 configuration
     FRASER_version: "FRASER" 
     deltaPsiCutoff : 0.3 

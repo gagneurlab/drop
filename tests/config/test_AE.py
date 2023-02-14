@@ -9,7 +9,6 @@ class Test_AE_Config:
             'padjCutoff': 1,
             'zScoreCutoff': 0,
             'genesToTest': 'Data/genes_to_test.yaml',
-            'reportAllGenesToTest': False,
             'maxTestedDimensionProportion': 3
         }
         print(dropConfig.AE.dict_.items())
