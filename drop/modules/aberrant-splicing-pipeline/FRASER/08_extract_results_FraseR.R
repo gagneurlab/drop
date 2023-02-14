@@ -89,7 +89,7 @@ if(nrow(res_junc_dt) > 0){
 # Extract full results by gene
 res_gene <- results(fds, psiType=psiTypes,
                     aggregate=TRUE, collapse=FALSE,
-                    padjCutoff=NA, deltaPsiCutoff=NA, minCountCutof=NA,
+                    padjCutoff=NA, deltaPsiCutoff=NA, minCountCutoff=NA,
                     subsets=subsets, 
                     fullSubset=TRUE)
 res_genes_dt   <- as.data.table(res_gene)
