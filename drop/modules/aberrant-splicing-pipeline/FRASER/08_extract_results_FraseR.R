@@ -81,7 +81,7 @@ if(nrow(res_junc_dt) > 0){
     
     # add colData to the results
     res_junc_dt <- merge(res_junc_dt, as.data.table(colData(fds)), by = "sampleID")
-    res_junc_dt[, c("bamFile", "pairedEnd", "STRAND") := NULL]
+    res_junc_dt[, c("bamFile", "pairedEnd", "STRAND", "RNA_BAM_FILE", "DNA_VCF_FILE", "COUNT_MODE", "COUNT_OVERLAPS") := NULL]
 } else{
     warning("The aberrant splicing pipeline gave 0 results for the ", dataset, " dataset.")
 }
@@ -104,7 +104,7 @@ print('Results per gene extracted')
 
 if(length(res_gene) > 0){
     res_genes_dt <- merge(res_genes_dt, as.data.table(colData(fds)), by = "sampleID")
-    res_genes_dt[, c("bamFile", "pairedEnd", "STRAND") := NULL]
+    res_genes_dt[, c("bamFile", "pairedEnd", "STRAND", "RNA_BAM_FILE", "DNA_VCF_FILE", "COUNT_MODE", "COUNT_OVERLAPS") := NULL]
 
     # add HPO overlap information
     sa <- fread(snakemake@config$sampleAnnotation, 
@@ -151,10 +151,11 @@ if(assemblyVersion %in% c("hg19", "hg38")){
 
 
 # Subset gene results to aberrant
-res_genes_ab_dt <- 
-    res_genes_dt[padjustGene <= snakemake@params$padjCutoff &
-                    abs(deltaPsi) >= snakemake@params$deltaPsiCutoff & 
-                    totalCounts >= 5,]
+padj_cols <- grep("padjust", colnames(res_genes_ab_dt), value=TRUE)
+res_genes_ab_dt <- res_genes_dt[do.call(pmin, c(res_genes_ab_dt[,padj_cols, with=FALSE], 
+                                                list(na.rm = TRUE))) <= snakemake@params$padjCutoff &
+             abs(deltaPsi) >= snakemake@params$deltaPsiCutoff & 
+             totalCounts >= 5,]
 
 # Results
 write_tsv(res_junc_dt, file=snakemake@output$resultTableJunc)
