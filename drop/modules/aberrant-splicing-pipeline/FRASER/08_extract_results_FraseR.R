@@ -10,12 +10,12 @@
 #'   - deltaPsiCutoff: '`sm cfg.AS.get("deltaPsiCutoff")`'
 #'   - hpoFile: '`sm cfg.get("hpoFile")`'
 #'   - ids: '`sm lambda w: sa.getIDsByGroup(w.dataset, assay="RNA")`'
-#'   - genes_to_test: '`sm cfg.AS.get("genesToTest")`'
+#'   - parse_subsets_for_FDR: '`sm str(projectDir / ".drop" / "helpers" / "parse_subsets_for_FDR.R")`'
 #'  threads: 10
 #'  input:
+#'   - genes_to_test: '`sm cfg.AS.get("genesToTest")`'
 #'   - setup: '`sm cfg.AS.getWorkdir() + "/config.R"`'
 #'   - add_HPO_cols: '`sm str(projectDir / ".drop" / "helpers" / "add_HPO_cols.R")`'
-#'   - parse_subsets_for_FDR: '`sm str(projectDir / ".drop" / "helpers" / "parse_subsets_for_FDR.R")`'
 #'   - sampleAnnoFile: '`sm config["sampleAnnotation"]`'
 #'   - fdsin: '`sm expand(cfg.getProcessedResultsDir() +
 #'                 "/aberrant_splicing/datasets/savedObjects/{dataset}--{annotation}/" +
@@ -46,9 +46,9 @@ register(MulticoreParam(snakemake@threads))
 setAutoBPPARAM(MulticoreParam(snakemake@threads))
 
 # read in subsets from sample anno if present (returns NULL if not present)
-source(snakemake@input$parse_subsets_for_FDR)
+source(snakemake@params$parse_subsets_for_FDR)
 fraser_sample_ids <- snakemake@params$ids
-subsets <- parse_subsets_for_FDR(snakemake@params$genes_to_test,
+subsets <- parse_subsets_for_FDR(snakemake@input$genes_to_test,
                                  sampleIDs=fraser_sample_ids)
 
 # Load fds and create a new one
