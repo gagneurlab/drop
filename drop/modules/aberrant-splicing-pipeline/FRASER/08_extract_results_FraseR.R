@@ -93,14 +93,22 @@ res_gene <- results(fds, psiType=psiTypes,
                     subsets=subsets, 
                     fullSubset=TRUE)
 res_genes_dt   <- as.data.table(res_gene)
-colorder <- colnames(res_genes_dt[, !"FDR_set", with=FALSE])
-res_genes_dt <- dcast(res_genes_dt, ... ~ FDR_set, value.var="padjustGene")
+colorder <- colnames(res_genes_dt[, !c("padjust", "FDR_set"), with=FALSE])
+res_genes_dt <- dcast(res_genes_dt[,!"padjust", with=FALSE], ... ~ FDR_set, value.var="padjustGene")
 setnames(res_genes_dt, "transcriptome-wide", "padjustGene")
 for(subset_name in names(subsets)){
     setnames(res_genes_dt, subset_name, paste0("padjustGene_", subset_name))
 }
 setcolorder(res_genes_dt, colorder)
 print('Results per gene extracted')
+write_tsv(res_genes_dt, file=snakemake@output$resultTableGene_full)
+
+# Subset gene results to aberrant
+padj_cols <- grep("padjustGene", colnames(res_genes_dt), value=TRUE)
+res_genes_dt <- res_genes_dt[do.call(pmin, c(res_genes_dt[,padj_cols, with=FALSE], 
+                                                list(na.rm = TRUE))) <= snakemake@params$padjCutoff &
+                                    abs(deltaPsi) >= snakemake@params$deltaPsiCutoff & 
+                                    totalCounts >= 5,]
 
 if(length(res_gene) > 0){
     res_genes_dt <- merge(res_genes_dt, as.data.table(colData(fds)), by = "sampleID")
@@ -149,15 +157,6 @@ if(assemblyVersion %in% c("hg19", "hg38")){
             " as part of FRASER.")
 }
 
-
-# Subset gene results to aberrant
-padj_cols <- grep("padjust", colnames(res_genes_ab_dt), value=TRUE)
-res_genes_ab_dt <- res_genes_dt[do.call(pmin, c(res_genes_ab_dt[,padj_cols, with=FALSE], 
-                                                list(na.rm = TRUE))) <= snakemake@params$padjCutoff &
-             abs(deltaPsi) >= snakemake@params$deltaPsiCutoff & 
-             totalCounts >= 5,]
-
 # Results
 write_tsv(res_junc_dt, file=snakemake@output$resultTableJunc)
-write_tsv(res_genes_dt, file=snakemake@output$resultTableGene_full)
-write_tsv(res_genes_ab_dt, file=snakemake@output$resultTableGene_aberrant)
+write_tsv(res_genes_dt, file=snakemake@output$resultTableGene_aberrant)
