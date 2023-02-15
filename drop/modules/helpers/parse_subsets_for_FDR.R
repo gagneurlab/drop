@@ -4,7 +4,7 @@
 parse_subsets_for_FDR <- function(yaml_file, sampleIDs){
     
     # if no file specific in config, return NULL
-    if(is.null(yaml_file) | yaml_file == ""){
+    if(is.null(yaml_file) || yaml_file == ""){
         return(NULL)
     }
     
