@@ -117,11 +117,13 @@ cat(paste0("<a href='./", basename(file), "'>Download FRASER results table</a>")
 # round numbers
 if(nrow(res) > 0){
   res[, pValue := signif(pValue, 3)]
-  res[, padjust := signif(padjust, 3)]
   res[, deltaPsi := signif(deltaPsi, 2)]
   res[, psiValue := signif(psiValue, 2)]
   res[, pValueGene := signif(pValueGene, 2)]
-  res[, padjustGene := signif(padjustGene, 2)]
+  padjGene_cols <- grep("padjustGene", colnames(res), value=TRUE)
+  for(padj_col in padjGene_cols){
+      res[, c(padj_col) := signif(get(padj_col), 2)]
+  }
 }
 
 DT::datatable(
