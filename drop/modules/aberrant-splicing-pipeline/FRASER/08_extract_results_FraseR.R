@@ -11,9 +11,9 @@
 #'   - hpoFile: '`sm cfg.get("hpoFile")`'
 #'   - ids: '`sm lambda w: sa.getIDsByGroup(w.dataset, assay="RNA")`'
 #'   - parse_subsets_for_FDR: '`sm str(projectDir / ".drop" / "helpers" / "parse_subsets_for_FDR.R")`'
+#'   - genes_to_test: '`sm cfg.AS.get("genesToTest")`'
 #'  threads: 10
 #'  input:
-#'   - genes_to_test: '`sm cfg.AS.get("genesToTest")`'
 #'   - setup: '`sm cfg.AS.getWorkdir() + "/config.R"`'
 #'   - add_HPO_cols: '`sm str(projectDir / ".drop" / "helpers" / "add_HPO_cols.R")`'
 #'   - sampleAnnoFile: '`sm config["sampleAnnotation"]`'
@@ -48,7 +48,7 @@ setAutoBPPARAM(MulticoreParam(snakemake@threads))
 # read in subsets from sample anno if present (returns NULL if not present)
 source(snakemake@params$parse_subsets_for_FDR)
 fraser_sample_ids <- snakemake@params$ids
-subsets <- parse_subsets_for_FDR(snakemake@input$genes_to_test,
+subsets <- parse_subsets_for_FDR(snakemake@params$genes_to_test,
                                  sampleIDs=fraser_sample_ids)
 
 # Load fds and create a new one

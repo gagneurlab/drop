@@ -7,10 +7,10 @@
 #'  params:
 #'   - ids: '`sm lambda w: sa.getIDsByGroup(w.dataset, assay="RNA")`'
 #'   - parse_subsets_for_FDR: '`sm str(projectDir / ".drop" / "helpers" / "parse_subsets_for_FDR.R")`'
+#'   - genes_to_test: '`sm cfg.AE.get("genesToTest")`'
 #'  input:
 #'   - ods_fitted: '`sm cfg.getProcessedResultsDir() + 
 #'           "/aberrant_expression/{annotation}/outrider/{dataset}/ods_fitted.Rds"`'
-#'   - genes_to_test: '`sm cfg.AE.get("genesToTest")`'
 #'   - gene_name_mapping: '`sm cfg.getProcessedDataDir() + "/preprocess/{annotation}/gene_name_mapping_{annotation}.tsv"`'
 #'  output:
 #'   - ods_with_pvals: '`sm cfg.getProcessedResultsDir() + 
@@ -41,7 +41,7 @@ register(MulticoreParam(snakemake@threads))
 # read in gene subsets from sample anno if present (returns NULL if not present)
 source(snakemake@params$parse_subsets_for_FDR)
 outrider_sample_ids <- snakemake@params$ids
-subsets <- parse_subsets_for_FDR(snakemake@input$genes_to_test,
+subsets <- parse_subsets_for_FDR(snakemake@params$genes_to_test,
                                  sampleIDs=outrider_sample_ids)
 subsets_final <- convert_to_geneIDs(subsets, snakemake@input$gene_name_mapping)
 
