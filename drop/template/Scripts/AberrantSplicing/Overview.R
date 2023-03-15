@@ -78,7 +78,11 @@ res <- fread(snakemake@input$result_tables[[1]])
 
 #' Display the results table of the first dataset
 #+ echo=FALSE
-DT::datatable(res, filter = 'top')
+if(nrow(res) > 0){
+  DT::datatable(head(res, 100), caption = 'FRASER results (up to 100 rows shown)',
+                options=list(scrollX=TRUE), filter = 'top')
+  
+} else print("no significant results")
 
 #' Get a splice site and sample of interest. Outliers are in red.
 #+ echo=TRUE

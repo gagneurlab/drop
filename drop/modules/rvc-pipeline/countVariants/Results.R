@@ -34,7 +34,7 @@ res_plot[,VARIANT := NULL]
 
 res$cohortFreq <- round(res$cohortFreq,3)
 
-#' ## Variant Calling Tables
+#' ## Variant Calling Tables (first 1,000)
 DT::datatable(
     head(res[grepl("PASS", FILTER)], 1000),
     caption = 'Variants called from RNA (up to 1,000 rows shown)',
@@ -49,13 +49,25 @@ if (!all(is.na(res$MAX_AF))) {
         filter = 'top')
 }
 
-# melt filters by GT. Exclude reference calls
-res_plot <- melt(res_plot,id.vars = "FILTER",value.name = "GT")[GT != "0/0",.N,by = c("FILTER","variable","GT")]
+# melt filters by GT. Exclude reference calls. Read in batches to avoid vector length errors for large datasets
+
+# generate batch lists by config value: yieldSize
+batches <- seq(0,nrow(res_plot),snakemake@config$rnaVariantCalling$yieldSize)
+if(batches[length(batches)] < nrow(res_plot)) batches <- c(batches,nrow(res_plot))
+
+# build dts by batches
+out <- lapply(1:(length(batches)-1), function(i){
+  melt(res_plot[(1 +batches[i]):batches[i+1]], #read through batches 1
+       id.vars = "FILTER",value.name = "GT")[GT != "0/0",.N,by = c("FILTER","variable","GT")]
+})
+
+# combine batches and sum up the variables
+res_plot <- rbindlist(out)[,.(N = sum(N)),by = c("FILTER","variable","GT")]
  
-#' ## Table of variant calls by GT
+#' ## Table of variant calls by GT (first 1,000)
 summary_dt <- dcast(res_plot, FILTER + GT ~ variable, value.var = "N")
 DT::datatable(
-    summary_dt,
+    head(summary_dt,1000),
     caption = "Variant filters by GT", 
     options=list(scrollY=TRUE),
     filter = 'top')

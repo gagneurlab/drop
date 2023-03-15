@@ -13,9 +13,9 @@
 #'  input:
 #'    - functions: '`sm cfg.workDir / "Scripts/html_functions.R"`'
 #'    - allelic_counts: '`sm expand(cfg.getProcessedDataDir() +
-#'                          "/mae/allelic_counts/{mae_id}.csv.gz",
-#'                          mae_id=cfg.MAE.getMaeAll())`'
-#'    - results_obj: '`sm expand(cfg.getProcessedResultsDir() +
+#'                       "/mae/allelic_counts/{mae_id}.csv.gz",
+#'                        mae_id=cfg.MAE.getMaeAll())`'
+#'    - results_sample: '`sm expand(cfg.getProcessedResultsDir() +
 #'                       "/mae/samples/{mae_id}_res.Rds",
 #'                       mae_id=cfg.MAE.getMaeAll())`'
 #'    - results_tables: '`sm expand(cfg.getProcessedResultsDir() +
@@ -39,83 +39,70 @@ datasets <- sort(snakemake@params$datasets)
 annotations <- snakemake@params$annotations
 htmlDir <- snakemake@params$htmlDir
 resultsDir <- snakemake@params$resultsDir
+allelicRatioCutoff <- snakemake@config$mae$allelicRatioCutoff
+padjCutoff <- snakemake@config$mae$padjCutoff
 
-results_links <- sapply(
-  annotations, function(x) build_link_list(
-    file_paths = file.path(htmlDir, paste0(datasets, '--', x, '_results.html')),
-    captions = datasets
-  )
+results_links <- sapply(annotations, function(x) build_link_list(
+  file_paths = file.path(htmlDir, paste0(datasets, '--', x, '_results.html')),
+  captions = datasets
+)
 )
 
-table_links <- sapply(
-  annotations, function(v) build_link_list(
-    file_paths = file.path(resultsDir, paste0(datasets, '/MAE_results_', v, '.tsv')),
-    captions = paste0(datasets)
-  )
+table_links <- sapply(annotations, function(v) build_link_list(
+  file_paths = file.path(resultsDir, paste0(datasets, '/MAE_results_', v, '.tsv')),
+  captions = paste0(datasets)
 )
+)
+
 
 #'
 #' **Datasets:** `r paste(datasets, collapse = ', ')`
 #'
 #' **Gene annotations:** `r paste(annotations, collapse = ', ')`
 #'
-#' ## MAE results
-#' `r display_text(caption = 'Gene annotation version ', links = results_links)`
+#' ## MAE results html
+#' `r display_text(caption = 'Gene annotation ', links = results_links)`
 #'
-#' ## Files
-#' * [Allelic counts](`r file.path(snakemake@config$root, 'processed_data/mae/allelic_counts/')`)
-#' * [Results data tables of each sample (.Rds)](`r file.path(snakemake@config$root, 'processed_results/mae/samples/')`)  
-
+#' ## MAE files
+#' * Allelic counts located under: `r file.path(snakemake@config$root, 'processed_data/mae/allelic_counts/')`
+#' * Results for each sample located under: `r file.path(snakemake@config$root, 'processed_results/mae/samples/')`
+#' * Aggregated results located under: `r file.path(snakemake@config$root, 'processed_results/mae/{DROP_group}/')`
 #'
-#' `r display_text(caption = 'Significant MAE results tables ', links = table_links)`
 
-
-#' ## Quality Control: VCF-BAM Matching
+#' ## Quality Control: VCF-BAM matching html
 #+ eval=TRUE, echo=FALSE
 qc_groups <- sort(snakemake@params$qc_groups)
-qc_links <- build_link_list(
-    file_paths = file.path(htmlDir, paste0('QC/', qc_groups, '.html')),
-    captions = qc_groups
+qc_links <- sapply(qc_groups, function(v) build_link_list(
+  file_paths = file.path(htmlDir, paste0('QC/', v, '.html')),
+  captions = paste0(qc_groups)
 )
-
-qc_matrix_links <- build_link_list(
-    file_paths = file.path(snakemake@input$qc_matrix),
-    captions = qc_groups
 )
 
 #' `r display_text(caption = 'QC Overview ', links = qc_links)`
-#' `r display_text(caption = 'DNA-RNA matrix ', links = qc_matrix_links)`
 #'
 
-#+ eval=TRUE, echo=TRUE
+#' ## QC files
+#' * QC matrix located under: `r file.path(snakemake@config$root, 'processed_results/mae/{DROP_group}/')`
+#'
+
 #' ## Analyze Individual Results
+#+echo=FALSE
 # Read the first results table
-res_sample <- readRDS(snakemake@input$results_obj[[1]])
-print(unique(res_sample$ID))
+res_sample <- readRDS(snakemake@input$results_sample[[1]])
+sample <- unique(res_sample$ID)
 
-#+echo=F
 library(tMAE)
-
-if(is.na(res_sample$rare)){
-  g1 <- plotMA4MAE(res_sample,
-                   padjCutoff = snakemake@config$mae$padjCutoff,
-                   allelicRatioCutoff = snakemake@config$mae$allelicRatioCutoff )
-  g2 <- plotAllelicCounts(res_sample,
-                   padjCutoff = snakemake@config$mae$padjCutoff,
-                   allelicRatioCutoff = snakemake@config$mae$allelicRatioCutoff )
-} else {
-  g1 <- plotMA4MAE(res_sample, rare_column = 'rare',
-                   padjCutoff = snakemake@config$mae$padjCutoff,
-                   allelicRatioCutoff = snakemake@config$mae$allelicRatioCutoff )
-  g2 <- plotAllelicCounts(res_sample, rare_column = 'rare',
-                   padjCutoff = snakemake@config$mae$padjCutoff,
-                   allelicRatioCutoff = snakemake@config$mae$allelicRatioCutoff )
-}
+library(ggplot2)
+rare_column <- 'rare'
+if(any(is.na(res_sample$rare))) rare_column <- NULL
+#+echo=TRUE
 
 #' ### MA plot: fold change vs RNA coverage
-#+echo=F
-g1
+plotMA4MAE(res_sample, rare_column = rare_column,
+           padjCutoff = padjCutoff,
+           allelicRatioCutoff = allelicRatioCutoff) + ggtitle(sample)
 
 #' ### Alternative vs Reference plot
-#+echo=F
-g2
+plotAllelicCounts(res_sample, rare_column = rare_column,
+                  padjCutoff = padjCutoff,
+                  allelicRatioCutoff = allelicRatioCutoff) + ggtitle(sample)

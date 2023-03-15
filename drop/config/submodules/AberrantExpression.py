@@ -39,6 +39,7 @@ class AE(Submodule):
         setKey(dict_, None, "zScoreCutoff", 0)
         setKey(dict_, None, "genesToTest", None)
         setKey(dict_, None, "maxTestedDimensionProportion", 3)
+        setKey(dict_, None, "yieldSize", 2000000)
         return dict_
 
     def getCountFiles(self, annotation, group):
