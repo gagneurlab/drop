@@ -37,10 +37,10 @@ fds <- loadFraserDataSet(dir=workingDir, name=paste0("raw-local-", dataset))
 # Read splice site coordinates from RDS
 splitCounts_gRanges <- readRDS(snakemake@input$gRangesNonSplitCounts)
 
-# If samples are recounted, remove the merged ones
+# Remove the cache file of merged counts from previous runs
 nonSplitCountsDir <- file.path(workingDir, "savedObjects", 
                             paste0("raw-local-", dataset), 'nonSplitCounts')
-if(params$recount == TRUE & dir.exists(nonSplitCountsDir)){
+if(dir.exists(nonSplitCountsDir)){
   unlink(nonSplitCountsDir, recursive = TRUE)
 }
 
@@ -50,6 +50,11 @@ nonSplitCounts <- getNonSplitReadCountsForAllSamples(fds=fds,
                                                      minAnchor=5, 
                                                      recount=FALSE, 
                                                      longRead=params$longRead)
+
+# remove cache dir as its not needed later
+if(dir.exists(nonSplitCountsDir)){
+    unlink(nonSplitCountsDir, recursive = TRUE)
+}
 
 message(date(), ":", dataset, " nonSplit counts done")
 
