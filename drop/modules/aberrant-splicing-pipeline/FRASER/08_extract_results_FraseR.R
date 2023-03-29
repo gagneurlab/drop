@@ -9,9 +9,6 @@
 #'   - padjCutoff: '`sm cfg.AS.get("padjCutoff")`'
 #'   - deltaPsiCutoff: '`sm cfg.AS.get("deltaPsiCutoff")`'
 #'   - hpoFile: '`sm cfg.get("hpoFile")`'
-#'   - ids: '`sm lambda w: sa.getIDsByGroup(w.dataset, assay="RNA")`'
-#'   - parse_subsets_for_FDR: '`sm str(projectDir / ".drop" / "helpers" / "parse_subsets_for_FDR.R")`'
-#'   - genes_to_test: '`sm cfg.AS.get("genesToTest")`'
 #'  threads: 10
 #'  input:
 #'   - setup: '`sm cfg.AS.getWorkdir() + "/config.R"`'
@@ -45,35 +42,30 @@ register(MulticoreParam(snakemake@threads))
 # Limit number of threads for DelayedArray operations
 setAutoBPPARAM(MulticoreParam(snakemake@threads))
 
-# read in subsets from sample anno if present (returns NULL if not present)
-source(snakemake@params$parse_subsets_for_FDR)
-fraser_sample_ids <- snakemake@params$ids
-subsets <- parse_subsets_for_FDR(snakemake@params$genes_to_test,
-                                 sampleIDs=fraser_sample_ids)
-
 # Load fds and create a new one
 fds <- loadFraserDataSet(dir=workingDir, name=paste(dataset, annotation, sep = '--'))
 
 # Extract results per junction
 res_junc <- results(fds, psiType=psiTypes,
                     padjCutoff=snakemake@params$padjCutoff,
-                    deltaPsiCutoff=snakemake@params$deltaPsiCutoff,
-                    subsets=subsets, 
-                    fullSubset=FALSE)
+                    deltaPsiCutoff=snakemake@params$deltaPsiCutoff)
 res_junc_dt   <- as.data.table(res_junc)
-colorder <- colnames(res_junc_dt[, !"FDR_set", with=FALSE])
-res_junc_dt <- dcast(res_junc_dt, ... ~ FDR_set, value.var="padjust")
-setnames(res_junc_dt, "transcriptome-wide", "padjust")
-for(subset_name in names(subsets)){
-    setnames(res_junc_dt, subset_name, paste0("padjust_", subset_name))
-}
-setcolorder(res_junc_dt, colorder)
 print('Results per junction extracted')
-
 
 # Add features
 if(nrow(res_junc_dt) > 0){
 
+    # dcast to have one row per outlier
+    subsets <- res_junc_dt[, unique(FDR_set)]
+    subsets <- subsets[subsets != "transcriptome-wide"]
+    colorder <- colnames(res_junc_dt[, !"FDR_set", with=FALSE])
+    res_junc_dt <- dcast(res_junc_dt, ... ~ FDR_set, value.var="padjust")
+    setnames(res_junc_dt, "transcriptome-wide", "padjust")
+    for(subset_name in subsets){
+        setnames(res_junc_dt, subset_name, paste0("padjust_", subset_name))
+    }
+    setcolorder(res_junc_dt, colorder)
+    
     # number of samples per gene and variant
     res_junc_dt[, numSamplesPerGene := uniqueN(sampleID), by = hgncSymbol]
     res_junc_dt[, numEventsPerGene := .N, by = "hgncSymbol,sampleID"]
@@ -89,14 +81,14 @@ if(nrow(res_junc_dt) > 0){
 # Extract full results by gene
 res_gene <- results(fds, psiType=psiTypes,
                     aggregate=TRUE, collapse=FALSE,
-                    padjCutoff=NA, deltaPsiCutoff=NA, minCount=NA,
-                    subsets=subsets, 
-                    fullSubset=TRUE)
+                    all=TRUE)
 res_genes_dt   <- as.data.table(res_gene)
+subsets <- res_genes_dt[, unique(FDR_set)]
+subsets <- subsets[subsets != "transcriptome-wide"]
 colorder <- colnames(res_genes_dt[, !c("padjust", "FDR_set"), with=FALSE])
 res_genes_dt <- dcast(res_genes_dt[,!"padjust", with=FALSE], ... ~ FDR_set, value.var="padjustGene")
 setnames(res_genes_dt, "transcriptome-wide", "padjustGene")
-for(subset_name in names(subsets)){
+for(subset_name in subsets){
     setnames(res_genes_dt, subset_name, paste0("padjustGene_", subset_name))
 }
 setcolorder(res_genes_dt, colorder)

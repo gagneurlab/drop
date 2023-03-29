@@ -7,6 +7,9 @@
 #'  params:
 #'   - setup: '`sm cfg.AS.getWorkdir() + "/config.R"`'
 #'   - workingDir: '`sm cfg.getProcessedResultsDir() + "/aberrant_splicing/datasets/"`'
+#'   - ids: '`sm lambda w: sa.getIDsByGroup(w.dataset, assay="RNA")`'
+#'   - parse_subsets_for_FDR: '`sm str(projectDir / ".drop" / "helpers" / "parse_subsets_for_FDR.R")`'
+#'   - genes_to_test: '`sm cfg.AS.get("genesToTest")`'
 #'  threads: 20
 #'  input:
 #'   - fdsin:  '`sm expand(cfg.getProcessedResultsDir() +
@@ -22,7 +25,7 @@
 saveRDS(snakemake, snakemake@log$snakemake)
 source(snakemake@params$setup, echo=FALSE)
 
-annotation    <- snakemake@wildcards$annotation
+annotation <- snakemake@wildcards$annotation
 dataset    <- snakemake@wildcards$dataset
 fdsFile    <- snakemake@input$fdsin
 workingDir <- snakemake@params$workingDir
@@ -30,6 +33,12 @@ workingDir <- snakemake@params$workingDir
 register(MulticoreParam(snakemake@threads))
 # Limit number of threads for DelayedArray operations
 setAutoBPPARAM(MulticoreParam(snakemake@threads))
+
+# read in subsets from sample anno if present (returns NULL if not present)
+source(snakemake@params$parse_subsets_for_FDR)
+fraser_sample_ids <- snakemake@params$ids
+subsets <- parse_subsets_for_FDR(snakemake@params$genes_to_test,
+                                 sampleIDs=fraser_sample_ids)
 
 # Load Zscores data
 fds <- loadFraserDataSet(dir=workingDir, name=paste(dataset, annotation, sep = '--'))
@@ -41,7 +50,7 @@ for (type in psiTypes) {
     # Pvalues
     fds <- calculatePvalues(fds, type=type)
     # Adjust Pvalues
-    fds <- calculatePadjValues(fds, type=type)
+    fds <- calculatePadjValues(fds, type=type, subsets=subsets)
 }
 
 fds <- saveFraserDataSet(fds)
