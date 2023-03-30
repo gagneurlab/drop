@@ -12,19 +12,15 @@ The manuscript is available in [Nature Protocols](https://www.nature.com/article
 
 ## What's new
 
-We have split the 269 samples from the external counts from fibroblasts strand-specific hg19 into two datasets according to the sequencing depth and removed 7 after QC. We recommend using the cohort with the sequencing depth that matches best the local samples.
+Version 1.3.0 introduces the option to use FRASER 2.0 which is an improved version of FRASER that uses the Intron Jaccard Index metric instead of percent spliced in and splicing efficiency to quantify and later call aberrant splicing. To run FRASER 2.0, modify the `FRASER_version` parameter in the aberrantSplicing dictionary in the config file and adapt the `quantileForFiltering` and `deltaPsiCutoff` parameters. See [config template](https://github.com/gagneurlab/drop/blob/master/drop/template/config.yaml).
 
 `Snakemake v.7.8` introduced some changes in which changes in parameters can cause rules to be re-executed. More info [here](https://github.com/snakemake/snakemake/issues/1694). This affects DROP and causes certain rules in the AS and QC modules to be triggered even if they were already completed and there were no changes in the sample annotation or scripts. The workaround is to run DROP by adding the parameter `--rerun-triggers mtime`, e.g. `snakemake -n --rerun-triggers mtime` or `snakemake --cores 10 --rerun-triggers mtime`. We will investigate the rules in DROP to fix this.
 
-Version 1.2.4 fixes some critical bugs that affected the performance of the `mae` pipeline, and introduces the `yieldSize` config variable to control batch size when reading BAM files and VCF files for the `aberrantExpression` and `rnaVariantCalling` modules.
-
-Version 1.2.3 fixes a bug in one of the plots in the AE Summary Script as well as simplifies the plots. In addition, there's a new heatmap in the sampleQC Summary that allows to better identify DNA-RNA mismatches.
-
-Version 1.2.2 fixes some critical bugs that affected the performance of the `aberrantExpression` pipeline, and allows sample IDs to be numeric.
+Version 1.2.3 simplifies the plots in the AE Summary Script. In addition, there's a new heatmap in the sampleQC Summary that allows to better identify DNA-RNA mismatches.
 
 As of version 1.2.1 DROP has a new module that performs RNA-seq variant calling. The input are BAM files and the output either a single-sample or a multi-sample VCF file (option specified by the user) annotated with allele frequencies from gnomAD (if specified by the user). The sample annotation table does not need to be changed, but several new parameters in the config file have to be added and tuned. For more info, refer to the [documentation](https://gagneurlab-drop.readthedocs.io/en/latest/prepare.html#rna-variant-calling-dictionary).
 
-Also, as of v 1.2.1 the integration of external split and non-split counts to detect aberrant splicing is now possible. Simply specify in a new column in the sample annotation the directory containing the counts. For more info, refer to the [documentation](https://gagneurlab-drop.readthedocs.io/en/latest/prepare.html#external-count-examples).
+Also, as of version 1.2.1 the integration of external split and non-split counts to detect aberrant splicing is now possible. Simply specify in a new column in the sample annotation the directory containing the counts. For more info, refer to the [documentation](https://gagneurlab-drop.readthedocs.io/en/latest/prepare.html#external-count-examples).
 
 ## Quickstart
 DROP is available on [bioconda](https://anaconda.org/bioconda/drop).
