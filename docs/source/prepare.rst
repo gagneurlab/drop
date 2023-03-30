@@ -308,36 +308,36 @@ EXT-3R          BLOOD_AS                                                        
 Limiting FDR correction to subsets of genes of interest
 ------------------------------------
 In addition to returning transcriptome-wide results, DROP provides the option to 
-limit the FDR correction to user-provided subsets of genes of interest in the 
+limit the FDR correction to user-provided genes of interest in the 
 ``aberrantExpression`` and ``aberrantSplicing`` modules. These could e.g. be all 
-OMIM genes, but it is also possible to provide sample-specific subsets such as all 
+OMIM genes. It is also possible to provide sample-specific genes such as all 
 genes with a rare splice region variant for each sample. 
-To use this feature of DROP, a yaml file containing the set(s) of genes to test 
-(per sample or for all samples) needs to be specified in the ``genesToTest`` field 
+To use this feature, a YAML file containing the set(s) of genes to test 
+(per sample or for all samples) needs to be specified in the ``genesToTest`` parameter 
 of the ``aberrantExpression`` and ``aberrantSplicing`` modules in the config file. 
-If no file is provided, only transcriptome-wide results will be reported for this sample.
-Otherwise, the result tables of the ``aberrantExpression`` and ``aberrantSplicing`` modules 
+If no file is provided, only transcriptome-wide results will be reported.
+Otherwise, the results tables of the ``aberrantExpression`` and ``aberrantSplicing`` modules 
 will additionally report aberrant events passing the cutoffs based on calculating 
-the FDR with respect to only the genes in the provided subsets.
+the FDR with respect to the genes in the provided lists.
 
 Creating the YAML file specifying subsets of genes to test
-+++++++++++++++++++++++++++++++++++++++++++++++++++++++
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 The file containing the list of genes (HGNC symbols) to be tested must be a YAML file, 
 where the variable names specify the name of each set of tested genes. In the output 
 of DROP, this name will be used to identify the set in the results table. Each set 
-can either be a list of genes when a set should be tested for all samples. Alternatively 
-(and additionally), sample specific sets can be created by giving the RNA_ID of the sample
+can either be a list of genes, in which case the set will be tested for all samples. Alternatively 
+(and additionally), sample-specific sets can be created by giving the RNA_ID of the sample
 for which the set should be used as the name (see example below).
-This yaml file can be easily created within R by using ``yaml::write_yaml(subsetList, filepath)``, 
+This YAML file can be created in R using ``yaml::write_yaml(subsetList, filepath)``, 
 where ``subsetList`` is a named list of named lists containing the sets of genes to test.
-In the following example, the name of the global set of genes is ``Example_subset_used_for_all_samples``
-and the name of the sample specific set is ``Genes_with_rare_splice_variants``:
+In the following example, the name of the global set of genes is ``Genes_to_test_on_all_samples``
+and the name of the sample-specific set is ``Genes_with_rare_splice_variants``:
 
 Example content of ``/path/to/genes_to_test.yaml``:
 
 .. code-block:: bash
 
-    Example_subset_used_for_all_samples:
+    Genes_to_test_on_all_samples:
       - BTG3
       - GATD3B
       - PKNOX1
