@@ -112,7 +112,10 @@ genesToTest                   character  Full path to a yaml file specifying lis
 Aberrant splicing dictionary
 ++++++++++++++++++++++++++++
 These parameters are directly used by the ``aberrantSplicing`` snakemake command. Each group must have at least ``10``
-samples. To use external counts, refer to the ``Using External Counts`` section.
+samples. This module uses FRASER to detect aberrant splicing. We recently developed an improved version of FRASER that uses
+the Intron Jaccard Index instead of percent spliced in and splicing efficiency to call aberrant splicing. To use this improved version,
+set the ``FRASER_version`` parameter to 'FRASER2'.
+To use external counts, refer to the ``Using External Counts`` section. 
 
 ============================  =========  =====================================================================================================================================================================================================================  ======
 Parameter                     Type       Description                                                                                                                                                                                                            Default/Examples
@@ -129,6 +132,7 @@ quantileMinExpression         numeric    The minimum total read count (N) an int
 quantileForFiltering          numeric    Defines at which percentile the ``quantileMinExpression`` filter is applied. A value of 0.95 means that at least 5% of the samples need to have a total read count N >= ``quantileMinExpression`` to pass the filter.  ``0.95``
 minDeltaPsi                   numeric    The minimal variation (in delta psi) required for an intron to pass the filter.                                                                                                                                        ``0.05``
 implementation                character  Either 'PCA' or 'PCA-BB-Decoder'. Methods to remove sample covariation in FRASER.                                                                                                                                      ``PCA``
+FRASER_version                character  Either 'FRASER' or 'FRASER2'.                                                                                                                                                                                          ``FRASER``
 deltaPsiCutoff                numeric    A non-negative number. Delta psi values greater than this cutoff are considered as outliers. Set to 0.1 when using FRASER2.                                                                                            ``0.3 # suggested by FRASER``
 padjCutoff                    numeric    Same as in aberrant expression.                                                                                                                                                                                        ``0.1``
 maxTestedDimensionProportion  numeric    Same as in aberrant expression.                                                                                                                                                                                        ``6``
