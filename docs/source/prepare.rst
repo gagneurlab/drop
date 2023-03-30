@@ -106,7 +106,7 @@ zScoreCutoff                  numeric    A non-negative number. Z scores (in abs
 padjCutoff                    numeric    A number between (0, 1] indicating the maximum FDR an event can have in order to be considered an outlier.                                                               ``0.05``
 maxTestedDimensionProportion  numeric    An integer that controls the maximum value that the encoding dimension can take. Refer to `advanced-options`_.                                                           ``3``
 yieldSize                     numeric    An integer that sets the batch size for counting reads within a bam file. If memory issues persist lower the yieldSize.                                                  ``2000000``
-genesToTest                   character  Full path to a yaml file specifying lists of candidate genes per sample to test during FDR correction. See the documentation for details on the structure of this file.  ``null``
+genesToTest                   character  Full path to a yaml file specifying lists of candidate genes per sample to test during FDR correction. See the documentation for details on the structure of this file.  ``/path/to/genes_to_test.yaml``
 ============================  =========  =======================================================================================================================================================================  ======
 
 Aberrant splicing dictionary
@@ -132,7 +132,7 @@ implementation                character  Either 'PCA' or 'PCA-BB-Decoder'. Metho
 deltaPsiCutoff                numeric    A non-negative number. Delta psi values greater than this cutoff are considered as outliers. Set to 0.1 when using FRASER2.                                                                                            ``0.3 # suggested by FRASER``
 padjCutoff                    numeric    Same as in aberrant expression.                                                                                                                                                                                        ``0.1``
 maxTestedDimensionProportion  numeric    Same as in aberrant expression.                                                                                                                                                                                        ``6``
-genesToTest                   character  Same as in aberrant expression.                                                                                                                                                                                        ``null``
+genesToTest                   character  Same as in aberrant expression.                                                                                                                                                                                        ``/path/to/genes_to_test.yaml``
 ============================  =========  =====================================================================================================================================================================================================================  ======
 
 
