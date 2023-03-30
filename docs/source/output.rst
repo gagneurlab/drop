@@ -39,7 +39,7 @@ tab at the top of the screen. The Overview tab contains links to the:
     * OUTRIDER datasets 
         * Follow the `OUTRIDER vignette <https://www.bioconductor.org/packages/devel/bioc/vignettes/OUTRIDER/inst/doc/OUTRIDER.pdf>`_ for individual OUTRIDER object file (ods) analysis.
     * Results tables
-        * ``results.tsv`` this text file contains only the significant genes and samples that meet the cutoffs defined in the config file for ``padjCutoff`` and ``zScoreCutoff``. The column ``FDR_set`` specifies on which genes FDR correction was performed (if lists of candidate genes were provided.)
+        * ``results.tsv`` this text file contains only the significant genes and samples that meet the cutoffs defined in the config file for ``padjCutoff`` and ``zScoreCutoff``. 
 
 Local result files
 ##################
@@ -66,7 +66,7 @@ tab at the top of the screen. The Overview tab contains links to the:
     * FRASER datasets (fds)
         * Follow the `FRASER vignette <https://www.bioconductor.org/packages/devel/bioc/vignettes/FRASER/inst/doc/FRASER.pdf>`_ for individual FRASER object file (fds) analysis.
     * Results tables
-        * ``results_per_junction.tsv`` this text file contains only significant junctions that meet the cutoffs defined in the config file. The column ``FDR_set`` specifies on which genes FDR correction was performed (if lists of candidate genes were provided.)
+        * ``results_per_junction.tsv`` this text file contains only significant junctions that meet the cutoffs defined in the config file. 
 
 Local result files
 ##################
