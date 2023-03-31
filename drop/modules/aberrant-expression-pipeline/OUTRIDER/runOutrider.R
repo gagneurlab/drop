@@ -8,8 +8,8 @@
 #'   - ods: '`sm cfg.getProcessedResultsDir() + 
 #'           "/aberrant_expression/{annotation}/outrider/{dataset}/ods_unfitted.Rds"`'
 #'  output:
-#'   - ods: '`sm cfg.getProcessedResultsDir() + 
-#'           "/aberrant_expression/{annotation}/outrider/{dataset}/ods.Rds"`'
+#'   - ods_fitted: '`sm cfg.getProcessedResultsDir() + 
+#'           "/aberrant_expression/{annotation}/outrider/{dataset}/ods_fitted.Rds"`'
 #'  type: script
 #'  threads: 30
 #'---
@@ -58,9 +58,19 @@ Nsteps <- min(maxSteps, b)   # Do at most 20 steps or N/3
 # Do unique in case 2 were repeated
 pars_q <- round(exp(seq(log(a),log(b),length.out = Nsteps))) %>% unique
 ods <- findEncodingDim(ods, params = pars_q, implementation = implementation)
+opt_q <- getBestQ(ods)
 
 ## fit OUTRIDER
-ods <- OUTRIDER(ods, implementation = implementation)
+# ods <- OUTRIDER(ods, implementation = implementation)
+message(date(), ": SizeFactor estimation ...")
+ods <- estimateSizeFactors(ods)
+message(date(), ": Controlling for confounders ...")
+implementation <- tolower(implementation)
+ods <- controlForConfounders(ods, q=opt_q, implementation=implementation)
+if(grepl("^(peer|pca)$", implementation)){
+    message(date(), ": Fitting the data ...")
+    ods <- fit(ods)
+}
 message("outrider fitting finished")
 
-saveRDS(ods, snakemake@output$ods)
+saveRDS(ods, snakemake@output$ods_fitted)

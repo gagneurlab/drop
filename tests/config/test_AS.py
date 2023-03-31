@@ -3,18 +3,22 @@ class Test_AS_Config:
     def test_config(self, dropConfig,demo_dir):
         assert dropConfig.AS.getWorkdir() == f"{demo_dir}/Scripts/AberrantSplicing/pipeline"
         dict_ = {
+            'run': True,
             'groups': ['fraser', 'fraser_external'],
             'recount': True,
             'longRead': False,
             'keepNonStandardChrs': False,
             'filter': False,
             'minExpressionInOneSample': 20,
+            'quantileMinExpression': 10,
+            'quantileForFiltering': 0.95,
             'minDeltaPsi': 0.05,
             'implementation': 'PCA',
             'padjCutoff': 1,
-            'zScoreCutoff': 0,
             'deltaPsiCutoff': 0.05,
-            'maxTestedDimensionProportion': 6
+            'maxTestedDimensionProportion': 6,
+            'genesToTest': 'Data/genes_to_test.yaml',
+            'FRASER_version': 'FRASER'
         }
         assert dict_.items() <= dropConfig.AS.dict_.items()
 

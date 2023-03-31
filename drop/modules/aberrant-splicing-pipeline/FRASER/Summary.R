@@ -24,14 +24,13 @@ source(snakemake@params$setup, echo=FALSE)
 
 suppressPackageStartupMessages({
   library(cowplot)
-  library("RColorBrewer")
+  library(RColorBrewer)
 })
 
 #+ input
 dataset    <- snakemake@wildcards$dataset
 annotation <- snakemake@wildcards$annotation
 padj_cutoff <- snakemake@config$aberrantSplicing$padjCutoff
-zScore_cutoff <- snakemake@config$aberrantSplicing$zScoreCutoff
 deltaPsi_cutoff <- snakemake@config$aberrantSplicing$deltaPsiCutoff
 
 
@@ -40,9 +39,9 @@ hasExternal <- length(levels(colData(fds)$isExternal) > 1)
 
 #' Number of samples: `r nrow(colData(fds))`
 #' 
-#' Number of introns (psi5 or psi3): `r length(rowRanges(fds, type = "psi5"))`
+#' Number of introns: `r length(rowRanges(fds, type = "psi5"))`
 #' 
-#' Number of splice sites (theta): `r length(rowRanges(fds, type = "theta"))`
+#' Number of splice sites: `r length(rowRanges(fds, type = "theta"))`
 
 # used for most plots
 dataset_title <- paste0("Dataset: ", dataset, "--", annotation)
@@ -53,13 +52,14 @@ for(type in psiTypes){
   g <- plotEncDimSearch(fds, type=type) 
   if (!is.null(g)) {
     g <- g + theme_cowplot(font_size = 16) + 
-      ggtitle(paste0("Q estimation, ", type))
+      ggtitle(paste0("Q estimation, ", type)) + theme(legend.position = "none")
     print(g)
   }
 }
 
 #' ## Aberrantly spliced genes per sample
-plotAberrantPerSample(fds, padjCutoff = padj_cutoff, zScoreCutoff = zScore_cutoff, deltaPsiCutoff = deltaPsi_cutoff,
+plotAberrantPerSample(fds, type=psiTypes, 
+                      padjCutoff = padj_cutoff, deltaPsiCutoff = deltaPsi_cutoff,
                       aggregate=TRUE, main=dataset_title) + 
   theme_cowplot(font_size = 16) +
   theme(legend.position = "top")
@@ -106,12 +106,13 @@ cat(paste0("<a href='./", basename(file), "'>Download FRASER results table</a>")
 # round numbers
 if(nrow(res) > 0){
   res[, pValue := signif(pValue, 3)]
-  res[, padjust := signif(padjust, 3)]
   res[, deltaPsi := signif(deltaPsi, 2)]
-  res[, zscore := signif(zScore, 2)]
   res[, psiValue := signif(psiValue, 2)]
   res[, pValueGene := signif(pValueGene, 2)]
-  res[, padjustGene := signif(padjustGene, 2)]
+  padjGene_cols <- grep("padjustGene", colnames(res), value=TRUE)
+  for(padj_col in padjGene_cols){
+      res[, c(padj_col) := signif(get(padj_col), 2)]
+  }
 }
 
 DT::datatable(

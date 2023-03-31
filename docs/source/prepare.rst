@@ -92,44 +92,52 @@ Aberrant expression dictionary
 These parameters are directly used by the ``aberrantExpression`` snakemake command. Aberrant expression groups must have at least ``10``
 samples per group. To use external counts please see the ``Using External Counts`` section.
 
-============================  =========  =================================================================================================================================  ======
-Parameter                     Type       Description                                                                                                                        Default/Examples
-============================  =========  =================================================================================================================================  ======
-run                           boolean    If true, the module will be run. If false, it will be ignored.                                                                     ``true``
-groups                        list       DROP groups that should be executed in this module. If not specified or ``null`` all groups are used.                              ``- group1``
+============================  =========  =======================================================================================================================================================================  ======
+Parameter                     Type       Description                                                                                                                                                              Default/Examples
+============================  =========  =======================================================================================================================================================================  ======
+run                           boolean    If true, the module will be run. If false, it will be ignored.                                                                                                           ``true``
+groups                        list       DROP groups that should be executed in this module. If not specified or ``null`` all groups are used.                                                                    ``- group1``
 
-                                                                                                                                                                            ``- group2``
-minIds                        numeric    A positive number indicating the minimum number of samples that a group needs in order to be analyzed. We recommend at least 50.   ``1``
-fpkmCutoff                    numeric    A positive number indicating the minimum FPKM per gene that 5% of the samples should have. If a gene has less it is filtered out.  ``1 # suggested by OUTRIDER``
-implementation                character  Either 'autoencoder', 'pca' or 'peer'. Methods to remove sample covariation in OUTRIDER.                                           ``autoencoder``
-zScoreCutoff                  numeric    A non-negative number. Z scores (in absolute value) greater than this cutoff are considered as outliers.                           ``0``
-padjCutoff                    numeric    A number between (0, 1] indicating the maximum FDR an event can have in order to be considered an outlier.                         ``0.05``
-maxTestedDimensionProportion  numeric    An integer that controls the maximum value that the encoding dimension can take. Refer to `advanced-options`_.                     ``3``
-yieldSize                     numeric    An integer that sets the batch size for counting reads within a bam file. If memory issues persist lower the yieldSize.            ``2000000``
-============================  =========  =================================================================================================================================  ======
+                                                                                                                                                                                                                  ``- group2``
+minIds                        numeric    A positive number indicating the minimum number of samples that a group needs in order to be analyzed. We recommend at least 50.                                         ``1``
+fpkmCutoff                    numeric    A positive number indicating the minimum FPKM per gene that 5% of the samples should have. If a gene has less it is filtered out.                                        ``1 # suggested by OUTRIDER``
+implementation                character  Either 'autoencoder', 'pca' or 'peer'. Methods to remove sample covariation in OUTRIDER.                                                                                 ``autoencoder``
+zScoreCutoff                  numeric    A non-negative number. Z scores (in absolute value) greater than this cutoff are considered as outliers.                                                                 ``0``
+padjCutoff                    numeric    A number between (0, 1] indicating the maximum FDR an event can have in order to be considered an outlier.                                                               ``0.05``
+maxTestedDimensionProportion  numeric    An integer that controls the maximum value that the encoding dimension can take. Refer to `advanced-options`_.                                                           ``3``
+yieldSize                     numeric    An integer that sets the batch size for counting reads within a bam file. If memory issues persist lower the yieldSize.                                                  ``2000000``
+genesToTest                   character  Full path to a yaml file specifying lists of candidate genes per sample to test during FDR correction. See the documentation for details on the structure of this file.  ``/path/to/genes_to_test.yaml``
+============================  =========  =======================================================================================================================================================================  ======
 
 Aberrant splicing dictionary
 ++++++++++++++++++++++++++++
-These parameters are directly used by the ``aberrantSplicing`` snakemake command. Aberrant splicing groups must have at least ``10``
-samples per group. To use external counts please see the ``Using External Counts`` section.
+These parameters are directly used by the ``aberrantSplicing`` snakemake command. Each group must have at least ``10``
+samples. This module uses FRASER to detect aberrant splicing. We recently developed an improved version of FRASER that uses
+the Intron Jaccard Index instead of percent spliced in and splicing efficiency to call aberrant splicing. To use this improved version,
+set the ``FRASER_version`` parameter to 'FRASER2'.
+To use external counts, refer to the ``Using External Counts`` section. 
 
-============================  =========  ============================================================================================  ======
-Parameter                     Type       Description                                                                                   Default/Examples
-============================  =========  ============================================================================================  ======
-run                           boolean    If true, the module will be run. If false, it will be ignored.                                ``true``
-groups                        list       Same as in aberrant expression.                                                               ``# see aberrant expression example``
-minIds                        numeric    Same as in aberrant expression.                                                               ``1``
-recount                       boolean    If true, it forces samples to be recounted.                                                   ``false``
-longRead                      boolean    Set to true only if counting Nanopore or PacBio long reads.                                   ``false``
-keepNonStandardChrs           boolean    Set to true if non standard chromosomes are to be kept for further analysis.                  ``false``
-filter                        boolean    If false, no filter is applied. We recommend filtering.                                       ``true``
-minExpressionInOneSample      numeric    The minimal read count in at least one sample required for an intron to pass the filter.      ``20``
-minDeltaPsi                   numeric    The minimal variation (in delta psi) required for an intron to pass the filter.               ``0.05``
-implementation                character  Either 'PCA' or 'PCA-BB-Decoder'. Methods to remove sample covariation in FRASER.             ``PCA``
-deltaPsiCutoff                numeric    A non-negative number. Delta psi values greater than this cutoff are considered as outliers.  ``0.3 # suggested by FRASER``
-padjCutoff                    numeric    Same as in aberrant expression.                                                               ``0.1``
-maxTestedDimensionProportion  numeric    Same as in aberrant expression.                                                               ``6``
-============================  =========  ============================================================================================  ======
+============================  =========  =====================================================================================================================================================================================================================  ======
+Parameter                     Type       Description                                                                                                                                                                                                            Default/Examples
+============================  =========  =====================================================================================================================================================================================================================  ======
+run                           boolean    If true, the module will be run. If false, it will be ignored.                                                                                                                                                         ``true``
+groups                        list       Same as in aberrant expression.                                                                                                                                                                                        ``# see aberrant expression example``
+minIds                        numeric    Same as in aberrant expression.                                                                                                                                                                                        ``1``
+recount                       boolean    If true, it forces samples to be recounted.                                                                                                                                                                            ``false``
+longRead                      boolean    Set to true only if counting Nanopore or PacBio long reads.                                                                                                                                                            ``false``
+keepNonStandardChrs           boolean    Set to true if non standard chromosomes are to be kept for further analysis.                                                                                                                                           ``false``
+filter                        boolean    If false, no filter is applied. We recommend filtering.                                                                                                                                                                ``true``
+minExpressionInOneSample      numeric    The minimal read count in at least one sample required for an intron to pass the filter.                                                                                                                               ``20``
+quantileMinExpression         numeric    The minimum total read count (N) an intron needs to have at the specified quantile across samples to pass the filter. See ``quantileForFiltering``.                                                                    ``10``
+quantileForFiltering          numeric    Defines at which percentile the ``quantileMinExpression`` filter is applied. A value of 0.95 means that at least 5% of the samples need to have a total read count N >= ``quantileMinExpression`` to pass the filter.  ``0.95``
+minDeltaPsi                   numeric    The minimal variation (in delta psi) required for an intron to pass the filter.                                                                                                                                        ``0.05``
+implementation                character  Either 'PCA' or 'PCA-BB-Decoder'. Methods to remove sample covariation in FRASER.                                                                                                                                      ``PCA``
+FRASER_version                character  Either 'FRASER' or 'FRASER2'.                                                                                                                                                                                          ``FRASER``
+deltaPsiCutoff                numeric    A non-negative number. Delta psi values greater than this cutoff are considered as outliers. Set to 0.1 when using FRASER2.                                                                                            ``0.3 # suggested by FRASER``
+padjCutoff                    numeric    Same as in aberrant expression.                                                                                                                                                                                        ``0.1``
+maxTestedDimensionProportion  numeric    Same as in aberrant expression.                                                                                                                                                                                        ``6``
+genesToTest                   character  Same as in aberrant expression.                                                                                                                                                                                        ``/path/to/genes_to_test.yaml``
+============================  =========  =====================================================================================================================================================================================================================  ======
 
 
 Mono-allelic expression (MAE) dictionary
@@ -274,7 +282,7 @@ Publicly available DROP external counts
 You can find different sets of publicly available external counts to add to your
 analysis on our `github page <https://github.com/gagneurlab/drop/#datasets>`_
 
-If you want to contribute with your own count matrices, please contact us: yepez at in.tum.de (yepez@in.tum.de)
+If you want to contribute with your own count matrices, please contact us: yepez at in.tum.de.
 
 External count examples
 +++++++++++++++++++++++
@@ -299,6 +307,60 @@ EXT-1R          BLOOD_AE                              /path/to/externalCounts.ts
 EXT-2R          BLOOD_AE,BLOOD_AS                     /path/to/externalCounts.tsv.gz  gencode34       /path/to/externalCountDir 
 EXT-3R          BLOOD_AS                                                                              /path/to/externalCountDir 
 ======  ======  =================  =================  ==============================  =============== =========================
+
+
+Limiting FDR correction to subsets of genes of interest
+------------------------------------
+In addition to returning transcriptome-wide results, DROP provides the option to 
+limit the FDR correction to user-provided genes of interest in the 
+``aberrantExpression`` and ``aberrantSplicing`` modules. These could e.g. be all 
+OMIM genes. It is also possible to provide sample-specific genes such as all 
+genes with a rare splice region variant for each sample. 
+To use this feature, a YAML file containing the set(s) of genes to test 
+(per sample or for all samples) needs to be specified in the ``genesToTest`` parameter 
+of the ``aberrantExpression`` and ``aberrantSplicing`` modules in the config file. 
+If no file is provided, only transcriptome-wide results will be reported.
+Otherwise, the results tables of the ``aberrantExpression`` and ``aberrantSplicing`` modules 
+will additionally report aberrant events passing the cutoffs based on calculating 
+the FDR with respect to the genes in the provided lists.
+
+Creating the YAML file specifying subsets of genes to test
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+The file containing the list of genes (HGNC symbols) to be tested must be a YAML file, 
+where the variable names specify the name of each set of tested genes. In the output 
+of DROP, this name will be used to identify the set in the results table. Each set 
+can either be a list of genes, in which case the set will be tested for all samples. Alternatively 
+(and additionally), sample-specific sets can be created by giving the RNA_ID of the sample
+for which the set should be used as the name (see example below).
+This YAML file can be created in R using ``yaml::write_yaml(subsetList, filepath)``, 
+where ``subsetList`` is a named list of named lists containing the sets of genes to test.
+In the following example, the name of the global set of genes is ``Genes_to_test_on_all_samples``
+and the name of the sample-specific set is ``Genes_with_rare_splice_variants``:
+
+Example content of ``/path/to/genes_to_test.yaml``:
+
+.. code-block:: bash
+
+    Genes_to_test_on_all_samples:
+      - BTG3
+      - GATD3B
+      - PKNOX1
+      - APP
+      - RRP1
+      - WRB-SH3BGR
+      - SLC19A1
+    Genes_with_rare_splice_variants:
+      sample1:
+      - ABCG1
+      - MCOLN1
+      - SLC45A1
+      sample2:
+      - CLIC6
+      - ATP5PO
+      - WRB
+      - ETS2
+      - HLCS
+
 
 
 .. _files-to-download:

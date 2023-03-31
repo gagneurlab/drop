@@ -2,7 +2,7 @@
 set -e
 
 # get data
-resource_url="https://github.com/nickhsmith/drop_demo_data/archive/refs/heads/main.zip"
+resource_url="https://github.com/gagneurlab/drop_demo_data/archive/refs/heads/main.zip"
 tmpdir="$(dirname "$(mktemp)")"
 wget -nc -P $tmpdir $resource_url
 

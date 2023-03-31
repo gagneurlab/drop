@@ -41,8 +41,10 @@ res[, foldChange := round(2^l2fc, 2)]
 saveRDS(res, snakemake@output$results_all)
 
 # Subset to significant results
-res <- res[padjust <= snakemake@params$padjCutoff &
-               abs(zScore) > snakemake@params$zScoreCutoff]
+padj_cols <- grep("padjust", colnames(res), value=TRUE)
+res <- res[do.call(pmin, c(res[,padj_cols, with=FALSE], list(na.rm = TRUE))) 
+                <= snakemake@params$padjCutoff &
+            abs(zScore) >= snakemake@params$zScoreCutoff]
 
 gene_annot_dt <- fread(snakemake@input$gene_name_mapping)
 if(!is.null(gene_annot_dt$gene_name)){

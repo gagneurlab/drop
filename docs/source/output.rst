@@ -39,7 +39,7 @@ tab at the top of the screen. The Overview tab contains links to the:
     * OUTRIDER datasets 
         * Follow the `OUTRIDER vignette <https://www.bioconductor.org/packages/devel/bioc/vignettes/OUTRIDER/inst/doc/OUTRIDER.pdf>`_ for individual OUTRIDER object file (ods) analysis.
     * Results tables
-        * ``results.tsv`` this text file contains only the significant genes and samples that meet the cutoffs defined in the config file for ``padjCutoff`` and ``zScoreCutoff``
+        * ``results.tsv`` this text file contains only the significant genes and samples that meet the cutoffs defined in the config file for ``padjCutoff`` and ``zScoreCutoff``. 
 
 Local result files
 ##################

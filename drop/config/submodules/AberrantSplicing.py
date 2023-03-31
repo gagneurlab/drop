@@ -13,7 +13,8 @@ class AS(Submodule):
         super().__init__(config, sampleAnnotation, processedDataDir, processedResultsDir, workDir)
         self.CONFIG_KEYS = [
             "groups", "recount", "longRead", "filter", "minExpressionInOneSample", "minDeltaPsi",
-            "implementation", "padjCutoff", "zScoreCutoff", "deltaPsiCutoff", "maxTestedDimensionProportion"
+            "quantileMinExpression", "quantileForFiltering", "implementation", "padjCutoff", 
+            "deltaPsiCutoff", "maxTestedDimensionProportion", "genesToTest", "FRASER_version"
         ]
         self.name = "AberrantSplicing"
         # if self.run is false return without doing any config/sa checks for completeness
@@ -40,12 +41,15 @@ class AS(Submodule):
         setKey(dict_, None, "keepNonStandardChrs", False)
         setKey(dict_, None, "filter", True)
         setKey(dict_, None, "minExpressionInOneSample", 20)
+        setKey(dict_, None, "quantileMinExpression", 10)
+        setKey(dict_, None, "quantileForFiltering", 0.95)
         setKey(dict_, None, "minDeltaPsi", 0)
         setKey(dict_, None, "implementation", "PCA")
         setKey(dict_, None, "padjCutoff", 0.05)
-        setKey(dict_, None, "zScoreCutoff", 0.05)
         setKey(dict_, None, "deltaPsiCutoff", 0.05)
         setKey(dict_, None, "maxTestedDimensionProportion", 6)
+        setKey(dict_, None, "genesToTest", None)
+        setKey(dict_, None, "FRASER_version", "FRASER")
         return dict_
 
     def getSplitCountFiles(self, dataset):
@@ -93,4 +97,15 @@ class AS(Submodule):
             extCountFiles = np.asarray(extCountFiles)[pd.isna(extCountFiles) == False].tolist()
             extCountFiles = [x + "/" + fileType + ".tsv.gz" for x in extCountFiles]
         return extCountFiles
-    
+
+    def getPsiTypeAssay(self):    
+        """
+        Dependent on the FRASER version, get the psiType of the h5 assays that 
+        will be produced by the aberrant-splicing pipeline.
+        :return: psiType
+        """
+        
+        fraser_version = self.get("FRASER_version")
+        if(fraser_version == "FRASER2"):
+            return "jaccard"
+        return "theta"

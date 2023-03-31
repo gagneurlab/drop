@@ -80,7 +80,11 @@ res <- fread(snakemake@input$resultTables[[1]])
 
 #' Display the results table of the first dataset
 #+ echo=FALSE
-DT::datatable(res, filter = 'top')
+if(nrow(res) > 0){
+DT::datatable(head(res, 100), caption = 'OUTRIDER results (up to 100 rows shown)',
+                options=list(scrollX=TRUE), filter = 'top')
+  
+} else print("no significant results")
 
 #' Choose a random gene and sample to plot. Outliers are in red.
 #+ echo=TRUE
