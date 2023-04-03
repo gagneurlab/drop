@@ -76,15 +76,9 @@ Please cite as instructed for each dataset.
 
 * 154 non strand-specific fibroblasts, build hg19, Technical University of Munich: [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.4646822.svg)](https://doi.org/10.5281/zenodo.4646822)
 
-<<<<<<< HEAD
 * 135 strand-specific fibroblasts, build hg19, high seq depth (116 million mapped reads), Technical University of Munich: [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.7510836.svg)](https://zenodo.org/record/7510836)
 
 * 127 strand-specific fibroblasts, build hg19, low seq depth (70 million mapped reads), Technical University of Munich: [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.7510845.svg)](https://zenodo.org/record/7510845)
-=======
-* 135 strand-specific fibroblasts, build hg19, high seq depth (116 million mapped reads), Technical University of Munich: [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.7436486.svg)](https://zenodo.org/record/7436486)
-
-* 127 strand-specific fibroblasts, build hg19, low seq depth (70 million mapped reads), Technical University of Munich: [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.7436579.svg)](https://zenodo.org/record/7436579)
->>>>>>> master
 
 * 49 tissues, each containing hundreds of samples, non strand-specific, build hg19, GTEx: [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.5596755.svg)](https://doi.org/10.5281/zenodo.5596755)
 
