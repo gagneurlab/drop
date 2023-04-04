@@ -67,8 +67,8 @@ if(has_external){
     localCountIDs <- colData(fdsMerge)[!as.logical(colData(fdsMerge)[,"isExternal"]),"sampleID"]
 
     cts <- K(fdsMerge,"psi5")
-    ctsLocal<- cts[,localCountIDs]
-    ctsExt<- cts[,externalCountIDs]
+    ctsLocal<- cts[,localCountIDs,drop=FALSE]
+    ctsExt<- cts[,externalCountIDs,drop=FALSE]
 
     rowMeanLocal <- rowMeans(ctsLocal)
     rowMeanExt <- rowMeans(ctsExt)
