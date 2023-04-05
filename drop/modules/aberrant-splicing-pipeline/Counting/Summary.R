@@ -101,7 +101,7 @@ devNull <- saveFraserDataSet(fdsMerge,dir=workingDir, name=paste0("raw-", datase
 #' ## Expression filtering
 #' The expression filtering step removes introns that are lowly expressed. The requirements for an intron to pass this filter are:
 #' 
-#' * at least 1 sample needs to have a count (K) of `r snakemake@config$aberrantSplicing$minExpressionInOneSample` or more reads for the intron
+#' * at least 1 sample has `r snakemake@config$aberrantSplicing$minExpressionInOneSample` counts (K) for the intron
 #' * at least `r 100*(1-snakemake@config$aberrantSplicing$quantileForFiltering)`% of the samples need to have a total of at least `r snakemake@config$aberrantSplicing$quantileMinExpression` reads for the splice metric denominator (N) of the intron
 plotFilterExpression(fdsMerge) + 
     labs(title="", x="Mean Intron Expression", y="Introns") +
