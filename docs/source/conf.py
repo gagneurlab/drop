@@ -23,7 +23,7 @@ copyright = '2020, Michaela Müller'
 author = 'Michaela Müller'
 
 # The full version, including alpha/beta/rc tags
-release_ = '1.3.1'
+release_ = '1.3.2'
 
 
 

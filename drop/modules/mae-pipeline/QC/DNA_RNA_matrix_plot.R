@@ -95,9 +95,14 @@ ann_colors = list(
 ann_colors[['status']] <- ann_colors[['status']][unique(c(dna_df$status, rna_df$status))] 
 
 #+ Heatmap, fig.height=6, fig.width=8
-pheatmap(qc_mat, color = color, cluster_rows = FALSE, cluster_cols = FALSE, 
-         annotation_row = dna_df, annotation_col = rna_df, annotation_colors = ann_colors,
-         labels_row = 'DNA samples', labels_col = 'RNA samples', angle_col = 0)
+if(nrow(qc_mat) > 1 || ncol(qc_mat) > 1){
+    pheatmap(qc_mat, color = color, cluster_rows = FALSE, cluster_cols = FALSE, 
+        annotation_row = dna_df, annotation_col = rna_df, annotation_colors = ann_colors,
+        labels_row = 'DNA samples', labels_col = 'RNA samples', angle_col = 0)
+} else {
+    print("No heatmap created as only 1 sample is provided.")
+    print(qc_mat)
+}
 
 
 #' ## Identify matching samples

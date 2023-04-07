@@ -34,7 +34,7 @@ suppressPackageStartupMessages({
 ods <- readRDS(snakemake@input$ods)
 
 has_external <- any(as.logical(colData(ods)$isExternal))
-cnts_mtx_local <- counts(ods, normalized = F)[,!as.logical(ods@colData$isExternal)]
+cnts_mtx_local <- counts(ods, normalized = F)[,!as.logical(ods@colData$isExternal),drop=FALSE]
 cnts_mtx <- counts(ods, normalized = F)
 
 #' ## Number of samples:  

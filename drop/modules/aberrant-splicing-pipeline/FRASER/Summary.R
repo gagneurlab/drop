@@ -39,9 +39,9 @@ hasExternal <- length(levels(colData(fds)$isExternal) > 1)
 
 #' Number of samples: `r nrow(colData(fds))`
 #' 
-#' Number of introns: `r length(rowRanges(fds, type = "psi5"))`
+#' Number of introns: `r length(rowRanges(fds, type = "j"))`
 #' 
-#' Number of splice sites: `r length(rowRanges(fds, type = "theta"))`
+#' Number of splice sites: `r length(rowRanges(fds, type = "ss"))`
 
 # used for most plots
 dataset_title <- paste0("Dataset: ", dataset, "--", annotation)
@@ -70,7 +70,7 @@ topJ <- 10000
 anno_color_scheme <- brewer.pal(n = 3, name = 'Dark2')[1:2]
 
 for(type in psiTypes){
-  for(normalized in c(T,F)){
+  for(normalized in c(F,T)){
     hm <- plotCountCorHeatmap(
       object=fds,
       type = type,

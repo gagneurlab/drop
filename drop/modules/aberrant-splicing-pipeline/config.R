@@ -27,7 +27,7 @@ extract_params <- function(params) {
     unlist(params)[1]
 }
 
-options("FRASER.maxSamplesNoHDF5"=1)
+options("FRASER.maxSamplesNoHDF5"=0)
 options("FRASER.maxJunctionsNoHDF5"=-1)
 
 h5disableFileLocking()

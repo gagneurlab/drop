@@ -52,6 +52,7 @@ Subworkflow                Description
 ``aberrantExpression``     Aberrant expression pipeline
 ``aberrantSplicing``       Aberrant splicing pipeline
 ``mae``                    Monoallelic expression pipeline
+``sampleQC``               DNA-RNA matching (already part of mae, but can be executed independently as well)
 ``rnaVariantCalling``      RNA Variant Calling pipeline
 ========================  =======================================================================
 
