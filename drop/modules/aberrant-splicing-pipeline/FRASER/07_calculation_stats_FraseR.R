@@ -40,13 +40,11 @@ fraser_sample_ids <- snakemake@params$ids
 subsets <- parse_subsets_for_FDR(snakemake@params$genes_to_test,
                                  sampleIDs=fraser_sample_ids)
 
-# Load Zscores data
+# Load FRASER data
 fds <- loadFraserDataSet(dir=workingDir, name=paste(dataset, annotation, sep = '--'))
 
 # Calculate stats
 for (type in psiTypes) {
-    # Zscores
-    fds <- calculateZscore(fds, type=type)
     # Pvalues
     fds <- calculatePvalues(fds, type=type)
     # Adjust Pvalues
