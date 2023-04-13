@@ -12,8 +12,8 @@
 #'   - counting_done: '`sm cfg.getProcessedDataDir() + 
 #'                "/aberrant_splicing/datasets/savedObjects/raw-local-{dataset}/counting.done" `'
 #'  output:
-#'  - theta:     '`sm cfg.getProcessedDataDir() +
-#'                    "/aberrant_splicing/datasets/savedObjects/raw-local-{dataset}/theta.h5"`'
+#'  - splice_metrics: '`sm expand(cfg.getProcessedDataDir() +
+#'                    "/aberrant_splicing/datasets/savedObjects/raw-local-{dataset}/{type}.h5", type=cfg.AS.getPsiTypeAssay(), allow_missing=True)`'
 #'  type: script
 #'--- 
 

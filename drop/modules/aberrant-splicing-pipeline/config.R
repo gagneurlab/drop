@@ -35,9 +35,11 @@ h5disableFileLocking()
 # set psiTypes to run based on preference in config.yaml
 cfg <- yaml::read_yaml("config.yaml")
 if(cfg$aberrantSplicing$FRASER_version == "FRASER2"){
-    psiTypes <- c("jaccard")
     pseudocount(0.1)
+    psiTypes <- c("jaccard")
+    psiTypesNotUsed <- c("psi5", "psi3", "theta")
 } else{
-    psiTypes <- c("psi5", "psi3", "theta")
     pseudocount(1)
+    psiTypes <- c("psi5", "psi3", "theta")
+    psiTypesNotUsed <- c("jaccard")
 }

@@ -9,8 +9,8 @@
 #'   - workingDir: '`sm cfg.getProcessedDataDir() + "/aberrant_splicing/datasets/"`'
 #'  threads: 20
 #'  input:
-#'   - hyper: '`sm cfg.getProcessedDataDir() + 
-#'                "/aberrant_splicing/datasets/savedObjects/{dataset}/hyper.done" `'
+#'   - hyper: '`sm expand(cfg.getProcessedDataDir() + 
+#'                "/aberrant_splicing/datasets/savedObjects/{dataset}/hyper_{version}.done", version=cfg.AS.get("FRASER_version"), allow_missing=True)`'
 #'  output:
 #'   - fdsout: '`sm expand(cfg.getProcessedDataDir() + 
 #'                  "/aberrant_splicing/datasets/savedObjects/{dataset}/predictedMeans_{type}.h5", type=cfg.AS.getPsiTypeAssay(), allow_missing=True)`'
@@ -41,3 +41,11 @@ for(type in psiTypes){
     fds <- saveFraserDataSet(fds)
 }
 
+# remove .h5 files from previous runs with other FRASER version
+fdsDir <- dirname(snakemake@output$fdsout[1])
+for(type in psiTypesNotUsed){
+    predMeansFile <- file.path(fdsDir, paste0("predictedMeans_", type, ".h5"))
+    if(file.exists(predMeansFile)){
+        unlink(predMeansFile)
+    }
+}
