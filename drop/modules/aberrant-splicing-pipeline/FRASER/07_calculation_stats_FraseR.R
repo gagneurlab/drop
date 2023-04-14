@@ -40,13 +40,11 @@ fraser_sample_ids <- snakemake@params$ids
 subsets <- parse_subsets_for_FDR(snakemake@params$genes_to_test,
                                  sampleIDs=fraser_sample_ids)
 
-# Load Zscores data
+# Load FRASER data
 fds <- loadFraserDataSet(dir=workingDir, name=paste(dataset, annotation, sep = '--'))
 
 # Calculate stats
 for (type in psiTypes) {
-    # Zscores
-    fds <- calculateZscore(fds, type=type)
     # Pvalues
     fds <- calculatePvalues(fds, type=type)
     # Adjust Pvalues
@@ -55,3 +53,14 @@ for (type in psiTypes) {
 
 fds <- saveFraserDataSet(fds)
 
+# remove .h5 files from previous runs with other FRASER version
+fdsDir <- dirname(snakemake@output$fdsout[1])
+pvalFiles <- grep("p(.*)BetaBinomial_(.*).h5", 
+                  list.files(fdsDir), 
+                  value=TRUE)
+for(type in psiTypesNotUsed){
+    pvalFilesType <- grep(type, pvalFiles, value=TRUE)
+    for(pFile in pvalFilesType){
+        unlink(file.path(fdsDir, pFile))
+    }
+}

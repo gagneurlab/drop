@@ -9,11 +9,11 @@
 #'   - workingDir: '`sm cfg.getProcessedDataDir() + "/aberrant_splicing/datasets/"`'
 #'  threads: 12
 #'  input:
-#'   - filter: '`sm cfg.getProcessedDataDir() + 
-#'                "/aberrant_splicing/datasets/savedObjects/{dataset}/filter.done" `'
+#'   - filter: '`sm expand(cfg.getProcessedDataDir() + 
+#'                "/aberrant_splicing/datasets/savedObjects/{dataset}/filter_{version}.done", version=cfg.AS.get("FRASER_version"), allow_missing=True)`'
 #'  output:
-#'   - hyper: '`sm cfg.getProcessedDataDir() + 
-#'                "/aberrant_splicing/datasets/savedObjects/{dataset}/hyper.done" `'
+#'   - hyper: '`sm expand(cfg.getProcessedDataDir() + 
+#'                "/aberrant_splicing/datasets/savedObjects/{dataset}/hyper_{version}.done", version=cfg.AS.get("FRASER_version"), allow_missing=True)`'
 #'  type: script
 #'---
 
@@ -66,4 +66,9 @@ for(type in psiTypes){
     fds <- saveFraserDataSet(fds)
 }
 fds <- saveFraserDataSet(fds)
+
+# remove previous hyper.done files and create new one
+outdir <- dirname(snakemake@output$hyper)
+prevFilterFiles <- grep("hyper(.*)done", list.files(outdir), value=TRUE)
+unlink(file.path(outdir, prevFilterFiles))
 file.create(snakemake@output$hyper)

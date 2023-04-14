@@ -9,14 +9,14 @@
 #'   - workingDir: '`sm cfg.getProcessedDataDir() + "/aberrant_splicing/datasets/"`'
 #'   - exCountIDs: '`sm lambda w: sa.getIDsByGroup(w.dataset, assay="SPLICE_COUNT")`'
 #'  input:
-#'   - theta:  '`sm cfg.getProcessedDataDir() +
-#'                  "/aberrant_splicing/datasets/savedObjects/raw-local-{dataset}/theta.h5"`'
+#'   - splice_metrics: '`sm expand(cfg.getProcessedDataDir() +
+#'                  "/aberrant_splicing/datasets/savedObjects/raw-local-{dataset}/{type}.h5", type=cfg.AS.getPsiTypeAssay(), allow_missing=True)`'
 #'   - exCounts: '`sm lambda w: cfg.AS.getExternalCounts(w.dataset, "k_j_counts")`'
 #'  output:
 #'   - fds: '`sm cfg.getProcessedDataDir() +
 #'                  "/aberrant_splicing/datasets/savedObjects/{dataset}/fds-object.RDS"`'
-#'   - done: '`sm cfg.getProcessedDataDir() +
-#'                  "/aberrant_splicing/datasets/savedObjects/{dataset}/filter.done" `'
+#'   - done: '`sm expand(cfg.getProcessedDataDir() +
+#'                  "/aberrant_splicing/datasets/savedObjects/{dataset}/filter_{version}.done", version=cfg.AS.get("FRASER_version"), allow_missing=True)`'
 #'  threads: 3
 #'  type: script
 #'---
@@ -97,4 +97,9 @@ if (params$filter == TRUE) {
 seqlevels(fds) <- seqlevelsInUse(fds)
 colData(fds)$sampleID <- as.character(colData(fds)$sampleID)
 fds <- saveFraserDataSet(fds,dir = workingDir)
+
+# remove previous filter.done files and create new one
+outdir <- dirname(snakemake@output$done)
+prevFilterFiles <- grep("filter(.*)done", list.files(outdir), value=TRUE)
+unlink(file.path(outdir, prevFilterFiles))
 file.create(snakemake@output$done)

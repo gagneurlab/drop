@@ -8,8 +8,8 @@
 #'   - setup: '`sm cfg.AS.getWorkdir() + "/config.R"`'
 #'   - workingDir: '`sm cfg.getProcessedDataDir() + "/aberrant_splicing/datasets/"`'
 #'  input:
-#'   - filter: '`sm cfg.getProcessedDataDir() + 
-#'                "/aberrant_splicing/datasets/savedObjects/{dataset}/filter.done" `'
+#'   - filter: '`sm expand(cfg.getProcessedDataDir() +
+#'                  "/aberrant_splicing/datasets/savedObjects/{dataset}/filter_{version}.done", version=cfg.AS.get("FRASER_version"), allow_missing=True)`'
 #'  output:
 #'   - wBhtml: '`sm config["htmlOutputPath"] + 
 #'                  "/AberrantSplicing/{dataset}_countSummary.html"`'

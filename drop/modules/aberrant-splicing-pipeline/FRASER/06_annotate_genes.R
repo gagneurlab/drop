@@ -60,3 +60,11 @@ fds_input <- annotateIntronReferenceOverlap(fds_input, txdb)
 # save fds
 fds <- saveFraserDataSet(fds_input, dir=outputDir, name = paste(dataset, annotation, sep = '--'), rewrite = TRUE)
 
+# remove .h5 files from previous runs with other FRASER version
+fdsDir <- dirname(snakemake@output$fdsout[1])
+for(type in psiTypesNotUsed){
+    predMeansFile <- file.path(fdsDir, paste0("predictedMeans_", type, ".h5"))
+    if(file.exists(predMeansFile)){
+        unlink(predMeansFile)
+    }
+}

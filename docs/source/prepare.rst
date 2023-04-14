@@ -114,7 +114,8 @@ Aberrant splicing dictionary
 These parameters are directly used by the ``aberrantSplicing`` snakemake command. Each group must have at least ``10``
 samples. This module uses FRASER to detect aberrant splicing. We recently developed an improved version of FRASER that uses
 the Intron Jaccard Index instead of percent spliced in and splicing efficiency to call aberrant splicing. To use this improved version,
-set the ``FRASER_version`` parameter to 'FRASER2'.
+set the ``FRASER_version`` parameter to 'FRASER2'. When switching between FRASER versions, we recommend running DROP in a
+separate folder for each version.
 To use external counts, refer to the ``Using External Counts`` section. 
 
 ============================  =========  =====================================================================================================================================================================================================================  ======
