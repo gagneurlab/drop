@@ -54,6 +54,10 @@ splitCountRanges <- rowRanges(splitCounts)
 # Annotate granges from the split counts
 splitCountRanges <- FRASER:::annotateSpliceSite(splitCountRanges)
 saveRDS(splitCountRanges, snakemake@output$gRangesSplitCounts)
+# additionally save as tsv.gz (for easier AbSplice input)
+fwrite(as.data.table(splitCountRanges), 
+        gsub(".Rds", ".tsv.gz", snakemake@output$gRangesSplitCounts,
+            ignore.case=TRUE))
 
 # Create ranges for non split counts
 # Subset by minExpression
