@@ -39,6 +39,8 @@ sa[, ANNOTATED_MATCH := TRUE]
 qc_mat <- readRDS(snakemake@input$mat_qc)
 melt_mat <- as.data.table(reshape2::melt(qc_mat))
 colnames(melt_mat)[1:2] <- c('DNA_ID', 'RNA_ID')
+melt_mat[, RNA_ID := as.character(RNA_ID)]
+melt_mat[, DNA_ID := as.character(DNA_ID)]
 
 ggplot(melt_mat, aes(value)) + geom_histogram(fill = 'cadetblue4', binwidth = 0.05, center = .025) + 
   theme_bw(base_size = 14) + 
