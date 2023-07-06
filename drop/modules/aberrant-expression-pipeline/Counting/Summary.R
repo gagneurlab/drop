@@ -48,13 +48,14 @@ cnts_mtx <- counts(ods, normalized = F)
 #' Consider removing samples with too low or too high size factors.
 #'  
 bam_coverage <- fread(snakemake@input$bam_cov)
-bam_coverage[, sampleID := as.character(sampleID)]
+bam_coverage[, RNA_ID := as.character(sampleID)]
+bam_coverage[, sampleID := NULL]
 setnames(bam_coverage, 'record_count', 'total_count')
-coverage_dt <- merge(bam_coverage,
-                     data.table(sampleID = colnames(ods),
+coverage_dt <- merge(data.table(RNA_ID = colnames(ods),
                                 read_count = colSums(cnts_mtx),
                                 isExternal = ods@colData$isExternal),
-                     by = "sampleID", sort = FALSE)
+                     bam_coverage,
+                     by = "RNA_ID", sort = FALSE)
 # read counts
 coverage_dt[, count_rank := rank(read_count)]
 
@@ -94,7 +95,7 @@ p_sf
 
 setnames(coverage_dt, old = c('total_count', 'read_count', 'size_factors'),
          new = c('Reads Mapped', 'Reads Counted', 'Size Factors'))
-DT::datatable(coverage_dt[, .(sampleID, `Reads Mapped`, `Reads Counted`, `Size Factors`)][order(`Reads Mapped`)],
+DT::datatable(coverage_dt[, .(RNA_ID, `Reads Mapped`, `Reads Counted`, `Size Factors`)][order(`Reads Mapped`)],
               caption = 'Reads summary statistics')
 
 #' # Filtering

@@ -75,7 +75,7 @@ if(nrow(res_junc_dt) > 0){
     res_junc_dt <- merge(res_junc_dt, as.data.table(colData(fds)), by = "sampleID")
     res_junc_dt[, c("bamFile", "pairedEnd", "STRAND", "RNA_BAM_FILE", "DNA_VCF_FILE", "COUNT_MODE", "COUNT_OVERLAPS") := NULL]
 } else{
-    warning("The aberrant splicing pipeline gave 0 results for the ", dataset, " dataset.")
+    warning("The aberrant splicing pipeline gave 0 intron-level results for the ", dataset, " dataset.")
 }
 
 # Extract full results by gene
@@ -102,7 +102,7 @@ res_genes_dt <- res_genes_dt[do.call(pmin, c(res_genes_dt[,padj_cols, with=FALSE
                                     abs(deltaPsi) >= snakemake@params$deltaPsiCutoff & 
                                     totalCounts >= 5,]
 
-if(length(res_gene) > 0){
+if(nrow(res_genes_dt) > 0){
     res_genes_dt <- merge(res_genes_dt, as.data.table(colData(fds)), by = "sampleID")
     res_genes_dt[, c("bamFile", "pairedEnd", "STRAND", "RNA_BAM_FILE", "DNA_VCF_FILE", "COUNT_MODE", "COUNT_OVERLAPS") := NULL]
 
@@ -115,7 +115,6 @@ if(length(res_gene) > 0){
         }
     }
 } else{
-    res_genes_dt <- data.table()
     warning("The aberrant splicing pipeline gave 0 gene-level results for the ", dataset, " dataset.")
 }
 
@@ -125,8 +124,12 @@ library(AnnotationDbi)
 txdb <- loadDb(snakemake@input$txdb)
     
 # annotate the type of splice event and UTR overlap
-res_junc_dt <- annotatePotentialImpact(result=res_junc_dt, txdb=txdb, fds=fds)
-res_genes_dt <- annotatePotentialImpact(result=res_genes_dt, txdb=txdb, fds=fds)
+if(nrow(res_junc_dt) > 0){
+    res_junc_dt <- annotatePotentialImpact(result=res_junc_dt, txdb=txdb, fds=fds)
+}
+if(nrow(res_genes_dt) > 0){
+    res_genes_dt <- annotatePotentialImpact(result=res_genes_dt, txdb=txdb, fds=fds)
+}
     
 # set genome assembly version to load correct blacklist region BED file (hg19 or hg38)
 assemblyVersion <- snakemake@config$genomeAssembly
@@ -139,10 +142,14 @@ if(grepl("grch38", assemblyVersion, ignore.case=TRUE)){
     
 # annotate overlap with blacklist regions
 if(assemblyVersion %in% c("hg19", "hg38")){
-    res_junc_dt <- flagBlacklistRegions(result=res_junc_dt, 
+    if(nrow(res_junc_dt) > 0){
+        res_junc_dt <- flagBlacklistRegions(result=res_junc_dt, 
                                         assemblyVersion=assemblyVersion)
-    res_genes_dt <- flagBlacklistRegions(result=res_genes_dt, 
+    }
+    if(nrow(res_genes_dt) > 0){
+        res_genes_dt <- flagBlacklistRegions(result=res_genes_dt, 
                                          assemblyVersion=assemblyVersion)
+    }
 } else{
     message(date(), ": cannot annotate blacklist regions as no blacklist region\n", 
             "BED file is available for genome assembly version ", assemblyVersion, 
