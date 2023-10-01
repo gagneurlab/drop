@@ -96,7 +96,7 @@ lp <- bplapply(1:N, function(i){
 mat <- do.call(rbind, lp)
 row.names(mat) <- dna_samples
 colnames(mat) <- rna_samples
-mat <- mat[sa[rows_in_group, DNA_ID], sa[rows_in_group, RNA_ID],drop=FALSE]
+# mat <- mat[sa[rows_in_group, DNA_ID], sa[rows_in_group, RNA_ID],drop=FALSE]
 
 saveRDS(mat, snakemake@output$mat_qc)
 
