@@ -138,5 +138,6 @@ DT::datatable(false_matches[value < identityCutoff])
 #' ### Samples that were not annotated to match but actually do
 false_mismatches <- merge(melt_mat, sa, by = c('DNA_ID', 'RNA_ID'), 
                           sort = FALSE, all.x = TRUE)
-DT::datatable(false_mismatches[is.na(ANNOTATED_MATCH) & value > identityCutoff])
+false_mismatches[is.na(ANNOTATED_MATCH), ANNOTATED_MATCH := FALSE]
+DT::datatable(false_mismatches[ANNOTATED_MATCH == F & value > identityCutoff])
 
