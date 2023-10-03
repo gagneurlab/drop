@@ -72,9 +72,9 @@ qc_dt[, PREDICTED_MATCH := value > identityCutoff]
 check_matches <- function(annot_col, pred_col){
   if(sum(pred_col) == 0) return('no match')
   if(identical(annot_col,pred_col)) return('match')
-  if(sum(annot_col)>1 & sum(pred_col)==1)  return('matches less')
-  if(sum(annot_col)==1 & sum(pred_col)>1)  return('matches more')
-  return('matches other')
+  if(all(rowSums(cbind(annot_col, pred_col)) < 2)) return('matches other') # the pred was never the same as the annot
+  if(sum(annot_col) > sum(pred_col))  return('matches less')
+  if(sum(annot_col) < sum(pred_col))  return('matches more')
 }
 
 # check DNA and RNA matches (not necessarily the same)
