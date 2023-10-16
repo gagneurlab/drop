@@ -75,6 +75,7 @@ check_matches <- function(annot_col, pred_col){
   if(all(rowSums(cbind(annot_col, pred_col)) < 2)) return('matches other') # the pred was never the same as the annot
   if(sum(annot_col) > sum(pred_col))  return('matches less')
   if(sum(annot_col) < sum(pred_col))  return('matches more')
+  else return('matches other')
 }
 
 # check DNA and RNA matches (not necessarily the same)
@@ -130,6 +131,8 @@ if(nrow(qc_mat) > 1 || ncol(qc_mat) > 1){
 #' * Is the sample a relative of the other?
 #' 
 
+melt_mat[, value := round(value, 3)]
+                        
 #' ### Samples that were annotated to match but do not 
 false_matches <- merge(sa, melt_mat, by = c('DNA_ID', 'RNA_ID'), 
                        sort = FALSE, all.x = TRUE)
