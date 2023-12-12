@@ -6,23 +6,10 @@
 The detection of RNA Outliers Pipeline (DROP) is an integrative workflow to detect aberrant expression, aberrant splicing, and mono-allelic expression from raw sequencing data. 
 
 The manuscript is available in [Nature Protocols](https://www.nature.com/articles/s41596-020-00462-5). [SharedIt link.](https://rdcu.be/cdMmF)
+The html results of the Geuvadis demo dataset described in the paper can be found [here](https://cmm.in.tum.de/public/paper/drop_analysis/webDir/drop_analysis_index.html).
 
 <img src="drop_sticker.png" alt="drop logo" width="200" class="center"/>
 
-
-## What's new
-
-Versions 1.3.3, 1.3.2 and 1.3.1 fix some bugs.
-Version 1.3.0 introduces the option to use FRASER 2.0 which is an improved version of FRASER that uses the Intron Jaccard Index metric instead of percent spliced in and splicing efficiency to quantify and later call aberrant splicing. To run FRASER 2.0, modify the `FRASER_version` parameter in the aberrantSplicing dictionary in the config file and adapt the `quantileForFiltering` and `deltaPsiCutoff` parameters. See the [config template](https://github.com/gagneurlab/drop/blob/master/drop/template/config.yaml) for more details. When switching between FRASER versions, we recommend running DROP in a
-separate folder for each version. Moreover, DROP now allows users to provide lists of genes to focus on and do the multiple testing correction instead of the usual transcriptome-wide approach. Refer to the [documentation](https://gagneurlab-drop.readthedocs.io/en/latest/prepare.html#limiting-fdr-correction-to-subsets-of-genes-of-interest).
-
-`Snakemake v.7.8` introduced some changes in which changes in parameters can cause rules to be re-executed. More info [here](https://github.com/snakemake/snakemake/issues/1694). This affects DROP and causes certain rules in the AS and QC modules to be triggered even if they were already completed and there were no changes in the sample annotation or scripts. The workaround is to run DROP by adding the parameter `--rerun-triggers mtime`, e.g. `snakemake -n --rerun-triggers mtime` or `snakemake --cores 10 --rerun-triggers mtime`. We will investigate the rules in DROP to fix this.
-
-Version 1.2.3 simplifies the plots in the AE Summary Script. In addition, there's a new heatmap in the sampleQC Summary that allows to better identify DNA-RNA mismatches.
-
-As of version 1.2.1 DROP has a new module that performs RNA-seq variant calling. The input are BAM files and the output either a single-sample or a multi-sample VCF file (option specified by the user) annotated with allele frequencies from gnomAD (if specified by the user). The sample annotation table does not need to be changed, but several new parameters in the config file have to be added and tuned. For more info, refer to the [documentation](https://gagneurlab-drop.readthedocs.io/en/latest/prepare.html#rna-variant-calling-dictionary).
-
-Also, as of version 1.2.1 the integration of external split and non-split counts to detect aberrant splicing is now possible. Simply specify in a new column in the sample annotation the directory containing the counts. For more info, refer to the [documentation](https://gagneurlab-drop.readthedocs.io/en/latest/prepare.html#external-count-examples).
 
 ## Quickstart
 DROP is available on [bioconda](https://anaconda.org/bioconda/drop).
@@ -54,6 +41,21 @@ Expected runtime: 25 min
 
 For more information on different installation options, refer to the
 [documentation](https://gagneurlab-drop.readthedocs.io/en/latest/installation.html)
+
+## What's new
+
+Versions 1.3.3, 1.3.2 and 1.3.1 fix some bugs.
+Version 1.3.0 introduces the option to use FRASER 2.0 which is an improved version of FRASER that uses the Intron Jaccard Index metric instead of percent spliced in and splicing efficiency to quantify and later call aberrant splicing. To run FRASER 2.0, modify the `FRASER_version` parameter in the aberrantSplicing dictionary in the config file and adapt the `quantileForFiltering` and `deltaPsiCutoff` parameters. See the [config template](https://github.com/gagneurlab/drop/blob/master/drop/template/config.yaml) for more details. When switching between FRASER versions, we recommend running DROP in a
+separate folder for each version. Moreover, DROP now allows users to provide lists of genes to focus on and do the multiple testing correction instead of the usual transcriptome-wide approach. Refer to the [documentation](https://gagneurlab-drop.readthedocs.io/en/latest/prepare.html#limiting-fdr-correction-to-subsets-of-genes-of-interest).
+
+`Snakemake v.7.8` introduced some changes in which changes in parameters can cause rules to be re-executed. More info [here](https://github.com/snakemake/snakemake/issues/1694). This affects DROP and causes certain rules in the AS and QC modules to be triggered even if they were already completed and there were no changes in the sample annotation or scripts. The workaround is to run DROP by adding the parameter `--rerun-triggers mtime`, e.g. `snakemake -n --rerun-triggers mtime` or `snakemake --cores 10 --rerun-triggers mtime`. We will investigate the rules in DROP to fix this.
+
+Version 1.2.3 simplifies the plots in the AE Summary Script. In addition, there's a new heatmap in the sampleQC Summary that allows to better identify DNA-RNA mismatches.
+
+As of version 1.2.1 DROP has a new module that performs RNA-seq variant calling. The input are BAM files and the output either a single-sample or a multi-sample VCF file (option specified by the user) annotated with allele frequencies from gnomAD (if specified by the user). The sample annotation table does not need to be changed, but several new parameters in the config file have to be added and tuned. For more info, refer to the [documentation](https://gagneurlab-drop.readthedocs.io/en/latest/prepare.html#rna-variant-calling-dictionary).
+
+Also, as of version 1.2.1 the integration of external split and non-split counts to detect aberrant splicing is now possible. Simply specify in a new column in the sample annotation the directory containing the counts. For more info, refer to the [documentation](https://gagneurlab-drop.readthedocs.io/en/latest/prepare.html#external-count-examples).
+
 
 ## Set up a custom project
 Install the drop module according to [installation](#installation) and initialize the project in a custom project directory.
@@ -100,7 +102,10 @@ If you want to contribute with your own count matrices, please contact us: yepez
 
 If you use DROP in research, please cite our [manuscript](https://www.nature.com/articles/s41596-020-00462-5).
 
-Furthermore, if you use the aberrant expression module, also cite [OUTRIDER](https://doi.org/10.1016/j.ajhg.2018.10.025); if you use the aberrant splicing module, also cite [FRASER](https://www.nature.com/articles/s41467-020-20573-7); and if you use the MAE module, also cite the [Kremer, Bader et al study](https://www.nature.com/articles/ncomms15824) and [DESeq2](https://genomebiology.biomedcentral.com/articles/10.1186/s13059-014-0550-8).
+Furthermore, if you use:
+* the aberrant expression module, also cite [OUTRIDER](https://doi.org/10.1016/j.ajhg.2018.10.025)
+* the aberrant splicing module, also cite [FRASER](https://www.nature.com/articles/s41467-020-20573-7) or [FRASER2](https://www.sciencedirect.com/science/article/pii/S0002929723003671?dgcid=coauthor), depending on the version that you use
+* the MAE module, also cite the [Kremer, Bader et al study](https://www.nature.com/articles/ncomms15824) and [DESeq2](https://genomebiology.biomedcentral.com/articles/10.1186/s13059-014-0550-8).
 
 For the complete set of tools used by DROP (e.g. for counting), see the [manuscript](https://www.nature.com/articles/s41596-020-00462-5).
 
