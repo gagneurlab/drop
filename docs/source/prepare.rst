@@ -314,9 +314,9 @@ Limiting FDR correction to subsets of genes of interest
 ------------------------------------
 In addition to returning transcriptome-wide results, DROP provides the option to 
 limit the FDR correction to user-provided genes of interest in the 
-``aberrantExpression`` and ``aberrantSplicing`` modules. These could e.g. be all 
+``aberrantExpression`` and ``aberrantSplicing`` modules. These could, for example, be all 
 OMIM genes. It is also possible to provide sample-specific genes such as all 
-genes with a rare splice region variant for each sample. 
+genes with a rare splice-region variant for each sample. 
 To use this feature, a YAML file containing the set(s) of genes to test 
 (per sample or for all samples) needs to be specified in the ``genesToTest`` parameter 
 of the ``aberrantExpression`` and ``aberrantSplicing`` modules in the config file. 
@@ -330,11 +330,14 @@ Creating the YAML file specifying subsets of genes to test
 The file containing the list of genes (HGNC symbols) to be tested must be a YAML file, 
 where the variable names specify the name of each set of tested genes. In the output 
 of DROP, this name will be used to identify the set in the results table. Each set 
-can either be a list of genes, in which case the set will be tested for all samples. Alternatively 
-(and additionally), sample-specific sets can be created by giving the RNA_ID of the sample
+can either be: i) a list of genes, in which case the set will be tested for all samples, or ii)
+sample-specific sets that can be created by giving the RNA_ID of the sample
 for which the set should be used as the name (see example below).
 This YAML file can be created in R using ``yaml::write_yaml(subsetList, filepath)``, 
 where ``subsetList`` is a named list of named lists containing the sets of genes to test.
+The gene names must match those from the provided gtf file. We currently do not support Ensembl ids as input.
+The table with extracted gene names from the gtf file is located under: 
+``root/processed_data/preprocess/{geneAnnotation}/gene_name_mapping_{geneAnnotation}.tsv``.
 In the following example, the name of the global set of genes is ``Genes_to_test_on_all_samples``
 and the name of the sample-specific set is ``Genes_with_rare_splice_variants``:
 
