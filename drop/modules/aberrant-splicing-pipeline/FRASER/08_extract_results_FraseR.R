@@ -119,8 +119,6 @@ if(nrow(res_genes_dt) > 0){
 }
 
 # Annotate results with spliceEventType and blacklist region overlap
-# load reference annotation
-library(AnnotationDbi)
 txdb <- loadDb(snakemake@input$txdb)
     
 # annotate the type of splice event and UTR overlap
@@ -133,13 +131,9 @@ if(nrow(res_genes_dt) > 0){
     
 # set genome assembly version to load correct blacklist region BED file (hg19 or hg38)
 assemblyVersion <- snakemake@config$genomeAssembly
-if(grepl("grch37", assemblyVersion, ignore.case=TRUE)){
-    assemblyVersion <- "hg19"
-}
-if(grepl("grch38", assemblyVersion, ignore.case=TRUE)){
-    assemblyVersion <- "hg38"
-}
-    
+if(grepl("grch37", assemblyVersion, ignore.case=TRUE)) assemblyVersion <- "hg19"
+if(grepl("grch38", assemblyVersion, ignore.case=TRUE)) assemblyVersion <- "hg38"
+
 # annotate overlap with blacklist regions
 if(assemblyVersion %in% c("hg19", "hg38")){
     if(nrow(res_junc_dt) > 0){
