@@ -5,9 +5,11 @@
 
 The detection of RNA Outliers Pipeline (DROP) is an integrative workflow to detect aberrant expression, aberrant splicing, and mono-allelic expression from raw sequencing data. 
 
-The manuscript is available in [Nature Protocols](https://www.nature.com/articles/s41596-020-00462-5). [SharedIt link.](https://rdcu.be/cdMmF)
+The manuscript is available in [Nature Protocols](https://www.nature.com/articles/s41596-020-00462-5).
 
 The website containing the different reports of the Geuvadis demo dataset described in the paper can be found [here](https://cmm.in.tum.de/public/paper/drop_analysis/webDir/drop_analysis_index.html).
+
+This [video](https://www.youtube.com/watch?v=XvgjiFQClhM&t=2761s) can serve as an introduction to the tools used in DROP and their application to rare disease diagnostics.
 
 <img src="drop_sticker.png" alt="drop logo" width="200" class="center"/>
 
