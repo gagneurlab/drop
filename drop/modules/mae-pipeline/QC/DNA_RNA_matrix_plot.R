@@ -12,7 +12,7 @@
 #'  type: noindex
 #'---
 
-#+echo=F
+#+ echo=F
 saveRDS(snakemake, snakemake@log$snakemake)
 
 suppressPackageStartupMessages({
