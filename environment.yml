@@ -3,9 +3,10 @@ channels:
   - conda-forge
   - bioconda
 dependencies:
-  - python==3.8
+  - python>=3.8
   - pip
   - drop
+  - snakemake>=5,<8
   - flake8
   - bioconductor-bsgenome.hsapiens.ucsc.hg19
 
