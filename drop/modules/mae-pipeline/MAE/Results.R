@@ -107,7 +107,7 @@ res[, MAE_ALT := MAE == TRUE & altRatio >= allelicRatioCutoff]
 #'
 #' Number of samples with significant MAE for alternative events: `r uniqueN(res[MAE_ALT == TRUE, ID])`
 
-#+echo=F
+#+ echo=F
 
 # Save full results zipped
 res[, altRatio := round(altRatio, 3)]
