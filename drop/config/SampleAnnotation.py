@@ -47,6 +47,11 @@ class SampleAnnotation:
         optional_columns = {"GENE_COUNTS_FILE", "SPLICE_COUNTS_DIR", "GENE_ANNOTATION", "GENOME"}
 
         annotationTable = pd.read_csv(self.file, sep=sep, index_col=False)
+        
+        # FRASER cannot handle a mixture of stranded and unstranded samples, raise error in such cases
+        if (annotationTable['STRAND'] == 'no').any() & ((annotationTable['STRAND'] == 'reverse').any() | (annotationTable['STRAND'] == 'yes').any()):
+            raise ValueError("Data contains a mix of stranded and unstranded samples. Please consider analyzing them separately.\n")
+
         missing_cols = [x for x in self.SAMPLE_ANNOTATION_COLUMNS if x not in annotationTable.columns.values]
         if len(missing_cols) > 0:
             if "GENE_ANNOTATION" in missing_cols and "ANNOTATION" in annotationTable.columns.values:
