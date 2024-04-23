@@ -35,10 +35,7 @@ fds <- FraserDataSet(colData = col_data,
 
 # Add paired end and strand specificity to the fds
 pairedEnd(fds) <- colData(fds)$PAIRED_END
-strandSpecific(fds) <- 'no'
-if(uniqueN(colData(fds)$STRAND) == 1){
-  strandSpecific(fds) <- unique(colData(fds)$STRAND)
-} 
+strandSpecific(fds) <- colData(fds)$STRAND
 
 # Save initial FRASER dataset
 fds <- saveFraserDataSet(fds)
