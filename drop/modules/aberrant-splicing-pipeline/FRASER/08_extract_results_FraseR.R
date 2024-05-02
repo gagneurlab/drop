@@ -54,23 +54,10 @@ print('Results per junction extracted')
 
 # Add features
 if(nrow(res_junc_dt) > 0){
-
-    # dcast to have one row per outlier
-    subsets <- res_junc_dt[, unique(FDR_set)]
-    subsets <- subsets[subsets != "transcriptome-wide"]
-    colorder <- colnames(res_junc_dt[, !"FDR_set", with=FALSE])
-    res_junc_dt <- dcast(res_junc_dt, ... ~ FDR_set, value.var="padjust")
-    setnames(res_junc_dt, "transcriptome-wide", "padjust")
-    for(subset_name in subsets){
-        setnames(res_junc_dt, subset_name, paste0("padjust_", subset_name))
-    }
-    setcolorder(res_junc_dt, colorder)
-    
     # number of samples per gene and variant
     res_junc_dt[, numSamplesPerGene := uniqueN(sampleID), by = hgncSymbol]
     res_junc_dt[, numEventsPerGene := .N, by = "hgncSymbol,sampleID"]
     res_junc_dt[, numSamplesPerJunc := uniqueN(sampleID), by = "seqnames,start,end,strand"]
-    
 } else{
     warning("The aberrant splicing pipeline gave 0 intron-level results for the ", dataset, " dataset.")
 }
@@ -80,15 +67,6 @@ res_gene <- results(fds, psiType=psiTypes,
                     aggregate=TRUE, collapse=FALSE,
                     all=TRUE)
 res_genes_dt   <- as.data.table(res_gene)
-subsets <- res_genes_dt[, unique(FDR_set)]
-subsets <- subsets[subsets != "transcriptome-wide"]
-colorder <- colnames(res_genes_dt[, !c("padjust", "FDR_set"), with=FALSE])
-res_genes_dt <- dcast(res_genes_dt[,!"padjust", with=FALSE], ... ~ FDR_set, value.var="padjustGene")
-setnames(res_genes_dt, "transcriptome-wide", "padjustGene")
-for(subset_name in subsets){
-    setnames(res_genes_dt, subset_name, paste0("padjustGene_", subset_name))
-}
-setcolorder(res_genes_dt, colorder)
 print('Results per gene extracted')
 write_tsv(res_genes_dt, file=snakemake@output$resultTableGene_full)
 
