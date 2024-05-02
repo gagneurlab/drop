@@ -29,6 +29,8 @@ params <- snakemake@config$aberrantSplicing
 # Create initial FRASER object
 col_data <- fread(colDataFile)
 
+col_data$strand <- 0L
+
 fds <- FraserDataSet(colData = col_data,
                      workingDir = workingDir,
                      name       = paste0("raw-local-", dataset))
