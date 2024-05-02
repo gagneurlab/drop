@@ -50,7 +50,10 @@ class SampleAnnotation:
         
         # FRASER cannot handle a mixture of stranded and unstranded samples, raise error in such cases
         if (annotationTable['STRAND'] == 'no').any() & ((annotationTable['STRAND'] == 'reverse').any() | (annotationTable['STRAND'] == 'yes').any()):
-            raise ValueError("Data contains a mix of stranded and unstranded samples. Please consider analyzing them separately.\n")
+            raise ValueError("Data contains a mix of stranded and unstranded samples. Please analyze them separately.\n")
+        
+        if annotationTable['STRAND'].isnull().values.any():
+            raise ValueError("STRAND is not provided for some samples. All samples should have STRAND value in the sample annotation file.\n")
 
         missing_cols = [x for x in self.SAMPLE_ANNOTATION_COLUMNS if x not in annotationTable.columns.values]
         if len(missing_cols) > 0:

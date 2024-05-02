@@ -53,7 +53,9 @@ if(length(exCountIDs) > 0){
     for(resource in unique(exCountFiles)){
         exSampleIDs <- exCountIDs[exCountFiles == resource]
         exAnno <- fread(sample_anno_file, key="RNA_ID")[J(exSampleIDs)]
-        exAnno$strand <- as.integer(0)
+        exAnno[, strand:=exAnno$STRAND]
+        exAnno$strand<- sapply(exAnno[, strand], switch, 'no' = 0L, 'unstranded' = 0L, 
+                                   'yes' = 1L, 'stranded' = 1L, 'reverse' = 2L, -1L)
         setnames(exAnno, "RNA_ID", "sampleID")
         
         ctsNames <- c("k_j", "k_theta", "n_psi3", "n_psi5", "n_theta")

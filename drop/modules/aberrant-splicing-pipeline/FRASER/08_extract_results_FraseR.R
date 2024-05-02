@@ -52,8 +52,6 @@ res_junc <- results(fds, psiType=psiTypes,
 res_junc_dt   <- as.data.table(res_junc)
 print('Results per junction extracted')
 
-names(colData(fds))[which(names(colData(fds))=="strand")] <- "intSTRAND"
-
 # Add features
 if(nrow(res_junc_dt) > 0){
 
@@ -73,9 +71,6 @@ if(nrow(res_junc_dt) > 0){
     res_junc_dt[, numEventsPerGene := .N, by = "hgncSymbol,sampleID"]
     res_junc_dt[, numSamplesPerJunc := uniqueN(sampleID), by = "seqnames,start,end,strand"]
     
-    # add colData to the results
-    res_junc_dt <- merge(res_junc_dt, as.data.table(colData(fds)), by = "sampleID")
-    res_junc_dt[, c("bamFile", "pairedEnd", "intSTRAND", "STRAND", "RNA_BAM_FILE", "DNA_VCF_FILE", "COUNT_MODE", "COUNT_OVERLAPS") := NULL]
 } else{
     warning("The aberrant splicing pipeline gave 0 intron-level results for the ", dataset, " dataset.")
 }
@@ -105,9 +100,6 @@ res_genes_dt <- res_genes_dt[do.call(pmin, c(res_genes_dt[,padj_cols, with=FALSE
                                     totalCounts >= 5,]
 
 if(nrow(res_genes_dt) > 0){
-    res_genes_dt <- merge(res_genes_dt, as.data.table(colData(fds)), by = "sampleID")
-    res_genes_dt[, c("bamFile", "pairedEnd", "intSTRAND", "STRAND", "RNA_BAM_FILE", "DNA_VCF_FILE", "COUNT_MODE", "COUNT_OVERLAPS") := NULL]
-
     # add HPO overlap information
     sa <- fread(snakemake@config$sampleAnnotation, 
                 colClasses = c(RNA_ID = 'character', DNA_ID = 'character'))
