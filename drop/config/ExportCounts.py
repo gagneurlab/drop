@@ -1,5 +1,6 @@
 from snakemake.io import expand
 from drop import utils
+from snakemake.logging import logger
 
 
 class ExportCounts:
@@ -36,6 +37,8 @@ class ExportCounts:
         }
 
         self.pattern = self.outputRoot / "{dataset}--{genomeAssembly}--{annotation}"
+
+        self.checkNonExternalGeneAnnotation()
 
     def setDefaults(self, config_dict, gene_annotations):
         utils.setKey(config_dict, None, "geneAnnotations", gene_annotations)
@@ -107,3 +110,13 @@ class ExportCounts:
         datasets = self.getExportGroups([self.COUNT_TYPE_MAP[count_type]])
         expandPattern = count_type if expandPattern is None else expandPattern
         return self.getFiles(f"{expandPattern}.{suffix}", datasets, **kwargs)
+
+    def checkNonExternalGeneAnnotation(self):
+        excluded_groups = self.config_dict['excludeGroups']
+        print(excluded_groups)
+
+        non_excluded_samples = self.sampleAnnotation.annotationTable[self.sampleAnnotation.annotationTable['DROP_GROUP'].isin(excluded_groups) == False]
+        print(non_excluded_samples)
+        if sum(non_excluded_samples['GENE_ANNOTATION'].isna() == False) > 0:
+            logger.info("WARNING: Found %d samples that had `GENE_ANNOTATION` provided in sample annotation table but are not external counts. The provided `GENE_ANNOTATIONs` are ignored.\n" % (sum(non_excluded_samples['GENE_ANNOTATION'].isna() == False)))
+            self.sampleAnnotation.annotationTable.loc[self.sampleAnnotation.annotationTable['DROP_GROUP'].isin(excluded_groups) == False, "GENE_ANNOTATION"] = ""
