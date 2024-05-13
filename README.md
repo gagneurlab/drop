@@ -47,7 +47,7 @@ For more information on different installation options, refer to the
 
 ## What's new
 
-Versions 1.3.3, 1.3.2 and 1.3.1 fix some bugs.
+Version 1.3.4 freezes FRASER and OUTRIDER versions before major changes in new FRASER to ensure reproducibility. Versions 1.3.3, 1.3.2 and 1.3.1 fix some bugs.
 Version 1.3.0 introduces the option to use FRASER 2.0 which is an improved version of FRASER that uses the Intron Jaccard Index metric instead of percent spliced in and splicing efficiency to quantify and later call aberrant splicing. To run FRASER 2.0, modify the `FRASER_version` parameter in the aberrantSplicing dictionary in the config file and adapt the `quantileForFiltering` and `deltaPsiCutoff` parameters. See the [config template](https://github.com/gagneurlab/drop/blob/master/drop/template/config.yaml) for more details. When switching between FRASER versions, we recommend running DROP in a
 separate folder for each version. Moreover, DROP now allows users to provide lists of genes to focus on and do the multiple testing correction instead of the usual transcriptome-wide approach. Refer to the [documentation](https://gagneurlab-drop.readthedocs.io/en/latest/prepare.html#limiting-fdr-correction-to-subsets-of-genes-of-interest).
 
