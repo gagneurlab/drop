@@ -35,7 +35,7 @@ sample_id <- snakemake@wildcards[["sample_id"]]
 
 # If data is not strand specific, add genome info
 genome <- NULL
-if(strandSpecific(fds) == 0){
+if(strandSpecific(fds[, sample_id]) == 0){
   genome <- getBSgenome(genomeAssembly)
 }
 

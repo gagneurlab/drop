@@ -16,7 +16,7 @@
 #'    code_download: TRUE
 #'---
 
-#+echo=F
+#+ echo=F
 saveRDS(snakemake, snakemake@log$snakemake)
 
 suppressPackageStartupMessages({
@@ -76,7 +76,7 @@ unique(sa[,.(RNA_ID, DROP_GROUP)])$DROP_GROUP %>% strsplit(',') %>% unlist %>%
   table %>% barplot(xlab = 'DROP groups', ylab = 'Number of samples')
 
 # Obtain genes that overlap with HPO terms
-#+echo=F
+#+ echo=F
 if(!is.null(sa$HPO_TERMS) & !all(is.na(sa$HPO_TERMS)) & ! all(sa$HPO_TERMS == '')){
   sa2 <- sa[, .SD[1], by = RNA_ID]
   
