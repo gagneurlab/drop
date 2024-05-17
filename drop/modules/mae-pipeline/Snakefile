@@ -20,19 +20,6 @@ rule mae_dependency:
 rule sampleQC:
     input: cfg.getHtmlFromScript(MAE_WORKDIR / "QC" / "Datasets.R")
 
-rule create_dict:
-    input:  cfg.genome.getFastaList()
-    output:  cfg.genome.getDictList()
-    shell: 
-	    """
-		for fasta in {input}
-		  do
-		  if [ ! -f "${{fasta%.*}}.dict" ]; then
-		    gatk CreateSequenceDictionary --REFERENCE $fasta
-                  fi
-		done
-		"""
-
 
 ## MAE
 rule mae_createSNVs:

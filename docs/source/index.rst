@@ -15,7 +15,7 @@ Then, DROP can be executed in multiple ways (:doc:`pipeline`).
    pipeline
    output
    license
-   troubleshooting
+   help
 
 Quickstart
 -----------

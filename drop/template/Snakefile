@@ -72,28 +72,35 @@ rule dependencyGraph:
 rule publish_local:
     shell: "rsync -Ort {config[htmlOutputPath]} {config[webDir]}"
 
-rule prepFasta_fa:
-    priority: 1
-    input:
-        "{path_to_ref}.fa"
-    output:
-        dict = "{path_to_ref}.dict" ,
-        fai = "{path_to_ref}.fa.fai"
+rule index_fa:
+    input: "{path_to_ref}.fa"
+    output: "{path_to_ref}.fa.fai"
     shell:
         """
-        samtools faidx {input} -o {output.fai}
-        gatk CreateSequenceDictionary -R {input} -O {output.dict}
+        samtools faidx {input} -o {output}
         """
 
-rule prepFasta_fasta:
-    priority: 1
-    input:
-        "{path_to_ref}.fasta"
-    output:
-        dict = "{path_to_ref}.dict" ,
-        fai = "{path_to_ref}.fasta.fai"
+rule dict_fa:
+    input: "{path_to_ref}.fa"
+    output: "{path_to_ref}.dict"
     shell:
         """
-        samtools faidx {input} -o {output.fai}
-        gatk CreateSequenceDictionary -R {input} -O {output.dict}
+        gatk CreateSequenceDictionary --REFERENCE {input} --OUTPUT {output}
         """
+
+rule index_fasta:
+    input: "{path_to_ref}.fasta"
+    output: "{path_to_ref}.fasta.fai"
+    shell:
+        """
+        samtools faidx {input} -o {output}
+        """
+
+rule dict_fasta:
+    input: "{path_to_ref}.fasta"
+    output: "{path_to_ref}.dict"
+    shell:
+        """
+        gatk CreateSequenceDictionary --REFERENCE {input} --OUTPUT {output}
+        """
+

@@ -86,7 +86,7 @@ qc_links <- sapply(qc_groups, function(v) build_link_list(
 #'
 
 #' ## Analyze Individual Results
-#+echo=FALSE
+#+ echo=FALSE
 # Read the first results table
 res_sample <- readRDS(snakemake@input$results_sample[[1]])
 sample <- unique(res_sample$ID)
@@ -95,7 +95,7 @@ library(tMAE)
 library(ggplot2)
 rare_column <- 'rare'
 if(any(is.na(res_sample$rare))) rare_column <- NULL
-#+echo=TRUE
+#+ echo=TRUE
 
 #' ### MA plot: fold change vs RNA coverage
 plotMA4MAE(res_sample, rare_column = rare_column,

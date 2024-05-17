@@ -12,7 +12,7 @@
 #'  type: noindex
 #'---
 
-#+echo=F
+#+ echo=F
 saveRDS(snakemake, snakemake@log$snakemake)
 
 suppressPackageStartupMessages({
@@ -39,6 +39,8 @@ sa[, ANNOTATED_MATCH := TRUE]
 qc_mat <- readRDS(snakemake@input$mat_qc)
 melt_mat <- as.data.table(reshape2::melt(qc_mat))
 colnames(melt_mat)[1:2] <- c('DNA_ID', 'RNA_ID')
+melt_mat[, RNA_ID := as.character(RNA_ID)]
+melt_mat[, DNA_ID := as.character(DNA_ID)]
 
 ggplot(melt_mat, aes(value)) + geom_histogram(fill = 'cadetblue4', binwidth = 0.05, center = .025) + 
   theme_bw(base_size = 14) + 
@@ -70,9 +72,10 @@ qc_dt[, PREDICTED_MATCH := value > identityCutoff]
 check_matches <- function(annot_col, pred_col){
   if(sum(pred_col) == 0) return('no match')
   if(identical(annot_col,pred_col)) return('match')
-  if(sum(annot_col)==1 & sum(pred_col)==1) return('matches other')
-  if(sum(annot_col)>1 & sum(pred_col)==1)  return('matches less')
-  if(sum(annot_col)==1 & sum(pred_col)>1)  return('matches more')
+  if(all(rowSums(cbind(annot_col, pred_col)) < 2)) return('matches other') # the pred was never the same as the annot
+  if(sum(annot_col) > sum(pred_col))  return('matches less')
+  if(sum(annot_col) < sum(pred_col))  return('matches more')
+  else return('matches other')
 }
 
 # check DNA and RNA matches (not necessarily the same)
@@ -128,6 +131,8 @@ if(nrow(qc_mat) > 1 || ncol(qc_mat) > 1){
 #' * Is the sample a relative of the other?
 #' 
 
+melt_mat[, value := round(value, 3)]
+                        
 #' ### Samples that were annotated to match but do not 
 false_matches <- merge(sa, melt_mat, by = c('DNA_ID', 'RNA_ID'), 
                        sort = FALSE, all.x = TRUE)
@@ -136,5 +141,6 @@ DT::datatable(false_matches[value < identityCutoff])
 #' ### Samples that were not annotated to match but actually do
 false_mismatches <- merge(melt_mat, sa, by = c('DNA_ID', 'RNA_ID'), 
                           sort = FALSE, all.x = TRUE)
-DT::datatable(false_mismatches[is.na(ANNOTATED_MATCH) & value > identityCutoff])
+false_mismatches[is.na(ANNOTATED_MATCH), ANNOTATED_MATCH := FALSE]
+DT::datatable(false_mismatches[ANNOTATED_MATCH == F & value > identityCutoff])
 
