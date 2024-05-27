@@ -113,10 +113,7 @@ class ExportCounts:
 
     def checkNonExternalGeneAnnotation(self):
         excluded_groups = self.config_dict['excludeGroups']
-        print(excluded_groups)
-
         non_excluded_samples = self.sampleAnnotation.annotationTable[self.sampleAnnotation.annotationTable['DROP_GROUP'].isin(excluded_groups) == False]
-        print(non_excluded_samples)
         if sum(non_excluded_samples['GENE_ANNOTATION'].isna() == False) > 0:
             logger.info("WARNING: Found %d samples that had `GENE_ANNOTATION` provided in sample annotation table but are not external counts. The provided `GENE_ANNOTATIONs` are ignored.\n" % (sum(non_excluded_samples['GENE_ANNOTATION'].isna() == False)))
             self.sampleAnnotation.annotationTable.loc[self.sampleAnnotation.annotationTable['DROP_GROUP'].isin(excluded_groups) == False, "GENE_ANNOTATION"] = ""
