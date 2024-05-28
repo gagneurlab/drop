@@ -22,6 +22,7 @@ Install the latest version and use the full path in the following command to ins
 
     mamba env create -f DROP_1.4.0.yaml
 
+
 Installation time: ~ 10min
 
 We can test whether the pipeline runs through by setting up the demo dataset in an empty directory (e.g. ``~/drop_demo``).
