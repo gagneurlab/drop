@@ -19,7 +19,6 @@ click_log.basic_config(logger)
 @click_log.simple_verbosity_option(logger)
 @click.version_option('1.4.0',prog_name='drop')
 
-
 def main():
     pass
 
