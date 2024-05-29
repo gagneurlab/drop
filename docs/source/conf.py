@@ -27,7 +27,6 @@ release_ = '1.4.0'
 
 
 
-
 # -- General configuration ---------------------------------------------------
 
 master_doc = 'index'
