@@ -26,6 +26,7 @@ suppressPackageStartupMessages({
 })
 
 sa <- fread(snakemake@input$sampleAnnotation)
+hpo_file <- snakemake@params$hpo_file
 
 #'
 #' Number of rows and columns in the sample annotation: `r dim(sa)`
@@ -80,7 +81,7 @@ unique(sa[,.(RNA_ID, DROP_GROUP)])$DROP_GROUP %>% strsplit(',') %>% unlist %>%
 if(!is.null(sa$HPO_TERMS) & !all(is.na(sa$HPO_TERMS)) & ! all(sa$HPO_TERMS == '')){
   sa2 <- sa[, .SD[1], by = RNA_ID]
   
-  filename <- ifelse(is.null(snakemake@params$hpo_file), 
+  filename <- ifelse(is.null(hpo_file), 
                      'https://www.cmm.in.tum.de/public/paper/drop_analysis/resource/hpo_genes.tsv.gz',
                      hpo_file)
   hpo_dt <- fread(filename)
