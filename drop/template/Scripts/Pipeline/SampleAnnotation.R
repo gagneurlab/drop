@@ -26,7 +26,7 @@ suppressPackageStartupMessages({
 })
 
 sa <- fread(snakemake@input$sampleAnnotation)
-hpo_file <- snakemake@params$hpo_file
+hpo_file <- snakemake@params$hpoFile
 
 #'
 #' Number of rows and columns in the sample annotation: `r dim(sa)`
