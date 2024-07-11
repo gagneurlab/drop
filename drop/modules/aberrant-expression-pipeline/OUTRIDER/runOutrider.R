@@ -1,5 +1,5 @@
 #'---
-#' title: Filter Counts for OUTRIDER
+#' title: OUTRIDER pipeline
 #' author: Michaela Mueller
 #' wb:
 #'  log:
@@ -30,6 +30,7 @@ suppressPackageStartupMessages({
 ods <- readRDS(snakemake@input$ods)
 implementation <- snakemake@config$aberrantExpression$implementation
 mp <- snakemake@config$aberrantExpression$maxTestedDimensionProportion
+oht <- snakemake@config$aberrantExpression$useOHTtoObtainQ
 register(MulticoreParam(snakemake@threads))
 
 ## subset filtered
@@ -43,22 +44,33 @@ if(length(gr) > 0){
     rowData(ods) <- rd
 }
 
-ods <- estimateSizeFactors(ods)
+#ods <- estimateSizeFactors(ods) #Unnecessary!
 
 ## find optimal encoding dimension
-a <- 5 
-b <- min(ncol(ods), nrow(ods)) / mp   # N/3
-
-maxSteps <- 15
-if(mp < 4){
+if (oht){
+  message(date(), ": Using OHT implementation to determine optimal q ...")
+  opt_q <- estimateBestQ(ods)
+  metadata(ods)[["optimalEncDim"]] <- opt_q
+  metadata(ods)[["useOHTtoObtainQ"]] <- TRUE
+} else{
+  a <- 5 
+  b <- min(ncol(ods), nrow(ods)) / mp   # N/3
+  
+  maxSteps <- 15
+  if(mp < 4){
     maxSteps <- 20
+  }
+  
+  Nsteps <- min(maxSteps, b)   # Do at most 20 steps or N/3
+  # Do unique in case 2 were repeated
+  pars_q <- round(exp(seq(log(a),log(b),length.out = Nsteps))) %>% unique
+  
+  message(date(), ": Testing the following values of q to determine the optimal one: ",
+          pars_q)
+  
+  ods <- findEncodingDim(ods, params = pars_q, implementation = implementation)
+  opt_q <- getBestQ(ods)
 }
-
-Nsteps <- min(maxSteps, b)   # Do at most 20 steps or N/3
-# Do unique in case 2 were repeated
-pars_q <- round(exp(seq(log(a),log(b),length.out = Nsteps))) %>% unique
-ods <- findEncodingDim(ods, params = pars_q, implementation = implementation)
-opt_q <- getBestQ(ods)
 
 ## fit OUTRIDER
 # ods <- OUTRIDER(ods, implementation = implementation)
@@ -71,6 +83,6 @@ if(grepl("^(peer|pca)$", implementation)){
     message(date(), ": Fitting the data ...")
     ods <- fit(ods)
 }
-message("outrider fitting finished")
+message("OUTRIDER fitting finished")
 
 saveRDS(ods, snakemake@output$ods_fitted)
