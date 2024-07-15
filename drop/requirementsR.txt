@@ -1,6 +1,6 @@
 package	version	ref
 devtools
-gagneurlab/OUTRIDER	1.20.1	1.20.1
+andrearaithel/OUTRIDER	1.20.1	OHT
 gagneurlab/FRASER	1.99.4	1.99.4
 gagneurlab/tMAE	1.0.4	1.0.4
 VariantAnnotation		
