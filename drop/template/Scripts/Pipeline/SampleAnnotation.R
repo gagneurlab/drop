@@ -26,7 +26,7 @@ suppressPackageStartupMessages({
 })
 
 sa <- fread(snakemake@input$sampleAnnotation)
-hpo_file <- snakemake@params$hpo_file
+hpo_file <- snakemake@params$hpoFile
 
 #'
 #' Number of rows and columns in the sample annotation: `r dim(sa)`
@@ -51,10 +51,12 @@ if(nrow(sa[is.na(RNA_ID)]) > 0){
 
 
 #' Check for nonexistent BAM files
-sa[, aux1 := file.exists(RNA_BAM_FILE)]
-if(any(sa$aux1 == F)){
-  print('The following BAM files do not exist: ')
-  DT::datatable(sa[aux1 == F])
+if(! all(sa[,is.na(RNA_BAM_FILE)])){
+  sa[, aux1 := file.exists(RNA_BAM_FILE)]
+  if(any(sa$aux1 == F)){
+    print('The following BAM files do not exist: ')
+    DT::datatable(sa[aux1 == F])
+  }
 }
 
 #' Check for nonexistent VCF files
