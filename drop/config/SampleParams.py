@@ -6,6 +6,8 @@ import os
 import shutil
 
 
+pd.set_option("future.no_silent_downcasting", True)
+
 
 class ParamHelper:
     def __init__(self,include,sampleAnnotationColumns,group,path):
