@@ -311,7 +311,7 @@ EXT-3R          BLOOD_AS                                                        
 
 
 Limiting FDR correction to subsets of genes of interest
-------------------------------------
+-------------------------------------------------------
 In addition to returning transcriptome-wide results, DROP provides the option to 
 limit the FDR correction to user-provided genes of interest in the 
 ``aberrantExpression`` and ``aberrantSplicing`` modules. These could, for example, be all 
