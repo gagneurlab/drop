@@ -50,7 +50,7 @@ if(is.null(colData(ods)$isExternal)) colData(ods)$isExternal <- FALSE
 #' ## Visualize
 #' ### Encoding dimension
 if (metadata(ods)[["useOHTtoObtainQ"]]){
-  print("Optimal dimension q was determined using OHT to be ", getBestQ(ods))
+  print(c("Optimal dimension q was determined using OHT to be", getBestQ(ods)), quote = F)
 } else{
   plotEncDimSearch(ods) +
     labs(title = dataset_title) +
