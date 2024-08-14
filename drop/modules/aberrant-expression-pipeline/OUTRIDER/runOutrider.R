@@ -47,7 +47,7 @@ if(length(gr) > 0){
 #ods <- estimateSizeFactors(ods) #Unnecessary!
 
 ## find optimal encoding dimension
-if (oht){
+if isTRUE(oht){
   message(date(), ": Using OHT implementation to determine optimal q ...")
   opt_q <- estimateBestQ(ods)
   metadata(ods)[["optimalEncDim"]] <- opt_q
