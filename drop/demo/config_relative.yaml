@@ -31,6 +31,7 @@ aberrantExpression:
     genesToTest: "Data/genes_to_test.yaml"
     maxTestedDimensionProportion: 3
     yieldSize: 2000000
+    useOHTtoObtainQ: true
 
 aberrantSplicing:
     run: true
