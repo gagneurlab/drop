@@ -70,6 +70,7 @@ if (oht){
   
   ods <- findEncodingDim(ods, params = pars_q, implementation = implementation)
   opt_q <- getBestQ(ods)
+  metadata(ods)[["useOHTtoObtainQ"]] <- FALSE
 }
 
 ## fit OUTRIDER
