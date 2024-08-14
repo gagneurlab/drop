@@ -107,6 +107,7 @@ padjCutoff                    numeric    A number between (0, 1] indicating the 
 maxTestedDimensionProportion  numeric    An integer that controls the maximum value that the encoding dimension can take. Refer to `advanced-options`_.                                                           ``3``
 yieldSize                     numeric    An integer that sets the batch size for counting reads within a bam file. If memory issues persist lower the yieldSize.                                                  ``2000000``
 genesToTest                   character  Full path to a yaml file specifying lists of candidate genes per sample to test during FDR correction. See the documentation for details on the structure of this file.  ``/path/to/genes_to_test.yaml``
+useOHTtoObtainQ               boolean    If true, the optimal latent space dimension for the autoencoder will be determined by OHT. If false, a grid-search will be performed.                                    ``true``
 ============================  =========  =======================================================================================================================================================================  ======
 
 Aberrant splicing dictionary
@@ -138,6 +139,7 @@ deltaPsiCutoff                numeric    A non-negative number. Delta psi values
 padjCutoff                    numeric    Same as in aberrant expression.                                                                                                                                                                                        ``0.1``
 maxTestedDimensionProportion  numeric    Same as in aberrant expression.                                                                                                                                                                                        ``6``
 genesToTest                   character  Same as in aberrant expression.                                                                                                                                                                                        ``/path/to/genes_to_test.yaml``
+useOHTtoObtainQ               boolean    Same as in aberrant expression.                                                                                                                                                                                        ``true``
 ============================  =========  =====================================================================================================================================================================================================================  ======
 
 
