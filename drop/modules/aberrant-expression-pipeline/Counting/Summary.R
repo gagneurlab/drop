@@ -182,6 +182,8 @@ if(has_external){
     DT::datatable(expressed_genes[order(Rank),-"Is External"],rownames = F)
 }
 
+#' ### Sex verifying
+
 #' **Considerations:**
 #' The verifying of the samples sex is performed by comparing the expression levels of 
 #' the genes XIST and UTY. In general, females should have high XIST and low UTY expression,
