@@ -56,6 +56,9 @@ class Test_AS_Pipeline:
         annotation = "v29"
         dataset = "fraser"
         r = run(f"wc -l {results_dir}/{annotation}/fraser/{dataset}/results_per_junction.tsv", demo_dir)
-        assert "4137" == r.stdout.split()[0] 
+        assert "980" == r.stdout.split()[0] 
         r = run(f"wc -l {results_dir}/{annotation}/fraser/{dataset}/results.tsv", demo_dir)
-        assert "310" == r.stdout.split()[0] 
+        assert "194" == r.stdout.split()[0] 
+        r = run(f"wc -l {results_dir}/{annotation}/fraser/{dataset}/results_gene_all.tsv", demo_dir)
+        assert "391" == r.stdout.split()[0]
+

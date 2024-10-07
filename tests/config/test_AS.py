@@ -18,7 +18,7 @@ class Test_AS_Config:
             'deltaPsiCutoff': 0.05,
             'maxTestedDimensionProportion': 6,
             'genesToTest': 'Data/genes_to_test.yaml',
-            'FRASER_version': 'FRASER'
+            'FRASER_version': 'FRASER2',
         }
         assert dict_.items() <= dropConfig.AS.dict_.items()
 
