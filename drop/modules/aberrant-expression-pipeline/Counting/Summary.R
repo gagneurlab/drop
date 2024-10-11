@@ -238,8 +238,9 @@ if(isEmpty(sex_idx)){
         annotation_logticks(sides = 'bl') + 
         labs(color = 'Sex', shape = 'Predicted sex', alpha = 'Matches sex')
       plot(g)
-    
-      DT::datatable(sex_dt[match_sex == F], caption = 'Sex mismatches')
+      if(sex_dt[match_sex == F, .N] > 0){
+        DT::datatable(sex_dt[match_sex == F], caption = 'Sex mismatches')
+      }
     } else {
       g <- ggplot(sex_dt, aes(XIST+1, UTY+1)) + geom_point(aes(col = SEX)) + 
         scale_x_log10(limits = c(1,NA)) + scale_y_log10(limits = c(1,NA)) +
