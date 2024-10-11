@@ -51,14 +51,14 @@ aberrantSplicing:
     padjCutoff: 0.1
     maxTestedDimensionProportion: 6
     genesToTest: null
-    ### FRASER1 configuration
-    FRASER_version: "FRASER" 
-    deltaPsiCutoff : 0.3 
-    quantileForFiltering: 0.95 
-    ### For FRASER2, use the follwing parameters instead of the 3 lines above:
-    # FRASER_version: "FRASER2"
-    # deltaPsiCutoff : 0.1
-    # quantileForFiltering: 0.75
+    ### FRASER2 configuration
+    FRASER_version: "FRASER2"
+    deltaPsiCutoff : 0.1
+    quantileForFiltering: 0.75
+    ### For FRASER1, use the follwing parameters instead of the 3 lines above:
+    # FRASER_version: "FRASER"
+    # deltaPsiCutoff : 0.3
+    # quantileForFiltering: 0.95
 
 mae:
     run: true
