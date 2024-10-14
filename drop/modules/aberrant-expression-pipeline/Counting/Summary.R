@@ -239,7 +239,8 @@ if(isEmpty(sex_idx)){
         labs(color = 'Sex', shape = 'Predicted sex', alpha = 'Matches sex')
       plot(g)
       if(sex_dt[match_sex == F, .N] > 0){
-        DT::datatable(sex_dt[match_sex == F], caption = 'Sex mismatches')
+	print('Sex mismatches:')
+        print(sex_dt[match_sex == F])
       }
     } else {
       g <- ggplot(sex_dt, aes(XIST+1, UTY+1)) + geom_point(aes(col = SEX)) + 
