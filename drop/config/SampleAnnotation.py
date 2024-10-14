@@ -33,7 +33,8 @@ class SampleAnnotation:
         # external counts
         self.extGeneCountIDs = self.createGroupIds(file_type="GENE_COUNTS_FILE", sep=',')
         self.extSpliceCountIDs = self.createGroupIds(file_type="SPLICE_COUNTS_DIR", sep=',')
-
+        self.checkNonExternalGeneAnnotation()
+        
     def parse(self, sep='\t'):
         """
         read and check sample annotation for missing columns
@@ -329,3 +330,10 @@ class SampleAnnotation:
     def getSampleIDs(self, file_type):
         ids = self.subsetFileMapping(file_type)["ID"]
         return list(ids)
+        
+    def checkNonExternalGeneAnnotation(self):
+        external_groups = set([g for g in self.extGeneCountIDs if len(self.extGeneCountIDs[g]) > 0])
+        non_external_samples = self.annotationTable[self.annotationTable['DROP_GROUP'].isin(external_groups) == False]
+        if sum(non_external_samples['GENE_ANNOTATION'].isna() == False) > 0:
+            logger.info("WARNING: Found %d samples that had `GENE_ANNOTATION` provided in sample annotation table but are not external samples. The provided GENE_ANNOTATIONs are ignored.\n" % (sum(non_external_samples['GENE_ANNOTATION'].isna() == False)))
+            self.annotationTable.loc[self.annotationTable['DROP_GROUP'].isin(non_external_samples) == False, "GENE_ANNOTATION"] = ""
