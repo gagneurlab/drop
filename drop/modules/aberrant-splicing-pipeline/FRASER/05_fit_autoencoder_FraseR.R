@@ -34,18 +34,35 @@ fds <- loadFraserDataSet(dir=workingDir, name=dataset)
 implementation <- snakemake@config$aberrantSplicing$implementation
 
 for(type in psiTypes){
-    currentType(fds) <- type
-    q <- bestQ(fds, type)
-    verbose(fds) <- 3   # Add verbosity to the FRASER object
-    fds <- fit(fds, q=q, type=type, iterations=15, implementation=implementation)
-    fds <- saveFraserDataSet(fds)
+  currentType(fds) <- type
+  q <- bestQ(fds, type)
+  verbose(fds) <- 3   # Add verbosity to the FRASER object
+  fds <- fit(fds, q=q, type=type, iterations=15, implementation=implementation)
 }
 
 # remove .h5 files from previous runs with other FRASER version
 fdsDir <- dirname(snakemake@output$fdsout[1])
 for(type in psiTypesNotUsed){
-    predMeansFile <- file.path(fdsDir, paste0("predictedMeans_", type, ".h5"))
-    if(file.exists(predMeansFile)){
-        unlink(predMeansFile)
-    }
+  predMeansFile <- file.path(fdsDir, paste0("predictedMeans_", type, ".h5"))
+  if(file.exists(predMeansFile)){
+    unlink(predMeansFile)
+    assay(fds, paste0("predictedMeans_", type), withDimnames=FALSE) <- NULL
+  }
+  deltaFiles <- file.path(fdsDir, paste0("delta_", type, ".h5"))
+  if(file.exists(deltaFiles)){
+    unlink(deltaFiles)
+    assay(fds, paste0("delta_", type), withDimnames=FALSE) <- NULL
+  }
+  psiFiles <- file.path(fdsDir, paste0(type, ".h5"))
+  if(file.exists(psiFiles)){
+    unlink(psiFiles)
+    assay(fds, type, withDimnames=FALSE) <- NULL
+  }
+  rawOtherFiles <- file.path(fdsDir, paste0("rawOtherCounts_", type, ".h5"))
+  if(file.exists(rawOtherFiles)){
+    unlink(rawOtherFiles)
+    assay(fds, paste0("rawOtherCounts_", type), withDimnames=FALSE) <- NULL
+  }
 }
+
+fds <- saveFraserDataSet(fds)
