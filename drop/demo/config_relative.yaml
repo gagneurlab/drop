@@ -50,6 +50,7 @@ aberrantSplicing:
     padjCutoff: 1 
     maxTestedDimensionProportion: 6
     genesToTest: "Data/genes_to_test.yaml"
+    useOHTtoObtainQ: true
     ### FRASER1 configuration for demo dataset
     FRASER_version: "FRASER" 
     deltaPsiCutoff : 0.05 
