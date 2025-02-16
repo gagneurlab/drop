@@ -48,12 +48,22 @@ dataset_title <- paste0("Dataset: ", dataset, "--", annotation)
 
 
 #' ## Hyperparameter optimization
-for(type in psiTypes){
-  g <- plotEncDimSearch(fds, type=type) 
+if (isTRUE(metadata(ods)[["useOHTtoObtainQ"]])){
+  type <- "jaccard"
+  g <- plotEncDimSearch(fds, type=type, plotType="sv")
   if (!is.null(g)) {
     g <- g + theme_cowplot(font_size = 16) + 
       ggtitle(paste0("Q estimation, ", type)) + theme(legend.position = "none")
     print(g)
+  }
+} else{
+  for(type in psiTypes){
+    g <- plotEncDimSearch(fds, type=type) 
+    if (!is.null(g)) {
+      g <- g + theme_cowplot(font_size = 16) + 
+        ggtitle(paste0("Q estimation, ", type)) + theme(legend.position = "none")
+      print(g)
+    }
   }
 }
 
