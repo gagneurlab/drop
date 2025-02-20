@@ -48,7 +48,7 @@ dataset_title <- paste0("Dataset: ", dataset, "--", annotation)
 
 
 #' ## Estimation of the optimal latent space dimension
-if (isTRUE(metadata(ods)[["useOHTtoObtainQ"]])){
+if (isTRUE(metadata(fds)[["useOHTtoObtainQ"]])){
   type <- "jaccard"
   g <- plotEncDimSearch(fds, type=type, plotType="sv")
   g <- g + theme_cowplot(font_size = 16) + 
