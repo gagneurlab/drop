@@ -171,7 +171,7 @@ Calling variants on RNA-seq data may be useful for researchers who do not have a
 The RNA variant calling process uses information from multiple samples (as designated by the ``groups`` variable) to improve the quality of the called variants. However, the larger the group size, the more costly the computation is in terms of time and resources. To prioritize accuracy, include many samples in each ``DROP_GROUP``, and to prioritize speed up computation, separate samples into many groups. Additionally, certain vcf and bed files must be included to further boost the quality of the called variants (refer to `files-to-download`_).
 
 =====================  =========  ================================================================================================================================================================================================  =========
-Parameter              Type       Description                                                                                                                                                                    Default/Examples
+Parameter              Type       Description                                                                                                                                                                                       Default/Examples
 =====================  =========  ================================================================================================================================================================================================  =========
 run                    boolean    If true, the module will be run. If false, it will be ignored.                                                                                                                                    ``true``
 groups                 list       Same as in aberrant expression.                                                                                                                                                                   ``# see aberrant expression example``
@@ -227,6 +227,34 @@ The sample annotation file must be saved in the tab-separated values (tsv) forma
 column order does not matter. Also, it does not matter where it is stored, as the path is 
 specified in the config file. Here we provide some examples on how to deal with certain
 situations. For simplicity, we do not include all possible columns in the examples.
+
+=====================  =========  ================================================================================================================================================================================================  ==========================
+Parameter              Type       Description                                                                                                                                                                                       Default/Examples
+=====================  =========  ================================================================================================================================================================================================  ==========================
+RNA_ID                 character  Unique identifier of an RNA assay.                                                                                                                                                                ``sample1``
+RNA_BAM_FILE           character  Absolute path to the BAM file derived from RNA-seq. A BAM file can belong to only one RNA_ID and vice versa.                                                                                      ``path/to/sample1.bam``                                                                          
+DNA_ID                 character  Unique identifier of a DNA assay.                                                                                                                                                                 ``sample1``
+DNA_VCF_FILE           character  Absolute path to the DNA VCF file. The DNA_ID has to match the ID inside the VCF file. In case a multisample VCF is used, write the file name for each sample.                                    ``path/to/sample1.vcf``
+DROP_GROUP             character  The analysis group(s) that the RNA assay belongs to. Multiple groups must be separated by commas and no spaces (e.g. blood,WES,groupA). We recommend doing a different analysis for each tissue 
+                                  as gene expression and splicing is tissue specific.                                                                                                                                               ``group1,group2``
+PAIRED_END             boolean    Either TRUE or FALSE, depending on whether the sample comes from paired-end RNA-seq or not.                                                                                                       ``TRUE``
+COUNT_MODE             character  Either ``Union``, ``IntersectionStrict`` or ``IntersectionNotEmpty``. Refer to the documentation of HTSeq for details.                                                                            ``IntersectionStrict``
+COUNT_OVERLAPS         character  Either TRUE or FALSE, depending on whether reads overlapping different regions are allowed and counted.                                                                                           ``TRUE``
+STRAND                 character  Either yes, no, or reverse: ``no`` means that the sequencing was not strand specific; ``yes`` that it was strand specific, and the first read in the pair is on the same strand as the feature 
+                                  and the second read on the opposite strand; and ``reverse`` that the sequencing is strand specific and the first read in the pair is on the opposite strand to the feature and the second read 
+                                  on the same strand.                                                                                                                                                                               ``no``
+HPO_TERMS              character  Comma-separated phenotypes encoded as HPO terms.                                                                                                                                                  ``HP:0001479,HP:0005591``
+GENE_COUNTS_FILE       character  (Only required for aberrant expression external samples) Absolute path to the external gene-level count matrix.                                                                                   ``/path/to/gene_counts/geneCounts.tsv.gz``
+GENE_ANNOTATION        character  (Only required for aberrant expression external samples) Gene annotation used to obtain the count matrix. Must correspond to the key of an entry in the geneAnnotation parameter of the config 
+                                  file.                                                                                                                                                                                             ``v29``
+GENOME                 character  (Optional) Either ``ncbi`` or ``ucsc`` indicating the reference genome assembly.                                                                                                                  ``ncbi``
+SPLICE_COUNTS_DIR      character  (Only required for aberrant splicing external samples) Absolute path to the directory containing the external files required for aberrant splicing module.                                        ``/path/to/splicing_dir/``
+SEX                    character  (Optional) Either ``m``, ``male`` or ``f``, ``female`` or empty for samples with unknown sex values. When provided, a sex matching algorithm will be run on the RNA-seq counts and a sex value 
+                                  will be predicted for all samples.                                                                                                                                                                ``m``
+TISSUE                 character  (Optional) Recommended to be provided when exporting counts.                                                                                                                                      ``BRAIN``
+DISEASE                character  (Optional) Recommended to be provided when exporting counts.                                                                                                                                      ``AML``
+=====================  =========  ================================================================================================================================================================================================  ==========================
+
 
 
 Using External Counts
@@ -313,7 +341,7 @@ EXT-3R          BLOOD_AS                                                        
 
 
 Limiting FDR correction to subsets of genes of interest
-------------------------------------
+-------------------------------------------------------
 In addition to returning transcriptome-wide results, DROP provides the option to 
 limit the FDR correction to user-provided genes of interest in the 
 ``aberrantExpression`` and ``aberrantSplicing`` modules. These could, for example, be all 

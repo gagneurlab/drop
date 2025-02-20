@@ -33,7 +33,8 @@ class SampleAnnotation:
         # external counts
         self.extGeneCountIDs = self.createGroupIds(file_type="GENE_COUNTS_FILE", sep=',')
         self.extSpliceCountIDs = self.createGroupIds(file_type="SPLICE_COUNTS_DIR", sep=',')
-
+        self.checkNonExternalGeneAnnotation()
+        
     def parse(self, sep='\t'):
         """
         read and check sample annotation for missing columns
@@ -47,10 +48,6 @@ class SampleAnnotation:
         optional_columns = {"GENE_COUNTS_FILE", "SPLICE_COUNTS_DIR", "GENE_ANNOTATION", "GENOME"}
 
         annotationTable = pd.read_csv(self.file, sep=sep, index_col=False)
-        
-        # FRASER cannot handle a mixture of stranded and unstranded samples, raise error in such cases
-        if (annotationTable['STRAND'] == 'no').any() & ((annotationTable['STRAND'] == 'reverse').any() | (annotationTable['STRAND'] == 'yes').any()):
-            raise ValueError("Data contains a mix of stranded and unstranded samples. Please analyze them separately.\n")
         
         if annotationTable['STRAND'].isnull().values.any():
             raise ValueError("STRAND is not provided for some samples. All samples should have STRAND value in the sample annotation file.\n")
@@ -333,3 +330,10 @@ class SampleAnnotation:
     def getSampleIDs(self, file_type):
         ids = self.subsetFileMapping(file_type)["ID"]
         return list(ids)
+        
+    def checkNonExternalGeneAnnotation(self):
+        external_groups = set([g for g in self.extGeneCountIDs if len(self.extGeneCountIDs[g]) > 0])
+        non_external_samples = self.annotationTable[self.annotationTable['DROP_GROUP'].isin(external_groups) == False]
+        if sum(non_external_samples['GENE_ANNOTATION'].isna() == False) > 0:
+            logger.info("WARNING: Found %d samples that had `GENE_ANNOTATION` provided in sample annotation table but are not external samples. The provided GENE_ANNOTATIONs are ignored.\n" % (sum(non_external_samples['GENE_ANNOTATION'].isna() == False)))
+            self.annotationTable.loc[self.annotationTable['DROP_GROUP'].isin(non_external_samples) == False, "GENE_ANNOTATION"] = ""

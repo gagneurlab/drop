@@ -59,7 +59,6 @@ if (isTRUE(metadata(ods)[["useOHTtoObtainQ"]])){
     scale_color_brewer(palette="Dark2")
 }
 
-
 #' ### Aberrantly expressed genes per sample
 plotAberrantPerSample(ods, main = dataset_title, 
                       padjCutoff = snakemake@params$padjCutoff,

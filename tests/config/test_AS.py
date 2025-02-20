@@ -19,7 +19,7 @@ class Test_AS_Config:
             'maxTestedDimensionProportion': 6,
             'genesToTest': 'Data/genes_to_test.yaml',
             'useOHTtoObtainQ': True,
-            'FRASER_version': 'FRASER'
+            'FRASER_version': 'FRASER2',
         }
         assert dict_.items() <= dropConfig.AS.dict_.items()
 
