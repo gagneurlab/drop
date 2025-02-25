@@ -51,12 +51,12 @@ if(is.null(colData(ods)$isExternal)) colData(ods)$isExternal <- FALSE
 #' ### Encoding dimension
 if (isTRUE(metadata(ods)[["useOHTtoObtainQ"]])){
   print(c("Optimal dimension q was determined using OHT to be", getBestQ(ods)), quote = F)
-} else{
-  plotEncDimSearch(ods) +
-    labs(title = dataset_title) +
-    theme_cowplot() +
-    background_grid() +
-    scale_color_brewer(palette="Dark2")
+} else if(!is.null(metadata(ods)$encDimTable)){
+    plotEncDimSearch(ods) +
+      labs(title = dataset_title) +
+      theme_cowplot() +
+      background_grid() +
+      scale_color_brewer(palette="Dark2")
 }
 
 #' ### Aberrantly expressed genes per sample
