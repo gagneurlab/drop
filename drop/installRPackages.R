@@ -37,13 +37,13 @@ for (pckg_name in packages$package) {
         installed[Package == pckg_name, Version], version) < 0)) {
         
         package <- package_dt$package
-        #message(paste("install", package))
+        message(paste("install", package))
         if(branch != ""){
-            BiocManager::install(package, ask=FALSE, update=FALSE, ref=branch)
+          suppressWarnings(BiocManager::install(package, ask=FALSE, update=FALSE, ref=branch))
         } else{
-            BiocManager::install(package, ask=FALSE, update=FALSE)    
+          suppressWarnings(BiocManager::install(package, ask=FALSE, update=FALSE))    
         }
-        #message(paste("installed", package))
+        message(paste("installed", package))
     }
 }
 
