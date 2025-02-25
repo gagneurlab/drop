@@ -53,7 +53,7 @@ if (isTRUE(metadata(fds)[["useOHTtoObtainQ"]])){
   g <- plotEncDimSearch(fds, type=type, plotType="sv")
   g <- g + theme_cowplot(font_size = 16) + 
     ggtitle(paste0("Q estimation, ", type)) + theme(legend.position = "none")
-  #print(g)
+  print(g)
 } else{
   for(type in psiTypes){
     g <- plotEncDimSearch(fds, type=type, plotType="auc") 
