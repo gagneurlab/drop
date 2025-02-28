@@ -15,7 +15,7 @@ jobs:
       uses: mamba-org/setup-micromamba@v1
       with:
         environment-file: environment.yml
-        cache-environment: true
+        cache-environment: false
 
     - name: Check micromamba install
       shell: bash -l {0}
