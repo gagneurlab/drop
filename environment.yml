@@ -9,6 +9,7 @@ dependencies:
   - snakemake>=5,<8
   - flake8
   - bioconductor-bsgenome.hsapiens.ucsc.hg19
+  - wbuild>1.8.0
 
   # required for downloading R packages through github
   - unzip
