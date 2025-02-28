@@ -1,7 +1,7 @@
 package	version	ref
 devtools
-gagneurlab/OUTRIDER	1.21.1	OHT_clean
-gagneurlab/FRASER	2.00.1	OHT
+gagneurlab/OUTRIDER	1.21.0	oht_bump_version
+gagneurlab/FRASER	2.0.0	oht_bump_version
 gagneurlab/tMAE	1.0.4	1.0.4
 VariantAnnotation		
 rmarkdown		
