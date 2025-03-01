@@ -61,7 +61,7 @@ lp <- bplapply(1:N, function(i){
   ## First, find out the chr style
   chrs <- row.names(scanVcfHeader(vcf_file)@header$contig)
   seqlevelsStyle(gr_res) <- seqlevelsStyle(chrs)[1]
-  gr_res <- keepSeqlevels(gr_res, chrs, pruning.mode = 'coarse')
+  gr_res <- keepSeqlevels(gr_res, intersect(seqnames(gr_res), chrs), pruning.mode = 'coarse')
   param <- ScanVcfParam(samples=sample, fixed=NA, info='NT', geno='GT', 
                             trimEmpty=TRUE, which = gr_res)
   vcf_sample <- readVcf(vcf_file, param = param, row.names = FALSE)
