@@ -12,7 +12,7 @@
 #'  output:
 #'    - mat_qc: '`sm cfg.getProcessedResultsDir() + 
 #'               "/mae/{dataset}/dna_rna_qc_matrix.Rds"`'
-#'  threads: 20
+#'  threads: 30
 #'  type: script
 #'---
 
@@ -51,12 +51,20 @@ N <- length(vcf_files)
 
 lp <- bplapply(1:N, function(i){
   
+  gr_res <- copy(gr_test)
+  
   # Read sample vcf file
-
   sample <- dna_samples[i] %>% as.character()
-
-  param <-  ScanVcfParam(fixed=NA, info='NT', geno='GT', samples=sample, trimEmpty=TRUE) 
-  vcf_sample <- readVcf(vcf_files[i], param = param, row.names = FALSE)
+  vcf_file <- vcf_files[i]
+  
+  ## Read only the positions to perform the matching from the DNA vcf file
+  ## First, find out the chr style
+  chrs <- row.names(scanVcfHeader(vcf_file)@header$contig)
+  seqlevelsStyle(gr_res) <- seqlevelsStyle(chrs)[1]
+  gr_res <- keepSeqlevels(gr_res, chrs, pruning.mode = 'coarse')
+  param <- ScanVcfParam(samples=sample, fixed=NA, info='NT', geno='GT', 
+                            trimEmpty=TRUE, which = gr_res)
+  vcf_sample <- readVcf(vcf_file, param = param, row.names = FALSE)
   # Get GRanges and add Genotype
   gr_sample <- granges(vcf_sample)
   
@@ -71,13 +79,11 @@ lp <- bplapply(1:N, function(i){
     gt <- gsub('ref', '0/0', gt)
     gt <- gsub('het', '0/1', gt)
     gt <- gsub('hom', '1/1', gt)
- }
+  }
   
   mcols(gr_sample)$GT <- gt
   
   # Find overlaps between test and sample
-  gr_res <- copy(gr_test)
-  seqlevelsStyle(gr_res) <- seqlevelsStyle(seqlevelsInUse(gr_sample))[1]
   ov <- findOverlaps(gr_res, gr_sample, type = 'equal')
   mcols(gr_res)[from(ov),]$GT <- mcols(gr_sample)[to(ov),]$GT
   
@@ -102,4 +108,3 @@ mat <- mat[unique(sa[rows_in_group, DNA_ID]),
            drop=FALSE]
 
 saveRDS(mat, snakemake@output$mat_qc)
-
