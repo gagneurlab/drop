@@ -75,8 +75,9 @@ if (isTRUE(oht)){
                            implementation=implementation,
                            q_param=pars_q,
                            plot = FALSE)
-      metadata(fds)[["useOHTtoObtainQ"]] <- FALSE
-}}
+  }
+  metadata(fds)[["useOHTtoObtainQ"]] <- FALSE
+}
 fds <- saveFraserDataSet(fds)
 
 # remove previous hyper.done files and create new one

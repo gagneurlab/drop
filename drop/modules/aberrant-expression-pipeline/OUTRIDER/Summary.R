@@ -49,9 +49,7 @@ if(is.null(colData(ods)$isExternal)) colData(ods)$isExternal <- FALSE
 #'
 #' ## Visualize
 #' ### Encoding dimension
-if (isTRUE(metadata(ods)[["useOHTtoObtainQ"]])){
-  print(c("Optimal dimension q was determined using OHT to be", getBestQ(ods)), quote = F)
-} else if(!is.null(metadata(ods)$encDimTable)){
+if (!is.null(metadata(ods)$encDimTable)){
     plotEncDimSearch(ods) +
       labs(title = dataset_title) +
       theme_cowplot() +

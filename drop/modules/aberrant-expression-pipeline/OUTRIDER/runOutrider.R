@@ -49,9 +49,8 @@ if(length(gr) > 0){
 ## find optimal encoding dimension
 if (isTRUE(oht)){
   message(date(), ": Using OHT implementation to determine optimal q ...")
-  opt_q <- estimateBestQ(ods)
-  metadata(ods)[["optimalEncDim"]] <- opt_q
-  metadata(ods)[["useOHTtoObtainQ"]] <- TRUE
+  ods <- estimateBestQ(ods, useOHT=TRUE)
+  metadata(ods)[['useOHTtoObtainQ']] <- TRUE
 } else{
   a <- 5 
   b <- min(ncol(ods), nrow(ods)) / mp   # N/3
@@ -68,7 +67,7 @@ if (isTRUE(oht)){
   message(date(), ": Testing the following values of q to determine the optimal one: ",
           pars_q)
   
-  ods <- findEncodingDim(ods, params = pars_q, implementation = implementation)
+  ods <- estimateBestQ(ods, useOHT=FALSE, params = pars_q, implementation = implementation)
   opt_q <- getBestQ(ods)
   metadata(ods)[["useOHTtoObtainQ"]] <- FALSE
 }
