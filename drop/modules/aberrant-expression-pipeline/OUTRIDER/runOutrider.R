@@ -50,6 +50,7 @@ if(length(gr) > 0){
 if (isTRUE(oht)){
   message(date(), ": Using OHT implementation to determine optimal q ...")
   ods <- estimateBestQ(ods, useOHT=TRUE)
+  opt_q <- getBestQ(ods)
   metadata(ods)[['useOHTtoObtainQ']] <- TRUE
 } else{
   a <- 5 
@@ -66,7 +67,6 @@ if (isTRUE(oht)){
   
   message(date(), ": Testing the following values of q to determine the optimal one: ",
           pars_q)
-  
   ods <- estimateBestQ(ods, useOHT=FALSE, params = pars_q, implementation = implementation)
   opt_q <- getBestQ(ods)
   metadata(ods)[["useOHTtoObtainQ"]] <- FALSE
