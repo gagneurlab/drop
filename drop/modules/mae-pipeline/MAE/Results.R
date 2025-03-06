@@ -40,14 +40,10 @@ suppressPackageStartupMessages({
 })
 
 # Read all MAE results files
-rmae <- lapply(snakemake@input$mae_res, function(m){
-  rt <- fread(m)
-  # force UCSC chromosome style
-  rt <- rt[!grepl("chr",contig), contig := paste0("chr",contig)]
-  return(rt)
-}) %>% rbindlist()
+rmae <- lapply(snakemake@input$mae_res, fread) %>% rbindlist()
 
-# re-factor contig
+# re-factor contig and have all as UCSC chr style
+rmae <- rmae[!grepl("chr",contig), contig := paste0("chr",contig)]
 rmae$contig <- factor(rmae$contig)
 
 # Convert results into GRanges
