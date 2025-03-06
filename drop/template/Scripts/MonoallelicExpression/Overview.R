@@ -16,7 +16,7 @@
 #'                       "/mae/allelic_counts/{mae_id}.csv.gz",
 #'                        mae_id=cfg.MAE.getMaeAll())`'
 #'    - results_sample: '`sm expand(cfg.getProcessedResultsDir() +
-#'                       "/mae/samples/{mae_id}_res.Rds",
+#'                       "/mae/samples/{mae_id}_res.tsv",
 #'                       mae_id=cfg.MAE.getMaeAll())`'
 #'    - results_tables: '`sm expand(cfg.getProcessedResultsDir() +
 #'                       "/mae/{dataset}/MAE_results_{annotation}.tsv",
