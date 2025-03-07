@@ -32,6 +32,8 @@
 #+ include=FALSE
 saveRDS(snakemake, snakemake@log$snakemake)
 source(snakemake@input$functions)
+library(tMAE)
+library(ggplot2)
 
 #+ eval=TRUE, echo=FALSE
 # get parameters
@@ -91,8 +93,6 @@ qc_links <- sapply(qc_groups, function(v) build_link_list(
 res_sample <- fread(snakemake@input$results_sample[[1]])
 sample <- unique(res_sample$ID)
 
-library(tMAE)
-library(ggplot2)
 rare_column <- 'rare'
 if(any(is.na(res_sample$rare))) rare_column <- NULL
 #+ echo=TRUE
