@@ -88,7 +88,7 @@ qc_links <- sapply(qc_groups, function(v) build_link_list(
 #' ## Analyze Individual Results
 #+ echo=FALSE
 # Read the first results table
-res_sample <- readRDS(snakemake@input$results_sample[[1]])
+res_sample <- fread(snakemake@input$results_sample[[1]])
 sample <- unique(res_sample$ID)
 
 library(tMAE)
