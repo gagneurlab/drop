@@ -41,7 +41,7 @@ setAutoBPPARAM(MulticoreParam(snakemake@threads))
 fds <- loadFraserDataSet(dir=workingDir, name=dataset)
 fitMetrics(fds) <- psiTypes
 
-# Run estimate of optimal latent dimension
+# Estimate optimal latent dimension using either OHT or grid search
 implementation <- snakemake@config$aberrantSplicing$implementation
 mp <- snakemake@config$aberrantSplicing$maxTestedDimensionProportion
 oht <- snakemake@config$aberrantSplicing$useOHTtoObtainQ
@@ -66,7 +66,7 @@ if (isTRUE(oht)){
   Nsteps <- min(maxSteps, b)
   pars_q <- round(exp(seq(log(a),log(b),length.out = Nsteps))) %>% unique
   message(date(), ": Testing the following values of q to determine the optimal one: ",
-          pars_q)
+          paste0(pars_q, collapse = ', '))
   
   for(type in psiTypes){
       message(date(), ": ", type)
