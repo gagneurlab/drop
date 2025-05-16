@@ -77,7 +77,7 @@ anno_color_scheme <- brewer.pal(n = 3, name = 'Dark2')[1:2]
 
 for(type in psiTypes){
   for(normalized in c(F,T)){
-    hm <- plotCountCorHeatmap(
+    hm <- FRASER::plotCountCorHeatmap(
       object=fds,
       type = type,
       logit = TRUE,

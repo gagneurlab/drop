@@ -52,7 +52,7 @@ aberrantSplicing:
     useOHTtoObtainQ: true
     ### FRASER2 configuration for demo dataset
     FRASER_version: "FRASER2"
-    deltaPsiCutoff : 0.05 
+    deltaPsiCutoff: 0.05 
     quantileForFiltering: 0.95
 
 mae:

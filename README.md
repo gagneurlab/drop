@@ -1,4 +1,4 @@
-# Detection of RNA Outlier Pipeline
+# Detection of RNA Outliers Pipeline
 [![DROP pipeline status](https://github.com/gagneurlab/drop/workflows/Build/badge.svg)](https://github.com/gagneurlab/drop/actions?query=workflow%3ABuild)
 [![Version](https://img.shields.io/github/v/release/gagneurlab/drop?include_prereleases)](https://github.com/gagneurlab/drop/releases)
 [![Version](https://readthedocs.org/projects/gagneurlab-drop/badge/?version=latest)](https://gagneurlab-drop.readthedocs.io/en/latest)
@@ -121,4 +121,6 @@ For the complete set of tools used by DROP (e.g. for counting), see the [manuscr
 
 ## Acknowledgements and Funding
 
-The DROP team is composed of members from the Gagneur lab at the Department of Informatics and School of Medicine of the Technical University of Munich (TUM) and The German Human Genome-Phenome Archive (GHGA). The team has been funded by the German Bundesministerium für Bildung und Forschung (BMBF) through the e:Med Networking fonds AbCD-Net, Medical Informatics Initiative CORD-MI, and ERA PerMed project PerMiM. We would like to thank all the users for their feedback.
+The DROP team is composed of members from the Gagneur lab at the Department of Informatics and School of Medicine of the Technical University of Munich (TUM) and The German Human Genome-Phenome Archive (GHGA). The team has been funded by the German Bundesministerium für Bildung und Forschung (BMBF) through the e:Med Networking fonds AbCD-Net and the ERA PerMed project PerMiM. 
+In addition, the [OmicsDiscoveries](https://www.omicsdiscoveries.com/) team has contributed to DROP since September 2024.
+We would like to thank all the users for their feedback.
