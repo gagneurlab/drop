@@ -44,8 +44,6 @@ if(length(gr) > 0){
     rowData(ods) <- rd
 }
 
-#ods <- estimateSizeFactors(ods) #Unnecessary!
-
 ## find optimal encoding dimension
 if (isTRUE(oht)){
   message(date(), ": Using OHT implementation to determine optimal q ...")

@@ -41,7 +41,7 @@ setAutoBPPARAM(MulticoreParam(snakemake@threads))
 fds <- loadFraserDataSet(dir=workingDir, name=dataset)
 fitMetrics(fds) <- psiTypes
 
-# Run estimate of optimal latent dimension
+# Run estimate optimal latent dimension
 implementation <- snakemake@config$aberrantSplicing$implementation
 mp <- snakemake@config$aberrantSplicing$maxTestedDimensionProportion
 oht <- snakemake@config$aberrantSplicing$useOHTtoObtainQ
@@ -80,7 +80,7 @@ if (isTRUE(oht)){
 }
 fds <- saveFraserDataSet(fds)
 
-# remove previous hyper.done files and create new one
+# Remove previous hyper.done files and create new one
 outdir <- dirname(snakemake@output$hyper)
 prevFilterFiles <- grep("hyper(.*)done", list.files(outdir), value=TRUE)
 unlink(file.path(outdir, prevFilterFiles))
