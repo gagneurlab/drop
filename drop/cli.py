@@ -15,12 +15,14 @@ logger = logging.getLogger(__name__)
 click_log.basic_config(logger)
 
 
-@click.group()
+@click.group(invoke_without_command=True)
 @click_log.simple_verbosity_option(logger)
 @click.version_option('1.4.0',prog_name='drop')
 
 def main():
-    pass
+    ctx = click.get_current_context()
+    if ctx.invoked_subcommand is None:
+        click.echo(ctx.get_help())
 
 
 def overwrite(base_repo, local_proj):
