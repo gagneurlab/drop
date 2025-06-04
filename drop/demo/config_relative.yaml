@@ -31,6 +31,7 @@ aberrantExpression:
     genesToTest: "Data/genes_to_test.yaml"
     maxTestedDimensionProportion: 3
     yieldSize: 2000000
+    useOHTtoObtainQ: true
 
 aberrantSplicing:
     run: true
@@ -48,6 +49,7 @@ aberrantSplicing:
     padjCutoff: 1 
     maxTestedDimensionProportion: 6
     genesToTest: "Data/genes_to_test.yaml"
+    useOHTtoObtainQ: true
     ### FRASER2 configuration for demo dataset
     FRASER_version: "FRASER2"
     deltaPsiCutoff: 0.05 

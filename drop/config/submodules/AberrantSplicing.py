@@ -14,7 +14,8 @@ class AS(Submodule):
         self.CONFIG_KEYS = [
             "groups", "recount", "longRead", "filter", "minExpressionInOneSample", "minDeltaPsi",
             "quantileMinExpression", "quantileForFiltering", "implementation", "padjCutoff", 
-            "deltaPsiCutoff", "maxTestedDimensionProportion", "genesToTest", "FRASER_version"
+            "deltaPsiCutoff", "maxTestedDimensionProportion", "genesToTest", "FRASER_version",
+            "useOHTtoObtainQ"
         ]
         self.name = "AberrantSplicing"
         # if self.run is false return without doing any config/sa checks for completeness
@@ -51,6 +52,7 @@ class AS(Submodule):
         setKey(dict_, None, "maxTestedDimensionProportion", 6)
         setKey(dict_, None, "genesToTest", None)
         setKey(dict_, None, "FRASER_version", "FRASER")
+        setKey(dict_, None, "useOHTtoObtainQ", True)
         return dict_
 
     def getSplitCountFiles(self, dataset):

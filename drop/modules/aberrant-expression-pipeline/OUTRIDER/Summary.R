@@ -49,12 +49,12 @@ if(is.null(colData(ods)$isExternal)) colData(ods)$isExternal <- FALSE
 #'
 #' ## Visualize
 #' ### Encoding dimension
-if(!is.null(metadata(ods)$encDimTable)){
-  plotEncDimSearch(ods) +
-    labs(title = dataset_title) +
-    theme_cowplot() +
-    background_grid() +
-    scale_color_brewer(palette="Dark2")
+if (!is.null(metadata(ods)$encDimTable)){
+    plotEncDimSearch(ods) +
+      labs(title = dataset_title) +
+      theme_cowplot() +
+      background_grid() +
+      scale_color_brewer(palette="Dark2")
 }
 
 #' ### Aberrantly expressed genes per sample

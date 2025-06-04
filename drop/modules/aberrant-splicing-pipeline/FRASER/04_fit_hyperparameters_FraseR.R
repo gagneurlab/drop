@@ -1,5 +1,5 @@
 #'---
-#' title: Hyper parameter optimization
+#' title: Estimating the optimal latent dimension
 #' author: Christian Mertes
 #' wb:
 #'  log:
@@ -41,33 +41,46 @@ setAutoBPPARAM(MulticoreParam(snakemake@threads))
 fds <- loadFraserDataSet(dir=workingDir, name=dataset)
 fitMetrics(fds) <- psiTypes
 
-# Run hyper parameter optimization
+# Run estimate optimal latent dimension
 implementation <- snakemake@config$aberrantSplicing$implementation
 mp <- snakemake@config$aberrantSplicing$maxTestedDimensionProportion
+oht <- snakemake@config$aberrantSplicing$useOHTtoObtainQ
 
-# Get range for latent space dimension
-a <- 2 
-b <- min(ncol(fds), nrow(fds)) / mp   # N/mp
-
-maxSteps <- 12
-if(mp < 6){
-  maxSteps <- 15
-}
-
-Nsteps <- min(maxSteps, b)
-pars_q <- round(exp(seq(log(a),log(b),length.out = Nsteps))) %>% unique
-
-for(type in psiTypes){
-    message(date(), ": ", type)
-    fds <- optimHyperParams(fds, type=type, 
-                            implementation=implementation,
-                            q_param=pars_q,
-                            plot = FALSE)
-    fds <- saveFraserDataSet(fds)
+if (isTRUE(oht)){
+  message(date(), ": Using OHT implementation to determine optimal q ...")
+  fds <- estimateBestQ(fds, type="jaccard",
+                       useOHT=TRUE,
+                       implementation=implementation,
+                       plot = FALSE)
+  metadata(fds)[["useOHTtoObtainQ"]] <- TRUE
+} else{
+  # Get range for latent space dimension
+  a <- 2 
+  b <- min(ncol(fds), nrow(fds)) / mp   # N/mp
+  
+  maxSteps <- 12
+  if(mp < 6){
+    maxSteps <- 15
+  }
+  
+  Nsteps <- min(maxSteps, b)
+  pars_q <- round(exp(seq(log(a),log(b),length.out = Nsteps))) %>% unique
+  message(date(), ": Testing the following values of q to determine the optimal one: ",
+          pars_q)
+  
+  for(type in psiTypes){
+      message(date(), ": ", type)
+      fds <- estimateBestQ(fds, type=type,
+                           useOHT=FALSE,
+                           implementation=implementation,
+                           q_param=pars_q,
+                           plot = FALSE)
+  }
+  metadata(fds)[["useOHTtoObtainQ"]] <- FALSE
 }
 fds <- saveFraserDataSet(fds)
 
-# remove previous hyper.done files and create new one
+# Remove previous hyper.done files and create new one
 outdir <- dirname(snakemake@output$hyper)
 prevFilterFiles <- grep("hyper(.*)done", list.files(outdir), value=TRUE)
 unlink(file.path(outdir, prevFilterFiles))
