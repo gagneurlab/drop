@@ -24,7 +24,7 @@ mamba create -n drop_env -c conda-forge -c bioconda drop --override-channels
 ```
 
 
-In the case troubles with mamba or conda, we recommend using the fixed `DROP_<version>.yaml` installation file we make available on our [public server](https://www.cmm.in.tum.de/public/paper/drop_analysis/). Install the current version and use the full path in the following command to install the conda environment `drop_env`
+In the case of troubles with mamba or conda, we recommend using the fixed `DROP_<version>.yaml` installation file we make available on our [public server](https://www.cmm.in.tum.de/public/paper/drop_analysis/). Install the current version and use the full path in the following command to install the conda environment `drop_env`
 ```
 mamba env create -f DROP_1.4.0.yaml
 
@@ -51,27 +51,19 @@ For more information on different installation options, refer to the
 
 ## What's new
 
+Version 1.5.0 contains the versions of OUTRIDER and FRASER that use the Optimal Hard Threshold procedure established by Gavish and Donoho, a deterministic approach to denoise low-rank matrices relying on singular value decomposition, to find the optimal autoencoder dimension instead of the grid search. This leads to a reduction in the run time of around 6-10 times. Also, since this version, DROP is not available for commercial use. If you want to use it for commercial purposes, please contact us. 
 
 Version 1.4.0 fixes some bugs regarding the split reads counting for FRASER, which only affects cohorts containing samples with different strands (stranded forward, stranded reverse or unstranded). If your cohort contained samples with different strands, please rerun the AS module using version 1.4.0. In addition, due to snakemake updates affecting wBuild and the way we installed FRASER, installing DROP 1.3.3 no longer works. Version 1.3.4 fixes the FRASER version to ensure reproducibility and fixes certain scripts affected by the snakemake update. Running the pipeline with version 1.3.4 should provide the same outlier results as 1.3.3.
-Due to snakemake updates affecting wBuild and the way we installed FRASER, installing DROP 1.3.3 no longer works. Version 1.3.4 simply fixes the FRASER version to ensure reproducibility and fixes certain scripts affected by the snakemake update. Running the pipeline with the version 1.3.4 should provide the same outlier results as 1.3.3.
 
-Version 1.3.0 introduces the option to use FRASER 2.0 which is an improved version of FRASER that uses the Intron Jaccard Index metric instead of percent spliced in and splicing efficiency to quantify and later call aberrant splicing. To run FRASER 2.0, modify the `FRASER_version` parameter in the aberrantSplicing dictionary in the config file and adapt the `quantileForFiltering` and `deltaPsiCutoff` parameters. See the [config template](https://github.com/gagneurlab/drop/blob/master/drop/template/config.yaml) for more details. When switching between FRASER versions, we recommend running DROP in a
+Version 1.3.0 introduces the option to use FRASER 2.0, which is an improved version of FRASER that uses the Intron Jaccard Index metric instead of the percent spliced in (PSI) and splicing efficiency to quantify and later call aberrant splicing. To run FRASER 2.0, modify the `FRASER_version` parameter in the aberrantSplicing dictionary in the config file and adapt the `quantileForFiltering` and `deltaPsiCutoff` parameters. See the [config template](https://github.com/gagneurlab/drop/blob/master/drop/template/config.yaml) for more details. When switching between FRASER versions, we recommend running DROP in a
 separate folder for each version. Moreover, DROP now allows users to provide lists of genes to focus on and do the multiple testing correction instead of the usual transcriptome-wide approach. Refer to the [documentation](https://gagneurlab-drop.readthedocs.io/en/latest/prepare.html#limiting-fdr-correction-to-subsets-of-genes-of-interest).
-
-`Snakemake v.7.8` introduced some changes in which changes in parameters can cause rules to be re-executed. More info [here](https://github.com/snakemake/snakemake/issues/1694). This affects DROP and causes certain rules in the AS and QC modules to be triggered even if they were already completed and there were no changes in the sample annotation or scripts. The workaround is to run DROP by adding the parameter `--rerun-triggers mtime`, e.g. `snakemake -n --rerun-triggers mtime` or `snakemake --cores 10 --rerun-triggers mtime`. We will investigate the rules in DROP to fix this.
-
-As of version 1.2.1 DROP has a new module that performs RNA-seq variant calling. The input are BAM files and the output either a single-sample or a multi-sample VCF file (option specified by the user) annotated with allele frequencies from gnomAD (if specified by the user). The sample annotation table does not need to be changed, but several new parameters in the config file have to be added and tuned. For more info, refer to the [documentation](https://gagneurlab-drop.readthedocs.io/en/latest/prepare.html#rna-variant-calling-dictionary).
-
-
-Also, as of version 1.2.1 the integration of external split and non-split counts to detect aberrant splicing is now possible. In a new column in the sample annotation, simply specify the directory containing the counts. For more info, refer to the [documentation](https://gagneurlab-drop.readthedocs.io/en/latest/prepare.html#external-count-examples).
-
 
 
 ## Set up a custom project
 Install the drop module according to [installation](#installation) and initialize the project in a custom project directory.
 ### Prepare the input data
-Create a sample annotation that contains the sample IDs, file locations and other information necessary for the pipeline.
-Edit the config file to set the correct file path of sample annotation and locations of non-sample specific input files.
+Create a sample annotation table that contains the sample IDs, file locations and other information necessary for the pipeline.
+Edit the config file to set the correct file path of the sample annotation and locations of non-sample-specific input files.
 The requirements are described in the [documentation](https://gagneurlab-drop.readthedocs.io/en/latest/prepare.html).
 
 ### Execute the pipeline
@@ -85,7 +77,7 @@ snakemake aberrantExpression --cores 10
 ```
 
 ## Datasets
-The following publicly-available datasets of gene counts can be used as controls.
+The following publicly available datasets of gene counts can be used as controls.
 Please cite as instructed for each dataset.
 
 * 154 non strand-specific fibroblasts, build hg19, Technical University of Munich: [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.4646822.svg)](https://doi.org/10.5281/zenodo.4646822)
@@ -121,6 +113,6 @@ For the complete set of tools used by DROP (e.g. for counting), see the [manuscr
 
 ## Acknowledgements and Funding
 
-The DROP team is composed of members from the Gagneur lab at the Department of Informatics and School of Medicine of the Technical University of Munich (TUM) and The German Human Genome-Phenome Archive (GHGA). The team has been funded by the German Bundesministerium für Bildung und Forschung (BMBF) through the e:Med Networking fonds AbCD-Net and the ERA PerMed project PerMiM. 
+The DROP team is composed of members from the Gagneur lab at the Department of Informatics and the School of Medicine of the Technical University of Munich (TUM) and The German Human Genome-Phenome Archive (GHGA). The team has been funded by the German Bundesministerium für Bildung und Forschung (BMBF) through the e:Med Networking fonds AbCD-Net and the ERA PerMed project PerMiM. 
 In addition, the [OmicsDiscoveries](https://www.omicsdiscoveries.com/) team has contributed to DROP since September 2024.
 We would like to thank all the users for their feedback.
