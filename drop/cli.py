@@ -17,7 +17,7 @@ click_log.basic_config(logger)
 
 @click.group(invoke_without_command=True)
 @click_log.simple_verbosity_option(logger)
-@click.version_option('1.4.0',prog_name='drop')
+@click.version_option('1.5.0',prog_name='drop')
 
 def main():
     ctx = click.get_current_context()
