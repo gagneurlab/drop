@@ -1,7 +1,7 @@
 # Detection of RNA Outliers Pipeline
 [![DROP pipeline status](https://github.com/gagneurlab/drop/workflows/Build/badge.svg)](https://github.com/gagneurlab/drop/actions?query=workflow%3ABuild)
 [![Version](https://img.shields.io/github/v/release/gagneurlab/drop?include_prereleases)](https://github.com/gagneurlab/drop/releases)
-[![Version](https://readthedocs.org/projects/gagneurlab-drop/badge/?version=latest)](https://gagneurlab-drop.readthedocs.io/en/latest)
+[![Version](https://readthedocs.org/projects/gagneurlab-drop/badge/?version=latest)](https://gagneurlab-drop.readthedocs.io/en/dev)
 
 
 The detection of RNA Outliers Pipeline (DROP) is an integrative workflow to detect aberrant expression, aberrant splicing, and mono-allelic expression from raw RNA sequencing data. 
