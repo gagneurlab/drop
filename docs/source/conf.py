@@ -23,7 +23,7 @@ copyright = '2020, Michaela Müller'
 author = 'Michaela Müller'
 
 # The full version, including alpha/beta/rc tags
-release_ = '1.4.0'
+release_ = '1.5.0'
 
 
 
@@ -50,12 +50,12 @@ exclude_patterns = []
 
 # -- Options for HTML output -------------------------------------------------
 
-# The theme to use for HTML and HTML Help pages.  See the documentation for
-# a list of builtin themes.
+# The theme to use for HTML and HTML Help pages. See the documentation for
+# a list of built-in themes.
 #
 html_theme = 'sphinx_rtd_theme'
 
 # Add any paths that contain custom static files (such as style sheets) here,
-# relative to this directory. They are copied after the builtin static files,
-# so a file named "default.css" will overwrite the builtin "default.css".
+# relative to this directory. They are copied after the built-in static files,
+# so a file named "default.css" will overwrite the built-in "default.css".
 #html_static_path = ['_static']
