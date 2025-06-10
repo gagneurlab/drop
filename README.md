@@ -1,5 +1,6 @@
 # Detection of RNA Outliers Pipeline
 [![DROP pipeline status](https://github.com/gagneurlab/drop/workflows/Build/badge.svg)](https://github.com/gagneurlab/drop/actions?query=workflow%3ABuild)
+[![License](https://img.shields.io/badge/license-CC--BY--NC%204.0-green)](https://github.com/gagneurlab/drop/blob/master/LICENSE)
 [![Version](https://img.shields.io/github/v/release/gagneurlab/drop?include_prereleases)](https://github.com/gagneurlab/drop/releases)
 [![Version](https://readthedocs.org/projects/gagneurlab-drop/badge/?version=latest)](https://gagneurlab-drop.readthedocs.io/en/latest)
 
