@@ -70,7 +70,7 @@ if(length(exCountIDs) > 0){
     }
 } else {
     message("symLink fraser dir")
-    file.symlink(paste0(workingDir, "savedObjects/","raw-local-", dataset),
+    file.symlink(paste0("raw-local-", dataset),
                  paste0(workingDir, "savedObjects/","raw-", dataset))
     
     fds@colData$isExternal <- as.factor(FALSE)
