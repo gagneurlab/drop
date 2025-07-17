@@ -31,6 +31,7 @@ aberrantExpression:
     genesToTest: "Data/genes_to_test.yaml"
     maxTestedDimensionProportion: 3
     yieldSize: 2000000
+    useOHTtoObtainQ: true
 
 aberrantSplicing:
     run: true
@@ -42,16 +43,17 @@ aberrantSplicing:
     keepNonStandardChrs: false
     filter: false
     minExpressionInOneSample: 20
-    quantileMinExpression: 10 
-    quantileForFiltering: 0.95 
+    quantileMinExpression: 10  
     minDeltaPsi: 0.05
     implementation: PCA
     padjCutoff: 1 
     maxTestedDimensionProportion: 6
     genesToTest: "Data/genes_to_test.yaml"
-    ### FRASER1 configuration for demo dataset
-    FRASER_version: "FRASER" 
-    deltaPsiCutoff : 0.05 
+    useOHTtoObtainQ: true
+    ### FRASER2 configuration for demo dataset
+    FRASER_version: "FRASER2"
+    deltaPsiCutoff: 0.05 
+    quantileForFiltering: 0.95
 
 mae:
     run: true

@@ -4,11 +4,14 @@ channels:
   - bioconda
 dependencies:
   - python>=3.8
+  - r-base>=4.4
   - pip
   - drop
   - snakemake>=5,<8
   - flake8
   - bioconductor-bsgenome.hsapiens.ucsc.hg19
+  - wbuild>1.8.0
+  - r-dt
 
   # required for downloading R packages through github
   - unzip

@@ -11,7 +11,7 @@ class AE(Submodule):
         super().__init__(config, sampleAnnotation, processedDataDir, processedResultsDir, workDir)
         self.CONFIG_KEYS = [
             "groups", "fpkmCutoff", "implementation", "padjCutoff", "zScoreCutoff",
-            "maxTestedDimensionProportion", "genesToTest"
+            "maxTestedDimensionProportion", "genesToTest", "useOHTtoObtainQ"
         ]
         self.name = "AberrantExpression"
         # if self.run is false return without doing any config/sa checks for completeness
@@ -40,6 +40,7 @@ class AE(Submodule):
         setKey(dict_, None, "genesToTest", None)
         setKey(dict_, None, "maxTestedDimensionProportion", 3)
         setKey(dict_, None, "yieldSize", 2000000)
+        setKey(dict_, None, "useOHTtoObtainQ", True)
         return dict_
 
     def getCountFiles(self, annotation, group):

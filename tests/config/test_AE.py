@@ -9,7 +9,8 @@ class Test_AE_Config:
             'padjCutoff': 1,
             'zScoreCutoff': 0,
             'genesToTest': 'Data/genes_to_test.yaml',
-            'maxTestedDimensionProportion': 3
+            'maxTestedDimensionProportion': 3,
+            'useOHTtoObtainQ': True
         }
         print(dropConfig.AE.dict_.items())
         assert dict_.items() <= dropConfig.AE.dict_.items()

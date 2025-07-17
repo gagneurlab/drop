@@ -20,8 +20,6 @@ def test_pipeline_no_run(demo_dir):
     pipeline_run = run(f"snakemake --until Index --cores {CORES} --configfile config_norun.yaml", demo_dir)
     pipeline_run = run(f"snakemake --cores {CORES} --configfile config_norun.yaml", demo_dir)
     assert "Finished job 0." in pipeline_run.stderr
-    return pipeline_run
-
 
 def test_dependencyGraph(demo_dir):
     r = run(f"snakemake dependencyGraph -F -c{CORES}", dir_path=demo_dir)
