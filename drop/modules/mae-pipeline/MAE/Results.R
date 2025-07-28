@@ -43,7 +43,8 @@ suppressPackageStartupMessages({
 rmae <- lapply(snakemake@input$mae_res, fread) %>% rbindlist()
 
 # re-factor contig and have all as UCSC chr style
-rmae <- rmae[!grepl("chr",contig), contig := paste0("chr",contig)]
+rmae[, contig := as.character(contig)]
+rmae[!grepl("chr",contig), contig := paste0("chr",contig)]
 rmae$contig <- factor(rmae$contig)
 
 # Convert results into GRanges
