@@ -54,7 +54,7 @@ For more information on different installation options, refer to the
 
 Version 1.5.0 contains the versions of OUTRIDER and FRASER that use the Optimal Hard Threshold procedure established by Gavish and Donoho, a deterministic approach to denoise low-rank matrices relying on singular value decomposition, to find the optimal autoencoder dimension instead of the grid search. This leads to a reduction in the run time of around 6-10 times. 
 
-⚠️ Also, since this version, DROP, OUTRIDER, and FRASER are released under `CC-BY-NC 4.0`,  meaning it requires a license for any commercial use. If you want to use it for commercial purposes, please contact us.
+⚠️ Also, since this version, OUTRIDER and FRASER are released under `CC-BY-NC 4.0`, meaning a license is required for any commercial use. If you intend to use the aberrant expression and aberrant splicing modules for commercial purposes, please contact us.
 
 Version 1.4.0 fixes some bugs regarding the split reads counting for FRASER, which only affects cohorts containing samples with different strands (stranded forward, stranded reverse or unstranded). If your cohort contained samples with different strands, please rerun the AS module using version 1.4.0. In addition, due to snakemake updates affecting wBuild and the way we installed FRASER, installing DROP 1.3.3 no longer works. Version 1.3.4 fixes the FRASER version to ensure reproducibility and fixes certain scripts affected by the snakemake update. Running the pipeline with version 1.3.4 should provide the same outlier results as 1.3.3.
 
