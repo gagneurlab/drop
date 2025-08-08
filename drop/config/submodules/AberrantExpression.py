@@ -19,10 +19,8 @@ class AE(Submodule):
             return
         self.rnaIDs = self.sampleAnnotation.subsetGroups(self.groups, assay="RNA")
         self.extRnaIDs = self.sampleAnnotation.subsetGroups(self.groups, assay="GENE_COUNTS")
-        for g in self.groups:
-            if len(set(self.rnaIDs[g]) & set(self.extRnaIDs[g])) > 0:
-                raise ValueError(f"{set(self.rnaIDs[g]) & set(self.extRnaIDs[g])} has both BAM and external count file \
-                please fix to only have either external count or BAM processing\n")
+        # Note: mixing BAM and external counts is now allowed to support using external expression counts
+        # while still processing BAM files for splicing analysis
 
         # check number of IDs per group
         all_ids = self.sampleAnnotation.subsetGroups(self.groups, assay=["RNA", "GENE_COUNTS"])
@@ -45,21 +43,26 @@ class AE(Submodule):
     def getCountFiles(self, annotation, group):
         """
         Get all count files from DROP (counted from BAM file) and external count matrices
+        When both BAM and external counts are available, prioritize external counts for expression analysis
+        while still allowing BAM files to be used for splicing analysis
         :param annotation: annotation name from wildcard
         :param group: DROP group name from wildcard
         :return: list of files
         """
 
-
         bam_IDs = self.sampleAnnotation.getIDsByGroup(group, assay="RNA")
+        ext_IDs = self.sampleAnnotation.getIDsByGroup(group, assay="GENE_COUNTS")
+        
+        # Get BAM-based count files only for samples that don't have external counts
+        bam_only_IDs = [id_ for id_ in bam_IDs if id_ not in ext_IDs]
         file_stump = self.processedDataDir / "aberrant_expression" / annotation / "counts" / "{sampleID}.Rds"
-        count_files = expand(str(file_stump), sampleID=bam_IDs)
-        # if sample annotation table does not contain GENE_COUNTS_FILE column. return no external counts
-        if("GENE_COUNTS_FILE" not in self.sampleAnnotation.SAMPLE_ANNOTATION_COLUMNS):
-            extCountFiles = []
-        else:
+        count_files = expand(str(file_stump), sampleID=bam_only_IDs)
+        
+        # Add external count files if available
+        if("GENE_COUNTS_FILE" in self.sampleAnnotation.SAMPLE_ANNOTATION_COLUMNS):
             extCountFiles = self.sampleAnnotation.getImportCountFiles(annotation, group, file_type="GENE_COUNTS_FILE")
             count_files.extend(extCountFiles)
+            
         return count_files
 
     def getCountParams(self, rnaID):

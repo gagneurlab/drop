@@ -25,7 +25,7 @@ class AS(Submodule):
         self.rnaExIDs = self.sampleAnnotation.subsetGroups(self.groups, assay="SPLICE_COUNT")
         for g in self.groups:
             if len(set(self.rnaIDs[g]) & set(self.rnaExIDs[g])) > 0:
-                raise ValueError(f"{set(self.rnaIDs[g]) & set(self.extRnaIDs[g])} has both BAM and external count file \
+                raise ValueError(f"{set(self.rnaIDs[g]) & set(self.rnaExIDs[g])} has both BAM and external count file \
                 please fix in sample annotation table to only have either external count or BAM processing\n")
 
         all_ids = self.sampleAnnotation.subsetGroups(self.groups, assay=["RNA", "SPLICE_COUNT"])

@@ -65,6 +65,8 @@ As of version 1.2.1 DROP has a new module that performs RNA-seq variant calling.
 
 Also, as of version 1.2.1 the integration of external split and non-split counts to detect aberrant splicing is now possible. In a new column in the sample annotation, simply specify the directory containing the counts. For more info, refer to the [documentation](https://gagneurlab-drop.readthedocs.io/en/latest/prepare.html#external-count-examples).
 
+As of version 1.4.1, DROP supports mixing BAM files and external expression counts within the same group. This allows users to provide pre-computed expression counts for some samples while still using BAM files for splicing analysis. When both are available for a sample, external counts take priority for expression analysis, while BAM files are still used for splicing analysis.
+
 
 
 ## Set up a custom project
