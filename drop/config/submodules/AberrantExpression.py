@@ -1,4 +1,5 @@
 from snakemake.io import expand
+from snakemake.logging import logger
 import numpy as np
 
 from drop import utils
@@ -55,6 +56,15 @@ class AE(Submodule):
         
         # Get BAM-based count files only for samples that don't have external counts
         bam_only_IDs = [id_ for id_ in bam_IDs if id_ not in ext_IDs]
+        
+        # Log information about mixed usage when both BAM and external counts are available
+        if ext_IDs and bam_only_IDs:
+            logger.info(f"Group '{group}': Using external expression counts for {len(ext_IDs)} samples "
+                       f"({', '.join(ext_IDs)}) and BAM-derived counts for {len(bam_only_IDs)} samples "
+                       f"({', '.join(bam_only_IDs)})")
+        elif ext_IDs:
+            logger.info(f"Group '{group}': Using external expression counts for all {len(ext_IDs)} samples")
+        
         file_stump = self.processedDataDir / "aberrant_expression" / annotation / "counts" / "{sampleID}.Rds"
         count_files = expand(str(file_stump), sampleID=bam_only_IDs)
         
