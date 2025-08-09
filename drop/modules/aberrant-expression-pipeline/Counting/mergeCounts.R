@@ -9,7 +9,6 @@
 #'  input: 
 #'   - counts: '`sm lambda w: cfg.AE.getCountFiles(w.annotation, w.dataset)`'
 #'   - count_ranges: '`sm cfg.getProcessedDataDir() + "/aberrant_expression/{annotation}/count_ranges.Rds" `'
-#'   - input_params: '`sm cfg.getProcessedDataDir() + "/aberrant_expression/{annotation}/params/merge/{dataset}_mergeParams.csv"`'
 #'  output:
 #'    - counts: '`sm cfg.getProcessedDataDir() +
 #'               "/aberrant_expression/{annotation}/outrider/{dataset}/total_counts.Rds"`'

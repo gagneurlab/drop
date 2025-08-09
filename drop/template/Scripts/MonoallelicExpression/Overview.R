@@ -16,7 +16,7 @@
 #'                       "/mae/allelic_counts/{mae_id}.csv.gz",
 #'                        mae_id=cfg.MAE.getMaeAll())`'
 #'    - results_sample: '`sm expand(cfg.getProcessedResultsDir() +
-#'                       "/mae/samples/{mae_id}_res.Rds",
+#'                       "/mae/samples/{mae_id}_res.tsv",
 #'                       mae_id=cfg.MAE.getMaeAll())`'
 #'    - results_tables: '`sm expand(cfg.getProcessedResultsDir() +
 #'                       "/mae/{dataset}/MAE_results_{annotation}.tsv",
@@ -32,6 +32,8 @@
 #+ include=FALSE
 saveRDS(snakemake, snakemake@log$snakemake)
 source(snakemake@input$functions)
+library(tMAE)
+library(ggplot2)
 
 #+ eval=TRUE, echo=FALSE
 # get parameters
@@ -88,11 +90,9 @@ qc_links <- sapply(qc_groups, function(v) build_link_list(
 #' ## Analyze Individual Results
 #+ echo=FALSE
 # Read the first results table
-res_sample <- readRDS(snakemake@input$results_sample[[1]])
+res_sample <- fread(snakemake@input$results_sample[[1]])
 sample <- unique(res_sample$ID)
 
-library(tMAE)
-library(ggplot2)
 rare_column <- 'rare'
 if(any(is.na(res_sample$rare))) rare_column <- NULL
 #+ echo=TRUE

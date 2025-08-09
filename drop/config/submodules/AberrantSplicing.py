@@ -14,7 +14,8 @@ class AS(Submodule):
         self.CONFIG_KEYS = [
             "groups", "recount", "longRead", "filter", "minExpressionInOneSample", "minDeltaPsi",
             "quantileMinExpression", "quantileForFiltering", "implementation", "padjCutoff", 
-            "deltaPsiCutoff", "maxTestedDimensionProportion", "genesToTest", "FRASER_version"
+            "deltaPsiCutoff", "maxTestedDimensionProportion", "genesToTest", "FRASER_version",
+            "useOHTtoObtainQ"
         ]
         self.name = "AberrantSplicing"
         # if self.run is false return without doing any config/sa checks for completeness
@@ -27,10 +28,11 @@ class AS(Submodule):
             if len(set(self.rnaIDs[g]) & set(self.rnaExIDs[g])) > 0:
                 raise ValueError(f"{set(self.rnaIDs[g]) & set(self.rnaExIDs[g])} has both BAM and external count file \
                 please fix in sample annotation table to only have either external count or BAM processing\n")
-
+   
         all_ids = self.sampleAnnotation.subsetGroups(self.groups, assay=["RNA", "SPLICE_COUNT"])
         self.checkSubset(all_ids)
-
+        self.checkStrandSpecificity()
+        
     def setDefaultKeys(self, dict_):
         super().setDefaultKeys(dict_)
         setKey = utils.setKey
@@ -50,6 +52,7 @@ class AS(Submodule):
         setKey(dict_, None, "maxTestedDimensionProportion", 6)
         setKey(dict_, None, "genesToTest", None)
         setKey(dict_, None, "FRASER_version", "FRASER")
+        setKey(dict_, None, "useOHTtoObtainQ", True)
         return dict_
 
     def getSplitCountFiles(self, dataset):
@@ -109,3 +112,15 @@ class AS(Submodule):
         if(fraser_version == "FRASER2"):
             return "jaccard"
         return "theta"
+    
+    def checkStrandSpecificity(self):
+        """
+        FRASER cannot handle a mixture of stranded and unstranded samples
+        raises an error in such cases
+        """
+        
+        for drop_group in self.groups:
+            drop_group_annotation = self.sampleAnnotation.getIDsByGroup(drop_group)
+            drop_group_annotation = self.sampleAnnotation.subsetSampleAnnotation("RNA_ID", drop_group_annotation)
+            if (drop_group_annotation['STRAND'] == 'no').any() & ((drop_group_annotation['STRAND'] == 'reverse').any() | (drop_group_annotation['STRAND'] == 'yes').any()):
+                raise ValueError(f"Data contains a mix of stranded and unstranded samples in group: {drop_group}. Please analyze them separately.\n")

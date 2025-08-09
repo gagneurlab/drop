@@ -40,9 +40,9 @@ for (pckg_name in packages$package) {
         message(paste("install", package))
         if(package == 'DT') remotes::install_github('rstudio/DT')
         if(branch != ""){
-            BiocManager::install(package, ask=FALSE, update=FALSE, ref=branch)
+          suppressWarnings(BiocManager::install(package, ask=FALSE, update=FALSE, ref=branch))
         } else{
-            BiocManager::install(package, ask=FALSE, update=FALSE)    
+          suppressWarnings(BiocManager::install(package, ask=FALSE, update=FALSE))    
         }
         message(paste("installed", package))
     }

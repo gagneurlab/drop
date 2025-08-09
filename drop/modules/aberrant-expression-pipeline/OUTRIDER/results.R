@@ -12,7 +12,6 @@
 #'   - add_HPO_cols: '`sm str(projectDir / ".drop" / "helpers" / "add_HPO_cols.R")`'
 #'   - ods: '`sm cfg.getProcessedResultsDir() + "/aberrant_expression/{annotation}/outrider/{dataset}/ods.Rds"`'
 #'   - gene_name_mapping: '`sm cfg.getProcessedDataDir() + "/preprocess/{annotation}/gene_name_mapping_{annotation}.tsv"`'
-#'   - input_params: '`sm cfg.getProcessedDataDir() + "/aberrant_expression/{annotation}/params/results/{dataset}_resultParams.csv"`'
 #'  output:
 #'   - results: '`sm cfg.getProcessedResultsDir() + "/aberrant_expression/{annotation}/outrider/{dataset}/OUTRIDER_results.tsv"`'
 #'   - results_all: '`sm cfg.getProcessedResultsDir() + "/aberrant_expression/{annotation}/outrider/{dataset}/OUTRIDER_results_all.Rds"`'
@@ -31,13 +30,10 @@ suppressPackageStartupMessages({
 })
 
 ods <- readRDS(snakemake@input$ods)
-res <- results(ods, padjCutoff = snakemake@params$padjCutoff,
-			   zScoreCutoff = snakemake@params$zScoreCutoff, all = TRUE)
 
-# Add fold change
+# Extract and save all the results (not just significant ones)
+res <- results(ods, all = TRUE)
 res[, foldChange := round(2^l2fc, 2)]
-
-# Save all the results and significant ones
 saveRDS(res, snakemake@output$results_all)
 
 # Subset to significant results
