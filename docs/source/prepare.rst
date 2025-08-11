@@ -264,10 +264,14 @@ which can enhance the statistical power of these modules by providing more sampl
 can build a distribution of counts and detect outliers. However this process introduces some
 particular issues that need to be addressed to make sure it is a valuable addition to the experiment.
 
-In case external counts are included, add a new row for each sample from those 
-files (or a subset if not all samples are needed). Add the columns: ``GENE_COUNTS_FILE``
+In case external counts are included, add the columns: ``GENE_COUNTS_FILE``
 (for aberrant expression), ``GENE_ANNOTATON``, and ``SPLICE_COUNTS_DIR`` (for aberrant splicing).
-These columns should remain empty for samples processed locally (from ``RNA_BAM``).
+
+DROP supports mixing BAM files and external expression counts within the same group. This allows
+users to provide pre-computed expression counts for some samples while still using BAM files for
+splicing analysis. When both are available for a sample, external counts take priority for 
+expression analysis, while BAM files are still used for splicing analysis.Groups can contain both
+BAM files and external count files.
 
 Aberrant Expression
 ####################
@@ -277,9 +281,8 @@ external sample as well as using the same gene annotation file specified in the 
 annotations could drastically affect which reads are counted in which region drastically skewing the results.
 
 The user must also use special consideration when building the sample annotation table. Samples
-using external counts need only ``RNA_ID`` which must exactly match the column header in the external count file
+using external counts need ``RNA_ID`` which must exactly match the column header in the external count file
 ``DROP_GROUP``, ``GENE_COUNTS_FILE``, and ``GENE_ANNOTATION`` which must contain the exact key specified in the config.
-The other columns should remain empty. 
 
 Using ``exportCounts`` generates the sharable ``GENE_COUNTS_FILE`` file in the appropriate
 ``ROOT_DIR/Output/processed_results/exported_counts/`` sub-directory.
@@ -293,9 +296,8 @@ As a result, when merging the external counts with the local counts we only matc
 the 2 sets, this is to ensure that if a region is missing we don't introduce 0 counts into the distribution calculations.
 
 The user must also use special consideration when building the sample annotation table. Samples
-using external counts need only ``RNA_ID`` which must exactly match the column header in the external count file
+using external counts need ``RNA_ID`` which must exactly match the column header in the external count file
 ``DROP_GROUP``, and ``SPLICE_COUNTS_DIR``. ``SPLICE_COUNTS_DIR`` is the directory containing the set of 5 needed count files.
-The other columns should remain empty. 
 
 Using ``exportCounts`` generates the necessary files in the appropriate
 ``ROOT_DIR/Output/processed_results/exported_counts/`` sub-directory

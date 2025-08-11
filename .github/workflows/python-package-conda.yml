@@ -14,8 +14,10 @@ jobs:
     - name: Setup environment with micromamba
       uses: mamba-org/setup-micromamba@v2
       with:
-        micromamba-version: '2.1.1-0'
         environment-file: environment.yml
+        environment-name: drop_test
+        cache-downloads: true
+        micromamba-version: '2.1.1-0'
         cache-environment: true
 
     - name: Check micromamba install
@@ -30,6 +32,7 @@ jobs:
     - name: Lint with flake8
       shell: bash -l {0}
       run: |
+        micromamba activate drop_test
         # stop the build if there are Python syntax errors or undefined names
         flake8 . --count --builtins="snakemake" --select=E9,F63,F7,F82 --show-source --statistics
         # exit-zero treats all errors as warnings. The GitHub editor is 127 chars wide
