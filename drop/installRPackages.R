@@ -12,7 +12,7 @@ if (!requireNamespace('data.table', quietly = TRUE)) {
 
 suppressPackageStartupMessages(library(data.table))
 
-# do not turn wanrings into errors. E.g. "Package XXX build for R 4.0.X"
+# do not turn warnings into errors. E.g. "Package XXX build for R 4.0.X"
 Sys.setenv(R_REMOTES_NO_ERRORS_FROM_WARNINGS="true")
 
 args <- commandArgs(trailingOnly=TRUE)
@@ -38,6 +38,7 @@ for (pckg_name in packages$package) {
         
         package <- package_dt$package
         message(paste("install", package))
+        if(package == 'DT') remotes::install_github('rstudio/DT')
         if(branch != ""){
           suppressWarnings(BiocManager::install(package, ask=FALSE, update=FALSE, ref=branch))
         } else{

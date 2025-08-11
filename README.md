@@ -52,7 +52,7 @@ For more information on different installation options, refer to the
 
 ## What's new
 
-Version 1.5.0 contains the versions of OUTRIDER and FRASER that use the Optimal Hard Threshold procedure established by Gavish and Donoho, a deterministic approach to denoise low-rank matrices relying on singular value decomposition, to find the optimal autoencoder dimension instead of the grid search. This leads to a reduction in the run time of around 6-10 times. 
+Version 1.5.0 contains the versions of OUTRIDER and FRASER that use the Optimal Hard Threshold procedure established by Gavish and Donoho, a deterministic approach to denoise low-rank matrices relying on singular value decomposition, to find the optimal autoencoder dimension instead of the grid search. This leads to a reduction in the run time of around 6-10 times. DROP supports mixing BAM files and external expression counts within the same group. This allows users to provide pre-computed expression counts for some samples while still using BAM files for splicing analysis. When both are available for a sample, external counts take priority for expression analysis, while BAM files are still used for splicing analysis.
 
 ⚠️ Also, since this version, OUTRIDER and FRASER are released under `CC-BY-NC 4.0`, meaning a license is required for any commercial use. If you intend to use the aberrant expression and aberrant splicing modules for commercial purposes, please contact us.
 
@@ -61,6 +61,11 @@ Version 1.4.0 fixes some bugs regarding the split reads counting for FRASER, whi
 Version 1.3.0 introduces the option to use FRASER 2.0, which is an improved version of FRASER that uses the Intron Jaccard Index metric instead of the percent spliced in (PSI) and splicing efficiency to quantify and later call aberrant splicing. To run FRASER 2.0, modify the `FRASER_version` parameter in the aberrantSplicing dictionary in the config file and adapt the `quantileForFiltering` and `deltaPsiCutoff` parameters. See the [config template](https://github.com/gagneurlab/drop/blob/master/drop/template/config.yaml) for more details. When switching between FRASER versions, we recommend running DROP in a
 separate folder for each version. Moreover, DROP now allows users to provide lists of genes to focus on and do the multiple testing correction instead of the usual transcriptome-wide approach. Refer to the [documentation](https://gagneurlab-drop.readthedocs.io/en/latest/prepare.html#limiting-fdr-correction-to-subsets-of-genes-of-interest).
 
+`Snakemake v.7.8` introduced some changes in which changes in parameters can cause rules to be re-executed. More info [here](https://github.com/snakemake/snakemake/issues/1694). This affects DROP and causes certain rules in the AS and QC modules to be triggered even if they were already completed and there were no changes in the sample annotation or scripts. The workaround is to run DROP by adding the parameter `--rerun-triggers mtime`, e.g. `snakemake -n --rerun-triggers mtime` or `snakemake --cores 10 --rerun-triggers mtime`. We will investigate the rules in DROP to fix this.
+
+As of version 1.2.1 DROP has a new module that performs RNA-seq variant calling. The input are BAM files and the output either a single-sample or a multi-sample VCF file (option specified by the user) annotated with allele frequencies from gnomAD (if specified by the user). The sample annotation table does not need to be changed, but several new parameters in the config file have to be added and tuned. For more info, refer to the [documentation](https://gagneurlab-drop.readthedocs.io/en/latest/prepare.html#rna-variant-calling-dictionary).
+
+Also, as of version 1.2.1 the integration of external split and non-split counts to detect aberrant splicing is now possible. In a new column in the sample annotation, simply specify the directory containing the counts. For more info, refer to the [documentation](https://gagneurlab-drop.readthedocs.io/en/latest/prepare.html#external-count-examples).
 
 ## Set up a custom project
 Install the drop module according to [installation](#installation) and initialize the project in a custom project directory.
