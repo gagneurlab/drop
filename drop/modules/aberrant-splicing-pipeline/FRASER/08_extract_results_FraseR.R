@@ -21,6 +21,8 @@
 #'  output:
 #'   - resultTableJunc: '`sm cfg.getProcessedResultsDir() +
 #'                          "/aberrant_splicing/results/{annotation}/fraser/{dataset}/results_per_junction.tsv"`'
+#'   - resultTableJunc_full: '`sm cfg.getProcessedResultsDir() +
+#'                          "/aberrant_splicing/results/{annotation}/fraser/{dataset}/results_all.tsv.gz"`'
 #'   - resultTableGene_full: '`sm cfg.getProcessedResultsDir() +
 #'                          "/aberrant_splicing/results/{annotation}/fraser/{dataset}/results_gene_all.tsv"`'
 #'   - resultTableGene_aberrant: '`sm cfg.getProcessedResultsDir() +
@@ -50,6 +52,7 @@ res_junc <- results(fds, psiType=psiTypes,
                     padjCutoff=snakemake@params$padjCutoff,
                     deltaPsiCutoff=snakemake@params$deltaPsiCutoff)
 res_junc_dt   <- as.data.table(res_junc)
+all_junc_res  <- as.data.table(results(fds, all=TRUE))
 print('Results per junction extracted')
 
 # Add features
@@ -123,5 +126,7 @@ if(assemblyVersion %in% c("hg19", "hg38")){
 }
 
 # Results
+options(scipen=999)
 write_tsv(res_junc_dt, file=snakemake@output$resultTableJunc)
 write_tsv(res_genes_dt, file=snakemake@output$resultTableGene_aberrant)
+fwrite(all_junc_res, sep='\t', file=snakemake@outputs$resultTableJunc_full)
