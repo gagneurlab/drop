@@ -28,9 +28,6 @@ aberrantExpression:
     groups:
         - group1
         - group2
-    # Note: groups can now contain both BAM files and external count files
-    # External counts take priority for expression analysis when available
-    # This allows using pre-computed expression counts while still processing BAM files for splicing
     fpkmCutoff: 1
     implementation: autoencoder
     padjCutoff: 0.05
