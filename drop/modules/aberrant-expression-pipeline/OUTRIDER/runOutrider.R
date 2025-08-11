@@ -33,6 +33,15 @@ mp <- snakemake@config$aberrantExpression$maxTestedDimensionProportion
 oht <- snakemake@config$aberrantExpression$useOHTtoObtainQ
 register(MulticoreParam(snakemake@threads))
 
+if ("random_seed" %in% names(snakemake@config)){
+    rseed <- snakemake@config$random_seed
+    if(isTRUE(rseed)){
+	set.seed(42)
+    } else if(is.numeric(rseed)){
+	set.seed(as.integer(rseed))
+    }
+}
+
 ## subset filtered
 ods <- ods[mcols(ods)$passedFilter,] 
 

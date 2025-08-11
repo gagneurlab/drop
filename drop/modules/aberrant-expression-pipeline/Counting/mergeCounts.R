@@ -51,6 +51,7 @@ if( length(unique(row_names_objects)) > 1 ){
 merged_assays <- do.call(cbind, counts_list)
 total_counts <- SummarizedExperiment(assays=list(counts=merged_assays))
 colnames(total_counts) <- gsub('.bam', '', colnames(total_counts))
+total_counts <- total_counts[, order(colnames(total_counts))]
 
 # assign ranges
 rowRanges(total_counts) <- count_ranges
