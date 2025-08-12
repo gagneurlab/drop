@@ -17,6 +17,14 @@ rule aberrantExpression_dependency:
             dot -Tsvg -Grankdir=TB > {output}
         """
 
+def get_bam_only_ids(wildcards):
+    # Get all RNA samples in the group
+    rna_ids = set(sa.getIDsByGroup(wildcards.dataset, assay="RNA"))
+    # Get RNA IDs that have external counts
+    ext_ids = set(sa.getIDsByGroup(wildcards.dataset, assay="GENE_COUNT"))
+    # Only those with BAM and NO external counts
+    return sorted(list(rna_ids - ext_ids))
+
 rule aberrantExpression_bamStats:
     input:
         bam = lambda wildcards: sa.getFilePath(wildcards.sampleID, "RNA_BAM_FILE"),
@@ -46,7 +54,7 @@ rule aberrantExpression_mergeBamStats:
     input:
         lambda w: expand(
             rules.aberrantExpression_bamStats.output[0],
-            sampleID=sa.getIDsByGroup(w.dataset, assay="RNA")
+            sampleID=get_bam_only_ids(w)
         )
     output:
         cfg.processedDataDir / "aberrant_expression" / "bam_stats" / "{dataset}.tsv"
@@ -54,7 +62,7 @@ rule aberrantExpression_mergeBamStats:
         exIDs = lambda w: sa.getIDsByGroup(w.dataset, assay="GENE_COUNT")
     run:
         with open(output[0], "w") as bam_stats:
-            bam_stats.write("sampleID\trecord_count\n")
+            bam_stats.write("RNA_ID\trecord_count\n")
             for f in input:
                 bam_stats.write(open(f, "r").read())
             for eid in params.exIDs:

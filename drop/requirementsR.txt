@@ -13,3 +13,4 @@ data.table
 dplyr		
 tidyr		
 magrittr		
+DT		
