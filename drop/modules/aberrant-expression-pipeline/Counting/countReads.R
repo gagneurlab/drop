@@ -15,7 +15,7 @@
 #'  type: script
 #'  threads: 6
 #'  resources:
-#'    - mem_mb: '`sm lambda w, threads, attempt: threads * 2000 + 10000 * attempt`'
+#'    - mem_mb: '`sm lambda wildcards, threads, attempt: threads * 2000 + 10000 * attempt`'
 #'---
 
 
@@ -61,9 +61,7 @@ count_ranges <- readRDS(snakemake@input$count_ranges)
 seqlevelsStyle(count_ranges) <- seqlevelsStyle(bam_file)
 
 # run it in parallel across all chromosomes
-gene_seqnames = bplapply(seqnames(count_ranges), 
-    function(x) as.character(x@values),
-    BPPARAM=MulticoreParam(threads))
+gene_seqnames = as.character(sapply(seqnames(count_ranges), runValue))
 
 # show info
 message(paste("input:", snakemake@input$sample_bam))
@@ -97,6 +95,7 @@ count_per_chromosome <- function(i, gene_seqnames, count_ranges, bam_file, yield
     fragments = FALSE,
     count.mapped.reads = TRUE,
     preprocess.reads = preprocess_reads,
+    inter.feature = inter_feature,
     param = ScanBamParam(which = GRanges(i, IRanges(1, seqlengths(bam_file)[i])))
   )
 }
