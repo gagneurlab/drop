@@ -35,7 +35,11 @@ counts_list <- bplapply(snakemake@input$counts, function(f){
     else {
         ex_counts <- as.matrix(fread(f), rownames = "geneID")
         print(head(ex_counts))
-        stopifnot(! snakemake@params$exCountIDs %in% names(ex_counts))
+        # Check that all expected external count IDs are present in the external count file
+        missing_ids <- setdiff(snakemake@params$exCountIDs, colnames(ex_counts))
+        if(length(missing_ids) > 0) {
+            stop(paste("Missing external count IDs:", paste(missing_ids, collapse=", ")))
+        }
         subset(ex_counts, select = snakemake@params$exCountIDs)
     }
 })
@@ -51,6 +55,7 @@ if( length(unique(row_names_objects)) > 1 ){
 merged_assays <- do.call(cbind, counts_list)
 total_counts <- SummarizedExperiment(assays=list(counts=merged_assays))
 colnames(total_counts) <- gsub('.bam', '', colnames(total_counts))
+total_counts <- total_counts[, order(colnames(total_counts))]
 
 # assign ranges
 rowRanges(total_counts) <- count_ranges

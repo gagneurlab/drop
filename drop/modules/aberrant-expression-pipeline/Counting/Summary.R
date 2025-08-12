@@ -48,8 +48,7 @@ cnts_mtx <- counts(ods, normalized = F)
 #' Consider removing samples with too low or too high size factors.
 #'  
 bam_coverage <- fread(snakemake@input$bam_cov)
-bam_coverage[, RNA_ID := as.character(sampleID)]
-bam_coverage[, sampleID := NULL]
+bam_coverage[, RNA_ID := as.character(RNA_ID)]
 setnames(bam_coverage, 'record_count', 'total_count')
 coverage_dt <- merge(data.table(RNA_ID = colnames(ods),
                                 read_count = colSums(cnts_mtx),
