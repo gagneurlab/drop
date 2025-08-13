@@ -14,6 +14,8 @@
 #'   - done_sample_nonSplitCounts : '`sm cfg.getProcessedDataDir() + 
 #'                   "/aberrant_splicing/datasets/cache/raw-local-{dataset}/sample_tmp/nonSplitCounts/sample_{sample_id}.done"`' 
 #'  threads: 3
+#'  resources:
+#'    - mem_mb: 3000
 #'  type: script
 #'---
 

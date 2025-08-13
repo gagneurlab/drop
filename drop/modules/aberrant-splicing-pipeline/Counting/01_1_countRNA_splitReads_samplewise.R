@@ -15,6 +15,8 @@
 #'                "/aberrant_splicing/datasets/cache/raw-local-{dataset}"
 #'                +"/sample_tmp/splitCounts/sample_{sample_id}.done"`'
 #'  threads: 3
+#'  resources:
+#'    - mem_mb: 3000
 #'  type: script
 #'---
 
