@@ -129,4 +129,4 @@ if(assemblyVersion %in% c("hg19", "hg38")){
 options(scipen=999)
 write_tsv(res_junc_dt, file=snakemake@output$resultTableJunc)
 write_tsv(res_genes_dt, file=snakemake@output$resultTableGene_aberrant)
-fwrite(all_junc_res, sep='\t', file=snakemake@outputs$resultTableJunc_full)
+fwrite(all_junc_res, sep='\t', file=snakemake@output$resultTableJunc_full)
