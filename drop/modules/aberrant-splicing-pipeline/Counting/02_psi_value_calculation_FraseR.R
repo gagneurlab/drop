@@ -31,7 +31,8 @@ setAutoBPPARAM(MulticoreParam(snakemake@threads))
 fds <- loadFraserDataSet(dir=workingDir, name=paste0("raw-local-", dataset))
 
 # Calculating PSI values
-fds <- calculatePSIValues(fds, types = psiTypes)
+# fds <- calculatePSIValues(fds, types = psiTypes)
+fds <- calculatePSIValues(fds)
 
 # FRASER object after PSI value calculation
 fds <- saveFraserDataSet(fds)
