@@ -39,7 +39,6 @@ setAutoBPPARAM(MulticoreParam(snakemake@threads))
 
 # Load PSI data
 fds <- loadFraserDataSet(dir=workingDir, name=dataset)
-fitMetrics(fds) <- psiTypes
 
 # Run estimate optimal latent dimension
 implementation <- snakemake@config$aberrantSplicing$implementation
