@@ -48,7 +48,6 @@ setAutoBPPARAM(MulticoreParam(snakemake@threads))
 # Add external data if provided by dataset
 if(length(exCountIDs) > 0){
     message("create new merged fraser object")
-    metadata(fds)[["fit_metrics"]] <- psiTypes
     fds <- saveFraserDataSet(fds,dir = workingDir, name=paste0("raw-", dataset))
 
     for(resource in unique(exCountFiles)){
