@@ -1,7 +1,7 @@
 package	version	ref
 devtools
 gagneurlab/OUTRIDER	1.26.2	1.26.2
-gagneurlab/FRASER	2.4.5	2.4.5
+gagneurlab/FRASER		
 gagneurlab/tMAE	1.0.5	1.0.5
 VariantAnnotation		
 rmarkdown		
