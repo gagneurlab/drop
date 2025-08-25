@@ -64,38 +64,37 @@ lp <- bplapply(1:N, function(i){
   gr_res <- keepSeqlevels(gr_res, intersect(seqnames(gr_res), chrs), pruning.mode = 'coarse')
   param <- ScanVcfParam(samples=sample, fixed=NA, info='NT', geno='GT', 
                             trimEmpty=TRUE, which = gr_res)
-  vcf_sample <- readVcf(vcf_file, param = param, row.names = FALSE)
+  vcf_dna <- readVcf(vcf_file, param = param, row.names = FALSE)
   # Get GRanges and add Genotype
-  gr_sample <- granges(vcf_sample)
+  gr_dna <- granges(vcf_dna)
   
-  if(!is.null(geno(vcf_sample)$GT)){
-    gt <- geno(vcf_sample)$GT
-    gt <- gsub('0|0', '0/0', gt, fixed = TRUE)
-    gt <- gsub('0|1', '0/1', gt, fixed = TRUE)
-    gt <- gsub('1|0', '0/1', gt, fixed = TRUE)
-    gt <- gsub('1|1', '1/1', gt, fixed = TRUE)
-  } else if(!is.null(info(vcf_sample)$NT)){
-    gt <- info(vcf_sample)$NT
+  if(!is.null(geno(vcf_dna)$GT)){
+    gt <- geno(vcf_dna)$GT
+    gt <- gsub('|', '/', gt, fixed = TRUE)
+    gt <- gsub('1/0', '0/1', gt, fixed = TRUE)
+  } else if(!is.null(info(vcf_dna)$NT)){
+    gt <- info(vcf_dna)$NT
     gt <- gsub('ref', '0/0', gt)
     gt <- gsub('het', '0/1', gt)
     gt <- gsub('hom', '1/1', gt)
   }
   
-  mcols(gr_sample)$GT <- gt
+  mcols(gr_dna)$GT <- gt
   
   # Find overlaps between test and sample
-  ov <- findOverlaps(gr_res, gr_sample, type = 'equal')
-  mcols(gr_res)[from(ov),]$GT <- mcols(gr_sample)[to(ov),]$GT
+  ov <- findOverlaps(gr_res, gr_dna, type = 'equal')
+  mcols(gr_res)$GT[from(ov)] <- mcols(gr_dna)$GT[to(ov)]
   
   # Find similarity between DNA sample and RNA sample
-  x <- vapply(rna_gt_list, function(gr_rna){
+  sims <- vapply(rna_gt_list, function(gr_rna){
+    gr_res <- gr_res[mcols(gr_res)$GT != "0/0"]
     seqlevelsStyle(gr_rna) <- seqlevelsStyle(gr_res)[1]
     ov <- findOverlaps(gr_res, gr_rna, type = 'equal')
     gt_dna <- gr_res[from(ov)]$GT
     gt_rna <- gr_rna[to(ov)]$RNA_GT
     sum(gt_dna == gt_rna) / length(gt_dna)
   }, 1.0)
-  return(x)
+  return(sims)
 })
 
 # Create a matrix
