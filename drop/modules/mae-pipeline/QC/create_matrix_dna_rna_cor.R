@@ -70,7 +70,7 @@ lp <- bplapply(1:N, function(i){
   
   if(!is.null(geno(vcf_dna)$GT)){
     gt <- geno(vcf_dna)$GT
-    gt <- gsub('|', '/', gt, fixed = T)
+    gt <- gsub('|', '/', gt, fixed = TRUE)
     gt <- gsub('1/0', '0/1', gt, fixed = TRUE)
   } else if(!is.null(info(vcf_dna)$NT)){
     gt <- info(vcf_dna)$NT
