@@ -58,14 +58,12 @@ if(length(exCountIDs) > 0){
                                    'yes' = 1L, 'stranded' = 1L, 'reverse' = 2L, -1L)
         setnames(exAnno, "RNA_ID", "sampleID")
         
-        ctsNames <- c("k_j", "k_theta", "n_psi3", "n_psi5", "n_theta")
-        ctsFiles <- paste0(dirname(resource), "/", ctsNames, "_counts.tsv.gz")
+        junctions <- paste0(dirname(resource), "/raw_junction_counts_counts.tsv.gz")
+        split_site_counts <- paste0(dirname(resource), "/raw_site_counts.tsv.gz")
         
-        # Merging external counts restricts the junctions to those that 
-        # are only present in both the counted (fromBam) junctions AND the 
-        # junctions from the external counts.
-        fds <- mergeExternalData(fds=fds, countFiles=ctsFiles,
-                sampleIDs=exSampleIDs, annotation=exAnno)
+        external_fds <- FraserDataSet(colData=exAnno, junctions=junctions,
+                                               spliceSites=split_site_counts, name="fds_external")
+        fds <- mergeFDS(fds, external_fds, fds_name = name(fds))
         fds@colData$isExternal <- as.factor(!is.na(fds@colData$SPLICE_COUNTS_DIR))
     }
 } else {

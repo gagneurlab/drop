@@ -6,53 +6,61 @@
 #'    - snakemake: '`sm str(tmp_dir / "AS" / "{dataset}" / "{genomeAssembly}--{annotation}_export.Rds")`'
 #'  params:
 #'   - setup: '`sm cfg.AS.getWorkdir() + "/config.R"`'
-
+#'   - workingDir: '`sm cfg.getProcessedDataDir() + "/aberrant_splicing/datasets/"`'
 #'  input:
-#'   - annotation: '`sm cfg.getProcessedDataDir() + "/preprocess/{annotation}/txdb.db"`'
-#'   - fds_theta: '`sm cfg.getProcessedDataDir() + 
-#'                    "/aberrant_splicing/datasets/savedObjects/raw-local-{dataset}/theta.h5"`'
+#'   - fds: '`sm cfg.getProcessedDataDir() +
+#'                  "/aberrant_splicing/datasets/savedObjects/{dataset}/fds-object.RDS"`'
 #'  output:
-#'    - k_counts: '`sm expand(cfg.exportCounts.getFilePattern(str_=True, expandStr=True) + "/k_{metric}_counts.tsv.gz", metric=["j", "theta"])`'
-#'    - n_counts: '`sm expand(cfg.exportCounts.getFilePattern(str_=True, expandStr=True) + "/n_{metric}_counts.tsv.gz", metric=["psi5", "psi3", "theta"])`'
+#'   - junction_counts: '`sm expand(cfg.exportCounts.getFilePattern(str_=True, expandStr=True) + "/raw_junction_counts.tsv.gz")`'
+#'   - site_counts: '`sm expand(cfg.exportCounts.getFilePattern(str_=True, expandStr=True) + "/raw_site_counts.tsv.gz")`'
 #'  type: script
 #'---
 
 saveRDS(snakemake, snakemake@log$snakemake)
 source(snakemake@params$setup, echo=FALSE)
 
-library(AnnotationDbi)
-
 # 
 # input
 #
-annotation_file <- snakemake@input$annotation
-fds_file   <- snakemake@input$fds_theta
+workingDir <- snakemake@params$workingDir
 dataset    <- snakemake@wildcards$dataset
 
-out_k_files <- snakemake@output$k_counts
-out_n_files <- snakemake@output$n_counts
+out_junction_counts <- snakemake@output$junction_counts
+out_splice_site_counts <- snakemake@output$site_counts 
 
-# Read annotation and extract known junctions
-txdb <- loadDb(annotation_file)
-introns <- unique(unlist(intronsByTranscript(txdb)))
-introns <- keepStandardChromosomes(introns, pruning.mode = 'coarse')
-length(introns)
 
-# Read FRASER object, adapt chr style and subset to known junctions
-fds <- loadFraserDataSet(file=fds_file)
-seqlevels(fds) <- seqlevelsInUse(fds)
-seqlevelsStyle(fds) <- seqlevelsStyle(introns)[1]
-fds_known <- fds[unique(to(findOverlaps(introns, rowRanges(fds, type="j"), type="equal"))),]
+fds <- loadFraserDataSet(dir=workingDir, name=dataset)
+chr_levels <- seqlevelsInUse(fds)
 
-# save k/n counts
-sapply(c(out_k_files, out_n_files), function(i){
-  ctsType <- toupper(strsplit(basename(i), "_")[[1]][1])
-  psiType <- strsplit(basename(i), "_")[[1]][2]
-  
-  cts <- as.data.table(get(ctsType)(fds_known, type=psiType))
-  grAnno <- rowRanges(fds_known, type=psiType)
-  anno <- as.data.table(grAnno)
-  anno <- anno[,.(seqnames, start, end, strand)]
-  
-  fwrite(cbind(anno, cts), file=i, quote=FALSE, row.names=FALSE, sep="\t", compress="gzip")
-}) %>% invisible()
+row_ranges <- as.data.table(rowRanges(fds))
+
+junction_counts <- as.data.table(assays(fds)$rawCountsJ)
+junction_counts <- cbind(junction_counts, row_ranges[, c("seqnames", "start", "end", "width", "strand", "startID", "endID")])
+# Enforce order
+junction_counts[, seqnames := factor(as.character(seqnames), levels = chr_levels)]
+setorder(junction_counts, seqnames, start)
+
+fwrite(junction_counts, file=out_junction_counts, quote=FALSE, row.names=FALSE, sep="\t", compress="gzip")
+
+splice_sites <- rowData(nonSplicedReads(fds))
+splice_site_counts <- as.data.table(assays(fds)$rawCountsSS)
+splice_site_counts <- as.data.table(cbind(splice_sites, splice_site_counts))
+
+splice_site_lookup <- unique(rbind(
+  row_ranges[, .(spliceSiteID = startID, seqnames, position = start - 1)],  # donor positions
+  row_ranges[, .(spliceSiteID = endID, seqnames, position = end)]      # acceptor positions
+)) 
+
+splice_site_lookup[, start := position]
+splice_site_lookup[, end := start + 1]
+splice_site_lookup[, width := 2]
+splice_site_lookup[, position := NULL]
+
+splice_site_counts <- merge(splice_site_counts, splice_site_lookup, by = "spliceSiteID", all.x = TRUE)        
+splice_site_counts[, seqnames := factor(as.character(seqnames), levels = chr_levels)]
+setorder(splice_site_counts, seqnames, start)
+
+
+
+fwrite(splice_site_counts, file=out_splice_site_counts, quote=FALSE, row.names=FALSE, sep="\t", compress="gzip")
+
