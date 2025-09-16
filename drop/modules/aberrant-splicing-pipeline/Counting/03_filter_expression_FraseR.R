@@ -58,7 +58,7 @@ if(length(exCountIDs) > 0){
                                    'yes' = 1L, 'stranded' = 1L, 'reverse' = 2L, -1L)
         setnames(exAnno, "RNA_ID", "sampleID")
         
-        junctions <- paste0(dirname(resource), "/raw_junction_counts_counts.tsv.gz")
+        junctions <- paste0(dirname(resource), "/raw_junction_counts.tsv.gz")
         split_site_counts <- paste0(dirname(resource), "/raw_site_counts.tsv.gz")
         
         external_fds <- FraserDataSet(colData=exAnno, junctions=junctions,
