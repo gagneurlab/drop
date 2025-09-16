@@ -11,7 +11,7 @@
 #'  input:
 #'   - splice_metrics: '`sm expand(cfg.getProcessedDataDir() +
 #'                  "/aberrant_splicing/datasets/savedObjects/raw-local-{dataset}/{type}.h5", type=cfg.AS.getPsiTypeAssay(), allow_missing=True)`'
-#'   - exCounts: '`sm lambda w: cfg.AS.getExternalCounts(w.dataset, "k_j_counts")`'
+#'   - exCounts: '`sm lambda w: cfg.AS.getExternalCounts(w.dataset, "raw_junction_counts")`'
 #'  output:
 #'   - fds: '`sm cfg.getProcessedDataDir() +
 #'                  "/aberrant_splicing/datasets/savedObjects/{dataset}/fds-object.RDS"`'
