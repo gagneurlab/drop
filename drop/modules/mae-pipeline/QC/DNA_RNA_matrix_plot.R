@@ -42,12 +42,24 @@ colnames(melt_mat)[1:2] <- c('DNA_ID', 'RNA_ID')
 melt_mat[, RNA_ID := as.character(RNA_ID)]
 melt_mat[, DNA_ID := as.character(DNA_ID)]
 
+# Add sample annot
+qc_dt <- merge(sa, melt_mat, all = T)
+qc_dt[is.na(ANNOTATED_MATCH), ANNOTATED_MATCH := F]
+qc_dt[, PREDICTED_MATCH := value > identityCutoff]
+qc_dt[ANNOTATED_MATCH == T, match := 'Annotated DNA-RNA']
+qc_dt[ANNOTATED_MATCH == F, match := 'Not annotated DNA-RNA']
+
+
 ggplot(melt_mat, aes(value)) + geom_histogram(fill = 'cadetblue4', binwidth = 0.05, center = .025) + 
   theme_bw(base_size = 14) + 
   labs(x = 'Proportion of matching DNA-RNA variants', y = 'DNA-RNA combinations') + 
   scale_y_log10() + annotation_logticks(sides = "l") +
   expand_limits(x=c(0,1)) +
   geom_vline(xintercept=identityCutoff, linetype='dashed', color = 'firebrick')
+
+ggplot(qc_dt, aes(match, value)) + geom_boxplot() + 
+  expand_limits(y=c(0,1)) + theme_bw(base_size = 14) +
+  labs(x = '', y = 'Proportion of matching DNA-RNA variants')
 
 
 #' ### Heatmap of matching variants
@@ -63,10 +75,6 @@ ggplot(melt_mat, aes(value)) + geom_histogram(fill = 'cadetblue4', binwidth = 0.
 #' 
 #' Similar for the RNAs.
 #' 
-
-qc_dt <- merge(sa, melt_mat, all = T)
-qc_dt[is.na(ANNOTATED_MATCH), ANNOTATED_MATCH := F]
-qc_dt[, PREDICTED_MATCH := value > identityCutoff]
 
 # function to check the matches
 check_matches <- function(annot_col, pred_col){

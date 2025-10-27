@@ -15,12 +15,14 @@ logger = logging.getLogger(__name__)
 click_log.basic_config(logger)
 
 
-@click.group()
+@click.group(invoke_without_command=True)
 @click_log.simple_verbosity_option(logger)
-@click.version_option('1.4.0',prog_name='drop')
+@click.version_option('1.5.0',prog_name='drop')
 
 def main():
-    pass
+    ctx = click.get_current_context()
+    if ctx.invoked_subcommand is None:
+        click.echo(ctx.get_help())
 
 
 def overwrite(base_repo, local_proj):
@@ -150,6 +152,10 @@ def init():
     else:
         setFiles()
         logger.info("init...done")
+    logger.warning("OUTRIDER and FRASER are now released under CC-BY-NC 4.0, meaning a license is required "
+                   "for any commercial use. If you intend to use the aberrant expression and aberrant splicing "
+                   "modules for commercial purposes, please contact the authors: Julien Gagneur (gagneur [at] in.tum.de), "
+                   "Christian Mertes (mertes [at] in.tum.de), and Vicente Yepez (yepez [at] in.tum.de).")
 
 
 @main.command()
@@ -157,6 +163,10 @@ def update():
     logger.info("updating local Scripts if necessary")
     drop.checkDropVersion(Path().cwd().resolve(), force=True)
     logger.info("update...done")
+    logger.warning("OUTRIDER and FRASER are now released under CC-BY-NC 4.0, meaning a license is required "
+                   "for any commercial use. If you intend to use the aberrant expression and aberrant splicing "
+                   "modules for commercial purposes, please contact the authors: Julien Gagneur (gagneur [at] in.tum.de), "
+                   "Christian Mertes (mertes [at] in.tum.de), and Vicente Yepez (yepez [at] in.tum.de).")
 
 
 @main.command()
@@ -179,3 +189,7 @@ def demo():
     drop.demo.fixConfig(demo_repo / "config_relative.yaml", Path.cwd() / "config.yaml")
 
     logger.info("demo project created")
+    logger.warning("OUTRIDER and FRASER are now released under CC-BY-NC 4.0, meaning a license is required "
+                   "for any commercial use. If you intend to use the aberrant expression and aberrant splicing "
+                   "modules for commercial purposes, please contact the authors: Julien Gagneur (gagneur [at] in.tum.de), "
+                   "Christian Mertes (mertes [at] in.tum.de), and Vicente Yepez (yepez [at] in.tum.de).")

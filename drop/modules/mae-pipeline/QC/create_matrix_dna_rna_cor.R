@@ -12,7 +12,7 @@
 #'  output:
 #'    - mat_qc: '`sm cfg.getProcessedResultsDir() + 
 #'               "/mae/{dataset}/dna_rna_qc_matrix.Rds"`'
-#'  threads: 20
+#'  threads: 30
 #'  type: script
 #'---
 
@@ -51,6 +51,8 @@ N <- length(vcf_files)
 
 lp <- bplapply(1:N, function(i){
   
+  gr_res <- copy(gr_test)
+  
   # Read sample vcf file
   
   dna_id <- dna_samples[i] %>% as.character()
@@ -62,7 +64,8 @@ lp <- bplapply(1:N, function(i){
   
   if(!is.null(geno(vcf_dna)$GT)){
     gt <- geno(vcf_dna)$GT
-    gt <- gsub('|', '/', gt, fixed = T)
+
+    gt <- gsub('|', '/', gt, fixed = TRUE)
     gt <- gsub('1/0', '0/1', gt, fixed = TRUE)
   } else if(!is.null(info(vcf_dna)$NT)){
     gt <- info(vcf_dna)$NT
@@ -95,6 +98,9 @@ lp <- bplapply(1:N, function(i){
 mat <- do.call(rbind, lp)
 row.names(mat) <- dna_samples
 colnames(mat) <- rna_samples
-# mat <- mat[sa[rows_in_group, DNA_ID], sa[rows_in_group, RNA_ID],drop=FALSE]
+# Sort as in the original sa and take care of repeated DNAs/RNAs in the group
+mat <- mat[unique(sa[rows_in_group, DNA_ID]), 
+           unique(sa[rows_in_group, RNA_ID]),
+           drop=FALSE]
 
 saveRDS(mat, snakemake@output$mat_qc)
