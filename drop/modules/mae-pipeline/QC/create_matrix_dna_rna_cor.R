@@ -54,22 +54,17 @@ lp <- bplapply(1:N, function(i){
   gr_res <- copy(gr_test)
   
   # Read sample vcf file
-  sample <- dna_samples[i] %>% as.character()
-  vcf_file <- vcf_files[i]
   
-  ## Read only the positions to perform the matching from the DNA vcf file
-  ## First, find out the chr style
-  chrs <- row.names(scanVcfHeader(vcf_file)@header$contig)
-  seqlevelsStyle(gr_res) <- seqlevelsStyle(chrs)[1]
-  gr_res <- keepSeqlevels(gr_res, intersect(seqnames(gr_res), chrs), pruning.mode = 'coarse')
-  param <- ScanVcfParam(samples=sample, fixed=NA, info='NT', geno='GT', 
-                            trimEmpty=TRUE, which = gr_res)
-  vcf_dna <- readVcf(vcf_file, param = param, row.names = FALSE)
+  dna_id <- dna_samples[i] %>% as.character()
+  
+  param <-  ScanVcfParam(fixed=NA, info='NT', geno='GT', samples=dna_id, trimEmpty=TRUE) 
+  vcf_dna <- readVcf(vcf_files[i], param = param, row.names = FALSE)
   # Get GRanges and add Genotype
   gr_dna <- granges(vcf_dna)
   
   if(!is.null(geno(vcf_dna)$GT)){
     gt <- geno(vcf_dna)$GT
+
     gt <- gsub('|', '/', gt, fixed = TRUE)
     gt <- gsub('1/0', '0/1', gt, fixed = TRUE)
   } else if(!is.null(info(vcf_dna)$NT)){
@@ -82,6 +77,8 @@ lp <- bplapply(1:N, function(i){
   mcols(gr_dna)$GT <- gt
   
   # Find overlaps between test and sample
+  gr_res <- copy(gr_test)
+  seqlevelsStyle(gr_res) <- seqlevelsStyle(seqlevelsInUse(gr_dna))[1]
   ov <- findOverlaps(gr_res, gr_dna, type = 'equal')
   mcols(gr_res)$GT[from(ov)] <- mcols(gr_dna)$GT[to(ov)]
   
@@ -92,7 +89,7 @@ lp <- bplapply(1:N, function(i){
     ov <- findOverlaps(gr_res, gr_rna, type = 'equal')
     gt_dna <- gr_res[from(ov)]$GT
     gt_rna <- gr_rna[to(ov)]$RNA_GT
-    sum(gt_dna == gt_rna) / length(gt_dna)
+    mean(gt_dna == gt_rna, na.rm = T)
   }, 1.0)
   return(sims)
 })
