@@ -74,7 +74,7 @@ library(magrittr)
 #' ## Analyze individual results
 # Read the first fds object and results table
 fds <- loadFraserDataSet(file = snakemake@input$fds_files[[1]])
-res <- fread(snakemake@input$result_tables[[1]])
+res <- data.table::fread(snakemake@input$result_tables[[1]])
 
 #' Display the results table of the first dataset
 #+ echo=FALSE
