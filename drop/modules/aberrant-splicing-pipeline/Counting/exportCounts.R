@@ -9,8 +9,8 @@
 
 #'  input:
 #'   - annotation: '`sm cfg.getProcessedDataDir() + "/preprocess/{annotation}/txdb.db"`'
-#'   - fds_theta: '`sm cfg.getProcessedDataDir() + 
-#'                    "/aberrant_splicing/datasets/savedObjects/raw-local-{dataset}/theta.h5"`'
+#'   - splice_metrics: '`sm expand(cfg.getProcessedDataDir() +
+#'                  "/aberrant_splicing/datasets/savedObjects/raw-local-{dataset}/{type}.h5", type=cfg.AS.getPsiTypeAssay(), allow_missing=True)`'
 #'  output:
 #'    - k_counts: '`sm expand(cfg.exportCounts.getFilePattern(str_=True, expandStr=True) + "/k_{metric}_counts.tsv.gz", metric=["j", "theta"])`'
 #'    - n_counts: '`sm expand(cfg.exportCounts.getFilePattern(str_=True, expandStr=True) + "/n_{metric}_counts.tsv.gz", metric=["psi5", "psi3", "theta"])`'
@@ -26,7 +26,7 @@ library(AnnotationDbi)
 # input
 #
 annotation_file <- snakemake@input$annotation
-fds_file   <- snakemake@input$fds_theta
+workingDir <- paste(head(strsplit(snakemake@input$splice_metrics, "/")[[1]], -3), collapse = "/")
 dataset    <- snakemake@wildcards$dataset
 
 out_k_files <- snakemake@output$k_counts
@@ -39,9 +39,17 @@ introns <- keepStandardChromosomes(introns, pruning.mode = 'coarse')
 length(introns)
 
 # Read FRASER object, adapt chr style and subset to known junctions
-fds <- loadFraserDataSet(file=fds_file)
+fds <- loadFraserDataSet(dir=workingDir, name=paste0("raw-local-", dataset))
 seqlevels(fds) <- seqlevelsInUse(fds)
 seqlevelsStyle(fds) <- seqlevelsStyle(introns)[1]
+
+# recalculate theta.h5 in Jaccard metric
+if (fitMetrics(fds) == "jaccard"){
+  fds <- calculatePSIValues(fds, type="theta")
+} else {
+  fds <- calculatePSIValues(fds, type="jaccard")
+}
+
 fds_known <- fds[unique(to(findOverlaps(introns, rowRanges(fds, type="j"), type="equal"))),]
 
 # save k/n counts
