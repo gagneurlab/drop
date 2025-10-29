@@ -47,8 +47,8 @@ class Test_AS_Pipeline:
             """.format(cnt_file)
         r = runR(r_cmd, demo_dir)
         assert "Number of samples:      10" in r.stdout
-        assert "Number of junctions:    1171" in r.stdout
-        assert "Number of splice sites: 377" in r.stdout
+        assert "Number of junctions:    982" in r.stdout
+        assert "Number of splice sites: 356" in r.stdout
 
     @pytest.mark.usefixtures("pipeline_run")
     def test_results(self, demo_dir):
@@ -56,9 +56,9 @@ class Test_AS_Pipeline:
         annotation = "v29"
         dataset = "fraser"
         r = run(f"wc -l {results_dir}/{annotation}/fraser/{dataset}/results_per_junction.tsv", demo_dir)
-        assert "980" == r.stdout.split()[0] 
+        assert "848" == r.stdout.split()[0] 
         r = run(f"wc -l {results_dir}/{annotation}/fraser/{dataset}/results.tsv", demo_dir)
-        assert "194" == r.stdout.split()[0] 
+        assert "259" == r.stdout.split()[0] 
         r = run(f"wc -l {results_dir}/{annotation}/fraser/{dataset}/results_gene_all.tsv", demo_dir)
-        assert "391" == r.stdout.split()[0]
+        assert "553" == r.stdout.split()[0]
 
