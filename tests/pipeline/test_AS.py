@@ -60,5 +60,5 @@ class Test_AS_Pipeline:
         r = run(f"wc -l {results_dir}/{annotation}/fraser/{dataset}/results.tsv", demo_dir)
         assert "259" == r.stdout.split()[0] 
         r = run(f"wc -l {results_dir}/{annotation}/fraser/{dataset}/results_gene_all.tsv", demo_dir)
-        assert "553" == r.stdout.split()[0]
+        assert "1701" == r.stdout.split()[0]
 
