@@ -63,7 +63,7 @@ if(length(exCountIDs) > 0){
         
         external_fds <- FraserDataSet(colData=exAnno, junctions=junctions,
                                                spliceSites=split_site_counts, name="fds_external")
-        fds <- mergeFDS(fds, external_fds, fds_name = name(fds))
+        fds <- mergeFDS(fds, external_fds, fds_name=name(fds), workingDir=fds@workingDir)
         fds@colData$isExternal <- as.factor(!is.na(fds@colData$SPLICE_COUNTS_DIR))
     }
 } else {
