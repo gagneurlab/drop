@@ -12,7 +12,7 @@
 #'  output:
 #'    - mat_qc: '`sm cfg.getProcessedResultsDir() + 
 #'               "/mae/{dataset}/dna_rna_qc_matrix.Rds"`'
-#'  threads: 20
+#'  threads: 30
 #'  type: script
 #'---
 
@@ -51,52 +51,56 @@ N <- length(vcf_files)
 
 lp <- bplapply(1:N, function(i){
   
-  # Read sample vcf file
-
-  sample <- dna_samples[i] %>% as.character()
-
-  param <-  ScanVcfParam(fixed=NA, info='NT', geno='GT', samples=sample, trimEmpty=TRUE) 
-  vcf_sample <- readVcf(vcf_files[i], param = param, row.names = FALSE)
-  # Get GRanges and add Genotype
-  gr_sample <- granges(vcf_sample)
+  gr_res <- copy(gr_test)
   
-  if(!is.null(geno(vcf_sample)$GT)){
-    gt <- geno(vcf_sample)$GT
-    gt <- gsub('0|0', '0/0', gt, fixed = TRUE)
-    gt <- gsub('0|1', '0/1', gt, fixed = TRUE)
-    gt <- gsub('1|0', '0/1', gt, fixed = TRUE)
-    gt <- gsub('1|1', '1/1', gt, fixed = TRUE)
-  } else if(!is.null(info(vcf_sample)$NT)){
-    gt <- info(vcf_sample)$NT
+  # Read sample vcf file
+  
+  dna_id <- dna_samples[i] %>% as.character()
+  
+  param <-  ScanVcfParam(fixed=NA, info='NT', geno='GT', samples=dna_id, trimEmpty=TRUE) 
+  vcf_dna <- readVcf(vcf_files[i], param = param, row.names = FALSE)
+  # Get GRanges and add Genotype
+  gr_dna <- granges(vcf_dna)
+  
+  if(!is.null(geno(vcf_dna)$GT)){
+    gt <- geno(vcf_dna)$GT
+
+    gt <- gsub('|', '/', gt, fixed = TRUE)
+    gt <- gsub('1/0', '0/1', gt, fixed = TRUE)
+  } else if(!is.null(info(vcf_dna)$NT)){
+    gt <- info(vcf_dna)$NT
     gt <- gsub('ref', '0/0', gt)
     gt <- gsub('het', '0/1', gt)
     gt <- gsub('hom', '1/1', gt)
- }
+  }
   
-  mcols(gr_sample)$GT <- gt
+  mcols(gr_dna)$GT <- gt
   
   # Find overlaps between test and sample
   gr_res <- copy(gr_test)
-  seqlevelsStyle(gr_res) <- seqlevelsStyle(seqlevelsInUse(gr_sample))[1]
-  ov <- findOverlaps(gr_res, gr_sample, type = 'equal')
-  mcols(gr_res)[from(ov),]$GT <- mcols(gr_sample)[to(ov),]$GT
+  seqlevelsStyle(gr_res) <- seqlevelsStyle(seqlevelsInUse(gr_dna))[1]
+  ov <- findOverlaps(gr_res, gr_dna, type = 'equal')
+  mcols(gr_res)$GT[from(ov)] <- mcols(gr_dna)$GT[to(ov)]
   
   # Find similarity between DNA sample and RNA sample
-  x <- vapply(rna_gt_list, function(gr_rna){
+  sims <- vapply(rna_gt_list, function(gr_rna){
+    gr_res <- gr_res[mcols(gr_res)$GT != "0/0"]
     seqlevelsStyle(gr_rna) <- seqlevelsStyle(gr_res)[1]
     ov <- findOverlaps(gr_res, gr_rna, type = 'equal')
     gt_dna <- gr_res[from(ov)]$GT
     gt_rna <- gr_rna[to(ov)]$RNA_GT
-    sum(gt_dna == gt_rna) / length(gt_dna)
+    mean(gt_dna == gt_rna, na.rm = T)
   }, 1.0)
-  return(x)
+  return(sims)
 })
 
 # Create a matrix
 mat <- do.call(rbind, lp)
 row.names(mat) <- dna_samples
 colnames(mat) <- rna_samples
-# mat <- mat[sa[rows_in_group, DNA_ID], sa[rows_in_group, RNA_ID],drop=FALSE]
+# Sort as in the original sa and take care of repeated DNAs/RNAs in the group
+mat <- mat[unique(sa[rows_in_group, DNA_ID]), 
+           unique(sa[rows_in_group, RNA_ID]),
+           drop=FALSE]
 
 saveRDS(mat, snakemake@output$mat_qc)
-

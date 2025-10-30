@@ -36,11 +36,14 @@ rule mae_createSNVs:
     params:
         bcftools = cfg.getTool("bcftoolsCmd"),
         samtools = cfg.getTool("samtoolsCmd")
+    threads: 4
+    resources:
+        mem_mb=lambda wildcards, threads: threads * 1500
     shell:
         """
         {input.script} {input.ncbi2ucsc} {input.ucsc2ncbi} {input.vcf_file} \
         {wildcards.vcf} {input.bam_file} {output.snvs_filename} \
-        {params.bcftools} {params.samtools}
+        {params.bcftools} {params.samtools} {threads}
         """
 
 rule mae_allelicCounts:

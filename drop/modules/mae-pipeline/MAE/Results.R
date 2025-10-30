@@ -10,7 +10,7 @@
 #'   - maxCohortFreq: '`sm cfg.MAE.get("maxVarFreqCohort")`'
 #'  input:
 #'   - mae_res: '`sm lambda w: expand(cfg.getProcessedResultsDir() + 
-#'                "/mae/samples/{id}_res.Rds", id=cfg.MAE.getMaeByGroup({w.dataset}))`'
+#'                "/mae/samples/{id}_res.tsv", id=cfg.MAE.getMaeByGroup({w.dataset}))`'
 #'   - gene_name_mapping: '`sm cfg.getProcessedDataDir() +
 #'                          "/mae/gene_name_mapping_{annotation}.tsv"`'
 #'   - input_sample_params: '`sm cfg.getProcessedDataDir() + "/mae/params/results/{dataset}_resultParams.csv" `'
@@ -40,19 +40,17 @@ suppressPackageStartupMessages({
 })
 
 # Read all MAE results files
-rmae <- lapply(snakemake@input$mae_res, function(m){
-  rt <- readRDS(m)
-  # force consistant UCSC chromosome style
-  rt <- rt[!grepl("chr",contig),contig:= paste0("chr",contig)]
-  return(rt)
-}) %>% rbindlist()
+rmae <- lapply(snakemake@input$mae_res, fread) %>% rbindlist()
 
-# re-factor contig
+# re-factor contig and have all as UCSC chr style
+rmae[, contig := as.character(contig)]
+rmae[!grepl("chr",contig), contig := paste0("chr",contig)]
 rmae$contig <- factor(rmae$contig)
 
 # Convert results into GRanges
 rmae_ranges <- GRanges(seqnames = rmae$contig, 
-                       IRanges(start = rmae$position, end = rmae$position), strand = '*')
+                       IRanges(start = rmae$position, end = rmae$position), 
+		       strand = '*')
 
 # Read annotation and convert into GRanges
 gene_annot_dt <- fread(snakemake@input$gene_name_mapping)

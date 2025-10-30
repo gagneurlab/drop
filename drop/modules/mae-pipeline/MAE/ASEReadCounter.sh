@@ -11,6 +11,7 @@
 # 9 {params.bcftools}
 #10 {params.samtools}
 #11 {params.gatk}
+#12 {threads}
 
 ncbi2ucsc=$1
 ucsc2ncbi=$2
@@ -23,6 +24,7 @@ output=$8
 bcftools=$9
 samtools=${10}
 gatk=${11}
+threads=${12:-4}
 
 tmp=$(mktemp)
 header="contig\tposition\tvariantID\trefAllele\taltAllele\t"
@@ -58,22 +60,31 @@ else
   exit 1
 fi
 
+# run parallel across chromosomes
+echo "$chr_subset" | \
+  xargs -P $threads -Imychromosome \
+    $gatk ASEReadCounter \
+      -R ${fasta} \
+      -I ${bam_file} \
+      -V ${vcf_file} \
+      -L mychromosome \
+      --verbosity ERROR \
+      --QUIET true \
+      --disable-sequence-dictionary-validation ${sanity} \
+      --output "${tmp}-mychromosome-ASE.tsv"
 
-for chr in $chr_subset; do
-  $gatk ASEReadCounter \
-    -R ${fasta} \
-    -I ${bam_file} \
-    -V ${vcf_file} \
-    -L ${chr} \
-    --verbosity ERROR \
-    --QUIET true \
-    --disable-sequence-dictionary-validation ${sanity} |
-    tail -n+2 >>$tmp
-done
+# merge results into one table
+for chr in $chr_subset;
+do
+  tail -n+2 "${tmp}-${chr}-ASE.tsv"
+done >> ${tmp}
 
 cat $tmp | awk -v id="${mae_id}" \
   -F $'\t' 'BEGIN {OFS = FS} NR==1{print $0, "ID"} NR>1{print $0, id}' |
   bgzip >${output}
+
+# clean up
+rm -rf ${tmp}-*-ASE.tsv
 rm ${tmp}
 
 num_out=$(zcat "${output}" | wc -l )

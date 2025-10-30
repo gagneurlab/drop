@@ -26,6 +26,7 @@
 #+ include=FALSE
 saveRDS(snakemake, snakemake@log$snakemake)
 source(snakemake@input$functions)
+library(data.table)
 
 #+ eval=TRUE, echo=FALSE
 # get parameters

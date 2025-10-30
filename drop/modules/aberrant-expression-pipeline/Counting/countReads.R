@@ -13,8 +13,11 @@
 #'  output:
 #'   - counts: '`sm cfg.getProcessedDataDir() + "/aberrant_expression/{annotation}/counts/{sampleID,[^/]+}.Rds"`'
 #'  type: script
-#'  threads: 1
+#'  threads: 6
+#'  resources:
+#'    - mem_mb: '`sm lambda wildcards, threads, attempt: threads * 2000 + 10000 * attempt`'
 #'---
+
 
 saveRDS(snakemake, snakemake@log$snakemake)
 
@@ -34,6 +37,8 @@ count_mode <- count_params$COUNT_MODE
 paired_end <- as.logical(count_params$PAIRED_END)
 overlap <- as.logical(count_params$COUNT_OVERLAPS)
 inter_feature <- ! overlap # inter_feature = FALSE does not allow overlaps
+yield_size <- snakemake@config$aberrantExpression$yieldSize
+threads <- snakemake@threads
 
 # infer preprocessing and strand info
 preprocess_reads <- NULL
@@ -50,10 +55,13 @@ if (strand == "yes") {
 }
 
 # read files
-bam_file <- BamFile(snakemake@input$sample_bam, yieldSize = snakemake@config$aberrantExpression$yieldSize)
+bam_file <- BamFile(snakemake@input$sample_bam, yieldSize = yield_size)
 count_ranges <- readRDS(snakemake@input$count_ranges)
 # set chromosome style
 seqlevelsStyle(count_ranges) <- seqlevelsStyle(bam_file)
+
+# run it in parallel across all chromosomes
+gene_seqnames = as.character(sapply(seqnames(count_ranges), runValue))
 
 # show info
 message(paste("input:", snakemake@input$sample_bam))
@@ -65,25 +73,53 @@ message(paste('\tstrand:', strand, sep = "\t"))
 message(paste('\tstrand specific:', strand_spec, sep = "\t"))
 message(paste(seqlevels(count_ranges), collapse = ' '))
 
-# start counting
-message("\ncounting")
+# function to count per chromosome
+count_per_chromosome <- function(i, gene_seqnames, count_ranges, bam_file, yield_size,
+                                 count_mode, paired_end, strand_spec, preprocess_reads) {
+  genes_to_count <- gene_seqnames == i
+  message(paste("counting seqname '", i, "' with '", sum(genes_to_count), "' genes.", sep = ""))
+  
+  # subset the count_ranges for the current seqname
+  current_ranges <- count_ranges[genes_to_count]
+  
+  # create a new BamFile for the current seqname
+  current_bam_file <- BamFile(path(bam_file), yieldSize=yield_size)
+
+  # summarize overlaps
+  summarizeOverlaps(
+    current_ranges,
+    current_bam_file,
+    mode = count_mode,
+    singleEnd = !paired_end,
+    ignore.strand = !strand_spec,
+    fragments = FALSE,
+    count.mapped.reads = TRUE,
+    preprocess.reads = preprocess_reads,
+    inter.feature = inter_feature,
+    param = ScanBamParam(which = GRanges(i, IRanges(1, seqlengths(bam_file)[i])))
+  )
+}
+
+# run counting in parallel across all chromosomes
+message("\nstarting counting expression ...")
 starttime <- Sys.time()
-se <- summarizeOverlaps(
-  count_ranges
-    , bam_file
-    , mode = count_mode
-    , singleEnd = !paired_end
-    , ignore.strand = !strand_spec  # FALSE if done strand specifically
-    , fragments = F
-    , count.mapped.reads = T
-    , inter.feature = inter_feature # TRUE: reads mapping to multiple features are dropped
-    , preprocess.reads = preprocess_reads
-    , BPPARAM = MulticoreParam(snakemake@threads)
+
+iterate <- seqlevels(count_ranges)
+bpparam <- MulticoreParam(workers = threads, tasks = length(iterate))
+counts <- bplapply(iterate, count_per_chromosome, 
+          gene_seqnames, count_ranges, bam_file, yield_size,
+          count_mode, paired_end, strand_spec, preprocess_reads,
+          BPPARAM = bpparam
 )
+
+# merge SE objects - concatenate by rows (genes) across chromosomes
+se <- do.call(rbind, counts)
+
 colnames(se) <- sampleID
 saveRDS(se, snakemake@output$counts)
 message("done")
 
-print(format(Sys.time()- starttime)) # print time taken
-print(sum(assay(se))) # total counts
+# print time and stats taken
+print(paste("Time taken:", format(Sys.time()- starttime), "with", threads, "threads."))
+print(paste("Total counts:", sum(assay(se))))
 

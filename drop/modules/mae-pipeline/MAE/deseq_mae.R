@@ -7,7 +7,7 @@
 #'  input:
 #'   - mae_counts: '`sm cfg.getProcessedDataDir() + "/mae/allelic_counts/{vcf}--{rna}.csv.gz" `'
 #'  output:
-#'   - mae_res: '`sm cfg.getProcessedResultsDir() + "/mae/samples/{vcf}--{rna}_res.Rds"`'
+#'   - mae_res: '`sm cfg.getProcessedResultsDir() + "/mae/samples/{vcf}--{rna}_res.tsv"`'
 #'  type: script
 #'---
 
@@ -47,4 +47,4 @@ if (snakemake@config$mae$addAF == TRUE) {
     rmae[, rare := NA]
 }
 
-saveRDS(rmae, snakemake@output$mae_res)
+fwrite(rmae, snakemake@output$mae_res, sep = '\t')
