@@ -37,6 +37,15 @@ sample_id <- snakemake@wildcards[["sample_id"]]
 # Read splice site coordinates from RDS
 spliceSiteCoords <- readRDS(snakemake@input$spliceSites)
 
+# Copy to local tmp
+bamFile <- bamFile(fds[, samples(fds) == sample_id])[[1]]
+tmp_file <- file.path(snakemake@resources$tmpdir, paste0('nonsplit_counts_', sample_id, '.bam'))
+
+message('Copy ', bamFile, ' to ', tmp_file)
+file.copy(bamFile, tmp_file)
+file.copy(paste0(bamFile, '.bai'), paste0(tmp_file, '.bai'))
+bamFile(fds[, samples(fds) == sample_id]) <- tmp_file
+
 # Count nonSplitReads for given sample id
 sample_result <- countNonSplicedReads(sample_id,
                                       splitCountRanges = NULL,
@@ -49,5 +58,9 @@ sample_result <- countNonSplicedReads(sample_id,
 
 message(date(), ": ", dataset, ", ", sample_id,
         " no. splice junctions (non split counts) = ", length(sample_result))
+
+# Reset bam file
+bamFile(fds[, samples(fds) == sample_id]) <- bamFile
+file.remove(tmp_file)
 
 file.create(snakemake@output$done_sample_nonSplitCounts)
