@@ -9,12 +9,12 @@ requirements = [
     'python-dateutil',
     'pandoc',
     'graphviz',
-    'pandas>=0.13',
+    'pandas>=2.2',
 ]
 
 extra_files = []
 for (path, directories, filenames) in os.walk('drop/'):
-    directories[:] = [d for d in directories if not d.startswith('.')]
+    directories[:] = [d for d in directories if not d.startswith('.')] 
     filenames[:] = [f for f in filenames if not f.startswith('.') and not f.endswith('.Rproj')]
     for filename in filenames:
         extra_files.append(os.path.join('..', path, filename))
@@ -34,4 +34,3 @@ setuptools.setup(
     include_package_data=True,
     install_requires=requirements,
 )
-

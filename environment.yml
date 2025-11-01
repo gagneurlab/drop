@@ -6,6 +6,7 @@ dependencies:
   - python>=3.8
   - r-base>=4.4
   - pip
+  - pandas>=2.2
   - drop
   - snakemake>=5,<8
   - flake8
