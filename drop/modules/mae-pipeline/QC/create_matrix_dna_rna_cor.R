@@ -97,11 +97,6 @@ lp <- bplapply(1:N, function(i){
   return(sims)
 })
 
-# Create a matrix
-mat <- do.call(rbind, lp)
-row.names(mat) <- dna_samples
-colnames(mat) <- rna_samples
-
 # Matrix 1: lengths
 m1 <- do.call(rbind, lapply(lp, function(x) x[1, , drop = FALSE]))
 
