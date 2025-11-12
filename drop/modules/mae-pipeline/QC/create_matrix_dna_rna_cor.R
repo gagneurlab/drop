@@ -64,7 +64,7 @@ lp <- bplapply(1:N, function(i){
   
   if(!is.null(geno(vcf_dna)$GT)){
     gt <- geno(vcf_dna)$GT
-
+    
     gt <- gsub('|', '/', gt, fixed = TRUE)
     gt <- gsub('1/0', '0/1', gt, fixed = TRUE)
   } else if(!is.null(info(vcf_dna)$NT)){
@@ -83,14 +83,17 @@ lp <- bplapply(1:N, function(i){
   mcols(gr_res)$GT[from(ov)] <- mcols(gr_dna)$GT[to(ov)]
   
   # Find similarity between DNA sample and RNA sample
-  sims <- vapply(rna_gt_list, function(gr_rna){
+  sims <- sapply(rna_gt_list, function(gr_rna){
     gr_res <- gr_res[mcols(gr_res)$GT != "0/0"]
     seqlevelsStyle(gr_rna) <- seqlevelsStyle(gr_res)[1]
     ov <- findOverlaps(gr_res, gr_rna, type = 'equal')
     gt_dna <- gr_res[from(ov)]$GT
     gt_rna <- gr_rna[to(ov)]$RNA_GT
-    mean(gt_dna == gt_rna, na.rm = T)
-  }, 1.0)
+    x <- c(length(gt_rna), sum(gt_dna == gt_rna, na.rm = T))
+    # x <- sum(gt_dna == gt_rna, na.rm = T)
+    return(x)
+    # mean(gt_dna == gt_rna, na.rm = T)
+  })
   return(sims)
 })
 
@@ -98,9 +101,32 @@ lp <- bplapply(1:N, function(i){
 mat <- do.call(rbind, lp)
 row.names(mat) <- dna_samples
 colnames(mat) <- rna_samples
-# Sort as in the original sa and take care of repeated DNAs/RNAs in the group
-mat <- mat[unique(sa[rows_in_group, DNA_ID]), 
-           unique(sa[rows_in_group, RNA_ID]),
-           drop=FALSE]
+
+# Matrix 1: lengths
+m1 <- do.call(rbind, lapply(lp, function(x) x[1, , drop = FALSE]))
+
+# Matrix 2: DNA-RNA matches
+m2 <- do.call(rbind, lapply(lp, function(x) x[2, , drop = FALSE]))
+
+
+clean_matrices <- function(m){
+  row.names(m) <- dna_samples
+  colnames(m) <- rna_samples
+  # Sort as in the original sa and take care of repeated DNAs/RNAs in the group
+  m <- m[unique(sa[rows_in_group, DNA_ID]), 
+        unique(sa[rows_in_group, RNA_ID]),
+        drop=FALSE]
+  
+  return(m)
+}
+
+m1 <- clean_matrices(m1)
+m2 <- clean_matrices(m2)
+
+# Matrix 3: DNA-RNA matches prop.
+mat <- m2/m1
+
 
 saveRDS(mat, snakemake@output$mat_qc)
+saveRDS(m1, gsub('matrix.Rds', 'matrix_length.Rds', snakemake@output$mat_qc))
+saveRDS(m2, gsub('matrix.Rds', 'matrix_sum.Rds', snakemake@output$mat_qc))
