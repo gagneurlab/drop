@@ -120,7 +120,7 @@ m2 <- clean_matrices(m2)
 
 # Matrix 3: DNA-RNA matches prop.
 mat <- m2/m1
-
+mat[is.nan(mat)] <- 0 # prevents 0/0
 
 saveRDS(mat, snakemake@output$mat_qc)
 saveRDS(m1, gsub('matrix.Rds', 'matrix_length.Rds', snakemake@output$mat_qc))
