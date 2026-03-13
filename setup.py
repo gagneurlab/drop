@@ -9,7 +9,7 @@ requirements = [
     'python-dateutil',
     'pandoc',
     'graphviz',
-    'pandas>=2.2',
+    'pandas>=3.0',
 ]
 
 extra_files = []
