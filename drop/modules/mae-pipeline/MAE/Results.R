@@ -42,7 +42,7 @@ suppressPackageStartupMessages({
 # Read all MAE results files
 rmae <- lapply(snakemake@input$mae_res, fread) %>% rbindlist()
 
-# re-factor contig and have all as UCSC chr style
+# Force UCSC chr style
 seqlevelsStyle(rmae$contig) <- 'UCSC'
 
 # Convert results into GRanges
