@@ -42,9 +42,12 @@ class SampleAnnotation:
         read and check sample annotation for missing columns
         clean columns and set types
         """
+        # Forcing bool type requires all values to be filled
+        # Hence, we use object to allow for NAs in the sample sheet. 
+        # https://stackoverflow.com/questions/66067314/how-to-convert-type-to-bool-in-pandas-with-none-values-in-the-series
         data_types: dict[str, type] = {
             "RNA_ID": str, "RNA_BAM_FILE": str, "DNA_ID": str, "DNA_VCF_FILE": str, "DROP_GROUP": str, 
-            "PAIRED_END": bool, "COUNT_MODE": str, "COUNT_OVERLAPS": bool, "STRAND": str, 
+            "PAIRED_END": object, "COUNT_MODE": str, "COUNT_OVERLAPS": object, "STRAND": str, 
         }
         optional_columns = {"GENE_COUNTS_FILE", "SPLICE_COUNTS_DIR", "GENE_ANNOTATION", "GENOME"}
         annotationTable = pd.read_csv(self.file, sep=sep, dtype=data_types, index_col=False)
