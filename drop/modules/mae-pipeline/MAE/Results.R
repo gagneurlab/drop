@@ -74,10 +74,11 @@ res_annot <- rbind(res_annot[gene_type == 'protein_coding'],
 
 # Write all the other genes in another column
 res_annot[, aux := paste(contig, position, sep = "-")]
-rvar <- unique(res_annot[, .(aux, gene_name)])
-rvar[, N := 1:.N, by = aux]
 
-r_other <- rvar[N > 1, .(other_names = paste(gene_name, collapse = ',')), by = aux]
+# For each variant position collect the non-primary gene names (i.e. every gene
+# after the first one, which is protein_coding due to the ordering above).
+r_other <- unique(res_annot[, .(aux, gene_name)])[
+  , if (.N > 1) .(other_names = paste(gene_name[-1], collapse = ',')), by = aux]
 res <- merge(res_annot, r_other, by = 'aux', sort = FALSE, all.x = TRUE) 
 res[, c('aux') := NULL]
 res <- res[, .SD[1], by = .(ID, contig, position)]
