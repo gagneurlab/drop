@@ -43,9 +43,7 @@ suppressPackageStartupMessages({
 rmae <- lapply(snakemake@input$mae_res, fread) %>% rbindlist()
 
 # re-factor contig and have all as UCSC chr style
-rmae[, contig := as.character(contig)]
-rmae[!grepl("chr",contig), contig := paste0("chr",contig)]
-rmae$contig <- factor(rmae$contig)
+seqlevelsStyle(rmae$contig) <- 'UCSC'
 
 # Convert results into GRanges
 rmae_ranges <- GRanges(seqnames = rmae$contig, 
@@ -57,7 +55,7 @@ gene_annot_dt <- fread(snakemake@input$gene_name_mapping)
 gene_annot_ranges <- GRanges(seqnames = gene_annot_dt$seqnames, 
                              IRanges(start = gene_annot_dt$start, end = gene_annot_dt$end), 
                              strand = gene_annot_dt$strand)
-gene_annot_ranges <- keepStandardChromosomes(gene_annot_ranges, pruning.mode = 'coarse')
+# gene_annot_ranges <- keepStandardChromosomes(gene_annot_ranges, pruning.mode = 'coarse')
 
 # Keep the chr style of the annotation in case the results contain different styles
 seqlevelsStyle(rmae_ranges) <- seqlevelsStyle(gene_annot_ranges)
