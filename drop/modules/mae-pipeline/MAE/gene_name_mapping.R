@@ -22,16 +22,17 @@ suppressPackageStartupMessages({
 
 gtf_dt <- import(snakemake@input$gtf) %>% as.data.table
 if (!"gene_name" %in% colnames(gtf_dt)) {
-  gtf_dt[gene_name := gene_id]
+  gtf_dt[, gene_name := gene_id]
 }
 if('gene_biotype' %in% colnames(gtf_dt))
    setnames(gtf_dt, 'gene_biotype', 'gene_type')
 gtf_dt <- gtf_dt[type == "gene", .(seqnames, start, end, strand, gene_id, gene_name, gene_type)]
 
-# make gene_names unique
-gtf_dt[, N := 1:.N, by = gene_name] # warning message
+# make gene_names unique, keeping the originals for reference.
+# make.unique avoids collisions that occur with the N-counter approach when
+# a gene is already naturally named e.g. "GENEX_2" (two different genes would
+# otherwise both map to the same name).
 gtf_dt[, gene_name_orig := gene_name]
-gtf_dt[N > 1, gene_name := paste(gene_name, N, sep = '_')]
-gtf_dt[, N := NULL]
+gtf_dt[, gene_name := make.unique(gene_name, sep = '_')]
 
 fwrite(gtf_dt, snakemake@output$gene_name_mapping, na = NA)
