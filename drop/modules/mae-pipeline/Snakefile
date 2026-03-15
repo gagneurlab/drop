@@ -57,6 +57,9 @@ rule mae_allelicCounts:
         script    = MAE_WORKDIR / "MAE" / "ASEReadCounter.sh"
     output:
         counted = cfg.processedDataDir / "mae" / "allelic_counts" / "{vcf}--{rna}.csv.gz"
+    threads: 4
+    resources:
+        mem_mb=lambda wildcards, threads: threads * 2000
     params:
         bcftools = cfg.getTool("bcftoolsCmd"),
         samtools = cfg.getTool("samtoolsCmd"),
@@ -67,5 +70,5 @@ rule mae_allelicCounts:
         {input.script} {input.ncbi2ucsc} {input.ucsc2ncbi} \
         {input.vcf_file} {input.bam_file} {wildcards.vcf}--{wildcards.rna} \
         {input.fasta} {params.gatkIgnoreHeaderCheck} {output.counted} \
-        {params.bcftools} {params.samtools} {params.gatk}
+        {params.bcftools} {params.samtools} {params.gatk} {threads}
         """

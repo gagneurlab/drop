@@ -48,7 +48,10 @@ message(paste("read", length(counts_list), 'files'))
 # check rownames and proceed only if they are the same
 row_names_objects <- lapply(counts_list, rownames)
 if( length(unique(row_names_objects)) > 1 ){
-  stop('The rows (genes) of the count matrices to be merged are not the same.')
+  stop('The rows (genes) of the sample counts to be merged are not the same.')
+}
+if(!identical(names(count_ranges), rownames(counts_list[[1]]))){
+    stop('The rows (genes) of the count matrices to be merged are not the same as the annotation.')
 }
 
 # merge counts
