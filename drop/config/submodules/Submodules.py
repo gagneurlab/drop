@@ -6,7 +6,7 @@ from wbuild.createIndex import createIndexRule
 
 class Submodule:
 
-    def __init__(self, config, sampleAnnotation, processedDataDir, processedResultsDir, workDir):
+    def __init__(self, config, sampleAnnotation: "SampleAnnotation", processedDataDir, processedResultsDir, workDir):
         self.CONFIG_KEYS = []
         self.name = "Submodule"
         self.sampleAnnotation = sampleAnnotation
@@ -157,3 +157,6 @@ class Submodule:
                     f"The Config file has defined specific key,value for genome path "
                     f"but the SA table does not match for sample {sampleID}"
                 )
+
+# import in the end to overcome circular import issues
+from drop.config.SampleAnnotation import SampleAnnotation
