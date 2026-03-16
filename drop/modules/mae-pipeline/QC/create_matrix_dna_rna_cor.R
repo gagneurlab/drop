@@ -90,9 +90,7 @@ lp <- bplapply(1:N, function(i){
     gt_dna <- gr_res[from(ov)]$GT
     gt_rna <- gr_rna[to(ov)]$RNA_GT
     x <- c(length(gt_rna), sum(gt_dna == gt_rna, na.rm = T))
-    # x <- sum(gt_dna == gt_rna, na.rm = T)
     return(x)
-    # mean(gt_dna == gt_rna, na.rm = T)
   })
   return(sims)
 })
