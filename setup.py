@@ -9,7 +9,7 @@ requirements = [
     'python-dateutil',
     'pandoc',
     'graphviz',
-    'pandas>=2.2',
+    'pandas>=3.0',
 ]
 
 extra_files = []
@@ -21,8 +21,8 @@ for (path, directories, filenames) in os.walk('drop/'):
 
 setuptools.setup(
     name="drop",
-    version="1.5.0",
-    author="Vicente A. Yépez, Michaela Müller, Nicholas H. Smith, Daniela Klaproth-Andrade, Luise Schuller, Ines Scheller, Christian Mertes <mertes@in.tum.de>, Julien Gagneur <gagneur@in.tum.de>",
+    version="1.6.0",
+    author="Vicente A. Yépez, Michaela Müller, Nicholas H. Smith, Ata Jadid Ahari, Daniela Klaproth-Andrade, Luise Schuller, Ines Scheller, Christian Mertes <mertes@in.tum.de>, Julien Gagneur <gagneur@in.tum.de>",
     author_email="yepez@in.tum.de",
     description="Detection of RNA Outlier Pipeline",
     long_description=long_description,

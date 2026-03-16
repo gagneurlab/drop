@@ -5,6 +5,8 @@ from collections import defaultdict
 from snakemake.logging import logger
 import warnings
 
+from drop.config.Genome import Genome
+
 warnings.filterwarnings("ignore", 'This pattern has match groups')
 
 
@@ -15,7 +17,7 @@ class SampleAnnotation:
         "PAIRED_END", "COUNT_MODE", "COUNT_OVERLAPS", "STRAND", "GENOME"
     ]
 
-    def __init__(self, file, root, genome):
+    def __init__(self, file: str, root: Path, genome: Genome):
         """
         sa_file: sample annotation file location from config
         root: output location for file mapping
@@ -35,26 +37,27 @@ class SampleAnnotation:
         self.extSpliceCountIDs = self.createGroupIds(file_type="SPLICE_COUNTS_DIR", sep=',')
         self.checkNonExternalGeneAnnotation()
         
-    def parse(self, sep='\t'):
+    def parse(self, sep: str ='\t'):
         """
         read and check sample annotation for missing columns
         clean columns and set types
         """
-        data_types = {
-            "RNA_ID": str, "DNA_ID": str, "DROP_GROUP": str, 
-            "PAIRED_END": bool, "COUNT_MODE": str, "COUNT_OVERLAPS": bool, "STRAND": str, 
+        # Forcing bool type requires all values to be filled
+        # Hence, we use object to allow for NAs in the sample sheet. 
+        # https://stackoverflow.com/questions/66067314/how-to-convert-type-to-bool-in-pandas-with-none-values-in-the-series
+        data_types: dict[str, type] = {
+            "RNA_ID": str, "RNA_BAM_FILE": str, "DNA_ID": str, "DNA_VCF_FILE": str, "DROP_GROUP": str, 
+            "PAIRED_END": object, "COUNT_MODE": str, "COUNT_OVERLAPS": object, "STRAND": str, 
         }
-        annotationTable = pd.read_csv(self.file, sep=sep, index_col=False)
         optional_columns = {"GENE_COUNTS_FILE", "SPLICE_COUNTS_DIR", "GENE_ANNOTATION", "GENOME"}
-
-        annotationTable = pd.read_csv(self.file, sep=sep, index_col=False)
+        annotationTable = pd.read_csv(self.file, sep=sep, dtype=data_types, index_col=False)
         
-        if annotationTable['STRAND'].isnull().values.any():
+        if annotationTable['STRAND'].isnull().any():
             raise ValueError("STRAND is not provided for some samples. All samples should have STRAND value in the sample annotation file.\n")
 
-        missing_cols = [x for x in self.SAMPLE_ANNOTATION_COLUMNS if x not in annotationTable.columns.values]
+        missing_cols = [x for x in self.SAMPLE_ANNOTATION_COLUMNS if x not in annotationTable.columns]
         if len(missing_cols) > 0:
-            if "GENE_ANNOTATION" in missing_cols and "ANNOTATION" in annotationTable.columns.values:
+            if "GENE_ANNOTATION" in missing_cols and "ANNOTATION" in annotationTable.columns:
                 logger.info(
                     "WARNING: GENE_ANNOTATION must be a column in the sample annotation table, ANNOTATION is the old column name and will be deprecated in the future\n")
                 annotationTable["GENE_ANNOTATION"] = annotationTable.pop("ANNOTATION")
@@ -68,7 +71,6 @@ class SampleAnnotation:
             if len(missing_cols) > 0:
                 raise ValueError(f"Incorrect columns in sample annotation file. Missing:\n{missing_cols}")
 
-        annotationTable = annotationTable.astype(data_types)
         # remove unwanted characters
         annotationTable["DROP_GROUP"] = annotationTable["DROP_GROUP"].str.replace(" ", "").str.replace("(|)", "", regex=True)
 

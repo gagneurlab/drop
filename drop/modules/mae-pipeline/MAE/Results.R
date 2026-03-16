@@ -42,11 +42,6 @@ suppressPackageStartupMessages({
 # Read all MAE results files
 rmae <- lapply(snakemake@input$mae_res, fread) %>% rbindlist()
 
-# re-factor contig and have all as UCSC chr style
-rmae[, contig := as.character(contig)]
-rmae[!grepl("chr",contig), contig := paste0("chr",contig)]
-rmae$contig <- factor(rmae$contig)
-
 # Convert results into GRanges
 rmae_ranges <- GRanges(seqnames = rmae$contig, 
                        IRanges(start = rmae$position, end = rmae$position), 
@@ -57,7 +52,6 @@ gene_annot_dt <- fread(snakemake@input$gene_name_mapping)
 gene_annot_ranges <- GRanges(seqnames = gene_annot_dt$seqnames, 
                              IRanges(start = gene_annot_dt$start, end = gene_annot_dt$end), 
                              strand = gene_annot_dt$strand)
-gene_annot_ranges <- keepStandardChromosomes(gene_annot_ranges, pruning.mode = 'coarse')
 
 # Keep the chr style of the annotation in case the results contain different styles
 seqlevelsStyle(rmae_ranges) <- seqlevelsStyle(gene_annot_ranges)
@@ -90,7 +84,7 @@ maxCohortFreq <- snakemake@params$maxCohortFreq
 res[, N_var := .N, by = .(gene_name, contig, position)]
 res[, cohort_freq := round(N_var / uniqueN(ID), 3)]
 
-res[, rare := (rare | is.na(rare)) & cohort_freq <= maxCohortFreq] 
+res[, rare := (isTRUE(rare) | is.na(rare)) & cohort_freq <= maxCohortFreq] 
 
 # Add significance columns
 allelicRatioCutoff <- snakemake@params$allelicRatioCutoff
@@ -145,10 +139,10 @@ melt_dt[variable == 'N_MAE_ALT_RARE', variable := '+MAE for ALT\n& rare']
 #' a cascade plot that shows a progression of added filters  
 #'   - >10 counts: only variants supported by more than 10 counts
 #'   - +MAE: and shows mono allelic expression
-#'   - +MAE for REF : the monoallelic expression favors the reference allele
-#'   - +MAE for ALT : the monoallelic expression favors the alternative allele
+#'   - +MAE for REF :the monoallelic expression favors the reference allele
+#'   - +MAE for ALT :the monoallelic expression favors the alternative allele
 #'   - rare: 
-#'     - if `add_AF` is set to true in config file must meet minimum AF set by the config value `max_AF`
+#'     - if `add_AF` is set to true in the config file must meet the minimum AF set by the config value `max_AF`
 #'     - must meet the inner-cohort frequency `maxVarFreqCohort` cutoff
 
 ggplot(melt_dt, aes(variable, value)) + geom_boxplot() +

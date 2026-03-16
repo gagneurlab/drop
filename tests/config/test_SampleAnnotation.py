@@ -13,7 +13,7 @@ class Test_SampleAnnotation:
 
     def test_mapping(self, sampleAnnotation):
         # ID mappings/groups
-        assert sampleAnnotation.idMapping.shape == (14, 2)
+        assert sampleAnnotation.idMapping.shape == (10, 2) # Test unique RNA - DNA pairs
         assert sampleAnnotation.sampleFileMapping.shape == (24, 4)
         true_mapping = {'batch_0': 1, 'batch_1': 2, 'mae': 3, 'outrider_external': 8, 'outrider': 10,
                 'fraser': 10,'fraser_external':8}
