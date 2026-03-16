@@ -52,7 +52,7 @@ For more information on different installation options, refer to the
 
 ## What's new
 
-Version 1.6.0 contains a fix to a bug in the counting of the aberrant expression module ⚠️ . Please do not use v1.5.0.
+Version 1.6.0 contains a fix to a bug in the counting of the aberrant expression module ⚠️ . In addition, it contains a fix to the assignment of variants to genes in the MAE module. Please do not use v1.5.0.
 
 Version 1.5.0 contains the versions of OUTRIDER and FRASER that use the Optimal Hard Threshold procedure established by Gavish and Donoho, a deterministic approach to denoise low-rank matrices relying on singular value decomposition, to find the optimal autoencoder dimension instead of the grid search. This leads to a reduction in the run time of around 6-10 times. DROP supports mixing BAM files and external expression counts within the same group. This allows users to provide pre-computed expression counts for some samples while still using BAM files for splicing analysis. When both are available for a sample, external counts take priority for expression analysis, while BAM files are still used for splicing analysis.
 
