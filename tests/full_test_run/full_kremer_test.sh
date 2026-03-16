@@ -19,13 +19,21 @@ mkdir -p ${run_folder}
 cd ${run_folder}
 
 # create test env first
-env_path=./env/drop_test_env
+env_path=${TMP}/env/env-$(basename ${run_folder})
 mkdir -p env
 mamba create -y -p ${env_path} \
     "drop>=1.5" "pandoc>=2.4" "r-base>=4.4" \
     "python>=3.12" "pip>=26.0" "yq>=3.4" \
     "pandas>=3.0"
-conda activate ${env_path}
+source $(dirname ${CONDA_EXE})/activate ${env_path}
+
+# Report locations in the end
+report_folder_on_exit(){
+    echo "The output data is in: ${run_folder} and the env is in ${env_path}"
+}
+trap report_folder_on_exit EXIT
+trap report_folder_on_exit INT
+
 
 # Install R data packages required for the pipeline
 Rscript -e "options(repos=structure(c(CRAN='https://cloud.r-project.org')), warn = -1); install.packages('BiocManager');"
