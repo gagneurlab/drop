@@ -80,16 +80,22 @@ class AE(Submodule):
         sa_row = self.sampleAnnotation.getRow("RNA_ID", rnaID)
         count_params = sa_row[["STRAND", "COUNT_MODE", "PAIRED_END", "COUNT_OVERLAPS"]]
         count_params_dict = {
-            k: self._to_bool_if_possible(v)
+            k: self._convert_to_bool(v)
             for k, v in count_params.iloc[0].to_dict().items()
         }
         return count_params_dict
 
     @staticmethod
-    def _to_bool_if_possible(v):
+    def _convert_to_bool(v: object) -> bool:
         """Convert value to bool if possible, otherwise return the original object."""
         if isinstance(v, (bool, np.bool_)):
             return bool(v)
-        if isinstance(v, str) and v.lower() in ('true', 'false'):
-            return v.lower() == 'true'
-        return v
+        if isinstance(v, (int, float)):
+            if v == 1:
+                return True
+            if v == 0:
+                return False
+        if isinstance(v, str) and v.lower() in ('true', 'false', 'yes', 'no', 't', 'f', 'y', 'n', '1', '0'):
+            return v.lower() in ('true', 'yes', 't', 'y', '1')
+        raise ValueError(f"Cannot convert value '{v}' of type {type(v)} to bool." +
+                         " Please provide a boolean value (True/False), 1/0 or yes/no.")
