@@ -3,12 +3,13 @@ from snakemake.logging import logger
 import numpy as np
 
 from drop import utils
+from drop.config import SampleAnnotation
 from .Submodules import Submodule
 
 
 class AE(Submodule):
 
-    def __init__(self, config, sampleAnnotation, processedDataDir, processedResultsDir, workDir):
+    def __init__(self, config, sampleAnnotation: SampleAnnotation, processedDataDir, processedResultsDir, workDir):
         super().__init__(config, sampleAnnotation, processedDataDir, processedResultsDir, workDir)
         self.CONFIG_KEYS = [
             "groups", "fpkmCutoff", "implementation", "padjCutoff", "zScoreCutoff",
@@ -76,7 +77,7 @@ class AE(Submodule):
             
         return count_files
 
-    def getCountParams(self, rnaID):
+    def getCountParams(self, rnaID) -> dict[str, str | bool]:
         sa_row = self.sampleAnnotation.getRow("RNA_ID", rnaID)
         count_params = sa_row[["STRAND", "COUNT_MODE", "PAIRED_END", "COUNT_OVERLAPS"]]
         count_params_dict = {

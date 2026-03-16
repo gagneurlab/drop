@@ -287,12 +287,12 @@ class SampleAnnotation:
             ans = set(ans)
         return ans
 
-    def getRow(self, column, value):
+    def getRow(self, column: str, value):
         sa = self.annotationTable
         if column not in sa.columns:
             raise KeyError(f"column {column} not in sample annotation")
         row = sa[sa[column] == value]
-        if row.shape[0] != 1:
+        if not isinstance(row, pd.DataFrame) or row.shape[0] != 1:
             raise ValueError(f"sa[sa[{column}] == {value}] should have 1 row")
         return row
 
