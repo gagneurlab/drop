@@ -57,6 +57,7 @@ rmae_ranges <- unlist(GRangesList(lapply(unique(rmae[,ID]), function(id){
     seqlevelsStyle(tmp_ranges) <- seqlevelsStyle(gene_annot_ranges)
     tmp_ranges
 })))
+rmae$contig <- as.character(seqnames(rmae_ranges))
 
 # Overlap results and annotation
 fo <- findOverlaps(rmae_ranges, gene_annot_ranges)
