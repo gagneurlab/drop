@@ -3,13 +3,11 @@ from snakemake.logging import logger
 import numpy as np
 
 from drop import utils
-from drop.config import SampleAnnotation
 from .Submodules import Submodule
-
 
 class AE(Submodule):
 
-    def __init__(self, config, sampleAnnotation: SampleAnnotation, processedDataDir, processedResultsDir, workDir):
+    def __init__(self, config, sampleAnnotation: "SampleAnnotation", processedDataDir, processedResultsDir, workDir):
         super().__init__(config, sampleAnnotation, processedDataDir, processedResultsDir, workDir)
         self.CONFIG_KEYS = [
             "groups", "fpkmCutoff", "implementation", "padjCutoff", "zScoreCutoff",
@@ -83,7 +81,7 @@ class AE(Submodule):
             "STRAND": sa_row.iloc[0].STRAND,
             "COUNT_MODE": sa_row.iloc[0].COUNT_MODE,
             "PAIRED_END": self._convert_to_bool(sa_row.iloc[0].PAIRED_END),
-            "COUNT_OVERLAPS": sa_row.iloc[0].COUNT_OVERLAPS
+            "COUNT_OVERLAPS": self._convert_to_bool(sa_row.iloc[0].COUNT_OVERLAPS),
         }
 
     @staticmethod
@@ -100,3 +98,6 @@ class AE(Submodule):
             return v.lower() in ('true', 'yes', 't', 'y', '1')
         raise ValueError(f"Cannot convert value '{v}' of type {type(v)} to bool." +
                          " Please provide a boolean value (True/False), 1/0 or yes/no.")
+
+# import in the end to overcome circular import issues
+from drop.config.SampleAnnotation import SampleAnnotation
