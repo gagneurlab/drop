@@ -27,6 +27,12 @@ mamba create -y -p ${env_path} \
     "pandas>=3.0"
 conda activate ${env_path}
 
+# Install R data packages required for the pipeline
+Rscript -e "options(repos=structure(c(CRAN='https://cloud.r-project.org')), warn = -1); install.packages('BiocManager');"
+Rscript -e "BiocManager::install('BSgenome.Hsapiens.UCSC.hg19')" &
+Rscript -e "BiocManager::install('MafDb.gnomAD.r2.1.hs37d5')" &
+wait
+
 # install version from git branch
 pip install --no-deps --force-reinstall \
     "git+https://github.com/gagneurlab/drop@${branch_name}"

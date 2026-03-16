@@ -39,22 +39,24 @@ suppressPackageStartupMessages({
   library(dplyr)
 })
 
-# Read all MAE results files
-rmae <- lapply(snakemake@input$mae_res, fread) %>% rbindlist()
-
-# Convert results into GRanges
-rmae_ranges <- GRanges(seqnames = rmae$contig, 
-                       IRanges(start = rmae$position, end = rmae$position), 
-		       strand = '*')
-
 # Read annotation and convert into GRanges
 gene_annot_dt <- fread(snakemake@input$gene_name_mapping)
-gene_annot_ranges <- GRanges(seqnames = gene_annot_dt$seqnames, 
-                             IRanges(start = gene_annot_dt$start, end = gene_annot_dt$end), 
-                             strand = gene_annot_dt$strand)
+gene_annot_ranges <- makeGRangesFromDataFrame(gene_annot_dt)
 
-# Keep the chr style of the annotation in case the results contain different styles
-seqlevelsStyle(rmae_ranges) <- seqlevelsStyle(gene_annot_ranges)
+# Read all MAE results files
+rmae <- rbindlist(lapply(snakemake@input$mae_res, fread))
+
+# Run this per sample, as the chromosome style might differ between samples
+rmae_ranges <- unlist(GRangesList(lapply(unique(rmae[,ID]), function(id){
+    tmp_ranges <- makeGRangesFromDataFrame(rmae[ID == id],
+                             seqnames.field='contig',
+                             start.field='position',
+                             end.field='position',
+                             keep.extra.columns=TRUE)
+    # Keep the chr style of the annotation in case the results contain different styles
+    seqlevelsStyle(tmp_ranges) <- seqlevelsStyle(gene_annot_ranges)
+    tmp_ranges
+})))
 
 # Overlap results and annotation
 fo <- findOverlaps(rmae_ranges, gene_annot_ranges)
