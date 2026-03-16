@@ -5,10 +5,12 @@
 #
 
 ## Parameters to change
-library(data.table)
-library(OUTRIDER)
-library(FRASER)
-library(yaml)
+suppressPackageStartupMessages({
+  library(data.table)
+  library(OUTRIDER)
+  library(FRASER)
+  library(yaml)
+})
 
 # default groups and folders
 root_dir <- './'
@@ -102,7 +104,7 @@ stopifnot(res_fra[hgncSymbol == 'TIMMDC1' & sampleID == 'MUC1344', counts] == 37
 ##
 
 # 11. MAE
-stopifnot(nrow(mae[gene_name == 'ALDH18A1' & ID == 'MUC1404']) == 1)
+stopifnot(nrow(mae[gene_name == 'ALDH18A1' & ID == '65990--MUC1404']) == 1)
 
 # 12. MAE counts
 stopifnot(mae[gene_name == 'ALDH18A1' & ID == "65990--MUC1404", altCount] == 159)
