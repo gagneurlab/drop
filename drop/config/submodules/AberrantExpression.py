@@ -79,12 +79,12 @@ class AE(Submodule):
 
     def getCountParams(self, rnaID) -> dict[str, str | bool]:
         sa_row = self.sampleAnnotation.getRow("RNA_ID", rnaID)
-        count_params = sa_row[["STRAND", "COUNT_MODE", "PAIRED_END", "COUNT_OVERLAPS"]]
-        count_params_dict = {
-            k: self._convert_to_bool(v)
-            for k, v in count_params.iloc[0].to_dict().items()
+        return {
+            "STRAND": sa_row.iloc[0].STRAND,
+            "COUNT_MODE": sa_row.iloc[0].COUNT_MODE,
+            "PAIRED_END": self._convert_to_bool(sa_row.iloc[0].PAIRED_END),
+            "COUNT_OVERLAPS": sa_row.iloc[0].COUNT_OVERLAPS
         }
-        return count_params_dict
 
     @staticmethod
     def _convert_to_bool(v: object) -> bool:
