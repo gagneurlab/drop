@@ -21,6 +21,8 @@ suppressPackageStartupMessages({
   library(data.table)
   library(rtracklayer)
   library(magrittr)
+  library(txdbmaker)
+  library(GenomeInfoDb)
 })
 
 ## Create txdb

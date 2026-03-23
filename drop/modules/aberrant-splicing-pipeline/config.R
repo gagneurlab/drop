@@ -14,7 +14,7 @@ suppressPackageStartupMessages({
     library(plotly)
     library(DelayedMatrixStats)
     library(FRASER)
-  library(rhdf5)
+    library(rhdf5)
 })
 
 

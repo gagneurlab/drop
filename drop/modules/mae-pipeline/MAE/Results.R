@@ -37,6 +37,7 @@ suppressPackageStartupMessages({
   library(SummarizedExperiment)
   library(R.utils)
   library(dplyr)
+  library(GenomeInfoDb)
 })
 
 # Read annotation and convert into GRanges

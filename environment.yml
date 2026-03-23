@@ -1,18 +1,55 @@
 name: drop_test
+
 channels:
   - conda-forge
   - bioconda
+
 dependencies:
-  - python>=3.11
-  - r-base>=4.4
+  - python >=3.11
   - pip
-  - pandas>=3.0
-  - drop
-  - snakemake>=5,<8
+  - pandas >=3.0
+  - Click >=7.0
+  - click-log
+  - python-dateutil
+
+  # snakemake/wbuild
+  - wbuild >=1.8=pyhdfd78af_2
+  - snakemake >=5.5.2,<8
+  - pandoc
+  - graphviz
+
+  # command line tools
+  - bc
+  - wget
+  - htslib
+  - samtools >=1.9
+  - bcftools >=1.9
+  - gatk4 >=4.0.4
+  - star >=2.7
+
+  # R dependencies
+  - r-base >=4.4
+  - r-dt
+  - r-rmarkdown
+  - r-knitr
+  - r-ggplot2
+  - r-ggthemes
+  - r-cowplot
+  - r-data.table
+  - r-dplyr
+  - r-tidyr
+  - r-magrittr
+  - r-devtools
+  - r-tmae >=1.0.5
+  
+  # bioconductor packages
+  - bioconductor-deseq2
+  - bioconductor-genomicscores
+  - bioconductor-outrider >=1.28
+  - bioconductor-fraser >=2.6
+  - bioconductor-variantannotation
+
+  # testing dependencies
   - flake8
   - bioconductor-bsgenome.hsapiens.ucsc.hg19
-  - wbuild>1.8.0
-  - r-dt
-
-  # required for downloading R packages through github
   - unzip

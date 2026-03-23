@@ -20,7 +20,10 @@
 saveRDS(snakemake, snakemake@log$snakemake)
 source(snakemake@params$setup, echo=FALSE)
 
-library(AnnotationDbi)
+suppressPackageStartupMessages({
+  library(AnnotationDbi)
+  library(GenomeInfoDb)
+})
 
 # 
 # input

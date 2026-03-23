@@ -24,6 +24,10 @@
 saveRDS(snakemake, snakemake@log$snakemake)
 source(snakemake@params$setup, echo=FALSE)
 
+suppressPackageStartupMessages({
+  library(GenomeInfoDb)
+})
+
 opts_chunk$set(fig.width=12, fig.height=8)
 
 # input
