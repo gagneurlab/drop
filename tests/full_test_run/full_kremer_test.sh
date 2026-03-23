@@ -20,11 +20,10 @@ cd ${run_folder}
 
 # create test env first
 env_path=${TMP}/env/env-$(basename ${run_folder})
-mkdir -p env
-mamba create -y -p ${env_path} \
-    "drop>=1.5" "pandoc>=2.4" "r-base>=4.4" \
-    "python>=3.12" "pip>=26.0" "yq>=3.4" \
-    "pandas>=3.0"
+mkdir -p $(dirname ${env_path})
+wget "https://github.com/gagneurlab/drop/blob/${branch_name}/environment.yml"
+yq -r '.dependencies[] | strings' environment.yml > environment.txt
+mamba create -y -p ${env_path} --file ./environment.txt
 source $(dirname ${CONDA_EXE})/activate ${env_path}
 
 # Report locations in the end
@@ -34,12 +33,6 @@ report_folder_on_exit(){
 trap report_folder_on_exit EXIT
 trap report_folder_on_exit INT
 
-
-# Install R data packages required for the pipeline
-Rscript -e "options(repos=structure(c(CRAN='https://cloud.r-project.org')), warn = -1); install.packages('BiocManager');"
-Rscript -e "BiocManager::install('BSgenome.Hsapiens.UCSC.hg19')" &
-Rscript -e "BiocManager::install('MafDb.gnomAD.r2.1.hs37d5')" &
-wait
 
 # install version from git branch
 pip install --no-deps --force-reinstall \
