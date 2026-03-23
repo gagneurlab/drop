@@ -25,7 +25,11 @@
 
 saveRDS(snakemake, snakemake@log$snakemake)
 source(snakemake@params$setup, echo=FALSE)
-library(AnnotationDbi)
+
+suppressPackageStartupMessages({
+  library(AnnotationDbi)
+  library(GenomeInfoDb)
+})
 
 annotation <- snakemake@wildcards$annotation
 dataset    <- snakemake@wildcards$dataset

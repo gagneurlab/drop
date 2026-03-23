@@ -26,6 +26,7 @@ suppressPackageStartupMessages({
   library(Rsamtools)
   library(BiocParallel)
   library(GenomicAlignments)
+  library(GenomeInfoDb)
 })
 
 # Get strand specific information from sample annotation

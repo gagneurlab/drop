@@ -24,6 +24,7 @@ suppressPackageStartupMessages({
   library(magrittr)
   library(BiocParallel)
   library(data.table)
+  library(GenomeInfoDb)
 })
 
 register(MulticoreParam(snakemake@threads))
