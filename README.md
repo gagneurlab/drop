@@ -51,6 +51,7 @@ For more information on different installation options, refer to the
 [documentation](https://gagneurlab-drop.readthedocs.io/en/latest/installation.html)
 
 ## What's new
+Version 1.6.1 fixes issues due to the new way to import functions in txdbmaker and GenomeInfoDb with the new BioC release 3.22 and above.
 
 Version 1.6.0 contains a fix to a bug in the counting of the aberrant expression module ⚠️ . In addition, it contains a fix to the assignment of variants to genes in the MAE module. Please do not use v1.5.0.
 
