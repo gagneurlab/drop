@@ -25,6 +25,7 @@ jobs:
       run: |
         micromamba --version
         micromamba env list
+        micromamba list -n drop_test
 
 #    - name: Install dependencies
 #      run: mamba env update -f environment.yml
