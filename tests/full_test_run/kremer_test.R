@@ -124,3 +124,5 @@ qc_match_anno <- sapply(seq_len(nrow(qc_matches)), function(x){
 stopifnot(qc_match_anno)
 
 
+# report success
+message("All checks passed!")
